@@ -23,7 +23,7 @@ e.g.
 <1> -L/home/jbaseadm/lib
 <2> -o/home/jbaseadm/bin
 
-You can also create an entry for a specific source item: EB.PARAMS *filename*_*sourcename*_lib
+You can also create an entry for a specific source item: EB.PARAMS **filename**_**sourcename**_lib
 
 When EB is operating on a selection of jBC code the CATALOG is performed when the last item is processed.
 
