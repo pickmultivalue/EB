@@ -4,7 +4,7 @@ The EB utility is primarily designed for editing, compiling jBC code. It can be 
 
 EB was originally written outside jBASE and so the command interface doesn't (currently) use JBASECommandNext for it's commands.
 
-The legend to EB's commands is in EB.PARAMS*<termtype>. 
+The legend to EB's commands is in EB.PARAMS*_termtype_.
 
 e.g. if you're term type is vt220 then it will read that file for it's keystroke mapping.
 
@@ -23,7 +23,7 @@ e.g.
 <1> -L/home/jbaseadm/lib
 <2> -o/home/jbaseadm/bin
 
-You can also create an entry for a specific source item: EB.PARAMS **filename**_**sourcename**_lib
+You can also create an entry for a specific source item: EB.PARAMS *filename*_*sourcename*_lib
 
 When EB is operating on a selection of jBC code the CATALOG is performed when the last item is processed.
 
