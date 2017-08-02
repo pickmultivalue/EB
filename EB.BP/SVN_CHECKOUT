@@ -55,6 +55,9 @@
 ! Now make the target directory
 !
     FileName = GETFLNM(FilePath)
+    fullpath = SVN_GETHOMEPATH('.'):DIR_DELIM_CH:FileName:DIR_DELIM_CH:ItemName
+    PCPERFORM 'git add ':fullpath CAPTURING result
+    RETURN result
 !
 ! First check that directory is under source control
 !

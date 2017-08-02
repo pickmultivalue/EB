@@ -121,7 +121,7 @@
             Z=TRUE; L=1
             IF NOT(silent) THEN
                 CRT MSG.CLR:'Add source to Source Control (Y/N) ? ':
-                INPTYPE='YN'; GOSUB INPT
+                INPTYPE='YN'; L = 1; GOSUB INPT
             END
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
@@ -139,7 +139,7 @@
             Z=TRUE; L=1
             IF NOT(silent) THEN
                 CRT MSG.CLR:'Delete source from Source Control (Y/N) ? ':
-                INPTYPE='YN'; GOSUB INPT
+                INPTYPE='YN'; L=1; GOSUB INPT
             END
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
@@ -154,7 +154,7 @@
             Z=TRUE; L=1
             IF NOT(silent) THEN
                 CRT MSG.CLR:'Revert check-out from Source Control (Y/N) ? ':
-                INPTYPE='YN'; GOSUB INPT
+                INPTYPE='YN'; L=1; GOSUB INPT
             END
             savelockvar = lockvar
             lockvar=TRUE
@@ -181,7 +181,7 @@
                 CALL EB_ERRMSG(errmsg, 1)
 !
                 CRT MSG.CLR:'Continue (Y/N) ? ':
-                INPTYPE='YN'; GOSUB INPT
+                INPTYPE='YN'; L=1; GOSUB INPT
                 IF NOT(Z) THEN RETURN
             END
 !
@@ -213,7 +213,7 @@
             Z=TRUE; L=1
             IF NOT(silent) THEN
                 CRT MSG.CLR:'Sync source from Source Control (Y/N) ? ':
-                INPTYPE='YN'; GOSUB INPT
+                INPTYPE='YN'; L=1; GOSUB INPT
             END
             lockvar=TRUE
             IF NOT(Z) THEN RETURN

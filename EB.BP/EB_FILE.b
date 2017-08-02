@@ -8,6 +8,7 @@
     DEFFUN SVN_READHIST()
     DEFFUN SVN_UPDATEHIST()
     DEFFUN SVN_OPENHIST()
+    DEFFUN SVN_CHECKOUT()
 !
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -303,6 +304,7 @@ RESTART: !
                     PATCH.ITEM=REC
                     MATWRITE PATCH ON F.PATCHFILE,K.PATCHFILE
                 END
+                result = SVN_CHECKOUT(FALSE, FLNM, ITNM)
             END
 COMPILE:    !
             IF PATCH.FLD>=PR.FLD THEN
