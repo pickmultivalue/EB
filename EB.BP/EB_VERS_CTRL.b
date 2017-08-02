@@ -99,7 +99,7 @@
         CASE Op=VersEdit
 !            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
 !            IF FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
-            PCPERFORM 'git ls-files ':K.lockvar CAPTURING IO
+            EXECUTE shell:'git ls-files ':K.lockvar:shellend CAPTURING IO
             IF LEN(IO) THEN
                 Z=TRUE; L=1
                 IF NOT(silent) THEN

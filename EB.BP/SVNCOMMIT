@@ -16,7 +16,14 @@
     INCLUDE EB.INCLUDES SVN_DEBUG
     INCLUDE EB.INCLUDES GET.HOME
 !
-    FullPaths = SVN_SENTENCE(TRUE, FALSE)
+    FullPaths = SVN_SENTENCE(TRUE, TRUE)
+    IF LEN(FullPaths) = 0 THEN
+        EXECUTE shell:'git status|grep modified':shellend CAPTURING FullPaths
+        nbr = DCOUNT(FullPaths, @AM)
+        FOR a = 1 TO nbr
+            FullPaths<a> = FIELD(TRIM(FullPaths<a>), ' ', 2)
+        NEXT a
+    END
 !
     IF LEN(FullPaths) THEN
         IF INDEX(OPTIONS,'L',1) THEN        ;! list only

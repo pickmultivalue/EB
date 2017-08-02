@@ -8,5 +8,8 @@
     INCLUDE EB.INCLUDES SVN_DEBUG
     K.lockvar = FileName:DIR_DELIM_CH:ItemName
     PCPERFORM 'git ls-files ':K.lockvar CAPTURING IO
+    IF LEN(IO) THEN
+        PCPERFORM 'git status ':K.lockvar CAPTURING IO
+    END
     RETURN IO
     RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)

@@ -39,11 +39,6 @@
     INCLUDE EB.INCLUDES GET.HOME
     INCLUDE EB.INCLUDES SVN_DEBUG
 !
-    IF Ask THEN
-        GOSUB Ask_Checkout
-        RETURN result
-    END
-!
 ! Check if a specific revision is required
 !
     revision = FIELD(ItemName, ',', 2)
@@ -52,11 +47,16 @@
         tItemName = ItemName[1, COL1() - 1]
     END ELSE tItemName = ItemName
 !
+    IF Ask THEN
+        GOSUB Ask_Checkout
+        RETURN result
+    END
+!
 ! Now make the target directory
 !
     FileName = GETFLNM(FilePath)
     fullpath = SVN_GETHOMEPATH('.'):DIR_DELIM_CH:FileName:DIR_DELIM_CH:ItemName
-    PCPERFORM 'git add ':fullpath CAPTURING result
+    EXECUTE shell:'git add ':fullpath:shellend CAPTURING result
     RETURN result
 !
 ! First check that directory is under source control
@@ -223,11 +223,12 @@ Ask_Checkout:
         END
     END
     result = ''
-    IF FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
+    IF LEN(IO) THEN ;!FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
         CRT @(-3)
         CRT FilePath:' ':tItemName:' is under source control.'
         CRT
-        ANS = GETYN('Do you want to check it out and edit the checked out copy', 'Y', 2)
+!            ANS = GETYN('Do you want to check it out and edit the checked out copy', 'Y', 2)
+        ANS = GETYN('Do you want add it to the commit stage', 'Y', 2)
         IF ANS = 'Y' THEN
             result = SVN_CHECKOUT(FALSE, FilePath, tItemName)
         END
