@@ -92,7 +92,7 @@
         cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
         EXECUTE shell:cmd CAPTURING before
         EXECUTE Editor:' ':K.Message
-        PCPERFORM cmd CAPTURING after
+        EXECUTE shell:cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)
         IF Abandon THEN
