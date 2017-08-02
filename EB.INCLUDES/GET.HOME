@@ -1,6 +1,6 @@
   rc =GETENV('USER', user)
   IF rc THEN
-    EXECUTE shell:'echo ~':user:shellend CAPTURING homepath
+    PCPERFORM 'echo ~':user:shellend CAPTURING homepath
   END ELSE
     rc =GETENV('USERNAME', user)
     rc =GETENV('HOME', homepath)

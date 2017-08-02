@@ -89,10 +89,10 @@
     TempDir = GETFULLPATH(TempFile)
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP
-        cmd = shell:'ls -l --time-style=full-iso ':K.Message:shellend
-        EXECUTE cmd CAPTURING before
+        cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
+        EXECUTE shell:cmd CAPTURING before
         EXECUTE Editor:' ':K.Message
-        EXECUTE cmd CAPTURING after
+        PCPERFORM cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)
         IF Abandon THEN

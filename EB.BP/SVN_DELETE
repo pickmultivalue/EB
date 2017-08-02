@@ -17,16 +17,16 @@
 !
     IO = SVN_SRC_STATUS(FilePath, ItemName)
     IF FIELD(IO, ' ',1) = 'A' THEN
-    cmd = 'revert'
-END ELSE
-cmd = 'delete'
-IF RemoveFlag THEN cmd := ' --force'
-END
-IO = SVN_EXEC(cmd:' ':FilePath:'/':ItemName, TRUE)
+        cmd = 'revert'
+    END ELSE
+        cmd = 'delete'
+        IF RemoveFlag THEN cmd := ' --force'
+    END
+    IO = SVN_EXEC(cmd:' ':FilePath:'/':ItemName, TRUE)
 !
-IF cmd = 'revert' AND RemoveFlag THEN   ;! try to delete it now
-    EXECUTE 'DELETE ':FilePath:' ':ItemName CAPTURING io
-    IF LEN(io) THEN IO<-1> = io
+    IF cmd = 'revert' AND RemoveFlag THEN   ;! try to delete it now
+        EXECUTE 'DELETE ':FilePath:' ':ItemName CAPTURING io
+        IF LEN(io) THEN IO<-1> = io
     END
 !
     RETURN IO

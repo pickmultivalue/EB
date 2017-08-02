@@ -13,10 +13,10 @@
     FullPaths = SVN_SENTENCE(FALSE, FALSE)
 !
     IF LEN(FullPaths) THEN
-    loc = 0
-    LOOP
-    REMOVE FullPath FROM FullPaths AT loc SETTING delim
-    CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
-    CRT 'Checking out ':FullPath:' ':SVN_CHECKOUT(FALSE, FilePath, ItemName)
-WHILE delim DO REPEAT
+        loc = 0
+        LOOP
+            REMOVE FullPath FROM FullPaths AT loc SETTING delim
+            CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
+            CRT 'Checking out ':FullPath:' ':SVN_CHECKOUT(FALSE, FilePath, ItemName)
+        WHILE delim DO REPEAT
     END

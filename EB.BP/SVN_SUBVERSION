@@ -30,10 +30,10 @@
     subversion = ''
     loc = 0
     LOOP
-    REMOVE line FROM IO AT loc SETTING delim
-    IF FIELD(line, ':', 1) = 'Repository Root' THEN
-    subversion = line[COL2()+2, 99]
-    delim = 0
-    END
-WHILE delim DO REPEAT
+        REMOVE line FROM IO AT loc SETTING delim
+        IF FIELD(line, ':', 1) = 'Repository Root' THEN
+            subversion = line[COL2()+2, 99]
+            delim = 0
+        END
+    WHILE delim DO REPEAT
     RETURN subversion

@@ -36,7 +36,6 @@
     EQU F_User       TO A_Filters(7)
     EQU F_Word       TO A_Filters(8)
 !
-    shell = CHAR(255):'k'
     shellend = ' 2>&1'
     EQU TRUE TO 1, FALSE TO 0
 !
@@ -49,28 +48,62 @@
     subversion = SVN_SUBVERSION(FilePath)
     Repository = SVN_GET_REPOSITORY(FileName)
     Repository := '/':FileName
-    repo = subversion:'/':Repository
+    repo = Repository
 !
-    IO = SVN_EXEC('log ':repo:'/':ItemName, TRUE)
+    IO = SVN_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
 !
     history = ''
     loc = 0
-    REMOVE line FROM IO AT loc SETTING delim
-    sep = line
     n = 1
-    LOOP WHILE delim DO
-        REMOVE line FROM IO AT loc SETTING delim
-        line = CHANGE(line, ' | ', @VM)
-        rev = line<1, 1>
-        user = line<1, 2>
-        timestamp = line<1, 3>
-        odate = FIELD(timestamp, ' ', 1)
-        date = ICONV(odate, 'D')
-        IF LEN(date) = 0 THEN ;! format may need massaging
-            year = FIELD(odate, '-', 1)
-            month = FIELD(odate, '-', 2)
-            day = FIELD(odate, '-', 3)
-            date = ICONV(day:'/':month:'/':year, 'D4/E')
+    REMOVE line FROM IO AT loc SETTING delim
+    IO := @AM:'commit'
+    IF FIELD(line, ' ', 1) = 'commit' THEN
+        LOOP
+            rev = line[COL2()+1, 99]
+            REMOVE user FROM IO AT loc SETTING delim
+            user = FIELD(user, ' ', 2)
+            REMOVE timestamp FROM IO AT loc SETTING delim
+            timestamp = TRIM(timestamp)
+            time = FIELD(timestamp, ' ', 5)
+            odate = FIELD(timestamp, ' ', 3, 2):' ':FIELD(timestamp, ' ', 6)
+            date = ICONV(odate, 'D')
+            desc = ''
+            line_id = ''
+            LOOP
+                REMOVE line FROM IO AT loc SETTING delim
+            UNTIL FIELD(line, ' ', 1) = 'commit' DO
+                IF LEN(line) THEN
+                    desc<1, 1, -1> = line
+                END
+            REPEAT
+            IF LEN(Filters) THEN
+                GOSUB Match_Filter
+            END ELSE OK = TRUE
+            IF OK THEN
+                history<1, n> = rev
+                history<2, n> = user
+                history<3, n> = date
+                history<4, n> = time
+                history<5, n> = CONVERT(desc, @SVM, ' ')
+            END
+        WHILE line # 'commit' DO
+            n++
+        REPEAT
+    END ELSE
+        sep = line
+        LOOP WHILE delim DO
+            REMOVE line FROM IO AT loc SETTING delim
+            line = CHANGE(line, ' | ', @VM)
+            rev = line<1, 1>
+            user = line<1, 2>
+            timestamp = line<1, 3>
+            odate = FIELD(timestamp, ' ', 1)
+            date = ICONV(odate, 'D')
+            IF LEN(date) = 0 THEN ;! format may need massaging
+                year = FIELD(odate, '-', 1)
+                month = FIELD(odate, '-', 2)
+                day = FIELD(odate, '-', 3)
+                date = ICONV(day:'/':month:'/':year, 'D4/E')
             END
             time = ICONV(FIELD(timestamp, ' ', 2), 'MTS')
             linecnt = OCONV(line<1, 4>, 'MCN')
@@ -80,90 +113,91 @@
             FOR L = 1 TO linecnt
                 REMOVE line FROM IO AT loc SETTING delim
                 IF LEN(line) THEN
-                IF LEN(line_id) = 0 AND LEN(desc) = 0 THEN  ;! check if description is for multiple items
-                    line_id = CONVERT(line, '\', '/')
-                    line_id = line_id[1, LEN(Repository)]
-                    IF line_id # Repository THEN line_id = ''
+                    IF LEN(line_id) = 0 AND LEN(desc) = 0 THEN  ;! check if description is for multiple items
+                        line_id = CONVERT(line, '\', '/')
+                        line_id = line_id[1, LEN(Repository)]
+                        IF line_id # Repository THEN line_id = ''
                     END
                     desc<1, 1, -1> = line
-                    END
-                NEXT L
+                END
+            NEXT L
 !
 ! If line_id is set then we need to
 ! extract the description for ItemName
 !
-                IF LEN(line_id) THEN
+            IF LEN(line_id) THEN
                 desc_id = CONVERT(Repository:'/':ItemName, '/', DIR_DELIM_CH)
                 LOCATE desc_id IN desc<1, 1> SETTING loc THEN
-                linecnd = DCOUNT(desc<1, 1>, @SVM)
-                loc++
-                ndesc = ''
-                FOR L = loc TO linecnt
-                    line = desc<1, 1, L>
-                    line_id = CONVERT(line, '\', '/')
-                    line_id = line_id[1, LEN(Repository)]
-                    IF line_id = Repository THEN BREAK
-                    ndesc<1, 1, -1> = line
-                NEXT L
-                desc = ndesc
+                    linecnd = DCOUNT(desc<1, 1>, @SVM)
+                    loc++
+                    ndesc = ''
+                    FOR L = loc TO linecnt
+                        line = desc<1, 1, L>
+                        line_id = CONVERT(line, '\', '/')
+                        line_id = line_id[1, LEN(Repository)]
+                        IF line_id = Repository THEN BREAK
+                        ndesc<1, 1, -1> = line
+                    NEXT L
+                    desc = ndesc
                 END
-                END
-                IF LEN(Filters) THEN
+            END
+            IF LEN(Filters) THEN
                 GOSUB Match_Filter
             END ELSE OK = TRUE
             IF OK THEN
-            history<1, n> = OCONV(rev,'MCN')
-            history<2, n> = user
-            history<3, n> = date
-            history<4, n> = time
-            history<5, n> = CONVERT(desc, @SVM, ' ')
-            n++
+                history<1, n> = OCONV(rev,'MCN')
+                history<2, n> = user
+                history<3, n> = date
+                history<4, n> = time
+                history<5, n> = CONVERT(desc, @SVM, ' ')
+                n++
             END
             REMOVE line FROM IO AT loc SETTING delim
-            REPEAT
+        REPEAT
+    END
 !
-            RETURN history
+    RETURN history
 !
-            Match_Filter:
+Match_Filter:
 !
-            OK = TRUE
-            IF F_Date THEN
-            IF date # F_Date THEN OK=FALSE; RETURN
-            END
-            IF F_StartDate THEN
-            IF date < F_StartDate THEN OK=FALSE; RETURN
-            END
-            IF F_EndDate THEN
-            IF date > F_EndDate THEN OK=FALSE; RETURN
-            END
-            IF F_Time THEN
-            IF time # F_Time THEN OK=FALSE; RETURN
-            END
-            IF F_StartTime THEN
-            IF time < F_StartTime THEN OK=FALSE; RETURN
-            END
-            IF F_EndTime THEN
-            IF time > F_EndTime THEN OK=FALSE; RETURN
-            END
-            IF F_User THEN
-            IF NOT(F_User MATCHES M_User) THEN OK=FALSE; RETURN
-            END
-            IF F_Word THEN
-            OK = FALSE
-            FOR W = 1 TO NbrWords UNTIL OK
-                OK = INDEX(desc, F_Word<1, 1, W>, 1)
-            NEXT W
-            END
-            RETURN
+    OK = TRUE
+    IF F_Date THEN
+        IF date # F_Date THEN OK=FALSE; RETURN
+    END
+    IF F_StartDate THEN
+        IF date < F_StartDate THEN OK=FALSE; RETURN
+    END
+    IF F_EndDate THEN
+        IF date > F_EndDate THEN OK=FALSE; RETURN
+    END
+    IF F_Time THEN
+        IF time # F_Time THEN OK=FALSE; RETURN
+    END
+    IF F_StartTime THEN
+        IF time < F_StartTime THEN OK=FALSE; RETURN
+    END
+    IF F_EndTime THEN
+        IF time > F_EndTime THEN OK=FALSE; RETURN
+    END
+    IF F_User THEN
+        IF NOT(F_User MATCHES M_User) THEN OK=FALSE; RETURN
+    END
+    IF F_Word THEN
+        OK = FALSE
+        FOR W = 1 TO NbrWords UNTIL OK
+            OK = INDEX(desc, F_Word<1, 1, W>, 1)
+        NEXT W
+    END
+    RETURN
 !
-            Parse_Filters:
+Parse_Filters:
 !
-            MAT A_Filters = ''
-            Nbr_Filters = DCOUNT(Filters<1>, @VM)
-            FOR F = 1 TO Nbr_Filters
-                Filter = Filters<1, F>
-                Value = Filters<2, F>
-                BEGIN CASE
+    MAT A_Filters = ''
+    Nbr_Filters = DCOUNT(Filters<1>, @VM)
+    FOR F = 1 TO Nbr_Filters
+        Filter = Filters<1, F>
+        Value = Filters<2, F>
+        BEGIN CASE
             CASE Filter = 'Date'      ; F_Date      = Value
             CASE Filter = 'StartDate' ; F_StartDate = Value
             CASE Filter = 'EndDate'   ; F_EndDate   = Value
@@ -177,15 +211,15 @@
                 F_User = Value
                 L_User = LEN(CONVERT(F_User, '*', ''))
                 BEGIN CASE
-            CASE F_User[1,1] = '*' AND F_User[-1, 1] = '*'
-                M_User = "0X'":F_User[2, -2]:"'0X"
-            CASE F_User[-1, 1] = '*'
-                M_User = "'":F_User[1, -2]:"'0X"
-            CASE F_User[1, 1] = '*'
-                M_User = "0X'":F_User[2, -1]:"'"
-            CASE 1
-                M_User = "'":F_User:"'"
-            END CASE
+                    CASE F_User[1,1] = '*' AND F_User[-1, 1] = '*'
+                        M_User = "0X'":F_User[2, -2]:"'0X"
+                    CASE F_User[-1, 1] = '*'
+                        M_User = "'":F_User[1, -2]:"'0X"
+                    CASE F_User[1, 1] = '*'
+                        M_User = "0X'":F_User[2, -1]:"'"
+                    CASE 1
+                        M_User = "'":F_User:"'"
+                END CASE
         END CASE
     NEXT F
     RETURN

@@ -55,6 +55,7 @@
 !
         CASE Op=VersStat
             lockvar = FALSE
+            RETURN ;! git
             IF INDEX(FilePath, 'JET.PASTE', 1) OR ITNM MATCHES "'%'1X0X'%'" THEN RETURN
 !
 ! Get unix login's home dir
@@ -96,8 +97,10 @@
                 END ELSE lockvar = TRUE       ;! locked no check out
             END
         CASE Op=VersEdit
-            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
-            IF FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
+!            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
+!            IF FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
+            PCPERFORM 'git ls-files ':K.lockvar CAPTURING IO
+            IF LEN(IO) THEN
                 Z=TRUE; L=1
                 IF NOT(silent) THEN
                     CRT MSG.CLR:
@@ -174,16 +177,16 @@
         CASE Op=VersCommit
             FullPath = FilePath:DIR_DELIM_CH:ITNM
             INCLUDE EB.INCLUDES PWD
-            IF pwd = FilePath[1, LEN(pwd)] THEN
-                errmsg     = 'Warning: you are currently in the directory for ':ITNM:'.'
-                errmsg<-1> = 'Committing the last item in a checked out file will attempt'
-                errmsg<-1> = 'to remove the file which will incur an error'
-                CALL EB_ERRMSG(errmsg, 1)
-!
-                CRT MSG.CLR:'Continue (Y/N) ? ':
-                INPTYPE='YN'; L=1; GOSUB INPT
-                IF NOT(Z) THEN RETURN
-            END
+!            IF pwd = FilePath[1, LEN(pwd)] THEN
+!                errmsg     = 'Warning: you are currently in the directory for ':ITNM:'.'
+!                errmsg<-1> = 'Committing the last item in a checked out file will attempt'
+!                errmsg<-1> = 'to remove the file which will incur an error'
+!                CALL EB_ERRMSG(errmsg, 1)
+!!
+!                CRT MSG.CLR:'Continue (Y/N) ? ':
+!                INPTYPE='YN'; L=1; GOSUB INPT
+!                IF NOT(Z) THEN RETURN
+!            END
 !
 ! First close all the files so commit can clean up (if relevant)
 !
