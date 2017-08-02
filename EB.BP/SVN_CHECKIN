@@ -108,7 +108,7 @@
     END
 !
     DELETE F.Source, commit_msg
-    IF NOT(INDEX(IO, 'Committed revision', 1)) THEN
+    IF NOT(INDEX(IO, 'ommitted', 1)) THEN
         Result = 'Error during commit of ':ItemName
         Result<3> = 'svn commit output:'
         Result<5> = IO

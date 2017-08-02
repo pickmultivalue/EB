@@ -1,7 +1,7 @@
 * @(#) SVN_EXEC Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_EXEC(Args, Capturing)
     shell = CHAR(255):'k'
-    shellend = '';! 2>&1'
+    shellend = ' 2>&1'
     command = 'svn'
     noprompt = ' '; ! ' --non-interactive '
     command = 'git'
@@ -26,7 +26,7 @@
     icmd = command:' ':new_Args
 
     IF Capturing THEN
-        EXECUTE shell:cmd CAPTURING IO
+        EXECUTE shell:cmd:shellend CAPTURING IO
         IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1)) THEN
             INCLUDE EB.INCLUDES SVN_DEBUG
             svn_io = 'svn_':SYSTEM(18)
