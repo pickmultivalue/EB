@@ -1,0 +1,6 @@
+* @(#) EB.STD.EQUS Ported to jBASE 15:13:19  17 APR 2000
+!
+! Standard Data/Basic definitions
+! ===============================
+!
+    INCLUDE EB.EQUS STD.EQUS

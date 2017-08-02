@@ -1,0 +1,135 @@
+* @(#) EB.FILE Ported to jBASE 15:13:18  17 APR 2000
+    K.PATCHFILE = PFLNM:'@':PITNM:'@':DATE()
+    MATREAD PATCH FROM F.PATCHFILE,K.PATCHFILE ELSE
+        MAT PATCH=''
+        APPL=FIELD(FLNM,'.',1)
+        DESCRIPTION=LAST.DESC
+        LAST.WORD=FIELD(FLNM,'.',DCOUNT(FLNM,'.'))
+        BEGIN CASE
+        CASE FLNM[COL2()+1,999]='OS.INCLUDES'
+            APPL='GALA'
+            TYPE='ITEM'
+        CASE FLNM 'R#2'='BP' OR FLNM 'R#3'='UTL' OR FLNM 'R#2'='BT'
+            IF ANY.CHNGS OR CHANGED THEN TYPE='BASIC' ELSE TYPE='RECOMPILE'
+        CASE 1
+            LOCATE APPL IN APPLICATION.CODES<1, vm_start> SETTING POS ELSE APPL='GALA'
+            TYPE='ITEM'
+        END CASE
+    END
+    CHANGED.BY=FG$TUSER:'@':SITE.NAME
+    CRT @(0,10):@(-3):
+    CRT @(0,11):STR('=',79):
+    PATCH.FLD=1
+    LOOP
+        IF PATCH.FLD=1 THEN
+            CRT @(0,12):BG:'Description: ':FG:
+            L=400; Z=DESCRIPTION; CRT @(0,13):
+!      STMP=FG$INPUT.CODES; FG$INPUT.CODES='';
+            ITYPE='AN':AM:LEN(Z)+1
+            GOSUB EDIT.INP
+!      FG$INPUT.CODES=STMP
+            BEGIN CASE
+            CASE FG$ACT.CODE=FG$ABT.CODE
+                PATCH.FLD=7
+            CASE FG$ACT.CODE=FG$OPT.CODE
+                IF UPDHIST THEN
+                    CRT MSG.CLR:'Building history...':
+                    IF DESCRIPTION#'' THEN Z=DESCRIPTION:'; ' ELSE Z=''
+                    READV PREV.HIST FROM F.HISTFILE,ITNM,3 ELSE PREV.HIST=''
+                    IF PREV.HIST#'' THEN PREV.HIST<2>=ITNM:STR(VM:ITNM,COUNT(PREV.HIST,VM))
+                    SELECT F.HISTFILE TO HISTLIST
+                    LOOP
+                        READNEXT HID FROM HISTLIST ELSE HID=AM
+                    UNTIL HID=AM DO
+                        IF HID#ITNM THEN
+                            READV DESCRIPTION FROM F.HISTFILE,HID,3 ELSE DESCRIPTION=''
+                            IF DESCRIPTION#'' THEN
+                                PREV.HIST<1,-1>=DESCRIPTION
+                                PREV.HIST<2,-1>=HID:STR(VM:HID,COUNT(DESCRIPTION,VM))
+                            END
+                        END
+                    REPEAT
+                    CRT MSG.CLR:
+                    DESCRIPTION=''
+                    CALL EB_CHOICES(10,12,'','','',PREV.HIST,DESCRIPTION,1,'',1:SVM:2,'L#60':SVM:'L#10','History')
+                    DESCRIPTION=Z:DESCRIPTION
+                END
+            CASE 1
+                DESCRIPTION=Z
+                LAST.DESC=Z
+                PATCH.FLD=PATCH.FLD+1
+            END CASE
+            CRT @(-3):
+        END
+!
+        IF PATCH.FLD=2 THEN
+            CRT @(0,18):BG:'Type:':FG:; L=20; Z=TYPE; CRT @(15,18):; GOSUB INPT
+            IF NOT(FG$ACT.CODE) THEN
+                TYPE=Z
+                LOCATE TYPE IN PATCH.TYPES<1, vm_start> SETTING POS ELSE TYPE=''
+                IF TYPE='NOPATCH' OR TYPE='DEBUG' THEN PATCH.FLD=6 ELSE
+                    IF TYPE#'' THEN PATCH.FLD=PATCH.FLD+1
+                END
+            END ELSE
+                BEGIN CASE
+                CASE FG$ACT.CODE=FG$ABT.CODE
+                    PATCH.FLD=7
+                CASE FG$ACT.CODE=FG$OPT.CODE
+                    CALL EB_CHOICES(50,12,'','','',PATCH.TYPES,TYPE,1,'':AM:TYPE,1,'L#10','Types')
+                CASE 1; FG$ACT.CODE=FG$BCK.CODE
+                    PATCH.FLD=PATCH.FLD-1
+                END CASE
+            END
+        END
+!
+        IF PATCH.FLD=3 THEN
+            CRT @(0,19):BG:'Application:':FG:; L=5; Z=APPL; CRT @(15,19):; GOSUB INPT
+            IF NOT(FG$ACT.CODE) THEN
+                APPL=Z
+                IF APPL#'' THEN PATCH.FLD=PATCH.FLD+1
+            END ELSE
+                BEGIN CASE
+                CASE FG$ACT.CODE=FG$ABT.CODE
+                    PATCH.FLD=7
+                CASE FG$ACT.CODE=FG$OPT.CODE
+                    CALL EB_CHOICES(50,12,'','','EB.CONTROL','APPLICATIONS',APPL,1,'':AM:APPL,1:SVM:2,'L#5':SVM:'L#30','Applications')
+                CASE 1; FG$ACT.CODE=FG$BCK.CODE
+                    PATCH.FLD=PATCH.FLD-1
+                END CASE
+            END
+        END
+!
+        READV REL.NO FROM FG$EB.PARAMS,APPL:'.REL',1 ELSE REL.NO=''
+        IF PATCH.FLD=4 THEN
+            CRT @(0,20):BG:'Release:':FG:; L=5; Z=REL.NO; CRT @(15,20):; GOSUB INPT
+            IF NOT(FG$ACT.CODE) THEN
+                REL.NO=Z
+                PATCH.FLD=PATCH.FLD+1
+            END ELSE
+!        IF FG$ACT.CODE=FG$BCK.CODE THEN
+                IF FG$ACT.CODE=FG$ABT.CODE THEN PATCH.FLD=7 ELSE PATCH.FLD=PATCH.FLD-1
+            END
+        END
+!
+        IF PATCH.FLD=5 THEN
+            CRT @(0,21):BG:'PR:':FG:; L=10; Z=SPRNO; CRT @(15,21):; GOSUB INPT
+            IF NOT(FG$ACT.CODE) THEN
+                SPRNO=Z
+            END ELSE
+                IF FG$ACT.CODE=FG$ABT.CODE THEN PATCH.FLD=7 ELSE PATCH.FLD=PATCH.FLD-1
+            END
+        END
+    UNTIL PATCH.FLD>4 DO REPEAT
+    IF PATCH.FLD=5 THEN
+        IF UPDHIST THEN
+            CALL EB_MAKEHIST(F.HISTFILE,ITNM,CHANGED.BY,DESCRIPTION)
+        END
+        Checksum=-1
+        CALL EB_MAKEPATCH(F.PATCHFILE,FLNM,ITNM,DATE(),MAT PATCH)
+    END ELSE
+        IF PATCH.FLD=7 THEN
+            CRT MSG.CLR:
+            SCR.UD=1
+            RETURN TO START
+        END
+    END

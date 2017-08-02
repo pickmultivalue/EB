@@ -1,0 +1,25 @@
+  DIM AUDIT.DEFS(20)
+!   key is file name - refer screen SAMAUDIT
+!   Atts 2-14 are MV and associated
+  EQU AUD.SUBR   TO AUDIT.DEFS(1)  ;* Alternate key description subroutine
+  EQU AUD.ATTRS  TO AUDIT.DEFS(2)  ;* Attribute number in above file
+  EQU AUD.CONVS  TO AUDIT.DEFS(3)  ;*     "     conversion to be applied
+  EQU AUD.XFILE  TO AUDIT.DEFS(4)  ;*     "     translate filename
+  EQU AUD.XATTR  TO AUDIT.DEFS(5)  ;*     "        "      attr number
+  EQU AUD.MSGS   TO AUDIT.DEFS(6)  ;*     "   print this message afterwards
+  EQU AUD.XLIND  TO AUDIT.DEFS(7)  ;*     "   translate indicator
+  EQU AUD.XTYPE  TO AUDIT.DEFS(8)  ;*     "        "      type
+                                    * XLATE = use (4) & (5)
+                                    * LOOKUP= use (9), (10), (11) & (12)
+                                    * SUBR  = use (14)
+  EQU AUD.LUFILE TO AUDIT.DEFS(9)  ;*     "     lookup filename
+  EQU AUD.LUITEM TO AUDIT.DEFS(10) ;*     "        "   itemid
+  EQU AUD.LUATTR TO AUDIT.DEFS(11) ;*     "        "   code attr number
+  EQU AUD.LUDESC TO AUDIT.DEFS(12) ;*     "        "   desc  "      "
+  EQU AUD.FHEAD  TO AUDIT.DEFS(13) ;*     "     description or header
+  EQU AUD.XSUBR  TO AUDIT.DEFS(14) ;*     "     translate subroutine
+  EQU AUD.ALTSUB TO AUDIT.DEFS(15) ;* Alternate report layout subroutine
+* ie ignore (2)-(14)
+  EQU AUD.PPSUB  TO AUDIT.DEFS(16) ;* Pre-process subroutine
+* Eg: Allow preprocess of diff record
+*     to massage multi-valued fields.

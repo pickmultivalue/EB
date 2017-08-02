@@ -1,0 +1,2 @@
+FG$OSTYPE='JB'
+DEFC JBASEWindowsInchar(VAR , INT)

@@ -1,0 +1,55 @@
+* @(#) PAINT.VERT Ported to jBASE 15:13:18  17 APR 2000
+*  The following variable names were converted
+*   LOWER
+* 
+    ACT.PROMPT='Enter '
+    FOR I=1 TO 4
+        IF I=3 THEN I=4
+        CRT @(0,23):RVON:BG:ACT.PROMPT:FG:INFO<I>:BG:RVOFF:FG:CLEOL:
+        LOOP
+            CALL EB_WP(WINDOW(I),'N0',20,23,2,0)
+        WHILE FG$ACT.CODE DO
+            BEGIN CASE
+            CASE FG$ACT.CODE=FG$ABT.CODE OR FG$ACT.CODE=FG$END.CODE
+                FG$ACT.CODE=FALSE
+                CRT @(0,23):CLEOL:
+                GOTO 10
+            CASE 1
+                INCLUDE EB.INCLUDES ON.INP
+                FG$ACT.CODE=FALSE
+            END CASE
+        REPEAT
+    NEXT I
+    IF COL#0 THEN HASH='L#':COL ELSE HASH=''
+    INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
+    CRT @(COL,ROW):UPPER:
+    FIRST=ROW+1
+    SECOND=DEPTH+ROW-2
+    FOR I=FIRST TO SECOND
+        CRT @(COL,I):VERT:
+    NEXT I
+    CRT @(COL,I):Lower:
+    ACT.PROMPT='Here (Y/N) '
+    CRT @(0,23):RVON:ACT.PROMPT:RVOFF:CLEOL:
+    INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
+    ANS='Y';YNC=16;YNR=23;GOSUB INPUT.YN
+    IF ANS='Y' THEN
+        FG$CHANGES=TRUE
+        TEMP=THIS.SCREEN<ROW+1>
+        THIS.SCREEN<ROW+1>=TEMP[1,COL] HASH:UPPER:TEMP[COL+2,80]
+        FIRST=FIRST+1
+        SECOND=SECOND+1
+        FOR I=FIRST TO SECOND
+            TEMP=THIS.SCREEN<I>
+            IF INDEX(' ',TEMP[COL+1,1],1) THEN
+                CHR=VERT
+            END ELSE CHR=CROSS
+            TEMP=TEMP[1,COL] HASH:CHR:TEMP[COL+2,80]
+            THIS.SCREEN<I>=TEMP
+        NEXT I
+        TEMP=THIS.SCREEN<I>
+        THIS.SCREEN<I>=TEMP[1,COL] HASH:Lower:TEMP[COL+2,80]
+    END
+    DEPTH=DEPTH+3
+    GOSUB PART.REFRESH
+    DEPTH=DEPTH-3

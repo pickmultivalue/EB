@@ -1,0 +1,6 @@
+* Delete saved list.
+* DELETE-LIST verb is not used as the execute clears any active select
+*
+OPEN 'DICT','POINTER-FILE' TO OSINC$POINTER.FILE THEN
+DELETE OSINC$POINTER.FILE,OSINC$LISTID
+END

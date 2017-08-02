@@ -1,0 +1,14 @@
+* @(#) NEW.PAGE Ported to jBASE 15:13:20  17 APR 2000
+NEW.PAGE: !
+    CRT @(0,23):RVON:BG:'Current Screen Page = ':FG:SCRN.PGE:BG:', enter New Page Number or <Return> ':RVOFF:FG:CLEOL:
+    STMP=SCRN.PGE
+    CALL EB_WP(STMP,'AN',60,23,2,0)
+    IF NUM(STMP) AND STMP#'' AND STMP#SCRN.PGE THEN
+        SCRN.PGE=STMP
+        IF SCREEN<SCRN.PGE>='' THEN
+            CRT @(0,23):RVON:BG:'Use Screen Mask on ':FG:'Page 1':BG:' as a Template ? ':RVOFF:FG:CLEOL:
+            ANS='Y'
+            CALL EB_WP(ANS,'AN',50,23,1,0)
+            IF OCONV(ANS,'MCU')='Y' THEN SCREEN<SCRN.PGE>=SCREEN<1>
+        END
+    END

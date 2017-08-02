@@ -1,0 +1,5 @@
+        IF LNM=1 THEN
+          REMOVE LINE FROM REC AT SPOS SETTING DELIM
+        END ELSE
+          LINE=REC<STRT>
+        END

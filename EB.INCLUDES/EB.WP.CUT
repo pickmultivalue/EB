@@ -1,0 +1,41 @@
+* @(#) EB.WP.CUT Ported to jBASE 15:13:19  17 APR 2000
+    IF NOT(PASTE) THEN
+        PASTE=CPOS
+        CALL EB_ERRMSG(FG$ERROR.MSGS<47>)
+    END ELSE
+        IF PASTE#CPOS THEN
+            IF CPOS>PASTE THEN          ;! swap
+                PASTE.NBR=CPOS
+                CPOS=PASTE
+                PASTE=PASTE.NBR
+                COL-=(PASTE-CPOS)
+            END
+            PASTE.LENGTH=PASTE-CPOS
+            PASTE.STRING=INP.STRING[CPOS,PASTE.LENGTH]
+            IF  FG$ACT.CODE=FG$DEL.CHAR.CODE THEN
+                FG$DELETE.LIST=PASTE.STRING:AM:FG$DELETE.LIST
+            END ELSE
+                PASTE.NBR=''
+                IF FG$STERM THEN
+                    CALL EB_AT_WINDOWS.INPUT(100,0,5,0,'','|M','Enter paste','',FG$ERROR.MSGS<81>,0,0,PASTE.NBR)
+                END ELSE
+                    IF FG$POPUP THEN
+                        IF STATUS.LINE<1,1>#'' THEN CRT STATUS.LINE<1,1>:FG$ERROR.MSGS<48>:STATUS.LINE<1,2>:
+                    END ELSE CRT @(0,23):CLEOL:FG$ERROR.MSGS<48>:' ':
+                    CALL EB_WP(PASTE.NBR,'AN',LEN(FG$ERROR.MSGS<48>)+2,23,30,1)
+                END
+                CALL EB_ERRMSG(' ')
+                LOCATE PASTE.NBR IN FG$PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
+                    FG$PASTE.LIST<2,PASTE.POS>=PASTE.STRING
+                END ELSE
+                    INS PASTE.NBR BEFORE FG$PASTE.LIST<1,PASTE.POS>
+                    INS PASTE.STRING BEFORE FG$PASTE.LIST<2,PASTE.POS>
+                END
+            END
+            INP.STRING=(INP.STRING[1,CPOS-1]:INP.STRING[PASTE,LENTH])
+            GOSUB CRT.UNDERLINE
+            INCLUDE EB.INCLUDES WP.INS.CURSOR
+            PASTE.STRING=''
+        END
+        PASTE=FALSE
+    END

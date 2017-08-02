@@ -1,0 +1,33 @@
+* @(#) EB.WP.PASTE Ported to jBASE 15:13:19  17 APR 2000
+    IF PASTE THEN
+        IF CPOS>PASTE THEN
+            ST=PASTE; FI=CPOS; GOSUB FOREGROUND
+        END ELSE
+            ST=CPOS; FI=PASTE; GOSUB FOREGROUND
+        END
+        PASTE=FALSE
+        IF FG$STERM ELSE CRT @(0,23):CLEOL:
+    END ELSE
+        IF FG$STERM THEN
+            FG$ACT.CODE=FG$OPT.CODE
+        END ELSE
+            CRT @(0,23):CLEOL:FG$ERROR.MSGS<48>:' ':
+            ST=LEN(FG$ERROR.MSGS<48>:' ')
+            CALL EB_WP(PASTE.NBR,'AN',ST,23,40,0)
+        END
+        IF FG$ACT.CODE=FG$OPT.CODE THEN
+            CALL EB_CHOICES(30,8,'','','',FG$PASTE.LIST,PASTE.NBR,1,'',1:SVM:2,'L#20':SVM:'L#20','Stored Pastes')
+            PASTE.NBR=PASTE.NBR<1,1>
+            FG$ACT.CODE=FALSE
+        END
+        IF PASTE.NBR#'' THEN
+            LOCATE PASTE.NBR IN FG$PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
+                PASTE.STRING=FG$PASTE.LIST<2,PASTE.POS>
+                GOSUB INSERT.STRING
+            END ELSE
+                CALL EB_ERRMSG(PASTE.NBR:FG$ERROR.MSGS<49>)
+            END
+        END
+        FG$ACT.CODE=FALSE
+        INCLUDE EB.INCLUDES WP.INS.CURSOR
+    END

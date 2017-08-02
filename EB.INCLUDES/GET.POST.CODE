@@ -1,0 +1,84 @@
+* @(#) GET.POST.CODE Ported to jBASE 15:13:20  17 APR 2000
+! W A R N I N G
+! the call to EB.REFRESH has been commented out for more user control
+!
+! This is a standard piece of code to be used for inputting
+! Suburbs and Postcodes in GALA screens.
+!
+! Your screen must have the standard POSTCODES file as one of its
+! files with the equate being F.POSTCODES and a "Y" under Btree
+!
+! You must have a suburb field and a postcode field
+! Before the INCLUDE EB.INCLUDES GET.POST.CODE you must have:-
+!
+!   SBURB.FLD=suburb.FLD
+!   PCODE.FLD=post_code.FLD
+!
+! where:      suburb    - is your Suburb field name
+!             post_code - is your Postcode field name
+!
+!
+! You must also INCLUDE EB.EQUS BTREE.EQUS at the top of your
+! subroutine
+!
+! If you have more than one set of suburb/postcode create a subroutine
+! label at the bottom of your program, placing this include after the
+! label followed by a RETURN
+!
+    IF FG$FIELD='' THEN
+        PCODE=''
+        GOTO END.POST.CODE
+    END
+    TRIES=0
+    ANS=0
+    ORIG.VALUE=FG$FIELD
+    LOCATE 'POSTCODES' IN FG$FILE.NAMES<1> SETTING POS ELSE RETURN
+GET.POST.CODE:      !
+    READV PCODES FROM F.POSTCODES,FG$FIELD,1 ELSE
+        IF TRIES THEN
+            CALL EB_PRINT_ERR(ORIG.VALUE:' not located in POSTCODES','','',1,'','')
+            FG$VALID=FALSE
+            IF FG$REFRESH THEN CALL EB_REFRESH
+            RETURN
+        END ELSE
+!
+            TRIES=1
+            FL=FN.POSTCODES
+            CURRENT.FL=FL
+            B$FILE=FILES(FL)
+            B$TREE=BFILES(FL)
+            STRUCT=BROOTS(FL)<1>
+            INCLUDE EB.INCLUDES SET.BTREE.PROG
+            IF NUM(FG$FIELD) THEN ANS=1; PCODE=FG$FIELD ELSE ANS=2
+            B$ROOTID=STRUCT<1,ANS>
+            ID=FG$FIELD
+            CALL @BTREE.PROG(FG$FIELD,ID)
+            IF ID#'' THEN FG$FIELD=ID
+            GOTO GET.POST.CODE
+        END
+    END
+    IF TRIES THEN
+        DAT(SBURB.FLD)=FG$FIELD
+        IF FG$REFRESH ELSE
+            FG$DISPLAY.LIST<1,-1>=SBURB.FLD
+            FG$REFRESH=FG$SELECTIVE
+        END
+    END
+    IF INDEX(PCODES,VM,1) THEN
+        IF ANS#1 THEN PCODE=AM
+        LOCATE PCODE IN PCODES<1> SETTING POS ELSE
+            CALL EB_ERRMSG('Please select the appropriate Post Code')
+            CALL EB_CHOICES(FG$SCR.COL<1,PCODE.FLD>,FG$SCR.ROW<1,PCODE.FLD>,10,3,'',PCODES,PCODE,1,'',1,'R#4','Post')
+            CALL EB_ERRMSG('')
+            IF PCODE='' THEN FG$VALID=FALSE
+        END
+    END ELSE PCODE=PCODES
+END.POST.CODE:      !
+    IF FG$VALID THEN
+        DAT(PCODE.FLD)=PCODE
+        IF FG$AMEND OR FG$REFRESH=FG$SELECTIVE THEN
+            FG$DISPLAY.LIST<1,-1>=PCODE.FLD
+            IF NOT(FG$REFRESH) THEN FG$REFRESH=FG$SELECTIVE
+        END
+    END ELSE FG$DISPLAY.LIST=''
+!  IF FG$REFRESH THEN CALL EB_REFRESH

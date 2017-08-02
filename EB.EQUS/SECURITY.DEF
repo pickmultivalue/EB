@@ -1,0 +1,17 @@
+  DIM A.SECURITY(20)
+  EQU SEC.LOGGEDIN    TO A.SECURITY(1)  ;! mv list of ports logged on
+  EQU SEC.PASSWORD    TO A.SECURITY(2)  ;! incremented password
+  EQU SEC.LANG.CODE   TO A.SECURITY(3)  ;! language code
+  EQU SEC.LEVEL       TO A.SECURITY(4)  ;! security level
+  EQU SEC.ACCESS      TO A.SECURITY(5)  ;! mv list of access codes
+  EQU SEC.FORM.QUE    TO A.SECURITY(6)  ;! form queue id
+  EQU SEC.LOGIN.MENU  TO A.SECURITY(7)  ;! initial login menu
+  EQU SEC.AUTO.MON    TO A.SECURITY(8)  ;! check mail time in secs
+  EQU SEC.TIMEOUT     TO A.SECURITY(9)  ;! input timeout in secs
+  EQU SEC.MSG.REMIND  TO A.SECURITY(10) ;! un-read sent mail check time
+  EQU SEC.MAX.LOGINS  TO A.SECURITY(11) ;! max number of concurrent logins
+  EQU SEC.LOCN        TO A.SECURITY(12) ;! location code
+  EQU SEC.DEPT        TO A.SECURITY(13) ;! department code
+  EQU SEC.MASKINP     TO A.SECURITY(14) ;! Mask Input flag
+  EQU SEC.TUTORIAL    TO A.SECURITY(15) ;! Tutorial mode (0,1,2)
+  EQU SEC.PROFILE     TO A.SECURITY(16) ;! Security profile

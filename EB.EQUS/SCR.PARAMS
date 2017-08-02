@@ -1,0 +1,98 @@
+EQU FG$SCR.CONDITIONS    TO SCR.PARAMS(1)  ;! RPN conditions
+EQU FG$SCR.MAND          TO SCR.PARAMS(2)  ;! Mandatory flags
+EQU FG$SCR.DO            TO SCR.PARAMS(3)  ;! Display only flags
+EQU FG$SCR.COL           TO SCR.PARAMS(4)  ;! Columns
+EQU FG$SCR.ROW           TO SCR.PARAMS(5)  ;! Rows
+EQU FG$SCR.JUST          TO SCR.PARAMS(6)  ;! Format 
+EQU FG$SCR.ACTIONS       TO SCR.PARAMS(7)  ;! Action and trigger formulas
+EQU FG$SCR.PAGING        TO SCR.PARAMS(8)  ;! Window Nbr
+EQU FG$SCR.LAST.ROW      TO SCR.PARAMS(9)  ;! Last row of each window
+EQU FG$SCR.NBR.FIELDS    TO SCR.PARAMS(10) ;! Last Field per page
+EQU FG$SCR.ST.PAGE       TO SCR.PARAMS(11) ;! First field per window
+EQU FG$SCR.FI.PAGE       TO SCR.PARAMS(12) ;! Last field per window
+EQU FG$SCR.CONTROL       TO SCR.PARAMS(13) ;! Multi-update flag
+EQU FG$SCR.FLD.PROMPT    TO SCR.PARAMS(14) ;! Prompt Nbrs
+EQU FG$SCR.FIRST.PAGE    TO SCR.PARAMS(15) ;! First input field per window
+EQU FG$SCR.FILES         TO SCR.PARAMS(16) ;! File names
+EQU FG$SCR.FILE.FLAGS    TO SCR.PARAMS(17) ;! Write/Delete/Exist/Last Upd attr/Suspend Attr/Created Attr
+EQU FG$SCR.FILE.ATTR     TO SCR.PARAMS(18) ;! Attr. Nbrs
+EQU FG$SCR.FLD.NAMES     TO SCR.PARAMS(19) ;! Field names
+EQU FG$SCR.ICONV.FLD     TO SCR.PARAMS(20) ;! ICONVs for each field
+EQU FG$SCR.REQUIRED      TO SCR.PARAMS(21) ;! Required Fields before file
+EQU FG$SCR.PAGE.MIN      TO SCR.PARAMS(22) ;! Min entries for window
+EQU FG$SCR.PAGE.MAX      TO SCR.PARAMS(23) ;! Max   "      "    "
+EQU FG$SCR.INPUT.LIST    TO SCR.PARAMS(24) ;! Field list for each page
+EQU FG$SCR.TYPE          TO SCR.PARAMS(25) ;! Type of field
+EQU FG$SCR.FILE.KEYS     TO SCR.PARAMS(26) ;! Keys for each file
+EQU FG$SCR.PAGE.SUB      TO SCR.PARAMS(27) ;! Subscreen per field
+EQU FG$SCR.CO.ORDS       TO SCR.PARAMS(28) ;! Screen position
+EQU FG$SCR.FLD.LEN       TO SCR.PARAMS(29) ;! Field lengths
+EQU FG$SCR.VIEWS         TO SCR.PARAMS(30) ;! View Names
+EQU FG$SCR.PASSFLDS      TO SCR.PARAMS(31) ;! Fields to pass to subscreen
+EQU FG$SCR.DATA.FLD      TO SCR.PARAMS(32) ;! Field Nbr where data is stored
+EQU FG$SCR.TOTAL.FLD     TO SCR.PARAMS(33) ;! Field to total into
+EQU FG$SCR.VALID.VALS    TO SCR.PARAMS(34) ;! Valid values
+EQU FG$SCR.EVENTS        TO SCR.PARAMS(35) ;! Events to trap
+EQU FG$SCR.NEXT.KEYS     TO SCR.PARAMS(36) ;! Auto Key params
+EQU FG$SCR.EVENT.ACTS    TO SCR.PARAMS(37) ;! EVENT action codes
+EQU FG$SCR.FIRST.INPUT   TO SCR.PARAMS(38) ;! First input field per screen page
+EQU FG$SCR.DISABLED      TO SCR.PARAMS(39) ;! <1,1>=initial state - flag to "grey out" field; <1,2>=state when reading existing records
+EQU FG$SCR.NBR.LINES     TO SCR.PARAMS(40) ;! Number of lines per window
+EQU FG$SCR.NBR.ROWS      TO SCR.PARAMS(41) ;! Number of rows per window
+EQU FG$SCR.CLEAR.FLD     TO SCR.PARAMS(42) ;! Clear field string
+EQU FG$SCR.BFILES        TO SCR.PARAMS(43) ;! Btree flags
+EQU FG$SCR.NBR.FILES     TO SCR.PARAMS(44) ;! Number of files
+EQU FG$SCR.NBR.PAGES     TO SCR.PARAMS(45) ;! Number of Screen pages
+EQU FG$SCR.VALIDATE      TO SCR.PARAMS(46) ;! Subroutine name
+EQU FG$SCR.ATTR.ASSOC    TO SCR.PARAMS(47) ;! Attribute associations
+EQU FG$SCR.WRITE.ORDER   TO SCR.PARAMS(48) ;! Update order of file numbers
+EQU FG$SCR.CONSTANTS     TO SCR.PARAMS(49) ;! Constants file/item/validate/display-depth
+EQU FG$SCR.DEPENDENTS    TO SCR.PARAMS(50) ;! Dependant fields
+EQU FG$SCR.PARENTS       TO SCR.PARAMS(51) ;! Parent fields
+EQU FG$SCR.MASTER.FILE   TO SCR.PARAMS(52) ;! Master file flag to control full-refresh
+EQU FG$SCR.AUDIT.FLAGS   TO SCR.PARAMS(53) ;! Audit Trail flags
+EQU FG$SCR.MIN.VALS      TO SCR.PARAMS(54) ;! Min vals per field
+EQU FG$SCR.MAX.VALS      TO SCR.PARAMS(55) ;! Max vals per field
+EQU FG$SCR.ACTION.XREF   TO SCR.PARAMS(56) ;! Action fld xref
+EQU FG$SCR.DEFAULT.TYPE  TO SCR.PARAMS(57) ;! Default data type or value (if preceeded by a ")
+EQU FG$SCR.DEPEND.VALS   TO SCR.PARAMS(58) ;! Dependant value
+EQU FG$SCR.CONST.ATTRS   TO SCR.PARAMS(59) ;! Constants attributes
+EQU FG$SCR.CONST.JUSTS   TO SCR.PARAMS(60) ;! Constants display formats
+EQU FG$SCR.PAGE.JUSTS    TO SCR.PARAMS(61) ;! R#n format for windows
+EQU FG$SCR.PAGE.LENS     TO SCR.PARAMS(62) ;! width of above for windows
+EQU FG$SCR.CHOICE.ATTRS  TO SCR.PARAMS(63) ;! Link field display attributes
+EQU FG$SCR.CHOICE.JUSTS  TO SCR.PARAMS(64) ;!  "     "     "     formats
+EQU FG$SCR.CHOICE.DISP   TO SCR.PARAMS(65) ;!  "     "     " depth/id just
+EQU FG$SCR.FILE.IDS      TO SCR.PARAMS(66) ;! File Nbrs to which flds are keys
+EQU FG$SCR.FILE.FLDS     TO SCR.PARAMS(67) ;! File Nbrs to which flds will open
+EQU FG$SCR.CONST.HDRS    TO SCR.PARAMS(68) ;! Headings for Constants
+EQU FG$SCR.CHOICE.HDRS   TO SCR.PARAMS(69) ;! Headings for Choices
+EQU FG$SCR.LOCK.FLAGS    TO SCR.PARAMS(70) ;! Lock item flags
+EQU FG$SCR.UNIQUE        TO SCR.PARAMS(71) ;! Unique entry flags (paging)
+EQU FG$SCR.CONST.FLDS    TO SCR.PARAMS(72) ;! Other return flds for constnts
+EQU FG$SCR.DEPN.BUTTONS  TO SCR.PARAMS(73) ;! Dependent buttons
+EQU FG$UPDATE.FIELDS     TO SCR.PARAMS(74) ;! Update Fields (calculated at run time)
+EQU FG$SCR.ST.COLS       TO SCR.PARAMS(75) ;! Col/Row ordered fields
+EQU FG$SCR.ST.COL.FLDS   TO SCR.PARAMS(76) ;! Col/Row ordered fields
+EQU FG$SCR.FI.COLS       TO SCR.PARAMS(77) ;! End Col/Row ordered fields
+EQU FG$SCR.FI.COL.FLDS   TO SCR.PARAMS(78) ;! End Col/Row ordered fields
+EQU FG$SCR.PASSFLD.OPTS  TO SCR.PARAMS(79) ;! flag to control passing data to subscreen
+EQU FG$SCR.PARENT.VALS   TO SCR.PARAMS(80) ;! Dependent Value if parent not a field
+EQU FG$SCR.DISP.ATTRS    TO SCR.PARAMS(81) ;! Display only attrs
+EQU FG$SCR.FORMULAS      TO SCR.PARAMS(82) ;! RV Polish formula
+EQU FG$SCR.SMART.READ    TO SCR.PARAMS(83) ;! TRUE if screen variables assigned only if page displayed
+EQU FG$SCR.SCROLL.WIN    TO SCR.PARAMS(84) ;! scroll paging fields one line at a time
+EQU FG$SCR.UPD.ORDER     TO SCR.PARAMS(85) ;! fld nbrs in assoc mv order
+EQU FG$SCR.ASSOC.MV      TO SCR.PARAMS(86) ;! multi-value controls
+EQU FG$SCR.MUST.PROCESS  TO SCR.PARAMS(87) ;! multi-valued list of fields to process before amend
+EQU FG$SCR.HIST.FILES    TO SCR.PARAMS(88) ;! History files
+EQU FG$SCR.HIST.KEYS     TO SCR.PARAMS(89) ;! History keys
+EQU FG$SCR.CONV.ATTRS    TO SCR.PARAMS(90) ;! Conversion codes
+EQU FG$SCR.AMEND.RULES   TO SCR.PARAMS(91) ;! Rules for setting amend
+EQU FG$SCR.BTREE.INDEXES TO SCR.PARAMS(92) ;! Btree indexes to search
+EQU FG$SCR.UPDATE.ATTRS  TO SCR.PARAMS(93) ;! Non-field updating attrs
+EQU FG$SCR.UPDATE.RULES  TO SCR.PARAMS(94) ;! Formula/params to control writes/deletes
+EQU FG$SCR.CALC.XREF     TO SCR.PARAMS(95) ;! MV/fld for Calc fields
+EQU FG$SCR.WIN.OPTS      TO SCR.PARAMS(96) ;! paging field ins/del restrictions
+EQU FG$SCR.ALT.KEYS      TO SCR.PARAMS(97) ;! ALT-keys for each field
+EQU FG$SCR.BTLOOKUPS     TO SCR.PARAMS(98) ;! Btree lookups per field

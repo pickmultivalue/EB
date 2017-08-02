@@ -1,0 +1,4 @@
+* @(#) HELP.HILITES Ported to jBASE 15:13:20  17 APR 2000
+    EQU BOLD TO 'b', LARGE TO 'l', ITAL TO 'i', UNDEL TO 'u'
+    EQU TABC TO 't', BOX TO 'x', SHADOW TO 's', MEDIUM TO 'm'
+    EQU PROP TO 'p'

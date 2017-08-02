@@ -1,0 +1,39 @@
+* @(#) PAINT.REMOVE Ported to jBASE 15:13:20  17 APR 2000
+    FOR I=FIRST.FIELD TO LAST.FIELD
+        PGE=(SCRN.PGES<1,I>:1)[1,1]
+        IF PGE=SCRN.PGE THEN
+            FOR K=1 TO 2 UNTIL LABELS<1,I,K>=''
+                LABEL=LABELS<1,I,K>
+                LENTH=LEN(LABEL)
+                CC=LAB.COLS<1,I,K>
+                RR=LAB.ROWS<1,I,K>
+                LINE=THIS.SCREEN<RR+1>
+                LINE=LINE[1,CC]:SPACE(LENTH):LINE[CC+1+LENTH,999]
+                THIS.SCREEN<RR+1>=LINE LINE.HASH
+                PRFX=ACT.PROMPTS<1,I,K>
+                IF PRFX THEN
+                    IF LABEL[1,1]#PRFX[1,1] THEN  ;! DEBUG
+                        LABEL='   ':PRFX
+                    END
+                    PRFX=LEN(PRFX)+2
+                    LABELS<1,I,K>=LABEL[PRFX+1,999]
+                    LAB.COLS<1,I,K>=CC+PRFX
+                END
+            NEXT K
+            DISPLY=LEN(DISPLAYS<1,I>)
+            CC=SCRN.COLS<1,I>
+            RR=SCRN.ROWS<1,I>
+            LINE=THIS.SCREEN<RR+1>
+            LINE=LINE[1,CC]:SPACE(DISPLY):LINE[CC+1+DISPLY,999]
+            THIS.SCREEN<RR+1>=LINE LINE.HASH
+!
+            LOCATE I IN FIRST.WIN<1> SETTING WIN THEN
+                DISPLY=3+LEN(WIN)
+                RR=LAST.ROWS<1,WIN>
+                LINE=THIS.SCREEN<RR+1>
+                LINE=LINE[1,CC]:SPACE(DISPLY):LINE[CC+1+DISPLY,999]
+                THIS.SCREEN<RR+1>=LINE LINE.HASH
+            END
+        END
+    NEXT I
+!

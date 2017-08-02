@@ -1,0 +1,104 @@
+*
+*********************************************************************
+* The following definitions are provided to make it easier
+* to use the various colors, fill patterns etc.
+*********************************************************************
+*
+* COLORS
+*
+EQU BLACK TO 0 ;* Background or background
+EQU BLUE TO 1 ;* Background or background
+EQU GREEN TO 2 ;* Background or background
+EQU CYAN TO 3 ;* Background or background
+EQU RED TO 4 ;* Background or background
+EQU MAGENTA TO 5 ;* Background or background
+EQU BROWN TO 6 ;* Background or background
+EQU LIGHTGRAY TO 7 ;* Background or background
+EQU DARKGRAY TO 8 ;* Foreground only
+EQU LIGHTBLUE TO 9 ;* Foreground only
+EQU LIGHTGREEN TO 10 ;* Foreground only
+EQU LIGHTCYAN TO 11 ;* Foreground only
+EQU LIGHTRED TO 12 ;* Foreground only
+EQU LIGHTMAGENTA TO 13 ;* Foreground only
+EQU YELLOW TO 14 ;* Foreground only
+EQU WHITE TO 15 ;* Foreground only
+*
+* BOX DEFINITIONS
+*
+EQU NOBOX TO 0
+EQU SINGLEBOX TO 1
+EQU DOUBLEBOX TO 2
+*
+* FILL PATTERNS
+*
+EQU EMPTYFILL TO 0
+EQU SOLIDFILL TO 1
+EQU LINEFILL TO 2
+EQU LTSLASHFILL TO 3
+EQU SLASHFILL TO 4
+EQU BKSLASHFILL TO 5
+EQU LTBKSLASHFILL TO 6
+EQU HATCHFILL TO 7
+EQU XHATCHFILL TO 8
+EQU INTERLEAVEFILL TO 9
+EQU WIDEDOTFILL TO 10
+EQU CLOSEDOTFILL TO 11
+*
+* LINE PATTERNS
+*
+EQU SOLIDLINE TO 0
+EQU DOTTEDLINE TO 1
+EQU CENTERLINE TO 2
+EQU DASHEDLINE TO 3
+*
+*LINE THICKNESS
+*
+EQU NORMTHICK TO 0
+EQU VERYTHICK TO 3
+*
+* TYPES OF DISPLAY FIELDS
+*
+EQU NORMAL.DATA TO 0
+EQU REVERSE.VIDEO TO 1
+EQU UNDERLINED TO 2
+EQU WINDOWS TO 3
+EQU HIGHLIGHTED TO 4
+EQU STATUS.LINE TO 5
+*
+* Constants used by AT.SELECT.MENU
+*
+EQU MENUOPT.SINGLE TO 'b'
+EQU MENUOPT.DOUBLE TO 'B'
+EQU MENUOPT.SELBOX TO 'S'
+EQU MENUOPT.NOESC  TO 'E'
+EQU MENUOPT.NOATERM TO 'A'
+EQU MENUOPT.NORETURN TO 'R'
+************************************************************************
+* DIALOG BOX
+************************************************************************
+* Control field positions
+************************************************************************
+EQU DB.X1            TO 1
+EQU DB.Y1            TO 2
+EQU DB.X2            TO 3
+EQU DB.Y2            TO 4
+EQU DB.HOTKEY        TO 5
+EQU DB.TYPE          TO 6
+************************************************************************
+* Control types and type specific field positions
+************************************************************************
+EQU DB.RADIO         TO 1
+    DB.RADIO.ITEMS   =  DB.TYPE+1
+*
+EQU DB.CHECK         TO 2
+    DB.CHECK.ITEMS   =  DB.TYPE+1
+*
+EQU DB.COMMAND       TO 3
+    DB.COMMAND.TEXT  =  DB.TYPE+1
+    DB.COMMAND.CMD   =  DB.TYPE+2
+*
+EQU DB.STRING        TO 4
+    DB.STRING.MAX    =  DB.TYPE+1
+*
+EQU DB.LABEL         TO 5
+    DB.LABEL.TEXT    =  DB.TYPE+1

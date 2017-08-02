@@ -1,0 +1,6 @@
+DIM TERM.TYPES(10)
+EQU TERM.TYPE     TO TERM.TYPES(1) ;! used for crt
+EQU KEYBOARD.TYPE TO TERM.TYPES(2) ;! used for keyboard functions
+EQU SCREEN.TYPE  TO TERM.TYPES(3) ;! used for screen masks
+EQU PICK.TYPE TO TERM.TYPES(4) ;! term setting
+EQU DISK.DRIVE TO TERM.TYPES(5);! PC disk drive

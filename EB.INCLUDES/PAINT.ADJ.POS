@@ -1,0 +1,62 @@
+* @(#) PAINT.ADJ.POS Ported to jBASE 15:13:19  17 APR 2000
+*  The following variable names were converted
+*   DISPLAY
+* 
+    INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
+    FOR WIN=1 TO NBR.WINS
+        FLD=FIRST.WIN<1,WIN>
+        IF FLD>=FIRST.FIELD AND FLD<=LAST.FIELD THEN
+            RR=LAST.ROWS<1,WIN>
+            IF RR=ROW THEN
+                CC=SCRN.COLS<1,FLD>
+                Display='<W':WIN:'>'
+                BLANK.FIELD=LEN(Display)
+                CRT @(CC+CC.ADJ,RR):SPACE(BLANK.FIELD):
+                CRT @(CC,RR):Display:
+                HASH='L#':CC+CC.ADJ
+                IF HASH='L#0' THEN HASH=''
+                LTEMP=THIS.SCREEN<RR+1>
+                LTEMP=LTEMP[1,CC+CC.ADJ] HASH:SPACE(BLANK.FIELD):LTEMP[CC+CC.ADJ+BLANK.FIELD+1,999]
+                IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                LTEMP=LTEMP[1,CC] HASH:Display:LTEMP[CC+BLANK.FIELD+1,999]
+                THIS.SCREEN<RR+1>=LTEMP ;! LINE.HASH
+            END
+        END
+    NEXT WIN
+    FOR FLD=FIRST.FIELD TO LAST.FIELD
+        PGE=(SCRN.PGES<1,FLD>:1)[1,1]
+        IF PGE=SCRN.PGE THEN
+            FOR J=1 TO 2
+                CC=LAB.COLS<1,FLD,J>
+                RR=LAB.ROWS<1,FLD,J>
+                IF CC>=COL AND RR=ROW THEN
+                    CC=CC+CC.ADJ
+                    LAB.COLS<1,FLD,J>=CC
+                    CFLD=FLD.NAMES<1,FLD>;GOSUB SET.CHANGES
+                END
+            NEXT J
+            CC=SCRN.COLS<1,FLD>
+            RR=SCRN.ROWS<1,FLD>
+            IF CC>=COL AND RR=ROW THEN
+                CC=CC+CC.ADJ
+                SCRN.COLS<1,FLD>=CC
+                CFLD=FLD.NAMES<1,FLD>;GOSUB SET.CHANGES
+!
+                LOCATE FLD IN FIRST.WIN<1, vm_start> SETTING WIN THEN
+                    RR=LAST.ROWS<1,WIN>
+                    Display='<W':WIN:'>'
+                    BLANK.FIELD=LEN(Display)
+                    CRT @(CC-CC.ADJ,RR):SPACE(BLANK.FIELD):
+                    CRT @(CC,RR):Display:
+                    HASH='L#':CC-CC.ADJ
+                    IF HASH='L#0' THEN HASH=''
+                    LTEMP=THIS.SCREEN<RR+1>
+                    LTEMP=LTEMP[1,CC-CC.ADJ] HASH:SPACE(BLANK.FIELD):LTEMP[CC-CC.ADJ+BLANK.FIELD+1,999]
+                    IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                    LTEMP=LTEMP[1,CC] HASH:Display:LTEMP[CC+BLANK.FIELD+1,999]
+                    THIS.SCREEN<RR+1>=LTEMP       ;! LINE.HASH
+                END
+            END
+        END
+    NEXT FLD
+    INCLUDE EB.OS.INCLUDES PC.ON.CURSOR

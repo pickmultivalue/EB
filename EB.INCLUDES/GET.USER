@@ -1,0 +1,1 @@
+  IF NOT(GETENV('USER', user)) THEN rc = GETENV('USERNAME', user)

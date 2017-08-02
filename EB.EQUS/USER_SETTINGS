@@ -1,0 +1,4 @@
+DIM User_Settings(5)
+EQU US_EditInput   TO User_Settings(1)
+EQU US_ReplaceMode TO User_Settings(2)
+EQU US_EscExit     TO User_Settings(3)

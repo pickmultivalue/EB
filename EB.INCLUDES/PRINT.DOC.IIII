@@ -1,0 +1,157 @@
+* @(#) PRINT.DOC.IIII Ported to jBASE 15:13:19  17 APR 2000
+*  The following variable names were converted
+*   SECTION
+* 
+PRINT.HELP:         !
+    NBR.LINES=DCOUNT(HELPS,VM)
+    FOR MV=1 TO NBR.LINES
+        MSG=HELPS<1,MV>
+        IF (TRIM(MSG)#'' AND LEN(MSG)<=WIDTH AND NOT(INDEX(MSG,NULL.CHAR,1))) OR INDEX(MSG,'~',1) OR INDEX(MSG,'_',1) OR INDEX(MSG,'\d',1) THEN
+            CALL EB.PROCESS.MSG(MSG,MV+1,NBR.LINES,HELPS,'',WIDTH,MNENOMICS,FUNC.VALS,S.FUNC.VALS)
+        END
+        IF INDEX(MSG,'\',1) THEN
+            LHASH=HASH
+            CALL EB.HELP.HILITE(MSG,LNBR,LAST.LINE,0,0,ATTRIBUTES,EMBED.ATTR,FONT,EXPAND,RESET.FONT,LHASH,MAT FLAGS)
+        END
+        CALL EB.SWAP(MSG,NULL.CHAR,'')
+        BEGIN CASE
+        CASE OCONV(MSG,'MCU')[1,2]='.P'
+            GOSUB NEW.PAGE
+        CASE OCONV(MSG,'MCU')[1,2]='.I'
+            TOC.DESC=MSG[4,99]
+            GOSUB UPDATE.TOC
+        CASE 1
+            IF PROC.DESC='' THEN GOSUB UPDATE.TOC
+            IF LNBR>LAST.LINE AND MSG='' THEN
+                LOOP WHILE MV<=NBR.LINES AND MSG='' DO
+                    MV=MV+1
+                    MSG=HELPS<1,MV>
+                REPEAT
+                IF MSG#'' THEN GOSUB NEW.PAGE;MV=MV-1
+            END ELSE
+                IF LNBR>LAST.LINE THEN GOSUB NEW.PAGE
+                IF INDEX(MSG,'\\',1) THEN CALL EB.SWAP(MSG,'\\','\')
+                PRINT INDENT:FIELD(MSG,NULL.CHAR,1)
+                LNBR=LNBR+1
+                GAP=TRUE
+            END
+        END CASE
+    NEXT MV
+    RETURN
+!
+NEW.PAGE: !
+!
+    IF PROP.FLAG THEN PRINT PROP.ON:
+    GOSUB PRINT.FOOT
+!
+    PRINT TOF:
+    PG.NBR=PG.NBR+1
+!
+PRINT.HEAD:         !
+!
+    CRT PG.NBR:'|':
+    PRINT;PRINT;PRINT;PRINT
+    PRINT HEAD
+    PRINT UNDER.LINE
+    PRINT;PRINT
+    LNBR=8
+    IF PROP.FLAG THEN PRINT PROP.OFF:
+    RETURN
+!
+PRINT.FOOT:         !
+!
+    LOOP UNTIL LNBR>=LAST.LINE DO
+        PRINT;LNBR=LNBR+1
+    REPEAT
+    PRINT UNDER.LINE
+    IF PRINTING.CONTENTS<0 ELSE
+        IF MOD(PG.NBR,2) THEN PRINT FOOT1:PG.NBR ELSE PRINT FOOT2:PG.NBR:FOOT3
+    END
+    RETURN
+PRINT.CONTENTS:     !
+    CRT 'x':
+    HEAD=TITLE;GOSUB NEW.PAGE
+    PRINTING.CONTENTS=-1
+    TABS=CHAR(13):STR(CHAR(9),6)
+    PRINT INDENT:BOLD.ON:MEDSIZE:'Table of Contents':TABS:'Page':EXP.OFF:BOLD.OFF
+    PRINT;PRINT
+    LNBR=LNBR+3
+    LAST.SECTION=''
+    FOR I=1 TO PG.NBR
+        IF CONTENTS<I>#'' THEN
+            PG.CONTENT=CONTENTS<I>
+            IF PG.CONTENT#'' THEN
+                J=1
+                LOOP
+                    CONTENT=PG.CONTENT<1,J>
+                UNTIL CONTENT='' DO
+                    J=J+1
+                    Section=FIELD(CONTENT,'/',1);CONTENT=CONTENT[COL2()+1,99]
+                    IF Section#LAST.SECTION THEN
+                        LAST.SECTION=Section
+                        IF TRIM(Section)#'' THEN
+                            PRINT INDENT:BOLD.ON:Section:BOLD.OFF:TABS:I 'R#7'
+                            LNBR=LNBR+1
+                            IF LNBR>=LAST.LINE THEN GOSUB NEW.PAGE
+                        END
+                    END
+                    IF TRIM(CONTENT)#'' THEN
+                        PRINT INDENT:'    ':CONTENT:TABS:I 'R#7'
+                        LNBR=LNBR+1
+                        IF LNBR>=LAST.LINE THEN GOSUB NEW.PAGE
+                    END
+                REPEAT
+            END ELSE
+                PRINT
+                LNBR=LNBR+1
+            END
+        END
+    NEXT I
+    LOOP UNTIL LNBR>=LAST.LINE DO
+        PRINT;LNBR=LNBR+1
+    REPEAT
+    PRINT UNDER.LINE
+    FG$FINISHED=TRUE
+    RETURN
+UPDATE.TOC:         !
+    READ PROC.DESC FROM F.PROCESSES,DOC.ID ELSE PROC.DESC=AM
+    IF TOC.DESC='' THEN
+        TOC.DESC=PROC.DESC<1>
+        IF TOC.DESC='' THEN TOC.DESC=Section
+        TOC.DESC='/':TOC.DESC
+    END
+    TOC.DESC=FIELD(TOC.DESC,NULL.CHAR,1)
+    Section=FIELD(TOC.DESC,'/',1)
+    SUB.TITLE=TOC.DESC[COL2()+1,99]
+    IF SUB.TITLE='' THEN
+        SUB.TITLE=PROC.DESC<1>
+        TOC.DESC=Section:'/':SUB.TITLE
+    END ELSE IF Section='' THEN Section=LAST.SECTION
+    IF PROC.DESC<2>='P' THEN PROC.TITLE=PROC.DESC<1> ELSE PROC.TITLE=''
+    HEAD=Section
+    IF PG.NBR THEN
+        IF MSG[1,2]='.I' AND MSG[4,1]#'/' THEN GOSUB NEW.PAGE
+    END ELSE PG.NBR=1;GOSUB PRINT.HEAD
+    IF Section#LAST.SECTION THEN
+        TITLE.MSG=BOLD.ON:EXP.ON:Section:BOLD.OFF:EXP.OFF
+        PRINT INDENT:TITLE.MSG
+        PRINT;PRINT
+        LNBR=LNBR+3
+        LAST.SECTION=Section
+        GAP=FALSE
+    END
+    IF TRIM(SUB.TITLE)#'' THEN
+        IF GAP THEN
+            FOR I=1 TO 2 UNTIL LNBR>=LAST.LINE
+                PRINT;LNBR=LNBR+1
+            NEXT I
+            GAP=FALSE
+        END
+        IF LNBR+4>=LAST.LINE THEN GOSUB NEW.PAGE
+        TITLE.MSG=BOLD.ON:MEDSIZE:UL.ON:SUB.TITLE:BOLD.OFF:EXP.OFF:UL.OFF
+        PRINT INDENT:TITLE.MSG;PRINT
+        LNBR=LNBR+2
+    END
+    CONTENTS<PG.NBR,-1>=TOC.DESC
+    TOC.DESC=Section
+    RETURN

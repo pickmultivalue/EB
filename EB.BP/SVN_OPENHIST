@@ -1,0 +1,33 @@
+* @(#) SVN_OPENHIST Ported to jBASE 07:23:52  18 FEB 2010
+    FUNCTION SVN_OPENHIST(F.Hist, FileName)
+!
+! OPEN 'SVN.HISTORY' and pass back the file variable
+!
+! If FileName is blank then the global SVN.HISTORY is
+! opened otherwise FileName,SVN.HISTORY is opened
+! (i.e. the currently checked out file)
+!
+! 27 JAN 2010 Peter Falson (jBASE)
+!
+! Returns 1 if succussful, 0 if not
+!
+    INCLUDE JBC.h
+    IF LEN(FileName) THEN
+    fname = FileName:','
+END ELSE fname = ''
+!
+histfile = 'SVN.HISTORY'
+fname := histfile
+!
+OPEN fname TO F.Hist ELSE
+!
+! If it can't be opened via JEDIFILEPATH or MD then
+! last place to look is in jbcreleasedir/config
+!
+rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
+fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:histfile
+OPEN fname TO F.Hist ELSE
+RETURN 0
+END
+END
+RETURN 1

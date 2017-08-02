@@ -1,0 +1,13 @@
+    IF NOT(CHANGED) THEN CHANGED=(ORIG.REC#REC)
+    IF (NEW.CHARS#'' OR CHANGED) AND NOT(UPDATES) AND NOT(lockvar) THEN
+        UPDATES=TRUE
+        CALL EB_VERS_CTRL(VersEdit,lockvar, VersCheckedOut)
+        IF lockvar THEN
+            GOSUB SETUP.SWITCH
+            GOSUB SET.MSG
+            CRT MSG.DSP:
+            CALL EB_OPEN('',FLNM,FIL,TRUE,POS)
+            IF lockvar = 2 THEN lockvar = -1
+        END
+        VersCheckedOut=(lockvar<1)
+    END

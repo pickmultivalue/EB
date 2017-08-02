@@ -1,0 +1,123 @@
+* @(#) INPUT.ZERO Ported to jBASE 15:13:19  17 APR 2000
+    ECHO OFF
+    PREV.CHARS=''
+    PREV.SUBS=''
+    FG$ACT.CODE=FALSE
+    CODE=FALSE
+    CHR.FOUND=FALSE
+    CHR.NBR=''
+    LOOP
+        CRT @(COL,ROW):
+        LAST.NBR=CHR.NBR
+!
+! If FG$TYPEAHEAD was not null, process any "normal" characters as input
+!
+        IF FG$TYPEAHEAD.BUFF#'' THEN
+            CHR=FG$TYPEAHEAD.BUFF[1,1]; FG$TYPEAHEAD.BUFF=FG$TYPEAHEAD.BUFF[2,999]
+            CHR.NBR=SEQ(CHR)
+        END ELSE
+            INCLUDE EB.OS.INCLUDES UT.INPUT.TIMEOUT
+        END
+        IF NOT(FG$TIMEDOUT) THEN
+            IF COUNT(CODES,PREV.CHARS:CHR)>1 AND CHR.NBR#RTN.VAL AND (CHR.NBR<FIRST.ASCII OR CHR.NBR>LAST.ASCII) THEN
+!
+! following code tries to trap all characters from single key-stroke
+!
+                IF INDEX(CODES,CHR,1) THEN
+                    INCLUDE EB.OS.INCLUDES INPUT.DELAY
+                END
+                POS=1
+                LOOP
+                    INCLUDE EB.OS.INCLUDES SYSTEM.14
+                WHILE SYSTEM.14 AND POS<MAX.LEN DO
+                    PREV.CHARS=PREV.CHARS:CHR
+                    PREV.SUBS=PREV.SUBS:CHR
+                    POS=POS+1
+                    INCLUDE EB.OS.INCLUDES INPUT.TIMEOUT
+                    IF FG$EXPECT.CR AND CHR#'' THEN
+                        LOCATE PREV.CHARS:CHR:CR IN FG$FUNC.CHARS<1, vm_start> SETTING POS THEN
+                            INCLUDE EB.OS.INCLUDES SYSTEM.14
+                            IF NOT(SYSTEM.14) THEN
+                                INCLUDE EB.OS.INCLUDES INPUT.DELAY
+                                INCLUDE EB.OS.INCLUDES SYSTEM.14
+                            END
+                            IF SYSTEM.14 THEN
+                                PREV.CHARS:=CHR
+                                INCLUDE EB.OS.INCLUDES INPUT.ZERO
+                                CHR=''; CHR.NBR=LAST.NBR
+                            END
+                        END
+                    END
+                REPEAT
+            END
+            IF CONV THEN CHR=OCONV(CHR,'MCU')
+            PREV.CHARS=(PREV.CHARS:CHR) ;! MAX.JUST
+            SAVE.CHARS=PREV.CHARS
+            LAST.CHR=LEN(PREV.CHARS)
+            SAVE.LEN=LAST.CHR
+            IF MAX.SUB THEN
+                LOOP
+                    l = MAX.LEN
+                    LOOP
+                        CHR1=PREV.CHARS[1,l]
+                        FKEY=CHR1
+                        INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
+                        INCLUDE EB.OS.INCLUDES CHECK.SUB.SUB
+                    UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
+                UNTIL LAST.CHR=1 OR FG$ACT.CODE OR CODE DO
+                    PREV.CHARS=PREV.CHARS[2,99]
+                    LAST.CHR-=1
+                REPEAT
+                IF NOT(CODE OR FG$ACT.CODE) AND NOT(CONV) THEN
+                    PREV.CHARS=OCONV(SAVE.CHARS,'MCU')
+                    IF PREV.CHARS#SAVE.CHARS THEN
+                        LAST.CHR=SAVE.LEN
+                        LOOP
+                            l = MAX.LEN
+                            LOOP
+                                CHR1=PREV.CHARS[1,l]
+                                FKEY=CHR1
+                                INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
+                                INCLUDE EB.OS.INCLUDES CHECK.SUB.SUB
+                            UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
+                        UNTIL LAST.CHR=1 OR FG$ACT.CODE OR CODE DO
+                            PREV.CHARS=PREV.CHARS[2,99]
+                            LAST.CHR-=1
+                        REPEAT
+                    END
+                END
+            END ELSE
+                IF CHR.NBR>SUB.CODE1 AND CHR.NBR<=SUB.CODE2 THEN CODE=TRUE
+                CHR1=CHR
+            END
+            IF CODE THEN
+                CHR=CHR1
+                IF FG$TYPEAHEAD.BUFF='' THEN FG$TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
+                CHR.FOUND=TRUE
+            END ELSE
+                IF FG$ACT.CODE ELSE
+                    IF MATCH.SET#'' THEN
+                        IF CHR1 MATCHES MATCH.SET THEN CHR=CHR1; CHR.FOUND=TRUE
+                    END
+                    PREV.CHARS=SAVE.CHARS
+                    LAST.CHR=SAVE.LEN
+                    LOOP
+                        l = MAX.LEN
+                        LOOP
+                            CHR1=PREV.CHARS[1,l]
+                            FKEY=CHR1
+                            INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
+                        UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
+                    UNTIL LAST.CHR=1 OR FG$ACT.CODE DO
+                        PREV.CHARS=PREV.CHARS[2,99]
+                        LAST.CHR-=1
+                    REPEAT
+                END
+                IF FG$ACT.CODE THEN
+                    CHR=FKEY
+                    IF FG$TYPEAHEAD.BUFF='' THEN FG$TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
+                END
+            END
+        END ELSE FG$ACT.CODE=FG$ABT.CODE
+    UNTIL CHR.FOUND OR CHR.NBR=13 OR FG$ACT.CODE DO REPEAT
+    ECHO ON

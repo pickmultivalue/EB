@@ -1,0 +1,32 @@
+* @(#) EB.DISP.ALL Ported to jBASE 15:13:18  17 APR 2000
+    IF NOT(INDEX(REC,SSTR,1)) THEN GO 4099
+    CRT @(0,0):CLEOP:
+    OCC=1; PGE=1; STRT=1
+4110      !
+    LOOP
+        CALL EB_FIND(REC[STRT,999999],SSTR,STR.POS,WHOLE.WORDS)
+    WHILE STR.POS AND (OCC/PGE<=(PDEPTH-2)) DO
+        STR.LINE=DCOUNT(REC[1,STR.POS+STRT-1],AM)
+        LINE=REC<STR.LINE>
+        CRT STR.LINE "R#4": " ":LINE[1,74]
+        CALL EB_FIND(LINE,SSTR,LPOS,WHOLE.WORDS)
+        STRT=STRT+STR.POS-LPOS+LEN(LINE)
+        OCC=OCC+1
+    REPEAT
+    CRT
+4120 IF NOT(STR.POS) THEN
+        CRT MSG.CLR:"That's all!  ":PR:" for original page, or line number? ":
+    END ELSE
+        CRT MSG.CLR:PR:" for next page, or <\>, or line number? ":
+    END
+    L=6; Z=""; ITYPE='N0'
+    GOSUB INPT
+    Y=Z
+    CRT MSG.DSP:
+    IF Y="" THEN
+        IF STR.POS THEN PGE=PGE+1; GO 4110 ELSE GO 4199
+    END
+    IF Y=ESC THEN GO 4199
+    IF Y<1 THEN Y=1
+    INDROW=Y
+4199 SCR.UD=TRUE; SSTR=''

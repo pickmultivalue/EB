@@ -1,0 +1,43 @@
+* @(#) EB.WP.FMT Ported to jBASE 15:13:19  17 APR 2000
+    IF CPOS+8<=LENTH OR TT.FIELD THEN
+        COL=COL+8
+        CPOS=CPOS+8
+        IF COL>LAST.COL THEN
+            COL=LAST.COL
+            GOSUB CRT.TICKER
+        END
+    END ELSE
+        CPOS=LENTH
+        COL=COL+CPOS-OLD.POS
+    END
+    IF PASTE THEN
+        IF OLD.POS<=PASTE THEN
+            ST=OLD.POS; FI=PASTE; GOSUB FOREGROUND
+        END
+        IF CPOS>PASTE THEN
+            ST=PASTE; FI=CPOS-1; GOSUB BACKGROUND
+        END
+    END ELSE
+        IF TRIM(INP.STRING)#'' THEN
+            IF INSERTING THEN
+                IF CMD=16 THEN
+                    INP.STRING=INP.STRING[1,OLD.POS-1]:TABS:INP.STRING[OLD.POS,99]
+                END ELSE INP.STRING=TRIM(INP.STRING)
+                SAVE.POS=CPOS
+                CPOS=1; COL=ORIG.COL
+                CHR=P
+                GOSUB REFORM.PARA
+                CPOS=SAVE.POS
+                COL=CPOS+ORIG.COL-1
+                SAVE.POS=''
+            END
+            IF TRIM(INP.STRING[OLD.POS,LENTH])='' THEN
+                FI='L#':CPOS
+                INP.STRING=INP.STRING[1,CPOS] FI
+                GOSUB CRT.UNDERLINE
+            END
+        END ELSE
+            CRT TABS:
+            INP.STRING=TABS:INP.STRING
+        END
+    END

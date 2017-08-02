@@ -1,0 +1,8 @@
+  DIM A.FIELD.SEC(10)
+  EQU PROC.FIELD.NAMES      TO A.FIELD.SEC(1);! Screen field names
+  EQU PROC.FIELD.LEVELS     TO A.FIELD.SEC(2);! Security <1,2>=min update level
+  EQU PROC.FIELD.CODES      TO A.FIELD.SEC(3);! Access codes
+  EQU PROC.FIELD.USERS      TO A.FIELD.SEC(4);! User(s) override
+  EQU PROC.FIELD.ENQ.LEVELS TO A.FIELD.SEC(5);! Security <1,2>=min update level
+  EQU PROC.FIELD.ENQ.CODES  TO A.FIELD.SEC(6);! Access codes
+  EQU PROC.FIELD.ENQ.USERS  TO A.FIELD.SEC(7);! User(s) override

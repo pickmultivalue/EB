@@ -1,0 +1,39 @@
+* @(#) EB.WP.FORMAT Ported to jBASE 15:13:19  17 APR 2000
+    IF WORD.PROCESSING THEN
+        IF INDEX(PREV.CHARS,FG$MULTI.CH,1) THEN
+            CRT @(0,23):CLEOL:RVOFF:FG:FG$ERROR.MSGS<45,1>:BG:FG$ERROR.MSGS<45,2>:FG:FG$ERROR.MSGS<45,3>:BG:FG$ERROR.MSGS<45,4>:FG:' ':
+            YNC=30; YNR=23; YNCHRS='F':VM:'S'; YNL=1
+            LOOP
+                CALL EB_UT_INPUT_ZERO(CHR,MAT EB$CHARS,FG$ACT.CODE,YNC,YNR,FG$INPUT.CODES,YNCHRS,YNL)
+            WHILE CHR=CR DO REPEAT
+        END ELSE
+            CHR='S'
+            CPOS=1
+            COL=ORIG.COL
+        END
+        FG$ACT=FG$DLN.CMD     ;! this will make sure window refreshes correctly
+        BEGIN CASE
+        CASE CHR='F'          ;! format text
+            CRT @(0,23):CLEOL:RVOFF:FG:P:BG:FG$ERROR.MSGS<46,2>:FG:D:BG:FG$ERROR.MSGS<46,4>:FG:
+            YNC=30; YNR=23; YNCHRS=P:VM:D; YNL=1
+            LOOP
+                CALL EB_UT_INPUT_ZERO(CHR,MAT EB$CHARS,FG$ACT.CODE,YNC,YNR,FG$INPUT.CODES,YNCHRS,YNL)
+            WHILE CHR=CR DO REPEAT
+REFORM.PARA:        !
+            CALL EB_WP_REFORM(INP.FLD,INSERTING,CHR,PARAGRAPH,MERGE.LINE,INP.STRING,MARGIN,INDENT,LAST.PANE,WIDTH,LENTH,CPOS)
+        CASE CHR='S'          ;!AND TRIM(INP.STRING[CPOS,LENTH])#'' ;! split line
+            GOSUB SPLIT.LINE
+        END CASE
+        FG$ACT=''
+        PASTE=FALSE
+        OLD.COL=COL
+        COL=ORIG.COL
+        OLD.POS=CPOS
+        CPOS=1
+        GOSUB CRT.UNDERLINE
+        INCLUDE EB.INCLUDES WP.INS.CURSOR
+        CPOS=OLD.POS
+        COL=OLD.COL
+    END ELSE
+        CALL EB_ERRMSG(FG$ERROR.MSGS<44>)
+    END

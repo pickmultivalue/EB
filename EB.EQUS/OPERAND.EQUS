@@ -1,0 +1,4 @@
+! GALA/Creator equates
+!
+! FG$PROCESSING.FIELD
+  EQU SKIP$INPUT TO 2

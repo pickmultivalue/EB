@@ -1,0 +1,100 @@
+EQU FG$K.SCREEN         TO OTHER.PARAMS(1)  ;! Screen Name
+EQU FG$VALID            TO OTHER.PARAMS(2)  ;! flag
+EQU FG$READ.FILE        TO OTHER.PARAMS(3)  ;! used to stop file reads
+EQU FG$WORK.FILE        TO OTHER.PARAMS(4)  ;! GALA.WORK,port.nbr
+EQU FG$PASSED.DATA      TO OTHER.PARAMS(5)  ;! default values to zoom or subscreen
+EQU FG$REFRESH          TO OTHER.PARAMS(6)  ;! refresh code
+EQU FG$RECALC           TO OTHER.PARAMS(7)  ;! list of MV fields to re-DCOUNT
+EQU FG$INPUT.CODES      TO OTHER.PARAMS(8)  ;! INPUTTRAP values
+EQU FG$ACTION.CODES     TO OTHER.PARAMS(9)  ;! INPUTTRAP values
+EQU FG$REPLACE.CODES    TO OTHER.PARAMS(10) ;! INPUTTRAP values
+EQU FG$USER.NAME        TO OTHER.PARAMS(11) ;! User Name
+EQU FG$TLINE            TO OTHER.PARAMS(12) ;! Port Nbr
+EQU FG$TACC.NAME        TO OTHER.PARAMS(13) ;! Account Name
+EQU FG$TUSER            TO OTHER.PARAMS(14) ;! Login Name
+EQU FG$SESSIONS         TO OTHER.PARAMS(15) ;! SYS level
+EQU FG$EVENT            TO OTHER.PARAMS(16) ;! Current event for user code
+EQU FG$SENTENCE         TO OTHER.PARAMS(17) ;! TCL sentence
+EQU FG$SELECT.CRITERIA  TO OTHER.PARAMS(18) ;! MV'd per file
+EQU FG$SELECT.LISTS     TO OTHER.PARAMS(19) ;! Screens with select lists
+EQU FG$PASTE.LIST       TO OTHER.PARAMS(20) ;! Cut/Paste strings
+EQU FG$DELETE.LIST      TO OTHER.PARAMS(21) ;! Deleted strings
+EQU FG$CRT.PAGE         TO OTHER.PARAMS(22) ;! Screen Save Page Nbr
+EQU FG$CRT.PAGES        TO OTHER.PARAMS(23) ;! Screen Page Index
+EQU FG$CRT.SEQUENCES    TO OTHER.PARAMS(24) ;! Screen Page Index
+EQU FG$SUSPENDED        TO OTHER.PARAMS(25) ;! List of suspended screens
+EQU FG$LANGUAGE         TO OTHER.PARAMS(26) ;! What language we're using
+EQU FG$DAYS             TO OTHER.PARAMS(27) ;! Days in this Language
+EQU FG$DFLT.STAMP       TO OTHER.PARAMS(28) ;! PROBABLY NOT REQUIRED
+EQU FG$LOCKED.ITEMS     TO OTHER.PARAMS(29) ;! Locked items index
+EQU FG$SPECIAL.CONVS    TO OTHER.PARAMS(30) ;! Special ICONV/OCONVs
+EQU FG$AFTER.READ       TO OTHER.PARAMS(31) ;! Validate After Read flag
+EQU FG$MONTHS           TO OTHER.PARAMS(32) ;! Months in this Language
+EQU FG$ACT.CODE         TO OTHER.PARAMS(33) ;! INPUTTRAP position
+EQU FG$DELETING         TO OTHER.PARAMS(34) ;! On-line window flag
+EQU FG$INSERTING        TO OTHER.PARAMS(35) ;! On-line window flag
+EQU FG$UPDATE.SCREENS   TO OTHER.PARAMS(36) ;! Code update screens
+EQU FG$TERM.TYPE        TO OTHER.PARAMS(37) ;! Screen type
+EQU FG$SCREEN.TYPE      TO OTHER.PARAMS(38) ;! Screen Mask Type
+EQU FG$KEYBOARD         TO OTHER.PARAMS(39) ;! Keyboard type
+EQU FG$ERROR.FLAG       TO OTHER.PARAMS(40) ;! Error msg on screen
+EQU FG$BACKGROUND.LOST  TO OTHER.PARAMS(41) ;! Flag if popup's page was reused
+EQU FG$SCR.MASK         TO OTHER.PARAMS(42) ;! Screen Mask
+EQU FG$SEC.LEVEL        TO OTHER.PARAMS(43) ;! Security Level
+EQU FG$SEC.CODES        TO OTHER.PARAMS(44) ;! Security Access Codes
+EQU FG$ERROR.NBR        TO OTHER.PARAMS(45) ;! Error Number to display
+EQU FG$UDTNO            TO OTHER.PARAMS(46) ;! DATA/BASE Process number
+EQU FG$LOGNAME          TO OTHER.PARAMS(47) ;! DATA/BASE user login
+EQU FG$COLOURS          TO OTHER.PARAMS(48) ;! Colour codes for various displays
+EQU FG$BTREE.DATA       TO OTHER.PARAMS(49) ;! Used at update time to hold btree data
+EQU FG$KEEP.CHOICES     TO OTHER.PARAMS(50) ;! Hold Choices box on screen
+EQU FG$SP.DFLT.ASSIGN   TO OTHER.PARAMS(51) ;! Default SP.ASSIGNMENTS id
+EQU FG$LOGIN.MENU       TO OTHER.PARAMS(52) ;! Login (First) Menu
+EQU FG$DFLT.COLOURS     TO OTHER.PARAMS(53) ;! Colour codes for Screens
+EQU FG$CHECK.MAIL       TO OTHER.PARAMS(54) ;! OA exist flag
+EQU FG$ERROR.MSGS       TO OTHER.PARAMS(55) ;! Standard Error Msgs
+EQU FG$SPELL.CHECK      TO OTHER.PARAMS(56) ;! Spell Check flag
+EQU FG$SEC.PROFILE      TO OTHER.PARAMS(57) ;! Security Profile
+EQU FG$HOT.CODE         TO OTHER.PARAMS(58) ;! Which hot key
+EQU FG$HOTKEY.CODES     TO OTHER.PARAMS(59) ;! Hot key codes
+EQU FG$HOT.SCREENS      TO OTHER.PARAMS(60) ;! Hot key process names
+EQU FG$DISK.DRIVE       TO OTHER.PARAMS(61) ;! PC disk drive
+EQU FG$CHECK.DIARY      TO OTHER.PARAMS(62) ;! Appointments exist for today
+EQU FG$MODULES          TO OTHER.PARAMS(63) ;! installed modules
+EQU FG$CURR.COLOURS     TO OTHER.PARAMS(64) ;! Printable string
+EQU FG$PREV.COLOURS     TO OTHER.PARAMS(65) ;! Foreground:Background
+EQU FG$SP.ASSIGN        TO OTHER.PARAMS(66) ;! Current SP.ASSIGNMENTS id
+EQU FG$LAST.EVENT       TO OTHER.PARAMS(67) ;! Last event from PC dialog
+EQU FG$ALARMS           TO OTHER.PARAMS(68) ;! list of current alarm times
+EQU FG$MONITOR.SECS     TO OTHER.PARAMS(69) ;! number of seconds to repropt
+EQU FG$TIMEOUT          TO OTHER.PARAMS(70) ;! number of minutes to check password
+EQU FG$EB.SCREEN      TO OTHER.PARAMS(71) ;! Actual Screen
+EQU FG$PASSED.KEYS      TO OTHER.PARAMS(72) ;! Keys passed to next screen
+EQU FG$FORCE.DATA       TO OTHER.PARAMS(73) ;! Force default data
+EQU FG$DFLT.FLDS        TO OTHER.PARAMS(74) ;! Next flds to pass on
+EQU FG$QUICK.MODE       TO OTHER.PARAMS(75) ;! Flag to process Mandatory only
+EQU FG$MSG.REMIND       TO OTHER.PARAMS(76) ;! time delay between reminder of unread msgs sent
+EQU FG$TYPEAHEAD.BUFF   TO OTHER.PARAMS(77) ;! used as input
+EQU FG$LOGIN.SCREENS    TO OTHER.PARAMS(78) ;! startup screens
+EQU FG$LOCATION         TO OTHER.PARAMS(79) ;! Location Code
+EQU FG$TUTORIAL         TO OTHER.PARAMS(80) ;! Tutorial Mode parameters
+EQU FG$FKEY.TRANSLATE   TO OTHER.PARAMS(81) ;! Translate strings for fkey labels
+EQU FG$TIMEDOUT         TO OTHER.PARAMS(82) ;! Flag if timedout
+EQU FG$NEXT.PAGE        TO OTHER.PARAMS(83) ;! Next Page number
+EQU FG$STERM            TO OTHER.PARAMS(84) ;! STERM flag
+EQU FG$NEXT.SEQUENCE    TO OTHER.PARAMS(85) ;! Next FG$SEQUENCE to use
+EQU FG$TOP.LINE         TO OTHER.PARAMS(86) ;! Top of screen display
+EQU FG$DEPT             TO OTHER.PARAMS(87) ;! Department code
+EQU FG$DIALOGS          TO OTHER.PARAMS(88) ;! Dialog ids
+EQU FG$NEXT.CODE        TO OTHER.PARAMS(89) ;! Next FG$ACT.CODE
+EQU FG$ICONV.TABLE      TO OTHER.PARAMS(90) ;! Conversion Table
+EQU FG$LAST.ACT.CODE    TO OTHER.PARAMS(91) ;! Previous
+EQU FG$TRANSACTIONS     TO OTHER.PARAMS(92) ;! Translog ids for current boundaries
+EQU FG$MASK.INPUT       TO OTHER.PARAMS(93) ;! Mask Input flag
+EQU FG$STERM.MENUS      TO OTHER.PARAMS(94) ;! loaded menus
+EQU FG$HILITES          TO OTHER.PARAMS(95) ;! Hilite colours/affects
+EQU FG$SKIP.TRANSLOG    TO OTHER.PARAMS(96) ;! skip translog flag
+EQU FG$MENU.PROG        TO OTHER.PARAMS(97) ;! menu program
+EQU FG$REPORTING        TO OTHER.PARAMS(98) ;! Reporting Flag
+EQU FG$UPDATE.KEYS      TO OTHER.PARAMS(99) ;! Update keys
+EQU FOREIGN.LOGIN       TO OTHER.PARAMS(100);! Foreign menu system login prog

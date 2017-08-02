@@ -1,0 +1,56 @@
+* @(#) BOX.CHARS Ported to jBASE 15:13:19  17 APR 2000
+*  The following variable names were converted
+*   LOWER
+* 
+!
+! If not PC then use High Order Ascii characters for graphics
+!
+    DUMB.TL=CHAR(128+SEQ('/'))
+    DUMB.TR=CHAR(128+SEQ('\'))
+    DUMB.BL=CHAR(128+SEQ('`'))
+    DUMB.BR=CHAR(128+SEQ("'"))
+    DUMB.HORIZ=CHAR(128+SEQ('-'))
+    DUMB.VERT=CHAR(161)
+    DUMB.CROSS=CHAR(128+SEQ('+'))
+    DUMB.LS=CHAR(128+SEQ('>'))
+    DUMB.RS=CHAR(128+SEQ('<'))
+    DUMB.UPPER=CHAR(128+SEQ('V'))
+    DUMB.LOWER=CHAR(128+SEQ('^'))
+!
+    PC.TL=GR.TL
+    PC.TR=GR.TR
+    PC.BL=GR.BL
+    PC.BR=GR.BR
+    PC.HORIZ=GR.HZ
+    PC.VERT=GR.VT
+    PC.CROSS=GR.CROSS
+    PC.LS=GR.LT
+    PC.RS=GR.RT
+    PC.UPPER=GR.TT
+    PC.LOWER=GR.BT
+!
+    IF GRON#'' THEN
+        TL=DUMB.TL
+        TR=DUMB.TR
+        BL=DUMB.BL
+        BR=DUMB.BR
+        HORIZ=DUMB.HORIZ
+        VERT=DUMB.VERT
+        CROSS=DUMB.CROSS
+        LS=DUMB.LS
+        RS=DUMB.RS
+        UPPER=DUMB.UPPER
+        Lower=DUMB.LOWER
+    END ELSE
+        TL=PC.TL
+        TR=PC.TR
+        BL=PC.BL
+        BR=PC.BR
+        HORIZ=PC.HORIZ
+        VERT=PC.VERT
+        CROSS=PC.CROSS
+        LS=PC.LS
+        RS=PC.RS
+        UPPER=PC.UPPER
+        Lower=PC.LOWER
+    END

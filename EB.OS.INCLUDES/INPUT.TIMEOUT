@@ -1,0 +1,13 @@
+CHR=FG$TYPEAHEAD.BUFF[1,1]; FG$TYPEAHEAD.BUFF=FG$TYPEAHEAD.BUFF[2,9]
+IF CHR='' THEN
+IN CHR.NBR FOR FG$MONITOR.SECS THEN CHR=CHAR(CHR.NBR) ELSE CHR.NBR=-1
+!Result = JBASEWindowsInchar(CHR.NBR , FG$MONITOR.SECS/150) ;! Get next character.
+!BEGIN CASE
+!  CASE Result>0      ;! If true, character was seen okay
+!    CHR=CHAR(CHR.NBR)
+!  CASE Result=0      ;* If true, the command timed out.
+!    CHR.NBR=-1
+!      !    CASE Result<0      ;* If true, the window re-sized itself.
+!      !      Command = cmd_winsize ; Exit1 = 0
+!  END CASE
+END

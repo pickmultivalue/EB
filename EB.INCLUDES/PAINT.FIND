@@ -1,0 +1,117 @@
+* @(#) PAINT.FIND Ported to jBASE 15:13:20  17 APR 2000
+    OROW=ROW
+    OCOL=COL
+    MSG=''
+    MV=''
+    SMV=''
+    IF SCRN.ROWS#'' THEN
+        PASS=ROW
+        LOOP
+            LOCATE ROW IN SCRN.ROWS<1>,FIRST.FIELD SETTING FLD THEN
+                RPOS=1
+            END ELSE
+                I=1
+                LOOP
+                    RPOS=INDEX(LAB.ROWS,ROW,I)
+                    IF RPOS THEN
+                        FLD=DCOUNT(LAB.ROWS[1,RPOS],VM)
+                        IF FLD<FIRST.FIELD OR FLD>LAST.FIELD OR NOT(LAB.ROWS<1,FLD,1>=ROW OR LAB.ROWS<1,FLD,2>=ROW) THEN RPOS=0
+                    END ELSE FLD=FALSE
+                UNTIL RPOS OR NOT(FLD) DO I=I+1 REPEAT
+                IF NOT(RPOS) THEN
+                    LOCATE ROW IN LAST.ROWS<1> SETTING RPOS ELSE RPOS=0
+                END
+            END
+        UNTIL RPOS OR ROW>22 DO
+            ROW=ROW+1
+            IF PASS=ROW THEN RETURN
+            IF ROW>22 THEN ROW=1
+        REPEAT
+    END ELSE RPOS=0
+!
+    IF RPOS THEN
+        SPOS=FLD
+        LOOP
+            PASS=0
+            LOOP
+                LOCATE COL IN SCRN.COLS<1>,SPOS SETTING FLD THEN
+                    LOCATE FLD IN FIRST.WIN<1> SETTING WIN ELSE WIN=0
+                    BEGIN CASE
+                    CASE SCRN.PGE#(SCRN.PGES<1,FLD>:1)[1,1]; SPOS=FLD+1
+                    CASE SCRN.ROWS<1,FLD>=ROW AND SCRN.PGE=(SCRN.PGES<1,FLD>:1)[1,1]
+                        MOVE.FIELD=DISPLAYS<1,FLD>
+                        IF MOVE.FIELD#'' OR ACT='C' THEN
+                            MV=FLD
+                            SMV=1
+                            MSG='DISPLAY'
+                        END ELSE
+                            IF SPOS=FIRST.FIELD OR PASS THEN
+                                IF MOVE.FIELD#'' THEN FLD='' ELSE SPOS=FLD+1
+                            END ELSE
+                                IF SPOS=NBR.FLDS THEN
+                                    SPOS=FIRST.FIELD
+                                    PASS=1
+                                END ELSE SPOS=FLD+1
+                            END
+                        END
+                    CASE ACT='M' AND WIN AND LAST.ROWS<1,WIN>=ROW
+                        MSG='WINDOW'
+                        MOVE.FIELD='<W':WIN:'>'
+                        MV=WIN
+                    CASE 1; SPOS=FLD+1
+                    END CASE
+                END ELSE
+                    IF SPOS=FIRST.FIELD OR PASS THEN
+                        FLD=''
+                    END ELSE
+                        SPOS=FIRST.FIELD
+                        PASS=1
+                    END
+                END
+            UNTIL MV#'' OR FLD='' DO REPEAT
+!
+            IF MV='' THEN
+                IF INDEX(LAB.COLS,COL,1) THEN
+                    FOR FLD=FIRST.FIELD TO LAST.FIELD UNTIL MV#''
+                        PGE=(SCRN.PGES<1,FLD>:1)[1,1]
+                        IF PGE=SCRN.PGE THEN
+                            FOR J=1 TO 2
+                                CC=LAB.COLS<1,FLD,J>
+                                RR=LAB.ROWS<1,FLD,J>
+                                IF CC=COL AND RR=ROW THEN
+                                    MOVE.FIELD=LABELS<1,FLD,J>
+                                    IF ACT='C' THEN
+                                        PRFX=ACT.PROMPTS<1,FLD,J>+0
+                                        IF PRFX THEN
+                                            PRFX=LEN(PRFX)+2
+                                            CC=CC+PRFX
+                                            COL=CC
+                                            MOVE.FIELD=MOVE.FIELD[PRFX+1,999]
+                                        END
+                                    END
+                                    IF MOVE.FIELD#'' OR ACT='C' THEN
+                                        MV=FLD
+                                        SMV=J
+                                        J=2
+                                        MSG='LABEL'
+                                    END
+                                END
+                            NEXT J
+                        END
+                    NEXT FLD
+                END
+            END
+        UNTIL MV#'' DO
+            COL=COL+1
+            IF COL>=LINE.WIDTH-1 THEN COL=0
+            IF COL=OCOL THEN
+                ROW=ROW+1
+                GOTO FIND.FIELD
+            END
+        REPEAT
+        BLANK.FIELD=LEN(MOVE.FIELD)
+        IF COL#0 THEN HASH='L#':COL ELSE HASH=''
+    END ELSE
+        ROW=OROW
+        CALL EB_ERRMSG('Could not find any fields')
+    END

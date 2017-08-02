@@ -1,0 +1,50 @@
+  DIM SCREENS.SRCE(50)
+  EQU SRCE$FLD.NAMES      TO SCREENS.SRCE(1)  ;! object names
+  EQU SRCE$FLD.COLS       TO SCREENS.SRCE(2)  ;! data col
+  EQU SRCE$FLD.ROWS       TO SCREENS.SRCE(3)  ;! data row
+  EQU SRCE$TEXT.COLS      TO SCREENS.SRCE(4)  ;! caption col
+  EQU SRCE$TEXT.ROWS      TO SCREENS.SRCE(5)  ;! caption row
+  EQU SRCE$FLD.WIDTHS     TO SCREENS.SRCE(6)  ;! data width
+  EQU SRCE$FLD.EVENTS     TO SCREENS.SRCE(7)  ;! fld events
+  EQU SRCE$FLD.INCLUDES   TO SCREENS.SRCE(8)  ;! fld code items
+  EQU SRCE$MV.SETS        TO SCREENS.SRCE(9)  ;! mv sets
+  EQU SRCE$MV.DEPTHS      TO SCREENS.SRCE(10) ;! mv depths
+  EQU SRCE$MV.OPTIONS     TO SCREENS.SRCE(11) ;! mv ins/del options
+  EQU SRCE$SCRN.EVENTS    TO SCREENS.SRCE(12) ;! screen events
+  EQU SRCE$SCRN.INCLUDES  TO SCREENS.SRCE(13) ;! screen code items
+  EQU SRCE$WRITE.DEFS     TO SCREENS.SRCE(14) ;! global file writes
+  EQU SRCE$DELETE.DEFS    TO SCREENS.SRCE(15) ;! global file deletes
+  EQU SRCE$EXIT.UPD       TO SCREENS.SRCE(16) ;! exit on update flag
+  EQU SRCE$WIDTH          TO SCREENS.SRCE(17) ;! screen width
+  EQU SRCE$DEPTH          TO SCREENS.SRCE(18) ;! screen depth
+  EQU SRCE$SUBROUTINE     TO SCREENS.SRCE(19) ;! subroutine name
+  EQU SRCE$COL            TO SCREENS.SRCE(20) ;! screen col pos
+  EQU SRCE$ROW            TO SCREENS.SRCE(21) ;! screen row pos
+  EQU SRCE$SCRN.ACTIONS   TO SCREENS.SRCE(22) ;! macros
+  EQU SRCE$SCRN.TRIGGERS  TO SCREENS.SRCE(23) ;! macro triggers (RPN)
+  EQU SRCE$SCRN.SCREENS   TO SCREENS.SRCE(24) ;! target screens for macros
+  EQU SRCE$CONDITIONS     TO SCREENS.SRCE(25) ;! screen conditions (RPN)
+  EQU SRCE$FLD.VIEWS      TO SCREENS.SRCE(26) ;! display views per fld
+  EQU SRCE$RECORD.DEFS    TO SCREENS.SRCE(27) ;! record/transaction ids
+  EQU SRCE$FILE.KEYS      TO SCREENS.SRCE(28) ;!   ""  file keys
+  EQU SRCE$FILEFLDS       TO SCREENS.SRCE(29) ;! Field assignments
+  EQU SRCE$FILE.ATTRS     TO SCREENS.SRCE(30) ;! attribute overides
+  EQU SRCE$WRITE.RULES    TO SCREENS.SRCE(31) ;! write rules (RPN)
+  EQU SRCE$DELETE.RULES   TO SCREENS.SRCE(32) ;! delete rules (RPN)
+  EQU SRCE$USE.FLD.TAGS   TO SCREENS.SRCE(33) ;! use caption flags
+  EQU SRCE$DO.FLAGS       TO SCREENS.SRCE(34) ;! display only flags
+  EQU SRCE$EXIST.FLAGS    TO SCREENS.SRCE(35) ;! record exist flags
+  EQU SRCE$LOCK.FLAGS     TO SCREENS.SRCE(36) ;! lock flags
+  EQU SRCE$MIN.MV.LINES   TO SCREENS.SRCE(37) ;! min lines per mv set
+  EQU SRCE$MAX.MV.LINES   TO SCREENS.SRCE(38) ;! max lines per mv set
+  EQU SRCE$SCRN.MV.SETS   TO SCREENS.SRCE(39) ;! mv set overides per fld
+  EQU SRCE$ORIG.OBJECTS   TO SCREENS.SRCE(40) ;! original object name
+  EQU SRCE$GLOBAL.FILES   TO SCREENS.SRCE(41) ;! original file def (see RECORD.DEFS)
+  EQU SRCE$DEPEND.FLDS    TO SCREENS.SRCE(42) ;! dependent objects
+  EQU SRCE$DEPEND.VALS    TO SCREENS.SRCE(43) ;! dependent values
+  EQU SRCE$MVLJUST        TO SCREENS.SRCE(44) ;! WINDOW line fmt
+  EQU SRCE$BTINDEXES      TO SCREENS.SRCE(45) ;! Btree indexes
+  EQU SRCE$BTLOOKUPS      TO SCREENS.SRCE(46) ;! Btree lookup display
+  EQU SRCE$FILEASSOCS     TO SCREENS.SRCE(47) ;! Record associate names
+  EQU SRCE$CREATED        TO SCREENS.SRCE(48) ;! When created
+  EQU SRCE$LASTUPD        TO SCREENS.SRCE(49) ;! When last updated

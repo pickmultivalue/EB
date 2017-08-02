@@ -1,0 +1,39 @@
+* @(#) GETFULLPATH Ported to jBASE 07:23:52  18 FEB 2010
+    FUNCTION GETFULLPATH(FLNM)
+!
+! Return full path for a given file
+!
+    DEFFUN GETFLNM()
+    INCLUDE JBC.h
+    shell = CHAR(255):'k'
+    IF NOT(GETENV('pwd', pwd)) THEN
+    IF NOT(GETENV('PWD', pwd)) THEN
+    pwd = '.'       ;! hopefully this won't be the case
+    END
+    END
+!
+    EXECUTE shell:'jshow -f ':FLNM CAPTURING FullPath
+!
+    IF FullPath='' THEN       ;! assume directory at current position
+        temp = pwd:DIR_DELIM_CH:FLNM
+        EXECUTE shell:'jshow -f ':temp CAPTURING FullPath
+        IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
+        temp = pwd
+    END ELSE temp = ''
+    FullPath='x ':temp        ;! create a path with a dummy arg for FIELD below
+END ELSE FullPath = FullPath<1>         ;! grab the first one
+!
+FullPath=OCONV(FullPath, 'MCP ')        ;! remove any dodgy characters
+FullPath=TRIM(FullPath)
+!
+! Get everything after the first word (i.e. result of jshow -f)
+!
+FullPath=FIELD(FullPath,' ',2,99)
+!
+! If the path starts with ".", replace with pwd
+!
+IF FIELD(FullPath, DIR_DELIM_CH, 1) = '.' THEN
+FullPath = pwd:FullPath[COL2(),99]
+END
+!
+RETURN FullPath

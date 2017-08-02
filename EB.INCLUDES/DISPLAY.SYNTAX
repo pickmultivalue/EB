@@ -1,0 +1,7 @@
+    CRT
+    syntax_loc = 0
+    LOOP
+        REMOVE syntax_line FROM Syntax AT syntax_loc SETTING syntax_delim
+        CRT syntax_line
+    WHILE syntax_delim DO REPEAT
+    CRT

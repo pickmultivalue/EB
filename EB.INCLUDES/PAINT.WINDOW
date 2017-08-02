@@ -1,0 +1,40 @@
+* @(#) PAINT.WINDOW Ported to jBASE 15:13:20  17 APR 2000
+    IF WINDOW.FLAG='' THEN
+        WINDOW.FLAG=COL:',':ROW
+        CRT @(0,23):RVON:BG:'Position cursor where the bottom right corner should be then type ':FG:'ctrl-W':RVOFF:CLEOL:
+    END ELSE
+        ORIG.COL=FIELD(WINDOW.FLAG,',',1)
+        ORIG.ROW=FIELD(WINDOW.FLAG,',',2)
+        IF COL=ORIG.COL AND ROW=ORIG.ROW THEN COL=79-ORIG.COL;ROW=22-ORIG.ROW
+        WIDTH=COL-ORIG.COL+1
+        DEPTH=ROW-ORIG.ROW+1
+        COL=ORIG.COL
+        ROW=ORIG.ROW
+        WINDOW.FLAG=''
+!
+        CALL EB.WINDOW.SUB(COL,ROW,WIDTH,DEPTH)
+        ACT.PROMPT='Here (Y/N) '
+        CRT @(0,23):RVON:ACT.PROMPT:RVOFF:CLEOL:
+        ANS='Y';YNC=16;YNR=23;GOSUB INPUT.YN
+        CRT @(0,23):CLEOL:
+        IF ANS='Y' THEN
+            FG$CHANGES=TRUE
+            IF COL#0 THEN HASH1='L#':COL ELSE HASH1=''
+            WIDTH=WIDTH-2
+            DEPTH=DEPTH-2
+            TEMP=THIS.SCREEN<ROW+1>
+            HASH="L#":WIDTH
+            THIS.SCREEN<ROW+1>=TEMP[1,COL] HASH1:TL:STR(HORIZ,WIDTH):TR:TEMP[COL+WIDTH+3,80]
+            FOR I=1 TO DEPTH
+                TEMP=THIS.SCREEN<ROW+I+1>
+                TEMP=TEMP[1,COL] HASH1:VERT:TEMP[COL+2,WIDTH] HASH:VERT:TEMP[COL+WIDTH+4,80]
+                THIS.SCREEN<ROW+I+1>=TEMP
+            NEXT I
+            TEMP=THIS.SCREEN<ROW+I+1>
+            THIS.SCREEN<ROW+I+1>=TEMP[1,COL] HASH1:BL:STR(HORIZ,WIDTH):BR:TEMP[COL+WIDTH+3,80]
+            DEPTH=DEPTH+2
+        END ELSE
+            DEPTH=DEPTH+ROW+1
+            GOSUB PART.REFRESH
+        END
+    END

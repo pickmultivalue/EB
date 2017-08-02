@@ -1,0 +1,23 @@
+* @(#) PRINT.DOC.IV Ported to jBASE 15:13:20  17 APR 2000
+    NBR.LINES=FG$NBR.PANES<1,W.PG.NBRS>
+    SAVE.PAGES=PRINT.PAGES;PRINT.PAGES=''
+    FOR I=1 TO NBR.LINES
+        PRINT.PAGE=SAVE.PAGES<1,I>
+        IF PRINT.PAGE MATCHES "1N0N" THEN
+            LOCATE PRINT.PAGE IN PRINT.PAGES<1> BY 'AR' SETTING POS ELSE
+                INS PRINT.PAGE BEFORE PRINT.PAGES<1,POS>
+            END
+        END ELSE
+            IF PRINT.PAGE='E' THEN
+                PRINT.PAGES<1,-1>='E'
+            END ELSE
+                ST=FIELD(PRINT.PAGE,'-',1)
+                FI=PRINT.PAGE[COL2()+1,99]
+                PRINT.PAGE=''
+                FOR II=ST TO FI;PRINT.PAGE<1,-1>=II;NEXT II
+                    LOCATE ST IN PRINT.PAGES<1> BY 'AR' SETTING POS ELSE
+                        INS PRINT.PAGE BEFORE PRINT.PAGES<1,POS>
+                    END
+                END
+            END
+        NEXT I

@@ -1,0 +1,32 @@
+* @(#) EB.EOL Ported to jBASE 15:13:19  17 APR 2000
+    IF CHR=BS.CH THEN
+        IF (LCOL+OFFSET)=1 THEN
+            IF LROW>1 THEN LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+        END ELSE
+            IF LCOL>LLEN+1 THEN
+                COL-=1
+                LCOL-=1
+                GO TOP
+            END ELSE
+                IF INS.MODE THEN
+                    SP1=""
+                    IF COL>4 THEN
+                        CRT BS.CH:
+                        IF DEL.CHAR#'' THEN
+                            CRT DEL.CHAR:
+                            Y=RDSP(LROW)[PWIDTH-4+OFFSET,2]
+                            IF Y[2,1]#'' THEN CRT @(PWIDTH-1,ROW):Y:
+                        END ELSE
+                            CRT @(COL-1,ROW):CLEOL:RDSP(LROW)[LCOL,81-COL]:
+                        END
+                    END
+                END ELSE SP1=' '
+                RDSP(LROW)=RDSP(LROW)[1,LCOL-2]:SP1:RDSP(LROW)[LCOL,MAX]
+                IF LCOL=LLEN+1 THEN LLEN-=1; RDSP(LROW)=RDSP(LROW)[1,LLEN]
+                COL-=1; GOSUB CHG.LROW
+                IF COL>4 THEN CRT @(COL,ROW):SP1:
+                LCOL-=1
+                GO TOP
+            END
+        END
+    END

@@ -1,0 +1,45 @@
+* @(#) PAINT.INSERT Ported to jBASE 15:13:20  17 APR 2000
+    PRINT.IT=FALSE
+    IF FIRST.FIELD<1 THEN FIRST.FIELD=1
+    FOR I=FIRST.FIELD TO LAST.FIELD
+        PGE=(SCRN.PGES<1,I>:1)[1,1]
+        IF PGE=SCRN.PGE THEN
+            FOR K=1 TO 2 UNTIL LABELS<1,I,K>=''
+                LABEL=LABELS<1,I,K>
+                CC=LAB.COLS<1,I,K>
+                RR=LAB.ROWS<1,I,K>
+                PRFX=ACT.PROMPTS<1,I,K>
+                IF PRFX THEN
+                    PRFX=PRFX:'. '
+                    IF COL=CC AND ROW=RR THEN PRINT.IT=TRUE
+                    CC=CC-(LEN(PRFX))
+                    IF PRINT.IT THEN
+                        CRT @(CC,RR):PRFX:
+                        PRINT.IT=FALSE
+                    END
+                    LABEL=PRFX:LABEL
+                    LABELS<1,I,K>=LABEL
+                    LAB.COLS<1,I,K>=CC
+                END
+                IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                LINE=THIS.SCREEN<RR+1>
+                LINE=LINE[1,CC] HASH:LABEL:LINE[CC+1+LEN(LABEL),999]
+                THIS.SCREEN<RR+1>=LINE  ;! LINE.HASH
+            NEXT K
+            DISPLY=DISPLAYS<1,I>
+            CC=SCRN.COLS<1,I>
+            IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+            RR=SCRN.ROWS<1,I>
+            LINE=THIS.SCREEN<RR+1>
+            LINE=LINE[1,CC] HASH:DISPLY:LINE[CC+1+LEN(DISPLY),999]
+            THIS.SCREEN<RR+1>=LINE      ;! LINE.HASH
+!
+            LOCATE I IN FIRST.WIN<1> SETTING WIN THEN
+                RR=LAST.ROWS<1,WIN>
+                LINE=THIS.SCREEN<RR+1>
+                DISPLY='<W':WIN:'>'
+                LINE=LINE[1,CC] HASH:DISPLY:LINE[CC+1+LEN(DISPLY),999]
+                THIS.SCREEN<RR+1>=LINE  ;! LINE.HASH
+            END
+        END
+    NEXT I

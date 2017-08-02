@@ -1,0 +1,14 @@
+CRT.LN:   !
+    CHR1=RDSP(LROW)[1,COMMENTLEN]
+    CONVERT VM:SVM TO ']\' IN CRTLN
+    IF TAB.MODE THEN CALL EB_TABS(CRTLN,PWIDTH)
+    CRTLN = OCONV(CRTLN,'MCP')
+    CRTLN = LOWER(lexLine(CRTLN,colors) )
+    tokens = RAISE(RAISE(CRTLN<1,2>))
+    sitokenCounte = 0
+    FOR tokenCount = 1 TO DCOUNT(tokens,@FM)
+        CRT tokens<tokenCount,3>:tokens<tokenCount,1>:
+        sitokenCounte += tokens<tokenCount,4>
+    NEXT tokenCount
+    CRT C_WHITE:
+    RETURN

@@ -1,0 +1,26 @@
+* @(#) PAINT.SEARCH Ported to jBASE 15:13:18  17 APR 2000
+    CRT @(0,23):FG$ERROR.MSGS<99>:
+    LOOP
+        CALL EB_WP(SEARCH,'AN',24,23,40,0)
+    WHILE FG$ACT.CODE DO
+        BEGIN CASE
+        CASE FG$ACT.CODE=FG$ABT.CODE OR FG$ACT.CODE=FG$END.CODE
+            FG$ACT.CODE=FALSE
+            CRT @(0,23):CLEOL:
+            GOTO 10
+        CASE 1
+            INCLUDE EB.INCLUDES ON.INP
+            FG$ACT.CODE=FALSE
+        END CASE
+    REPEAT
+    IF SEARCH#'' THEN
+        ACT=1
+        LOOP
+            POS=INDEX(THIS.SCREEN,SEARCH,ACT)
+            IF POS THEN
+                RR=DCOUNT(THIS.SCREEN[1,POS],AM)-1
+                CC=INDEX(THIS.SCREEN<RR+1>,SEARCH,1)-1
+            END
+        UNTIL RR>=ROW OR CC>=COL OR NOT(POS) DO ACT=ACT+1 REPEAT
+        IF POS THEN COL=CC;ROW=RR
+    END

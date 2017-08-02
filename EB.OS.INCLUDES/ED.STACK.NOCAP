@@ -1,0 +1,1 @@
+EXECUTE 'ED ':STK.FILE:' ':STACK.ID:' (Z'

@@ -1,0 +1,96 @@
+* @(#) VALID.INPUT Ported to jBASE 15:13:18  17 APR 2000
+    INP.STRING=TRIM(INP.STRING)
+    ERRMSG=''
+    BEGIN CASE
+    CASE TYPE[1,1]='D'
+        BEGIN CASE
+        CASE INP.STRING MATCHES "'+'0N" OR INP.STRING MATCHES "'-'0N"
+            STMP=TODAYS$DATE+INP.STRING
+        CASE INP.STRING='.'; STMP=TODAYS$DATE
+        CASE NUM(INP.STRING) AND LEN(INP.STRING)<3
+            STMP=ICONV(INP.STRING:' ':OCONV(TODAYS$DATE,DM.CONV),'D')
+        CASE 1
+            STMP=ICONV(INP.STRING,'D')
+!
+! If prior to this month then concatenate next year nbr to input string
+! to generate future date. This should (hopefully on all platforms)
+! not affect the outcome if the user actually entered the Year.
+!
+            IF OCONV(STMP,DM.CONV)<OCONV(TODAYS$DATE,DM.CONV) THEN
+                STMP=ICONV(INP.STRING:' ':OCONV(TODAYS$DATE,DY.CONV)+1,'D')
+            END
+        END CASE
+        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG$ERROR.MSGS<41>
+    CASE TYPE='T'
+        INP.STRING=OCONV(INP.STRING,'MCU')
+        IF INDEX(INP.STRING,':',1) THEN
+            STMP=ICONV(INP.STRING,'MTS')
+        END ELSE
+            STMP=OCONV(INP.STRING,'MCN')
+            IF LEN(STMP)>4 THEN
+                STMP=STMP+(120000*(INDEX(INP.STRING,'P',1)>0))
+                DUMMY='R%%:%%:%%'
+            END ELSE
+                IF STMP<99 THEN STMP=STMP*100
+                STMP=STMP+(1200*(INDEX(INP.STRING,'P',1)>0))
+                DUMMY='R%%:%%'
+            END
+            STMP=STMP DUMMY
+            BEGIN CASE
+            CASE INP.STRING='.'; STMP=CURR$TIME
+            CASE NUM(INP.STRING) AND LEN(INP.STRING)<3; STMP=ICONV(INP.STRING:':00','MT')
+            CASE 1
+                STMP=ICONV(STMP,'MTS')
+            END CASE
+        END
+        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG$ERROR.MSGS<79>
+    CASE NUM.FIELD
+        IF INP.STRING[1,1]='$' THEN INP.STRING=INP.STRING[2,LENTH]
+        IF NUM(INP.STRING) THEN
+            IF TYPE[1,1]='M' THEN STMP=2 ELSE STMP=TYPE[2,2]+0
+            IF INP.STRING=INP.STRING STMP THEN STMP=1 ELSE
+                ERRMSG=STMP:FG$ERROR.MSGS<78>
+            END
+        END ELSE
+            FL=FG$SCR.FILE.IDS<1,INP.FLD>
+            IF FL#'' THEN
+                IF FG$SCR.BFILES<1,FL> THEN
+                    FG$FIELD=INP.STRING
+                    CALL EB.LOOKUP
+                    IF FG$VALID THEN
+                        INP.STRING=FG$FIELD
+                        GOTO FINISH
+                    END ELSE
+                        FG$VALID=TRUE
+                        RTN.KEY=FALSE
+                        CPOS=1; COL=ORIG.COL
+                        GOSUB CRT.UNDERLINE
+                        RETURN
+                    END
+                END
+            END
+            ERRMSG=FG$ERROR.MSGS<76>
+        END
+    CASE TYPE 'R#1'='A'
+        STMP=OCONV(INP.STRING,'MCA')
+        IF STMP#INP.STRING THEN ERRMSG=FG$ERROR.MSGS<41>
+    CASE TYPE 'R#1'='U'
+        INP.STRING=OCONV(INP.STRING,'MCU')
+    CASE TYPE 'R#1'='L'
+        INP.STRING=OCONV(INP.STRING,'MCL')
+    CASE TYPE 'R#1'='LC'
+        INP.STRING=OCONV(INP.STRING,'MCT')
+    CASE TYPE[1,1]='F'
+    END CASE
+    IF ERRMSG#'' THEN
+        RTN.KEY=FALSE
+        INP.STRING=FG$OLD.FIELD
+        CPOS=1; COL=ORIG.COL
+        IF INDEX('NM',TYPE[1,1],1) ELSE ERRS=ERRS+1
+        CALL EB.ERRMSG(ERRMSG:BELL)
+        IF ERRS=3 THEN
+            RQM; CALL EB.HELP('',20,7,40,10)
+            IF FG$REFRESH THEN CALL EB.REFRESH
+            ERRS=0
+        END
+    END

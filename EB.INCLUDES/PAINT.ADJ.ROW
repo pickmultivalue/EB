@@ -1,0 +1,79 @@
+* @(#) PAINT.ADJ.ROW Ported to jBASE 15:13:18  17 APR 2000
+    IF ROW.ADJ<0 THEN
+        FOR WIN=1 TO NBR.WINS
+            FLD=FIRST.WIN<1,WIN>
+            IF FLD>=FIRST.FIELD AND FLD<=LAST.FIELD THEN
+                RR=LAST.ROWS<1,WIN>
+                IF RR=ROW THEN
+                    CC=SCRN.COLS<1,FLD>
+                    DISPLY='<W':WIN:'>'
+                    BLANK.FIELD=LEN(DISPLY)
+                    CRT @(CC,RR):DISPLY:
+                    IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                    LTEMP=THIS.SCREEN<RR+1>
+                    LTEMP=LTEMP[1,CC] HASH:DISPLY:LTEMP[CC+BLANK.FIELD+1,999]
+                    THIS.SCREEN<RR+1>=LTEMP       ;! LINE.HASH
+                END
+            END
+        NEXT WIN
+    END
+    FOR FLD=FIRST.FIELD TO LAST.FIELD
+        PGE=(SCRN.PGES<1,FLD>:1)[1,1]
+        IF PGE=SCRN.PGE THEN
+            FOR J=1 TO 2
+                RR=LAB.ROWS<1,FLD,J>
+                IF RR>ROW OR (RR=ROW AND ROW.ADJ>0) THEN
+                    LAB.ROWS<1,FLD,J>=LAB.ROWS<1,FLD,J>+ROW.ADJ
+                    CFLD=FLD.NAMES<1,FLD>; GOSUB SET.CHANGES
+                END ELSE
+                    IF RR=ROW AND ROW.ADJ<0 THEN  ;! put label back in
+                        LABEL=LABELS<1,FLD,J>
+                        CC=LAB.COLS<1,FLD,J>
+                        IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                        LINE=THIS.SCREEN<RR+1>
+                        LINE=LINE[1,CC] HASH:LABEL:LINE[CC+1+LEN(LABEL),999]
+                        THIS.SCREEN<RR+1>=LINE    ;! LINE.HASH
+                    END
+                END
+            NEXT J
+            RR=SCRN.ROWS<1,FLD>
+            IF RR>ROW OR (RR=ROW AND ROW.ADJ>0)THEN
+            SCRN.ROWS<1,FLD>=SCRN.ROWS<1,FLD>+ROW.ADJ
+            CFLD=FLD.NAMES<1,FLD>; GOSUB SET.CHANGES
+        END ELSE
+            IF RR=ROW AND ROW.ADJ<0 THEN          ;! put label back in
+                DISPLY=DISPLAYS<1,FLD>
+                CC=SCRN.COLS<1,FLD>
+                IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                LINE=THIS.SCREEN<RR+1>
+                LINE=LINE[1,CC] HASH:DISPLY:LINE[CC+1+LEN(DISPLY),999]
+                THIS.SCREEN<RR+1>=LINE  ;! LINE.HASH
+            END
+        END
+!
+        LOCATE FLD IN FIRST.WIN<1, vm_start> SETTING WIN THEN
+            CC=SCRN.COLS<1,FLD>
+            RR=LAST.ROWS<1,WIN>
+            IF RR>=ROW THEN   ;! changed from > to fix INS.LINE
+                IF RR+ROW.ADJ<22 THEN
+                    LAST.ROWS<1,WIN>=LAST.ROWS<1,WIN>+ROW.ADJ
+                END ELSE
+                    INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
+                    DISPLY='<W':WIN:'>'
+                    BLANK.FIELD=LEN(DISPLY)
+                    CRT @(CC,RR+ROW.ADJ):SPACE(BLANK.FIELD):
+                    CRT @(CC,RR):DISPLY:
+                    INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
+                    IF CC#0 THEN HASH='L#':CC ELSE HASH=''
+                    LTEMP=THIS.SCREEN<RR+1+ROW.ADJ>
+                    LTEMP=LTEMP[1,CC] HASH:SPACE(BLANK.FIELD):LTEMP[CC+BLANK.FIELD+1,999]
+                    THIS.SCREEN<RR+1+ROW.ADJ>=LTEMP         ;! LINE.HASH
+                    LTEMP=THIS.SCREEN<RR+1>
+                    LTEMP=LTEMP[1,CC] HASH:DISPLY:LTEMP[CC+BLANK.FIELD+1,999]
+                    THIS.SCREEN<RR+1>=LTEMP       ;! LINE.HASH
+                END
+            END
+        END
+    NEXT FLD
+    LINE=THIS.SCREEN<ROW+1>
+    CRT @(0,ROW):LINE:

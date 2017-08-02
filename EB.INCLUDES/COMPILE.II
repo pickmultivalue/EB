@@ -1,0 +1,9 @@
+* @(#) COMPILE.II Ported to jBASE 15:13:18  17 APR 2000
+*  The following variable names were converted
+*   PROGRAM,PROG
+* 
+    WRITE Program ON F.BP,Prog
+    DELETE F.BP,'%':Prog:'%'
+    WRITE NEW.PROGRAM ON F.DEST,DPROG
+    IF CONV ELSE CRT Prog:' is generic'
+    RETURN

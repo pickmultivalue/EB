@@ -1,0 +1,1 @@
+IF NOT(GETENV('PWD',pwd)) THEN rc = GETENV('pwd',pwd)

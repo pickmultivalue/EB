@@ -1,0 +1,3 @@
+*DIM TMITEM(10)
+EQU TM.TERMTYPE  TO TMITEM(01) ;* Gala termtype
+EQU TM.INTERFACE TO TMITEM(02) ;* PC interface ie. S-TERM
