@@ -18,10 +18,15 @@
 !
     FullPaths = SVN_SENTENCE(TRUE, TRUE)
     IF LEN(FullPaths) = 0 THEN
-        EXECUTE shell:'git status|grep modified':shellend CAPTURING FullPaths
-        nbr = DCOUNT(FullPaths, @AM)
+        EXECUTE shell:'git status':shellend CAPTURING io
+        nbr = DCOUNT(io, @AM)
+        FullPaths = ''
         FOR a = 1 TO nbr
-            FullPaths<a> = FIELD(TRIM(FullPaths<a>), ' ', 2)
+            line = io<a>
+            status = FIELD(line, ':', 1)
+            IF INDEX(status, 'modified', 1) OR INDEX(status, 'new file', 1) THEN
+                FullPaths<-1> = FIELD(TRIM(line[COL2(), 99]), ' ', 2)
+            END
         NEXT a
     END
 !

@@ -49,7 +49,7 @@
 !
     IF Ask THEN
         GOSUB Ask_Checkout
-        RETURN result
+        IF LEN(result) THEN RETURN result
     END
 !
 ! Now make the target directory
