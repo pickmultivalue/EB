@@ -12,22 +12,26 @@
 ! Returns 1 if succussful, 0 if not
 !
     INCLUDE JBC.h
+    DEFFUN SVN_OPENHIST()
+
     IF LEN(FileName) THEN
-    fname = FileName:','
-END ELSE fname = ''
+        fname = FileName:','
+    END ELSE fname = ''
 !
-histfile = 'SVN.HISTORY'
-fname := histfile
+    histfile = 'SVN.HISTORY'
+    fname := histfile
 !
-OPEN fname TO F.Hist ELSE
+    OPEN fname TO F.Hist ELSE
 !
 ! If it can't be opened via JEDIFILEPATH or MD then
 ! last place to look is in jbcreleasedir/config
 !
-rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
-fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:histfile
-OPEN fname TO F.Hist ELSE
-RETURN 0
-END
-END
-RETURN 1
+        rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
+        fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:histfile
+        OPEN fname TO F.Hist ELSE
+            IF LEN(FileName) THEN
+                RETURN SVN_OPENHIST(F.Hist, '')
+            END ELSE RETURN 0
+        END
+    END
+    RETURN 1

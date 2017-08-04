@@ -1,0 +1,3 @@
+    PROGRAM OCONV
+    DEFFUN F_CONV()
+    CRT F_CONV('O')

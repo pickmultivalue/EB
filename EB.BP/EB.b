@@ -488,8 +488,8 @@ ALREADY.LOCKED: !
         IF Y='Y' THEN
             REC='! PROGRAM ':Z:AM:BASE.ITEM
         END ELSE REC=''
-        CALL EB_VERS_CTRL(VersAdd,lockvar, FALSE)
-        VersCheckedOut=(lockvar<1)
+!        CALL EB_VERS_CTRL(VersAdd,lockvar, FALSE)
+!        VersCheckedOut=(lockvar<1)
     END
     TAB.MODE=INDEX(REC,TAB,1)
     CRLF.MODE=NOT(INDEX(REC,AM,1)) AND INDEX(REC,CR:LF,1)

@@ -11,6 +11,8 @@
     DEFFUN SVN_GETPWD()
     DEFFUN SVN_OPENLOCKS()
     DEFFUN SVN_READHIST()
+    DEFFUN SVN_HISTORY()
+    DEFFUN SVN_GETHOMEPATH()
     DEFFUN GETFULLPATH()
     DEFFUN GETYN()
     INCLUDE JBC.h
@@ -44,21 +46,35 @@
     RootList = ''
     CRT 'Building template, please wait...':
     DESCRIPTIONS = ''
+    homepath = SVN_GETHOMEPATH(FullPaths<1>)
     FOR i = 1 TO nbr_items
         FullPath = FullPaths<i>
-        Type = FIELD(SVN_EXEC('status ':FullPath, TRUE), ' ', 1)
-        IF LEN(Type) = 0 THEN CONTINUE
+        status = SVN_EXEC('status ':FullPath, TRUE)
+        IF LEN(status) = 0 THEN CONTINUE
         CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
         Root = SVN_GETROOT(FilePath)
         LOCATE Root IN RootList SETTING POS ELSE
-            IF POS>1 THEN
-                CRT 'Error: you cannot submit from 2 different SVN check out directories'
-                STOP
-            END
+!            IF POS>1 THEN
+!                CRT 'Error: ';!you cannot submit from 2 different SVN check out directories'
+!                CRT Root
+!                STOP
+!            END
             INS Root BEFORE RootList<POS>
         END
-        DESCRIPTION = SVN_READHIST(1, FilePath, ItemName, '', '', '', '')
-        DESCRIPTION = DESCRIPTION<1>
+        logs = SVN_HISTORY(FilePath, ItemName, '')
+        log_datetime = logs<3,1>:logs<4,1>
+        history = SVN_READHIST(1, FilePath, ItemName, '', '', '', '')
+        description = history<1>
+        dates = history<5>
+        times = history<4>
+        DESCRIPTION = ''
+        hist_count = DCOUNT(dates, @VM)
+        FOR v = 1 TO hist_count
+            datetime =dates<1, v>:times<1, v>
+            IF datetime > log_datetime THEN
+                DESCRIPTION<1, -1> = description<1, v>
+            END
+        NEXT v
 !
 ! Build a list of Descriptions. If they're all the same then
 ! we'll change the Template at the end of this loop
@@ -70,10 +86,10 @@
         Template = CHANGE(Template, @AM:' ', @AM)
         IF nbr_items > 1 THEN
             DescTemplate = Template
-            Template = SVN_GETPWD(FilePath, DIR_DELIM_CH, TRUE):DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
+            Template = FilePath:DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
         END
         StartTemplate<-1> = Template
-        IF LEN(Type) THEN EndTemplate<-1> = Type:'    ':FullPath
+        EndTemplate<-1> = '    - ':FullPath
     NEXT i
 !
 ! Do we need to consolidate the description?
@@ -123,7 +139,7 @@
     UNTIL ANS='Y' DO REPEAT
     IO = ''
     IF LEN(FullPaths) AND LEN(Message) THEN
-        IO = SVN_CHECKIN(FullPaths, Message)
+        IO = SVN_CHECKIN(SVN_GETHOMEPATH(FullPaths<1>), FullPaths, Message)
     END
     CRT
     DELETE F.Temp, K.Template

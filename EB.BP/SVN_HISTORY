@@ -61,10 +61,10 @@
         LOOP
             rev = line[COL2()+1, 99]
             REMOVE user FROM IO AT loc SETTING delim
-            user = FIELD(user, ' ', 2)
+            user = TRIM(FIELD(user, ':', 2))
             REMOVE timestamp FROM IO AT loc SETTING delim
             timestamp = TRIM(timestamp)
-            time = FIELD(timestamp, ' ', 5)
+            time = ICONV(FIELD(timestamp, ' ', 5), 'MTS')
             odate = FIELD(timestamp, ' ', 3, 2):' ':FIELD(timestamp, ' ', 6)
             date = ICONV(odate, 'D')
             desc = ''

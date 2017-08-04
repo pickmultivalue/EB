@@ -1,5 +1,5 @@
 * @(#) SVN_CHECKIN Ported to jBASE 07:23:52  18 FEB 2010
-    FUNCTION SVN_CHECKIN(FullPaths, Message)
+    FUNCTION SVN_CHECKIN(rootpath, FullPaths, Message)
 !
 ! Function to check in the user's copy of a program.
 ! This copy is first copied on top of the original source,
@@ -41,15 +41,15 @@
 !
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items
-        FullPath = FullPaths<i>
+        FullPath = rootpath:DIR_DELIM_CH:FullPaths<i>
         commit_path := ' ':FullPath
-        IF i = nbr_items THEN
-            CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
-            rootdir = SVN_GETROOT(FilePath)
-            OPEN rootdir TO F.Source ELSE
-                RETURN rootdir:' could not be opened'
-            END
-        END
+!        IF i = nbr_items THEN
+!            CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
+!            rootdir = SVN_GETROOT(FilePath)
+!            OPEN rootdir TO F.Source ELSE
+!                RETURN rootdir:' could not be opened'
+!            END
+!        END
     NEXT i
 !
 ! Commit item to repository
