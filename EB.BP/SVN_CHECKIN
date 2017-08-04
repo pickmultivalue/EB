@@ -57,6 +57,7 @@
     commit_msg = 'svn_commit_msg'
     WRITE Message ON F.Source, commit_msg
     IO = SVN_EXEC('commit -m "':CHANGE(commit_msg, '"', '\"'):'" ':commit_path, TRUE)
+    DEBUG
 !
 ! If commit fails due to "not working copy"
 ! then do an svn update - which should merge in
