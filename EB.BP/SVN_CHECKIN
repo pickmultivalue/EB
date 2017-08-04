@@ -56,6 +56,14 @@
 !
     commit_msg = 'svn_commit_msg'
     OPEN '.' TO F.local ELSE NULL
+    loc = 0
+    LOOP
+        REMOVE line FROM Message AT loc SETTING delim
+        IF INDEX(line, '--This line, and those below, will be ignored--', 1) THEN
+            Message = Message[1, loc]
+            BREAK
+        END
+    WHILE delim DO REPEAT
     WRITE Message ON F.local, commit_msg
     IO = SVN_EXEC('commit -F ':commit_msg:' ':commit_path, TRUE)
 !
