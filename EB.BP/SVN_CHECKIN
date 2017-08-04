@@ -55,9 +55,9 @@
 ! Commit item to repository
 !
     commit_msg = 'svn_commit_msg'
-    WRITE Message ON F.Source, commit_msg
-    IO = SVN_EXEC('commit -m "':CHANGE(commit_msg, '"', '\"'):'" ':commit_path, TRUE)
-    DEBUG
+    OPEN '.' TO F.local ELSE NULL
+    WRITE Message ON F.local, commit_msg
+    IO = SVN_EXEC('commit -F ':commit_msg:' ':commit_path, TRUE)
 !
 ! If commit fails due to "not working copy"
 ! then do an svn update - which should merge in
@@ -108,10 +108,10 @@
         RETURN Result
     END
 !
-    DELETE F.Source, commit_msg
-    IF NOT(INDEX(IO, 'ommitted', 1)) THEN
+    DELETE F.local, commit_msg
+    IF INDEX(IO, 'fatal', 1) THEN
         Result = 'Error during commit of ':ItemName
-        Result<3> = 'svn commit output:'
+        Result<3> = 'commit output:'
         Result<5> = IO
         RETURN Result
     END
@@ -249,7 +249,7 @@
             END
         NEXT f
     END ELSE
-        EXECUTE shell:'chmod -w ':commit_path:shellend CAPTURING ignore
+!        EXECUTE shell:'chmod -w ':commit_path:shellend CAPTURING ignore
     END
 !
     RETURN ''
