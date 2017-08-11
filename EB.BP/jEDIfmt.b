@@ -73,7 +73,12 @@
     END
     OPEN FNAME TO FILE ELSE STOP 201,FNAME
     MAT IND=0; IND(1)=4; IND(2)=4
-    OPEN 'DICT',FNAME TO DFILE THEN
+    IF FNAME = 'JET.PASTE' THEN
+        ID=BUFF<3>
+        rFname = FIELD(ID, '%', 2)
+        IF rFname = '' THEN rFname = FNAME
+    END
+    OPEN 'DICT',rFname TO DFILE THEN
         MATREAD IND FROM DFILE,'EB_INDENT' ELSE
             OPEN 'EB.PARAMS' THEN
                 MATREAD IND FROM 'EB_INDENT' ELSE NULL
@@ -99,63 +104,63 @@
     EXCEPT.IND=0
     MATCH.IND=''
     BEGIN CASE
-    CASE PLSQL
-        IND(1)=0;
-        COMMENTS='--'; COMMENTLEN=2
-        ENDW='END IF'; ENDSW='ELSIF '
-        PREFIX='ELSIF':AM:'END':AM:'EXCEPTION':AM:'FOR'
-        PREFIX.IND = -1:AM:-1:AM:-1:AM:0
-        PREFIX.NEXT = 1:AM:0:AM:0:AM:1
-        EXACT='BEGIN':AM:'ELSE':AM:'ELSIF':AM:'END':AM:'END IF':AM:'END LOOP'
-        EXACT.IND = 0:AM:-1:AM:-1:AM:-1:AM:-1:AM:-1
-        EXACT.NEXT = 1:AM:1:AM:1:AM:0:AM:0:AM:0
-        SUFFIX='AS':AM:'ELSE':AM:'THEN'
-        CONTFIX='THEN'
-        EXCEPTIONS='WHEN':AM:'FORALL'
-        MATCH.S='P4':VM:'S3'
-        MATCH.S<2>='E4':VM:'E3'
-        MATCH.E='E3':VM:'E4'
-        MATCH.E<2>='S3':VM:'P4'
+        CASE PLSQL
+            IND(1)=0;
+            COMMENTS='--'; COMMENTLEN=2
+            ENDW='END IF'; ENDSW='ELSIF '
+            PREFIX='ELSIF':AM:'END':AM:'EXCEPTION':AM:'FOR'
+            PREFIX.IND = -1:AM:-1:AM:-1:AM:0
+            PREFIX.NEXT = 1:AM:0:AM:0:AM:1
+            EXACT='BEGIN':AM:'ELSE':AM:'ELSIF':AM:'END':AM:'END IF':AM:'END LOOP'
+            EXACT.IND = 0:AM:-1:AM:-1:AM:-1:AM:-1:AM:-1
+            EXACT.NEXT = 1:AM:1:AM:1:AM:0:AM:0:AM:0
+            SUFFIX='AS':AM:'ELSE':AM:'THEN'
+            CONTFIX='THEN'
+            EXCEPTIONS='WHEN':AM:'FORALL'
+            MATCH.S='P4':VM:'S3'
+            MATCH.S<2>='E4':VM:'E3'
+            MATCH.E='E3':VM:'E4'
+            MATCH.E<2>='S3':VM:'P4'
 !
-        PP(4)=0     ;! FOR
+            PP(4)=0     ;! FOR
 !
-        SP(1)=0     ;! ELSIF
-        SP(2)=0     ;! END
+            SP(1)=0     ;! ELSIF
+            SP(2)=0     ;! END
 !
-        PS(2)=1     ;! ELSE
+            PS(2)=1     ;! ELSE
 !
-        PE(1)=0; SE(1)=1      ;! BEGIN CASE
-        PE(2)=0; SE(2)=0      ;! END
-        PE(3)=0; SE(3)=0      ;! END IF
-        PE(4)=0; SE(4)=0      ;! END LOOP
-    CASE 1
-        COMMENTS='!*#'; COMMENTLEN=1
-        EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END THEN':AM:'LOOP':AM:'REPEAT'
-        EXACT.IND = 0:AM:-1:AM:-2:AM:-1:AM:-1:AM:0:AM:-1
-        EXACT.NEXT = 2:AM:0:AM:0:AM:1:AM:1:AM:1:AM:0
-        PREFIX='CASE':AM:'END':AM:'FOR':AM:'LOOP':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
-        PREFIX.IND = -1:AM:-1:AM:0:AM:0:AM:-1:AM:-1:AM:-1
-        PREFIX.NEXT = 1:AM:0:AM:1:AM:1:AM:0:AM:1:AM:1
-        SUFFIX='ELSE':AM:'ERROR':AM:'LOCKED':AM:'THEN'
-        MATCH.S='P3':VM:'P4'
-        MATCH.S<2>='P5':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3'
-        MATCH.E='E3':VM:'P5':VM:'P6':VM:'S3'
-        MATCH.E<2>='P4':VM:'P3':VM:'P4':VM:'P4'
-        EXCEPTIONS=''
-        PP(3)=0     ;! FOR
-        PP(4)=0     ;! LOOP
+            PE(1)=0; SE(1)=1      ;! BEGIN CASE
+            PE(2)=0; SE(2)=0      ;! END
+            PE(3)=0; SE(3)=0      ;! END IF
+            PE(4)=0; SE(4)=0      ;! END LOOP
+        CASE 1
+            COMMENTS='!*#'; COMMENTLEN=1
+            EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END THEN':AM:'LOOP':AM:'REPEAT'
+            EXACT.IND = 0:AM:-1:AM:-2:AM:-1:AM:-1:AM:0:AM:-1
+            EXACT.NEXT = 2:AM:0:AM:0:AM:1:AM:1:AM:1:AM:0
+            PREFIX='CASE':AM:'END':AM:'FOR':AM:'LOOP':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
+            PREFIX.IND = -1:AM:-1:AM:0:AM:0:AM:-1:AM:-1:AM:-1
+            PREFIX.NEXT = 1:AM:0:AM:1:AM:1:AM:0:AM:1:AM:1
+            SUFFIX='ELSE':AM:'ERROR':AM:'LOCKED':AM:'THEN'
+            MATCH.S='P3':VM:'P4'
+            MATCH.S<2>='P5':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3'
+            MATCH.E='E3':VM:'P5':VM:'P6':VM:'S3'
+            MATCH.E<2>='P4':VM:'P3':VM:'P4':VM:'P4'
+            EXCEPTIONS=''
+            PP(3)=0     ;! FOR
+            PP(4)=0     ;! LOOP
 !            PP(6)=0     ;! REPEAT
 !
-        SP(2)=0     ;! END
-        SP(5)=0     ;! NEXT
+            SP(2)=0     ;! END
+            SP(5)=0     ;! NEXT
 !
-        CONTFIX='ELSE':AM:'LOCKED':AM:'THEN'
+            CONTFIX='ELSE':AM:'LOCKED':AM:'THEN'
 !
-        SS(4)=-1    ;! REPEAT
+            SS(4)=-1    ;! REPEAT
 !
-        PE(1)=0; SE(1)=2      ;! BEGIN CASE
-        PE(2)=1; SE(2)=0      ;! END CASE
-        PE(3)=1; SE(3)=0      ;! REPEAT
+            PE(1)=0; SE(1)=2      ;! BEGIN CASE
+            PE(2)=1; SE(2)=0      ;! END CASE
+            PE(3)=1; SE(3)=0      ;! REPEAT
     END CASE
 !
     LBL.SUFFIX=':!*'; SC=';'
@@ -345,18 +350,18 @@
                                         NLPOS=FALSE
                                     END
                                     BEGIN CASE
-                                    CASE EPOS
-                                        CUR.INDEX += EXACT.IND<EPOS>
-                                        NEXT.INDEX = CUR.INDEX + EXACT.NEXT<EPOS>
-                                    CASE SPOS AND NOT(PLSQL)
-                                        NEXT.INDEX = CUR.INDEX + 1
-                                    CASE FPOS
-                                        CUR.INDEX += PREFIX.IND<FPOS>
-                                        IF NOT(FLPOS OR NFPOS OR NLPOS) THEN
-                                            NEXT.INDEX = CUR.INDEX + PREFIX.NEXT<FPOS>
-                                        END ELSE NEXT.INDEX = CUR.INDEX
-                                    CASE SPOS
-                                        NEXT.INDEX = CUR.INDEX + 1
+                                        CASE EPOS
+                                            CUR.INDEX += EXACT.IND<EPOS>
+                                            NEXT.INDEX = CUR.INDEX + EXACT.NEXT<EPOS>
+                                        CASE SPOS AND NOT(PLSQL)
+                                            NEXT.INDEX = CUR.INDEX + 1
+                                        CASE FPOS
+                                            CUR.INDEX += PREFIX.IND<FPOS>
+                                            IF NOT(FLPOS OR NFPOS OR NLPOS) THEN
+                                                NEXT.INDEX = CUR.INDEX + PREFIX.NEXT<FPOS>
+                                            END ELSE NEXT.INDEX = CUR.INDEX
+                                        CASE SPOS
+                                            NEXT.INDEX = CUR.INDEX + 1
                                     END CASE
                                 END ELSE
 !
@@ -511,7 +516,7 @@
                     END
                 END
             NEXT LNO
-Error:    !
+Error:      !
             IF F.OPTION THEN
                 IF CUR.INDEX > 1 THEN
                     IF U.OPTION THEN MATWRITE ITEM ON FILE,ID:ID.SUFFIX

@@ -17,6 +17,7 @@
     DEFFUN SVN_GETHOMEPATH()
     DEFFUN SVN_OPENLOCKS()
     DEFFUN SVN_SRC_STATUS()
+    DEFFUN SVN_EXEC()
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
     DEFFUN GET_CATALOG_FILE()
@@ -54,7 +55,6 @@
 !
         CASE Op=VersStat
             lockvar = FALSE
-            RETURN ;! git
             IF INDEX(FilePath, 'JET.PASTE', 1) OR ITNM MATCHES "'%'1X0X'%'" THEN RETURN
 !
 ! Get unix login's home dir
@@ -69,6 +69,10 @@
 !
             IF NOT(SVN_OPENLOCKS(F.VAR)) THEN STOP 201,'SVN.LOCKS'
             K.lockvar = GETFULLPATH(BP_FILE):DIR_DELIM_CH:ITNM
+            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
+            gitinfo = SVN_EXEC('info ':K.lockvar, TRUE)
+            lockvar = LEN(gitinfo) = 0
+            RETURN
             LocalCopy = 'Make local copy'
             READV lockvar FROM F.VAR, SVN_CASE(K.lockvar), 1 THEN
                 CALL EB_CHOICES(10,3,'','',VM:LocalCopy,lockvar,ANS,1,'',1,'L#50','Warning - Currently being worked on by')

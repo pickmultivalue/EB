@@ -197,6 +197,7 @@
     COMPILE.OPTS=COMPILE.VERB<3>
     IF COMPILE.OPTS#'' THEN COMPILE.OPTS=SPC:COMPILE.OPTS
     COMPILE.VERB=shell:COMPILE.VERB<1>
+    ITAB = ''
     READ ITAB FROM FG$EB.PARAMS,'EB.ITAB' ELSE
         ITAB=2:@AM:8:@AM:3
     END
@@ -411,6 +412,9 @@ FIRST.ITEM: !
         IF FLNM#'' THEN FG$SENTENCE='EB ':FLNM:SPC:OCONV(FG$SENTENCE,'G1 ':NBR.WORDS); NBR.WORDS+=1; GO 25
         CRT MSG.CLR:"File does not exist! ":
         GO 10
+    END
+    OPEN 'DICT',FLNM THEN
+        READ ITAB FROM 'EB_INDENT' ELSE NULL
     END
 READ.ITEM:!
     UPDATES=TRUE
@@ -1937,31 +1941,31 @@ TCL: !
             END
             PCPERFORM 'jsh -s sh -c "loadsave -o temp.dl4 ':DL4FNAME:'/':ITNM:' 2>dl4.errs"' SETTING ERR.NOS
 !            INCLUDE EB.OS.INCLUDES DL4.BASIC
-          READ DSPLY FROM F.currdir,'dl4.errs' THEN
-              DELETE F.currdir,'dl4.errs'
-          END ELSE DSPLY = ''
-          CONVERT CR TO '' IN DSPLY
-          DSPLY = TRIM(DSPLY)
-          NBR.DSPLY=DCOUNT(DSPLY,AM)
-          FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
-            CRT DSPLY<I>
-          NEXT I
-          CRT
-          IF Y#'B' AND Y#'P' AND LEN(DSPLY) THEN
-            TXT="re-edit"
-            basloc=0
-            LOOP
-                REMOVE basline FROM DSPLY AT basloc SETTING basdelim
-                INDROW=TRIM(FIELD(basline, ' ', 1))
-            UNTIL INDROW MATCHES "1N0N" OR NOT(basdelim) REPEAT
-            IF NOT(NUM(INDROW)) OR INDROW < 1 THEN INDROW = 1
-            INDROW-=11
-            COL=5
-            ROW=11
-            IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
-            CRT MSG.CLR:
-            SCR.UD=1
-          END
+            READ DSPLY FROM F.currdir,'dl4.errs' THEN
+                DELETE F.currdir,'dl4.errs'
+            END ELSE DSPLY = ''
+            CONVERT CR TO '' IN DSPLY
+            DSPLY = TRIM(DSPLY)
+            NBR.DSPLY=DCOUNT(DSPLY,AM)
+            FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
+                CRT DSPLY<I>
+            NEXT I
+            CRT
+            IF Y#'B' AND Y#'P' AND LEN(DSPLY) THEN
+                TXT="re-edit"
+                basloc=0
+                LOOP
+                    REMOVE basline FROM DSPLY AT basloc SETTING basdelim
+                    INDROW=TRIM(FIELD(basline, ' ', 1))
+                UNTIL INDROW MATCHES "1N0N" OR NOT(basdelim) REPEAT
+                IF NOT(NUM(INDROW)) OR INDROW < 1 THEN INDROW = 1
+                INDROW-=11
+                COL=5
+                ROW=11
+                IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
+                CRT MSG.CLR:
+                SCR.UD=1
+            END
 !            INCLUDE EB.OS.INCLUDES DL4.BASIC
         CASE TYPE='SQL' OR (TYPE='DEBUG' AND COMMENT='--')
             TYPE='SQL'
@@ -2057,7 +2061,7 @@ FORMAT: !
     CALL EB_FORMAT(DUMMY,I,LNM)
     RETURN
 INDENT: !
-    Y='%':ITNM:'%'
+    Y='%':FLNM:'%':ITNM:'%'
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Formatting program...':
     ECHO OFF
@@ -2345,7 +2349,7 @@ SET.MODE: !
             COMMENT='!'
             COMMENTLEN=1
             TYPE='BASIC'
-            ITABPOS=1
+            ITABPOS=2
             PC:=';("_");(".")'
     END CASE
     BEGIN CASE

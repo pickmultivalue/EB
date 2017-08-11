@@ -6,10 +6,11 @@
 !
     DEFFUN SVN_EXEC()
     INCLUDE EB.INCLUDES SVN_DEBUG
+    CALL SPLITFILEPATH(FullPath, FileName, ItemName)
     K.lockvar = FileName:DIR_DELIM_CH:ItemName
-    PCPERFORM 'git ls-files ':K.lockvar CAPTURING IO
+    PCPERFORM 'cd ':FullPath:' & git ls-files ':K.lockvar CAPTURING IO
     IF LEN(IO) THEN
-        PCPERFORM 'git status ':K.lockvar CAPTURING IO
+        PCPERFORM 'cd ':FullPath:' & git status ':K.lockvar CAPTURING IO
     END
     RETURN IO
     RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)
