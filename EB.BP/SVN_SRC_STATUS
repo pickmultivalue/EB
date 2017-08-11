@@ -6,15 +6,15 @@
 !
     DEFFUN SVN_EXEC()
     INCLUDE EB.INCLUDES SVN_DEBUG
-    Root = CONVERT(FileName, DIR_DELIM_CH, @AM)
-    dc = DCOUNT(Root, @AM)
-    FileName = Root<dc>
-    DEL Root<dc>
-    K.lockvar = FileName:DIR_DELIM_CH:ItemName
-    Root = CONVERT(Root, @AM, DIR_DELIM_CH)
-    PCPERFORM 'cd ':Root:' && git ls-files ':K.lockvar CAPTURING IO
+    root = CONVERT(FileName, DIR_DELIM_CH, @AM)
+    dc = DCOUNT(root, @AM)
+    fName = root<dc>
+    DEL root<dc>
+    K.lockvar = fName:DIR_DELIM_CH:ItemName
+    root = CONVERT(root, @AM, DIR_DELIM_CH)
+    PCPERFORM 'cd ':root:' && git ls-files ':K.lockvar CAPTURING IO
     IF LEN(IO) THEN
-        PCPERFORM 'cd ':Root:' && git status ':K.lockvar CAPTURING IO
+        PCPERFORM 'cd ':root:' && git status ':K.lockvar CAPTURING IO
     END
     RETURN IO
     RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)
