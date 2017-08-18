@@ -78,6 +78,7 @@
 ! the record
 !
     IF INDEX(IO, 'working copy', 1) THEN
+        DEBUG
         CRT end_of_screen:'Warning: commit of ':commit_path:' failed'
         CRT
         CRT IO

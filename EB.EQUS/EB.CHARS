@@ -51,8 +51,8 @@ EQU FG$DELLN.CH   TO EB$CHARS(47) ;! Delete line
 EQU FG$DEL.CH     TO EB$CHARS(48) ;! Delete char
 EQU FG$DELW.CH    TO EB$CHARS(49) ;! Delete word
 EQU FG$SUS.CH     TO EB$CHARS(50) ;! 
-EQU FG$PRV.CH     TO EB$CHARS(51) ;! Previous occurrence
-EQU FG$NXT.CH     TO EB$CHARS(52) ;! Next occurrence
+EQU FG$PRV.CH     TO EB$CHARS(51) ;! Page Up
+EQU FG$NXT.CH     TO EB$CHARS(52) ;! Page Down
 EQU FG$MERGE.CH   TO EB$CHARS(53) ;! 
 EQU FG$OPT.CH     TO EB$CHARS(54) ;! Options
 EQU FG$JMP.CH     TO EB$CHARS(55) ;! Zoom
