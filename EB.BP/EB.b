@@ -1995,7 +1995,9 @@ TCL: !
             END ELSE
                 IF INDEX('YO',Y,1) THEN
                     CRT 'Compiling...'
-                    IF GETENV('JEDIFILEPATH',jedifilepath) THEN NULL
+                    IF NOT(GETENV('JEDIFILEPATH',jedifilepath)) THEN
+                        jedifilepath = '.'
+                    END
                     IF INDEX(jedifilepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
                     CONVERT dirsep TO @AM IN jedifilepath
                     IF GETENV('INCLUDE',includepath) ELSE includepath='.'
