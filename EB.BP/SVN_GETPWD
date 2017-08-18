@@ -41,7 +41,7 @@
         root = IO<1>
         path = IO<2>
         IF LEN(path) THEN
-            root = path
+            root = CONVERT(IO, @AM, DIR_DELIM_CH)
         END
         RETURN root
     END

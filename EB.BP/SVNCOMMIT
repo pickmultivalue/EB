@@ -24,8 +24,13 @@
         FOR a = 1 TO nbr
             line = io<a>
             status = FIELD(line, ':', 1)
-            IF INDEX(status, 'modified', 1) OR INDEX(status, 'new file', 1) THEN
-                FullPaths<-1> = FIELD(TRIM(line[COL2(), 99]), ' ', 2)
+            IF INDEX(status, 'modified', 1) OR INDEX(status, 'new file', 1) OR INDEX(status, 'renamed', 1) THEN
+                line = TRIM(line[COL2(), 99])
+                FullPath = FIELD(line, ' ', 2)
+                IF INDEX(status,'renamed',1) THEN
+                    FullPath<1, -1> = FIELD(line, ' ', 4)
+                END
+                FullPaths<-1> = FullPath
             END
         NEXT a
     END
@@ -36,9 +41,12 @@
             CRT 'The following are ready to be checked in:'
             CRT
             loc = 0
+            lastDelim = 0
             LOOP
                 REMOVE FullPath FROM FullPaths AT loc SETTING delim
+                IF lastDelim = 3 THEN CRT ' - renamed to ':
                 CRT FullPath
+                lastDelim = delim
             WHILE delim DO REPEAT
         END ELSE
             CRT SVN_COMMIT(FullPaths)

@@ -9,12 +9,12 @@
     root = CONVERT(FileName, DIR_DELIM_CH, @AM)
     dc = DCOUNT(root, @AM)
     fName = root<dc>
-    DEL root<dc>
-    K.lockvar = fName:DIR_DELIM_CH:ItemName
+    K.lockvar = ItemName
     root = CONVERT(root, @AM, DIR_DELIM_CH)
-    PCPERFORM 'cd ':root:' && git ls-files ':K.lockvar CAPTURING IO
+    ksh = CHAR(255):'k'
+    EXECUTE ksh:'cd ':root:' && git ls-files ':K.lockvar CAPTURING IO
     IF LEN(IO) THEN
-        PCPERFORM 'cd ':root:' && git status ':K.lockvar CAPTURING IO
+        EXECUTE ksh:'cd ':root:' && git status ':K.lockvar CAPTURING IO
     END
     RETURN IO
     RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)

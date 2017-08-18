@@ -10,7 +10,7 @@
             TERM=TERM.TYPE
         END
         OPEN 'EB.PARAMS' TO EB.PARAMS THEN
-            MATREAD SCREEN.PARAMS FROM EB.PARAMS,'CRT*':TERM.TYPE ELSE
+            MATREAD SCREEN.PARAMS FROM EB.PARAMS,'CRT@':TERM.TYPE ELSE
                 CRT TERM.TYPE:' not setup in EB.SECURITY'
                 STOP
             END

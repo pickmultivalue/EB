@@ -48,7 +48,8 @@
     DESCRIPTIONS = ''
     homepath = SVN_GETHOMEPATH(FullPaths<1>)
     FOR i = 1 TO nbr_items
-        FullPath = FullPaths<i>
+        FullPath = homepath:DIR_DELIM_CH:FullPaths<i,1>
+        newPath = FullPaths<i,2>
         status = SVN_EXEC('status ':FullPath, TRUE)
         IF LEN(status) = 0 THEN CONTINUE
         CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
@@ -82,11 +83,14 @@
         LOCATE DESCRIPTION IN DESCRIPTIONS SETTING DPOS ELSE
             INS DESCRIPTION BEFORE DESCRIPTIONS<DPOS>
         END
+        IF LEN(newPath) THEN
+            DESCRIPTION<-1> = 'renamed to ':newPath
+        END
         Template = CONVERT(DESCRIPTION, ';':@SVM:@VM, @AM:@AM:@AM)
         Template = CHANGE(Template, @AM:' ', @AM)
         IF nbr_items > 1 THEN
             DescTemplate = Template
-            Template = FilePath:DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
+            Template = CHANGE(FilePath, homepath:DIR_DELIM_CH, ''):DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
         END
         StartTemplate<-1> = Template
         EndTemplate<-1> = '    - ':FullPath

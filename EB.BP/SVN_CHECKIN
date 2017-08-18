@@ -41,8 +41,11 @@
 !
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items
-        FullPath = rootpath:DIR_DELIM_CH:FullPaths<i>
-        commit_path := ' ':FullPath
+        FullPath = FullPaths<i>
+        IF FullPath[1, LEN(rootpath)] # rootpath THEN
+            FullPath = rootpath:DIR_DELIM_CH:FullPath
+        END
+        commit_path := ' ':CHANGE(FullPath, '*', '\*')
 !        IF i = nbr_items THEN
 !            CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
 !            rootdir = SVN_GETROOT(FilePath)
