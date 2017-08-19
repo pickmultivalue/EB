@@ -1676,7 +1676,7 @@ CHG.LROW:
                     SCR.UD=TRUE
                 END
             END
-        CASE FTYP='S'
+        CASE FTYP='W'
             CRT MSG.CLR:'Changed item being filed. ':MSG.AKN:
             IF HEX.MODE THEN
                 STMP=REC
@@ -1706,7 +1706,7 @@ CHG.LROW:
             IF MOD(FG$STERM,3) THEN
                 CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN
             END ELSE SCR.UD=1
-        CASE FTYP='W'
+        CASE FTYP='S'
             STMP=RDSP(LROW)
             CALL EB_SWAP(STMP,POS)
             IF POS THEN

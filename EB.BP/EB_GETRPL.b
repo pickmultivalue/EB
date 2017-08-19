@@ -221,7 +221,7 @@ MAIN$:!
                 END
             NEXT I
         END ELSE
-            WHOLE=(INDEX(ROPTS,'W',1) OR INDEX(ROPTS,'W',1))
+            WHOLE=(INDEX(ROPTS,'V',1) OR INDEX(ROPTS,'W',1))
             ALOC=INDEX(ROPTS,'U',1) OR INDEX(ROPTS,'A',1)
             CONFIRM=INDEX(ROPTS,'C',1)
             SwitchValues=INDEX(ROPTS,'S',1)
