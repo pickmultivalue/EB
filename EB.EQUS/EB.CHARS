@@ -36,7 +36,7 @@ EQU FG$TAB.CH     TO EB$CHARS(32) ;! Tab
 EQU FG$DOWN.CH    TO EB$CHARS(33) ;! Down arrow
 EQU FG$UP.CH      TO EB$CHARS(34) ;! Up arrow
 EQU FG$SKIP.CH    TO EB$CHARS(35) ;! 
-EQU FG$MULTI.CH   TO EB$CHARS(36) ;! 
+EQU FG$MULTI.CH   TO EB$CHARS(36) ;! Next occurrence
 EQU FG$PASTE.CH   TO EB$CHARS(37) ;! Paste
 EQU FG$TOP.CH     TO EB$CHARS(38) ;! Top of screen/record
 EQU FG$INSMOD.CH  TO EB$CHARS(39) ;! Toggle INS/OVR

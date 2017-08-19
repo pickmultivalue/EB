@@ -6,6 +6,7 @@
     OPEN 'EB.EQUS' TO f.equs ELSE STOP 201, 'EB.EQUS'
     READ equs FROM f.equs, 'EB.CHARS' ELSE STOP 202, 'EB.CHARS'
     ttype = cmd<2>
+    specific_setting = cmd<3>
     key = 'EB.CHARS@':ttype
     MATREAD EB$CHARS FROM f.params, key THEN
         status = 'updated'
@@ -18,20 +19,31 @@
     LOOP
         REMOVE line FROM equs AT loc SETTING delim
         setting = TRIM(FIELD(line, '!', 2))
-        attr = OCONV(line, 'MCN')
-        IF LEN(setting) AND attr MATCHES '1N0N' THEN
-            chars = EB$CHARS(attr)
-            save_chars = chars
-            GOSUB get_key
-            IF LEN(chars) > 0 THEN
-                IF chars = ' ' THEN chars = ''
-                IF chars # save_chars THEN
-                    EB$CHARS(attr) = chars
-                    CRT OCONV(chars, 'MX')
-                    CRT OCONV(chars, 'MCP')
+        IF NOT(LEN(specific_setting)) OR setting = specific_setting THEN
+            attr = OCONV(line, 'MCN')
+            IF LEN(setting) AND attr MATCHES '1N0N' THEN
+                chars = EB$CHARS(attr)
+                save_chars = chars
+                GOSUB get_key
+                IF LEN(chars) > 0 THEN
+                    IF chars = ' ' THEN chars = ''
+                    IF chars # save_chars THEN
+                        FOR i = 2 TO 100
+                            existing = EB$CHARS(i)
+                            IF existing = chars THEN
+                                CRT 'Sequence already in use in attr ':i
+                            END
+                        NEXT i
+                        IF i > 100 THEN
+                            EB$CHARS(attr) = chars
+                            CRT OCONV(chars, 'MX')
+                            CRT OCONV(chars, 'MCP')
+                        END
+                    END
                 END
             END
         END
+
     WHILE delim DO REPEAT
     len = 0
     FOR attr = 2 TO 100

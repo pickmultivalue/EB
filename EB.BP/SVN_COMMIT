@@ -47,6 +47,7 @@
     CRT 'Building template, please wait...':
     DESCRIPTIONS = ''
     homepath = SVN_GETHOMEPATH(FullPaths<1>)
+    homepath = CONVERT(homepath, DIR_DELIM_CH, '/')
     FOR i = 1 TO nbr_items
         FullPath = homepath:DIR_DELIM_CH:FullPaths<i,1>
         newPath = FullPaths<i,2>

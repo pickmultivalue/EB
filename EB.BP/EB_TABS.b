@@ -13,7 +13,7 @@
         CRTLN:='.'
         ADD.DOT=TRUE
     END ELSE ADD.DOT=FALSE
-    IF Nbr.Tabs=1 THEN RETURN
+!    IF Nbr.Tabs=1 THEN RETURN
     NEWLN=''
     FOR T=1 TO Nbr.Tabs
         TabField=FIELD(CRTLN,TABCH,T)
