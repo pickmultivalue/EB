@@ -10,6 +10,7 @@
     GO MAIN$
     EQU TRUE TO 1, FALSE TO 0
     INCLUDE EB.EQUS EB.EQUS
+    INCLUDE JBC.h
     MAIN$:!
 !
     INCLUDE EB.OS.INCLUDES OS.REL
@@ -129,13 +130,16 @@
     WHILE delim DO REPEAT
     IF NOT(OS.HELP) THEN
         CRT @(-1):
-        EXECUTE CHAR(255):'kman -M $JBCRELEASEDIR/man ':WORD:' 2>&1' CAPTURING list
+        IF DIR_DELIM_CH = '/' THEN
+            mandir = '-M $JBCRELEASEDIR/man '
+        END ELSE mandir = ''
+        EXECUTE CHAR(255):'kman ':mandir:WORD:' 2>&1' CAPTURING list
         notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
         IF notfound THEN
             CRT list
             CRT
         END ELSE
-            EXECUTE CHAR(255):'kman -M $JBCRELEASEDIR/man ':WORD:' 2>&1' CAPTURING help
+            EXECUTE CHAR(255):'kman ':mandir:WORD:' 2>&1' CAPTURING help
             K.HELP = '%EB_HELP*':WORD:'%'
             WRITE help ON JET.PASTE,K.HELP
             EXECUTE 'EB JET.PASTE ':K.HELP
