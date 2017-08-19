@@ -27,13 +27,14 @@
                 GOSUB get_key
                 IF LEN(chars) > 0 THEN
                     IF chars = ' ' THEN chars = ''
+                    FOR i = 2 TO 100
+                        existing = EB$CHARS(i)
+                        IF existing = chars AND i # attr THEN
+                            CRT 'Sequence already in use in attr ':i:
+                            BREAK
+                        END
+                    NEXT i
                     IF chars # save_chars THEN
-                        FOR i = 2 TO 100
-                            existing = EB$CHARS(i)
-                            IF existing = chars THEN
-                                CRT 'Sequence already in use in attr ':i
-                            END
-                        NEXT i
                         IF i > 100 THEN
                             EB$CHARS(attr) = chars
                             CRT OCONV(chars, 'MX')
@@ -51,6 +52,7 @@
         IF l > len THEN len = l
     NEXT attr
     EB$CHARS(1) = len
+    attr = ''
     setting = 'Update ':key
     chars = 'N'
     GOSUB get_key
@@ -81,7 +83,7 @@ get_key:
         END CASE
         newchars := c
     NEXT i
-    CRT setting:' (':newchars:') ? ':
+    CRT attr,setting:' (':newchars:') ? ':
     ECHO OFF
     chars = ''
     timeout = 1000
