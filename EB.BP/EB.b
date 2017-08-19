@@ -744,7 +744,7 @@ TOP: !
                             CRT BS.CH:
                             Y=RDSP(LROW)
                             CALL EB_TABS(Y,PWIDTH)
-                            Y=Y[PWIDTH-4+OFFSET,2]
+!                            Y=Y[PWIDTH-4+OFFSET,2]
                             IF DEL.CHAR#'' THEN
                                 CRT DEL.CHAR:
                                 IF Y[2,1]#'' THEN CRT @(PWIDTH-1,ROW):Y:
