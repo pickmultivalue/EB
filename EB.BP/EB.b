@@ -131,7 +131,15 @@
     FOR I=1 TO 3
         RPL.COLS(I)=LEN(RPL.PROMPTS(I))
     NEXT I
-    DSPLY=''; ERR.NOS=241; SECRET=0
+    READ DSPLY FROM JET.PASTE, '%DSPLY%' THEN
+        DELETE JET.PASTE, '%DSPLY%'
+        ERR.NOS=COMPER
+    END ELSE
+        DSPLY = ''
+        ERR.NOS=241
+    END
+    NBR.DSPLY = DCOUNT(DSPLY, @AM)
+    SECRET=0
     PR="--Press <RETURN>"
     CONV.TYPE="MCU"
     MSG.AKN=@(0,(PDEPTH-1))
@@ -2472,4 +2480,3 @@ WRAPUP: !
             NEXT C
         NEXT F
     END
-
