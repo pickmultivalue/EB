@@ -90,7 +90,6 @@
         CALL EB_OPEN('','EB.HELP.INDEX,ENG',FG$EB.HELP.INDEX,0,POS)
         IF POS ELSE FG$EB.HELP.INDEX=FG$EB.HELP
     END ELSE OPEN.HELP=FALSE
-
     ITNM=FG$SENTENCE
     CALL EB_UT_INIT
     FG$SENTENCE=ITNM
@@ -131,7 +130,15 @@
     FOR I=1 TO 3
         RPL.COLS(I)=LEN(RPL.PROMPTS(I))
     NEXT I
-    DSPLY=''; ERR.NOS=241; SECRET=0
+    READ DSPLY FROM JET.PASTE, '%DSPLY%' THEN
+        DELETE JET.PASTE, '%DSPLY%'
+        ERR.NOS=COMPER
+    END ELSE
+        DSPLY = ''
+        ERR.NOS=241
+    END
+    NBR.DSPLY = DCOUNT(DSPLY, @AM)
+    SECRET=0
     PR="--Press <RETURN>"
     CONV.TYPE="MCU"
     MSG.AKN=@(0,(PDEPTH-1))
@@ -2295,6 +2302,7 @@ GET.EDIT.MODE: !
         CASE ITNM 'R#4'='.sql'; EDIT.MODE='Q'
         CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
         CASE ITNM 'R#4'='.sqc'; EDIT.MODE='c'
+        CASE ITNM 'R#5'='.java'; EDIT.MODE='c'
         CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.b'; EDIT.MODE='!'

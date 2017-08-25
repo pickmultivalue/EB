@@ -103,9 +103,10 @@
     LOOP
         STR.POS=REC[LINE.POS,END.POS-LINE.POS+1]
         IF INIT#'' THEN
-            STR.POS=INDEX(REC[LINE.POS,END.POS-LINE.POS+1],INIT,1)
+            STR.POS=INDEX(STR.POS,INIT,1)
         END ELSE
             IF TRIM(STR.POS)#'' THEN
+                STR.POS = @AM:STR.POS
                 LINE.NO=LEN(STR.POS)
                 FOR I=1 TO LINE.NO WHILE(INDEX(@AM,TRIM(STR.POS[I,1]),1)); NEXT I
                 I+=am_start
