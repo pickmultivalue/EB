@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 !
 ! EB keyboard parameters/commands
 !
@@ -80,3 +81,87 @@ EQU FG$FUNC.CHARS TO EB$CHARS(97) ;!
 EQU FG$FUNC.VALS  TO EB$CHARS(98) ;! 
 EQU FG$LAST.CHR   TO EB$CHARS(99) ;! 
 EQU FG$MNENOMICS  TO EB$CHARS(100);! 
+=======
+!
+! EB keyboard parameters/commands
+!
+EQU FG$MAX.CHARS  TO EB$CHARS(1)  ;* Maximum command length
+EQU FG$END.CH     TO EB$CHARS(2)  ;! Save
+EQU FG$ABT.CH     TO EB$CHARS(3)  ;! Cancel
+EQU FG$BCK.CH     TO EB$CHARS(4)  ;! Previous
+EQU FG$SRCH.CH    TO EB$CHARS(5)  ;! Search
+EQU FG$RFR.CH     TO EB$CHARS(6)  ;! Refresh
+EQU FG$LST.CH     TO EB$CHARS(7)  ;! Bookmark
+EQU FG$TCL.CH     TO EB$CHARS(8)  ;! Shell
+EQU FG$SKP.CH     TO EB$CHARS(9)  ;! Skip
+EQU FG$SEL.CH     TO EB$CHARS(10) ;! Select start/end
+EQU FG$HLP.CH     TO EB$CHARS(11) ;! Help
+EQU FG$FUNK.CH    TO EB$CHARS(12) ;! 
+EQU FG$DEL.CMD    TO EB$CHARS(13) ;! 
+EQU FG$AMD.CMD    TO EB$CHARS(14) ;! 
+EQU FG$PRT.CMD    TO EB$CHARS(15) ;! 
+EQU FG$IND.CMD    TO EB$CHARS(16) ;! 
+EQU FG$LN.CMD     TO EB$CHARS(17) ;! 
+EQU FG$ULN.CMD    TO EB$CHARS(18) ;! 
+EQU FG$DLN.CMD    TO EB$CHARS(19) ;! 
+EQU FG$INS.CMD    TO EB$CHARS(20) ;! 
+EQU FG$BCK.CMD    TO EB$CHARS(21) ;! 
+EQU FG$FWD.CMD    TO EB$CHARS(22) ;! 
+EQU FG$REP.CMD    TO EB$CHARS(23) ;! 
+EQU FG$CP.CMD     TO EB$CHARS(24) ;! 
+EQU FG$MV.CMD     TO EB$CHARS(25) ;! 
+EQU FG$L.CASE.CH  TO EB$CHARS(26) ;! Lower Case
+EQU FG$CASE.CH    TO EB$CHARS(27) ;! Toggle Case
+EQU FG$BWORD.CH   TO EB$CHARS(28) ;! Prev word
+EQU FG$EOL.CH     TO EB$CHARS(29) ;! End of line
+EQU FG$FWORD.CH   TO EB$CHARS(30) ;! Next word
+EQU FG$LEFT.CH    TO EB$CHARS(31) ;! Left arrow
+EQU FG$TAB.CH     TO EB$CHARS(32) ;! Tab
+EQU FG$DOWN.CH    TO EB$CHARS(33) ;! Down arrow
+EQU FG$UP.CH      TO EB$CHARS(34) ;! Up arrow
+EQU FG$SKIP.CH    TO EB$CHARS(35) ;! 
+EQU FG$MULTI.CH   TO EB$CHARS(36) ;! Next occurrence
+EQU FG$PASTE.CH   TO EB$CHARS(37) ;! Paste
+EQU FG$TOP.CH     TO EB$CHARS(38) ;! Top of screen/record
+EQU FG$INSMOD.CH  TO EB$CHARS(39) ;! Toggle INS/OVR
+EQU FG$SPELL.CH   TO EB$CHARS(40) ;! 
+EQU FG$SOL.CH     TO EB$CHARS(41) ;! Home
+EQU FG$CUT.CH     TO EB$CHARS(42) ;! Cut/Truncate
+EQU FG$UNDEL.CH   TO EB$CHARS(43) ;! Undelete
+EQU FG$INSLN.CH   TO EB$CHARS(44) ;! Insert line
+EQU FG$BTAB.CH    TO EB$CHARS(45) ;! Back-tab
+EQU FG$INS.CH     TO EB$CHARS(46) ;! Insert space
+EQU FG$DELLN.CH   TO EB$CHARS(47) ;! Delete line
+EQU FG$DEL.CH     TO EB$CHARS(48) ;! Delete char
+EQU FG$DELW.CH    TO EB$CHARS(49) ;! Delete word
+EQU FG$SUS.CH     TO EB$CHARS(50) ;! 
+EQU FG$PRV.CH     TO EB$CHARS(51) ;! Page Up
+EQU FG$NXT.CH     TO EB$CHARS(52) ;! Page Down
+EQU FG$MERGE.CH   TO EB$CHARS(53) ;! 
+EQU FG$OPT.CH     TO EB$CHARS(54) ;! Options
+EQU FG$JMP.CH     TO EB$CHARS(55) ;! Zoom
+EQU FG$NXTKEY.CH  TO EB$CHARS(56) ;! Next record
+EQU FG$SCRN.SEL   TO EB$CHARS(57) ;! 
+EQU FG$TAG.CH     TO EB$CHARS(58) ;! Select/toggle
+EQU FG$EXIT.LN    TO EB$CHARS(59) ;! 
+EQU FG$TAG.CMD    TO EB$CHARS(60) ;! 
+EQU FG$HOT.KEYS   TO EB$CHARS(61) ;! 
+EQU FG$QUICK.CH   TO EB$CHARS(62) ;! 
+EQU FG$TUT.CH     TO EB$CHARS(63) ;! 
+EQU FG$MOUSE.CH   TO EB$CHARS(64) ;! Mouse click (co-ords)
+EQU FG$EXPECT.CR  TO EB$CHARS(65) ;! 
+EQU FG$BS.CH      TO EB$CHARS(66) ;! Backspace
+EQU FG$ALT.CH     TO EB$CHARS(67) ;! 
+EQU FG$CLR.CMD    TO EB$CHARS(68) ;! 
+EQU FG$PRVKEY.CH  TO EB$CHARS(69) ;! Previous record
+EQU FG$GOTO.CH    TO EB$CHARS(70) ;! 
+EQU FG$MENU.CH    TO EB$CHARS(71) ;! 
+EQU FG$ADD.CH     TO EB$CHARS(72) ;! 
+EQU FG$APP.CH     TO EB$CHARS(73) ;! 
+EQU FG$AMD.CH     TO EB$CHARS(74) ;! 
+EQU FG$BOT.CH     TO EB$CHARS(75) ;! Bottom of screen/record
+EQU FG$FUNC.CHARS TO EB$CHARS(97) ;! 
+EQU FG$FUNC.VALS  TO EB$CHARS(98) ;! 
+EQU FG$LAST.CHR   TO EB$CHARS(99) ;! Reverse search
+EQU FG$MNENOMICS  TO EB$CHARS(100);! 
+>>>>>>> 69e7e66558bc59146ee2da0a66c7e3c5262befaf
