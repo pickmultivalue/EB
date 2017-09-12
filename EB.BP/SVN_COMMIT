@@ -46,7 +46,10 @@
     RootList = ''
     CRT 'Building template, please wait...':
     DESCRIPTIONS = ''
-    homepath = SVN_GETHOMEPATH(FullPaths<1>)
+    IF GETENV('pwd',homepath) ELSE
+        IF GETENV('PWD',homepath) THEN NULL
+    END
+!    homepath = SVN_GETHOMEPATH(FullPaths<1>)
     homepath = CONVERT(homepath, DIR_DELIM_CH, '/')
     FOR i = 1 TO nbr_items
         FullPath = homepath:DIR_DELIM_CH:FullPaths<i,1>
@@ -91,7 +94,8 @@
         Template = CHANGE(Template, @AM:' ', @AM)
         IF nbr_items > 1 THEN
             DescTemplate = Template
-            Template = CHANGE(FilePath, homepath:DIR_DELIM_CH, ''):DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
+            Template = CHANGE(FilePath, homepath, ''):DIR_DELIM_CH:ItemName:@AM:' - ':CHANGE(Template, @AM, @AM:' - ')
+            Template = TRIM(Template, '/', 'L')
         END
         StartTemplate<-1> = Template
         EndTemplate<-1> = '    - ':FullPath

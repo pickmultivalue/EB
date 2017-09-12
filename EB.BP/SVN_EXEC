@@ -37,11 +37,12 @@
 
     IF Capturing THEN
         EXECUTE shell:cmd:shellend CAPTURING IO
-        IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1)) THEN
+        IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1) OR INDEX(IO, 'fatal', 1)) THEN
             INCLUDE EB.INCLUDES SVN_DEBUG
             svn_io = 'svn_':SYSTEM(18)
-            EXECUTE shell:icmd:' > ':svn_io:shellend
-            OPEN '.' THEN
+            home = GETENV('HOME')
+            EXECUTE shell:icmd:' > ':home:DIR_DELIM_CH:svn_io:shellend
+            OPEN home THEN
                 READ IO FROM svn_io THEN
                     DELETE svn_io
                 END

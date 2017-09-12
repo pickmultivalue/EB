@@ -6,6 +6,7 @@
     COM EB.FILES(100),EB.FILE.LIST
     COM RDSP(100), CHANGES(100)
     GO MAIN$
+    INCLUDE JBC.h
     INCLUDE EB.EQUS EB.EQUS
     INCLUDE EB.EQUS OTHER.PARAMS
     INCLUDE EB.EQUS ACT.CODES
@@ -13,7 +14,7 @@
     INCLUDE EB.EQUS SCREEN.PARAMS
     EQU SDEL TO CHAR(250)     ;* Delete cut item
     EQU MAX TO 999999
-    MAIN$:!
+MAIN$:!
     G60=FALSE
     INPTYPE='AN'
     IF FG$ACT.CODE=FG$CUT.CODE OR FG$ACT.CODE=FG$SEL.CODE THEN CHR=SDEL
@@ -90,33 +91,33 @@
             IF MODIFY THEN
                 LINE=REC<INDROW+ROW>
                 BEGIN CASE
-                CASE Z='!' ;  ;! comment out lines
-                    IF ZFLAG THEN
-                        LINE=COMMENT<1,1,1>:LINE:COMMENT<1,1,2>
-                    END ELSE
-                        IF LINE[1,COMMENTLEN]=COMMENT<1,1,1> THEN
-                            LINE=LINE[COMMENTLEN+1,MAX]
-                            IF LINE[LEN(LINE)-1,COMMENTLEN]=COMMENT<1,1,2> THEN
-                                LINE=LINE[1,LEN(LINE)-COMMENTLEN]
+                    CASE Z='!' ;  ;! comment out lines
+                        IF ZFLAG THEN
+                            LINE=COMMENT<1,1,1>:LINE:COMMENT<1,1,2>
+                        END ELSE
+                            IF LINE[1,COMMENTLEN]=COMMENT<1,1,1> THEN
+                                LINE=LINE[COMMENTLEN+1,MAX]
+                                IF LINE[LEN(LINE)-1,COMMENTLEN]=COMMENT<1,1,2> THEN
+                                    LINE=LINE[1,LEN(LINE)-COMMENTLEN]
+                                END
                             END
                         END
-                    END
-                CASE Z='<'    ;! unindent
-                    IF LINE[1,1]=TAB THEN
-                        LINE=LINE[2,MAX]
-                    END ELSE
-                        IF LINE[1,TABLEN]=SPACE(TABLEN) THEN
-                            LINE=LINE[TABLEN+1,MAX]
+                    CASE Z='<'    ;! unindent
+                        IF LINE[1,1]=TAB THEN
+                            LINE=LINE[2,MAX]
+                        END ELSE
+                            IF LINE[1,TABLEN]=SPACE(TABLEN) THEN
+                                LINE=LINE[TABLEN+1,MAX]
+                            END
                         END
-                    END
-                CASE Z='>'    ;! indent
-                    IF LINE[1,1]=TAB THEN
-                        LINE=TAB:LINE
-                    END ELSE
-                        IF LINE[1,TABLEN]=SPACE(TABLEN) THEN
-                            LINE=SPACE(TABLEN):LINE
+                    CASE Z='>'    ;! indent
+                        IF LINE[1,1]=TAB THEN
+                            LINE=TAB:LINE
+                        END ELSE
+                            IF LINE[1,TABLEN]=SPACE(TABLEN) THEN
+                                LINE=SPACE(TABLEN):LINE
+                            END
                         END
-                    END
                 END CASE
                 REC<INDROW+ROW>=LINE
                 INDROW+=1
@@ -152,6 +153,14 @@
                     CUT.TEXT<1>=CUT.TEXT<1>[CUT.POS<1,1,2>,MAX]
                     CUT.TEXT<NO.D.L>=CUT.TEXT<NO.D.L>[1,CUT.POS<2,1,2>-1]
                 END ELSE CUT.TEXT=CUT.TEXT[CUT.POS<1,1,2>,CUT.POS<2,1,2>-CUT.POS<1,1,2>]
+! hack for case where JET.PASTE is directory
+                IF CUT.TEXT[-1,1] = AM THEN
+                    status = ''
+                    rc = IOCTL(JET.PASTE,JIOCTL_COMMAND_FILESTATUS,status)
+                    IF status<1> = 'UD' THEN
+                        CUT.TEXT := AM
+                    END
+                END
                 WRITE CUT.TEXT ON JET.PASTE,Z
             END ELSE
                 INS CUT.TEXT BEFORE DEL.LINES<1>
@@ -175,13 +184,13 @@
     END
     RETURN
 CHG.LROW: CHANGED=TRUE; CHANGES(LROW)=TRUE; RETURN
-INPT:     !
+INPT: !
     POS=1
     EDITED=FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
     INPTYPE='AN'
     RETURN
-6000      ! Incorporate changed lines into dynamic array, REC.
+6000 ! Incorporate changed lines into dynamic array, REC.
     CHANGES(LROW)=TRUE
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
@@ -191,4 +200,3 @@ INPT:     !
     NEXT I
     CHANGED=FALSE; MAT CHANGES=FALSE
     RETURN
-END

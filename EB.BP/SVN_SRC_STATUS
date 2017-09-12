@@ -11,10 +11,11 @@
     fName = root<dc>
     K.lockvar = ItemName
     root = CONVERT(root, @AM, DIR_DELIM_CH)
-    ksh = CHAR(255):'k'
-    EXECUTE ksh:'cd ':root:' && git ls-files ':K.lockvar CAPTURING IO
+    shell = CHAR(255):'k'
+    shellend = ' 2>&1'
+    EXECUTE shell:'cd ':root:' && git ls-files ':K.lockvar:shellend CAPTURING IO
     IF LEN(IO) THEN
-        EXECUTE ksh:'cd ':root:' && git status ':K.lockvar CAPTURING IO
+        EXECUTE shell:'cd ':root:' && git status ':K.lockvar:shellend CAPTURING IO
     END
     RETURN IO
     RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)

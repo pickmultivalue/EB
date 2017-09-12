@@ -15,9 +15,12 @@
     INCLUDE EB.INCLUDES SVN_DEBUG
     IO = SVN_EXEC('info ':FilePath, TRUE)
 !
-    IF LEN(IO) = 0 OR INDEX(IO, 'Not a version', 1) OR INDEX(IO, 'ambiguous', 1) THEN
+    IF LEN(IO) = 0 OR INDEX(IO, 'Not a ', 1) OR INDEX(IO, 'ambiguous', 1) THEN
         CALL SPLITFILEPATH(FilePath, Parent, FileName)
         IO = SVN_EXEC('info ':Parent, TRUE)
+        IF LEN(IO) = 0 OR INDEX(IO, 'Not a ', 1) OR INDEX(IO, 'ambiguous', 1) THEN
+            IO = ''
+        END
         FileName = Delim:FileName
     END ELSE FileName = ''
 !
