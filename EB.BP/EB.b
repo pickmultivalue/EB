@@ -752,7 +752,7 @@ TOP: !
                             CRT BS.CH:
                             Y=RDSP(LROW)
                             CALL EB_TABS(Y,PWIDTH)
-!                            Y=Y[PWIDTH-4+OFFSET,2]
+                            Y=Y[PWIDTH-4+OFFSET,2]
                             IF DEL.CHAR#'' THEN
                                 CRT DEL.CHAR:
                                 IF Y[2,1]#'' THEN CRT @(PWIDTH-1,ROW):Y:
@@ -1275,7 +1275,9 @@ GET.HELP:   !
                             POS=INDEX(tags,DUMMY:TAB,1)
                         END ELSE POS = FALSE
                         IF POS THEN
-                            DUMMY=FIELD(FIELD(tags[POS,99],TAB,3),DIR_DELIM_CH,2)
+                            DUMMY=tags[POS,99]
+                            DUMMY=FIELD(DUMMY,TAB,3,99)
+                            DUMMY=FIELD(DUMMY,DIR_DELIM_CH,2)
                             WRITE FG$MULTI.CODE:AM:DUMMY ON F.currdir,'eb_auto'
                             DUMMY=FIELD(tags[POS,99],TAB,2)
 ! Assume that the item names are all that matters

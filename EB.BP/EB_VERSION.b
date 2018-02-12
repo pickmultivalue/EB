@@ -109,7 +109,7 @@
                         CASE Y='C'
                             ECHO ON
                             DATA '','',''
-                            EXECUTE 'COMPARE_ITEM ':FLNM:DIR_DELIM_CH:ITNM:REV:' ':FLNM:DIR_DELIM_CH:ITNM:'.tmp'
+                            EXECUTE 'COMPARE_ITEM ':FLNM:DIR_DELIM_CH:ITNM:REV:' ':FLNM:DIR_DELIM_CH:ITNM:'.tmp (T'
                             READ REC FROM FIL,ITNM:'.tmp' THEN
                                 SCR.UD=1
                                 CALL EB_REFRESH

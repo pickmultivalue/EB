@@ -27,7 +27,7 @@
 ! Using the URL and Repository Root we can derive the current
 ! path
 !
-    subversion = ''
+    subversion = IO<1,1,1>
     loc = 0
     LOOP
         REMOVE line FROM IO AT loc SETTING delim
