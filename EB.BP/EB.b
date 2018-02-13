@@ -348,9 +348,9 @@
         GO 25
     END
     GO FIRST.ITEM
-NEXT.ITEM:
+NEXT.ITEM:!
     GOSUB LAST.USED
-FIRST.ITEM:
+FIRST.ITEM: !
     WCNT+=1
     ITNM=FIELD(FG$SENTENCE,SPC,WCNT)
     ITNM=CHANGE(ITNM, '{sp}', SPC)
@@ -424,13 +424,13 @@ FIRST.ITEM:
     OPEN 'DICT',FLNM THEN
         READ ITAB FROM 'EB_INDENT' ELSE NULL
     END
-READ.ITEM:
+READ.ITEM:!
     UPDATES=TRUE
     tempItem = 0 - (ITNM[1,1]='%' AND (ITNM 'R#1')='%')
     VersCheckedOut=tempItem
     lockvar=TRUE
     FIRST.READ=(SFLNM#HFLNM)
-REREAD.ITEM:
+REREAD.ITEM: !
 !
 ! Tricky bit here....
 ! If multiple items are being processed from a particular file
@@ -442,7 +442,7 @@ REREAD.ITEM:
         YNC=65; YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
         CRT MSG.CLR:
         IF Y#'Y' THEN GO 20
-ALREADY.LOCKED:
+ALREADY.LOCKED: !
         UPDATES=FALSE
         READ REC FROM FIL,ITNM ELSE REC=''
     END THEN
@@ -578,13 +578,11 @@ ALREADY.LOCKED:
     END
     GO STRT         ;! Skip over subroutines
 !==========
-AUTO.SAVE:
-! time check
+AUTO.SAVE:! time check
     CALL EB_AUTOSAVE
     RETURN
 !==========
-SCRN.TO.REC:
-! Incorporate changed lines into dynamic array, REC.
+SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
     IF NEW.CHARS#'' THEN GOSUB ADD.CHARS
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
@@ -608,7 +606,7 @@ STRT: ! top of main loop
     CALL EB_REFRESH
     LAST.NBR=FIRST.ALPHA
     IF Z = FG$MULTI.CODE THEN FG$ACT.CODE = Z
-TOP:
+TOP: !
     INCLUDE EB.INCLUDES VERS_CTRL
     IF COL<5 THEN GO STRT
     THIS.ROW=INDROW+ROW
@@ -754,7 +752,7 @@ TOP:
                             CRT BS.CH:
                             Y=RDSP(LROW)
                             CALL EB_TABS(Y,PWIDTH)
-!                            Y=Y[PWIDTH-4+OFFSET,2]
+                            Y=Y[PWIDTH-4+OFFSET,2]
                             IF DEL.CHAR#'' THEN
                                 CRT DEL.CHAR:
                                 IF Y[2,1]#'' THEN CRT @(PWIDTH-1,ROW):Y:
@@ -773,7 +771,7 @@ TOP:
             END
         END
     END
-CHECK.CODES:
+CHECK.CODES: !
     BEGIN CASE
         CASE FG$ACT.CODE=FG$RIGHT.CODE
             COL+=1
@@ -837,7 +835,7 @@ CHECK.CODES:
             IF LROW < (PDEPTH-1) THEN LLEN=LEN(RDSP(LROW+1))    ;! else its done in SCR.UD block
             IF LROW>(PDEPTH-2) THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
-SCROLL.LINE:
+SCROLL.LINE:    !
                 GOSUB SCROLL.DOWN
                 ON Y GO STRT,TOP
             END ELSE
@@ -1164,7 +1162,7 @@ GEOL:       !
             CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
         CASE FG$ACT.CODE=FG$HLP.CODE
-GET.HELP:
+GET.HELP:   !
             GOSUB GET.WORD
             CALL EB_HELP(WORD,Z)
             IF Z THEN
@@ -1277,7 +1275,9 @@ GET.HELP:
                             POS=INDEX(tags,DUMMY:TAB,1)
                         END ELSE POS = FALSE
                         IF POS THEN
-                            DUMMY=FIELD(FIELD(tags[POS,99],TAB,3),DIR_DELIM_CH,2)
+                            DUMMY=tags[POS,99]
+                            DUMMY=FIELD(DUMMY,TAB,3,99)
+                            DUMMY=FIELD(DUMMY,DIR_DELIM_CH,2)
                             WRITE FG$MULTI.CODE:AM:DUMMY ON F.currdir,'eb_auto'
                             DUMMY=FIELD(tags[POS,99],TAB,2)
 ! Assume that the item names are all that matters
@@ -1362,7 +1362,7 @@ GET.HELP:
     END CASE
     GO STRT
     INCLUDE EB.INCLUDES CRT.LN
-ADD.CHARS:
+ADD.CHARS:!
     IF NOT(STRT) THEN
         CALL EB_TABCOL(RDSP(LROW),COL-LEN(NEW.CHARS),LCOL,TRUE)
         STRT=LCOL
@@ -1372,7 +1372,7 @@ ADD.CHARS:
     IF INS.MODE THEN LLEN=0 ELSE LLEN=LEN(NEW.CHARS)
     RDSP(LROW)=(RDSP(LROW)[1,STRT-1]:NEW.CHARS:RDSP(LROW)[STRT+LLEN,MAX])
     STRT=0; NEW.CHARS=''; GO CHG.LROW
-SCROLL.DOWN:
+SCROLL.DOWN: !
     Y=PDEPTH-1
     FOR I=1 TO Y
         RDSP(I)=RDSP(I+1)
@@ -1392,7 +1392,7 @@ SCROLL.DOWN:
     Y=2
     RETURN
 !==========
-EB.SUB:
+EB.SUB: !
     CALL EB_RSS(1)
     WRITE HEADERS ON F.currdir,'eb_headers'
     EXECUTE DUMMY
@@ -1516,7 +1516,7 @@ EB.SUB:
     END
     GO 999
 !==================================================!
-SAVE.ITEM:
+SAVE.ITEM: !
     IF CHANGED THEN GOSUB SCRN.TO.REC
     IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
     CALL EB_TRIM(REC,REC:'',AM,'T')
@@ -1525,17 +1525,15 @@ SAVE.ITEM:
     DELETE JET.PASTE,ITNM:'.sav'
     RETURN
 !==================================================!
-GET.CHAR:
+GET.CHAR: !
     CALL EB_UT_INPUT_ZERO(Y,MAT EB$CHARS,FG$ACT.CODE,YNC,YNR,FG$INPUT.CODES,YNCHRS,YNL,FG$TIMEOUT:AM:FG$MONITOR.SECS)
     RETURN
 !==================================================!
-INPT:
-! Field entry and/or editing subroutine.
+INPT: ! Field entry and/or editing subroutine.
     POS=1
     EDITED=FALSE
 !
-EDIT.INP:
-! Redisplay the field
+EDIT.INP: ! Redisplay the field
 !
     ECHO ON
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
@@ -1745,8 +1743,7 @@ CHG.LROW:
     CRT MSG.DSP:
     GO STRT
 !============
-SPLIT.LINE:
-! Break a line in two, at the cursor position.
+SPLIT.LINE: ! Break a line in two, at the cursor position.
 ! First move all subsequent lines down 1 to allow for the new line.
     IF CHANGED THEN GOSUB SCRN.TO.REC
     FOR I=(PDEPTH-1) TO LROW STEP -1
@@ -1857,7 +1854,7 @@ SPLIT.LINE:
     SCR.UD=TRUE; SSTR=''
     GO STRT
 !============
-TCL:
+TCL: !
     IF MOD(FG$STERM,3) ELSE SCR.LR=1; CRT @(-1)
     CALL EB_RSS(1)
 !  CALL EB_TCL
@@ -2058,7 +2055,7 @@ TCL:
     END
     GO NEXT.ITEM
 !==============================================
-INS.TXT:
+INS.TXT: !
     IF LCOL>1 THEN
         HASH='L#':LCOL-1
         Y=RDSP(LROW)[1,LCOL-1] HASH
@@ -2072,10 +2069,10 @@ INS.TXT:
         CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
     END
     RETURN
-FORMAT:
+FORMAT: !
     CALL EB_FORMAT(DUMMY,I,LNM)
     RETURN
-INDENT:
+INDENT: !
     Y='%':FLNM:'%':ITNM:'%'
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Formatting program...':
@@ -2088,7 +2085,7 @@ INDENT:
     DELETE JET.PASTE,Y
     SCR.UD=TRUE
     RETURN
-UNINDENT:
+UNINDENT: !
     Y='%':ITNM:'%'
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Unformatting program...':
@@ -2099,7 +2096,7 @@ UNINDENT:
     DELETE JET.PASTE,Y
     SCR.UD=TRUE
     RETURN
-BACK.WORD:
+BACK.WORD:!
     LCOL-=1
     FOR I=LCOL TO 1 STEP -1 UNTIL ICONV(RDSP(LROW)[I,1],PC)#''; NEXT I
 ! first search for the previous non-alpha character
@@ -2113,7 +2110,7 @@ BACK.WORD:
     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
     RETURN
-GET.WORD:
+GET.WORD: !
     LLEN1=LLEN+1
 ! first search for the next non-alpha character
     I=LCOL
@@ -2132,7 +2129,7 @@ GET.WORD:
     END
     WORD=RDSP(LROW)[LCOL,I-LCOL]
     RETURN
-GET.PREVWORD:
+GET.PREVWORD: !
     SLCOL=LCOL
     SCOL=COL
     GOSUB BACK.WORD
@@ -2197,7 +2194,7 @@ GET.PREVWORD:
     CRT MSG.CLR:Z:
     Z = ''; L=1; GOSUB INPT
     GO NEXT.ITEM
-Abort:
+Abort: !
     FG$ACT.CODE = FALSE
     changed = (ORIG.REC#REC)
     IF changed THEN
@@ -2249,14 +2246,14 @@ Abort:
             CRT MSG.DSP:
     END CASE
     RETURN
-FILE.ITEM:
+FILE.ITEM:!
     CALL EB_FILE(SKIP.PATCH,K.PATCHFILE,MAT PATCH,Y,ENCRYPTED,UPG)
     IF SKIP.PATCH THEN
         IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT
         RETURN TO STRT
     END
     RETURN
-ENCRYPT.IT:
+ENCRYPT.IT: !
     IF PASSWD='' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
     CALL UPGCONVERT(FLNM,ITNM,REC,'E',USEMODE,F.UPG.WORKFILE,PASSWD,CONVOK)
     IF NOT(CONVOK) THEN
@@ -2265,7 +2262,7 @@ ENCRYPT.IT:
         WRITE REC ON FIL,ITNM
     END
     RETURN
-CHKSUM:
+CHKSUM: !
     RETURN
     IF UPG ELSE RETURN
     CALL UPGFILETYPE(FLNM,FILETYPE)
@@ -2290,7 +2287,7 @@ CHKSUM:
         END
     END
     RETURN
-CONV.HEX:
+CONV.HEX: !
     IF HEX.MODE THEN
         CRT MSG.CLR:'Converting to HEX...'
         FOR I=1 TO CNT
@@ -2303,7 +2300,7 @@ CONV.HEX:
         NEXT I
     END
     RETURN
-GET.EDIT.MODE:
+GET.EDIT.MODE: !
     BEGIN CASE
         CASE ITNM 'R#4'='.sql'; EDIT.MODE='Q'
         CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
@@ -2322,7 +2319,7 @@ GET.EDIT.MODE:
             END
     END CASE
     RETURN
-SET.MODE:
+SET.MODE: !
     PC='P(1N);(1A)'
     BEGIN CASE
         CASE COUNT(EDIT.MODE,'C')
@@ -2378,7 +2375,7 @@ SET.MODE:
     END CASE
     commentlen=COMMENTLEN
     RETURN
-LAST.USED:
+LAST.USED:!
     IF ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN RETURN
     IF (ITNM 'R#4')='.tmp' THEN RETURN
     IF tempItem THEN RETURN
@@ -2403,7 +2400,7 @@ LAST.USED:
     REPEAT
     WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
     RETURN
-SET.MSG:
+SET.MSG: !
     MSG.DFLT='File:':FLNM 'R#20 ':' Item: ':ITNM 'R#15 ':' Started: ':OCONV(PSTIME,'MTS')
     MSG.DFLT=(FLNM:'/':ITNM) 'R#50 Started: ':OCONV(PSTIME,'MTS')
 SET.MSG.DSP:
@@ -2418,10 +2415,10 @@ SET.MSG.DSP:
         CRT CURS.RPL:
     END
     RETURN
-SETUP.SWITCH:
+SETUP.SWITCH: !
     CALL EB_SETUPSWITCH(HFLNM, SFLNM)
     RETURN
-SWITCH.FILE:
+SWITCH.FILE: !
     IF FLNM = HFLNM THEN
         FIL = SFIL
         FLNM = SFLNM
@@ -2430,7 +2427,7 @@ SWITCH.FILE:
         FLNM = HFLNM
     END
     RETURN
-WRAPUP:
+WRAPUP: !
     IF MOD(FG$STERM,3) THEN
         CALL EB_STERM.MENU('EB.MENU','','',-1,'')
         CALL EB_AT.WINDOW.CLOSE(1)
