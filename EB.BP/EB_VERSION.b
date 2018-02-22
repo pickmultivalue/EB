@@ -71,7 +71,7 @@
                 CALL EB_CHOICES(5,3,'',PDEPTH-5,'',history,REV,1,1,Attrs,Fmts,'Revision History':SVM:ColHdrs)
                 IF REV THEN
                     REV = ',':REV
-                    IF SVN_READ(FullPath, ITNM:REV, errmsg) THEN
+                    IF SVN_READ(FLNM, ITNM:REV, errmsg) THEN
                         IF REC = errmsg THEN
                             errmsg = 'Version the same as current record'
                             GOSUB DISPLAY_ERROR
