@@ -9,7 +9,7 @@
     INCLUDE EB.EQUS ACT.CODES
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
-    MAIN$:!
+MAIN$:!
     MAX=LEN(REC)
     LAST.AM=DCOUNT(REC,AM)
     PR="--Press <RETURN>"
@@ -35,10 +35,10 @@
             LOCATE FG$ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
         WHILE POS DO
             BEGIN CASE
-            CASE FG$ACT.CODE=FG$OPT.CODE
-                CALL EB_CHOICES(50,8,31,10,'',SSS,Z,1,RPOS,1,'L#30','Previous Searches')
-            CASE FG$ACT.CODE=FG$SKP.CODE OR FG$ACT.CODE=FG$MULTI.CODE; RPOS+=1
-            CASE 1; RPOS-=1
+                CASE FG$ACT.CODE=FG$OPT.CODE
+                    CALL EB_CHOICES(50,8,31,10,'',SSS,Z,1,RPOS,1,'L#30','Previous Searches')
+                CASE FG$ACT.CODE=FG$SKP.CODE OR FG$ACT.CODE=FG$MULTI.CODE; RPOS+=1
+                CASE 1; RPOS-=1
             END CASE
             IF RPOS<1 THEN RPOS=0
             FG$ACT.CODE=FALSE
@@ -143,6 +143,9 @@
     SSTR=SSTR[COL2()+1,MAX]
     IF SSTR='' THEN SSTR=OPTIONS; OPTIONS='' ELSE OPTIONS=OCONV(OPTIONS,'MCU')
     WHOLE.WORDS=INDEX(OPTIONS,'V',1)
+    WHOLE.WORDS:=INDEX(OPTIONS,'S',1)
+    CASE.INSENSITIVE = INDEX(OPTIONS,'I',1)
+    IF CASE.INSENSITIVE THEN SSTR = UPCASE(SSTR)
     IF INDEX(OPTIONS,'C',1) THEN        ;! convert chars
         L=LEN(SSTR)
         FOR I=1 TO L
@@ -181,8 +184,8 @@ RETRY:
             END ELSE
                 RPOS=LINE.POS; EPOS=MAX
             END
-            MREC=REC[RPOS,EPOS]
-            CALL EB_FIND(STR.POS,WHOLE.WORDS)
+            GOSUB SETMREC
+            CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         END
         IF STR.POS ELSE GO 4095
         STR.LINE=COUNT(MREC[1,STR.POS],AM)
@@ -192,8 +195,8 @@ RETRY:
         END ELSE
             RPOS=LCOL+1; EPOS=MAX
         END
-        MREC=REC[RPOS,EPOS]
-        CALL EB_FIND(STR.POS,WHOLE.WORDS)
+        GOSUB SETMREC
+        CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         IF NOT(STR.POS) THEN GO 4095
         STR.LINE=COUNT(REC[RPOS,STR.POS],AM)      ;!+(SSTR<1>='')
     END
@@ -223,7 +226,7 @@ RETRY:
         END
     END
     STR.LINE+=(STRT-INDROW+1)
-4095      !
+4095 !
     IF NOT(STR.POS) THEN
         IF RSEARCH THEN
             RPOS=LAST.AM
@@ -263,14 +266,14 @@ RETRY:
             MREC=RDSP(STR.LINE)[LCOL+1,MAX]
             COL=LCOL
         END ELSE COL=0; MREC=RDSP(STR.LINE); ROW=STR.LINE-1
-        CALL EB_FIND(STR.POS,WHOLE.WORDS)
+        CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         IF NOT(STR.POS) THEN
             LCOL=0
             COL=0
             STR.LINE++
             ROW++
             MREC=RDSP(STR.LINE)
-            CALL EB_FIND(STR.POS,WHOLE.WORDS)
+            CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         END
         LCOL=STR.POS+COL
         CALL EB_TABCOL(RDSP(STR.LINE),COL,LCOL,FALSE)
@@ -284,7 +287,7 @@ RETRY:
                 Y=OCONV(Y[1+OFFSET,PWIDTH-4],'MCP')
                 LINE.POS=INDEX(Y,SSTR,1)
                 IF LINE.POS THEN
-                    IF WHOLE.WORDS THEN
+                    IF WHOLE.WORDS[1,1] THEN
                         OCC=2
                         LOOP
                             CHR1=Y[LINE.POS-1,1]
@@ -310,28 +313,33 @@ RETRY:
         END
         LROW=STR.LINE
     END
-4099      !
+4099 !
     CRT MSG.DSP:
     PSSTR=SRCH.STR:AM:OPTIONS
     MREC=""; SSTR=""
     RETURN
 !========
-4100      ! Display all occurrences of a string.
-    IF NOT(INDEX(REC,SSTR,1)) THEN GO 4099
+4100 ! Display all occurrences of a string.
+!    IF NOT(INDEX(REC,SSTR,1)) THEN GO 4099
     FOUND=0
     OCC=1; PGE=1
     HLIM=0
     BEGIN CASE
-    CASE INDEX(OPTIONS,'+',1); LLIM=INDROW
-    CASE INDEX(OPTIONS,'-',1); LLIM=1; HLIM=INDEX(REC,AM,INDROW+1)-1
-    CASE 1; LLIM=1
+        CASE INDEX(OPTIONS,'+',1); LLIM=INDROW
+        CASE INDEX(OPTIONS,'-',1); LLIM=1; HLIM=INDEX(REC,AM,INDROW+1)-1
+        CASE 1; LLIM=1
     END CASE
     IF LLIM=1 THEN STRT=1 ELSE STRT=INDEX(REC,AM,LLIM-1)+1
     IF HLIM THEN MAX=HLIM
-4110      !
+4110 !
+    EPOS = MAX
+    SSSTR = SSTR
     LOOP
+        SPOS = STRT
+        GOSUB SETMREC
         MREC=REC[STRT,MAX]
-        CALL EB_FIND(STR.POS,WHOLE.WORDS)
+        SSTR = SSSTR
+        CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
     WHILE STR.POS AND (OCC/PGE<=(PDEPTH-2)) DO
         STR.LINE=DCOUNT(REC[1,STR.POS+STRT-1],AM)
         MREC=REC<STR.LINE>
@@ -341,14 +349,14 @@ RETRY:
             DIMOFF = FG
         END ELSE DIMON = ''; DIMOFF = ''
         CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,PWIDTH-5],'MCP')
-        CALL EB_FIND(LPOS,WHOLE.WORDS)
+        CALL EB_FIND(LPOS,WHOLE.WORDS:'')
         DIFF=STR.POS-LPOS+LEN(MREC)
         STRT+=DIFF
         MAX-=DIFF
         OCC+=1
     REPEAT
     IF FOUND THEN CRT ELSE RETURN
-4120      !
+4120 !
     RefreshRequired=TRUE
     IF NOT(STR.POS) THEN
         CRT MSG.CLR:"That's all!  ":PR:" for original page, or line number? ":
@@ -365,23 +373,23 @@ RETRY:
     IF Y=ESC THEN GO 4199
     IF Y<1 THEN Y=1
     INDROW=Y; ROW=0; COL=5
-4199      !
+4199 !
     IF RefreshRequired THEN
         SCR.UD=1
         CALL EB_REFRESH       ;! INDROW=-INDROW
     END
     SSTR=''
     RETURN
-INPT:     !
+INPT: !
     POS=1
     EDITED=FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
     INPTYPE='AN'
     RETURN
-FORMAT:   !
+FORMAT: !
     CALL EB_FORMAT(DUMMY,I,LNM)
     RETURN
-6000      ! Incorporate changed lines into dynamic array, REC.
+6000 ! Incorporate changed lines into dynamic array, REC.
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
             CALL EB_TRIM(RDSP(I),RDSP(I):'',' ','T')
@@ -390,4 +398,7 @@ FORMAT:   !
     NEXT I
     CHANGED=FALSE; MAT CHANGES=FALSE
     RETURN
-END
+SETMREC:
+    MREC=REC[RPOS,EPOS]
+    IF CASE.INSENSITIVE THEN MREC = UPCASE(MREC)
+    RETURN

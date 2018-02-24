@@ -1256,10 +1256,14 @@ GET.HELP:   !
                 SCR.UD=TRUE
             END ELSE
                 BEGIN CASE
-                    CASE DUMMY='CALL'
-                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
+                    CASE DUMMY='CALL' OR DUMMY='EXECUTE' OR DUMMY='PERFORM'
+                        callopt = DUMMY EQ 'CALL'
+                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2,99)
                         DUMMY=FIELD(DUMMY:'(','(',1)
                         DUMMY=FIELD(DUMMY:';',';',1)
+                        IF NOT(callopt) THEN
+                            DUMMY = FIELD(DUMMY, DUMMY[1,1], 2)
+                        END
                         DUMMY := ' (!'
                     CASE INDEX(OCONV(DUMMY,'MCU'),'INCLUDE',1)
                         DUMMY=RDSP(LROW)[I+1,MAX]
@@ -1297,7 +1301,23 @@ GET.HELP:   !
                             IF LEN(IO) = 0 THEN DUMMY = ''
                         END
                 END CASE
-                IF DUMMY#'' THEN DUMMY='EB ':DUMMY; GOSUB EB.SUB
+                IF DUMMY#'' THEN
+                    prog=FIELD(DUMMY,' ',1)
+                    IF prog = 'RUN' THEN
+                        prog=FIELD(DUMMY,' ',2)
+                        DUMMY=DUMMY[COL2()+1, 99]
+                    END ELSE
+                        EXECUTE 'jshow -c ':prog CAPTURING IO
+                        BEGIN CASE
+                            CASE LEN(IO)=0 ; prog=FLNM
+                            CASE INDEX(IO, 'jCL', 1)
+                                prog = FIELD(TRIM(IO), ' ',3)
+                                prog = FIELD(prog, DIR_DELIM_CH, 1, DCOUNT(prog, DIR_DELIM_CH))
+                            CASE 1; prog = ''
+                        END CASE
+                    END
+                    DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
+                END
             END
         CASE FG$ACT.CODE=FG$LST.CODE
             CRT MSG.CLR:"Type a letter from A-Z":
@@ -2401,10 +2421,13 @@ LAST.USED:!
     WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
     RETURN
 SET.MSG: !
-    MSG.DFLT='File:':FLNM 'R#20 ':' Item: ':ITNM 'R#15 ':' Started: ':OCONV(PSTIME,'MTS')
-    MSG.DFLT=(FLNM:'/':ITNM) 'R#50 Started: ':OCONV(PSTIME,'MTS')
+    MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(PSTIME,'MTS')
 SET.MSG.DSP:
     MSG.DSP=MSG.DFLT:' (Col=   )'
+    IF NBR.WORDS GT 1 THEN
+        IDPOS = '(':WCNT-2:'/':NBR.WORDS-2:')'
+        MSG.DSP[1,LEN(IDPOS)]=IDPOS
+    END
     MSG.COL=LEN(MSG.DSP)-4
     MSG.DSP=MSG.CLR:MSG.DSP
     IF INS.MODE THEN

@@ -1,6 +1,4 @@
     SUBROUTINE EB_HELP(WORD,OS.HELP)
-* @(#) EB_HELP.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.HELP Ported to jBASE 16:15:14  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     INCLUDE EB.EQUS OTHER.PARAMS
     INCLUDE EB.EQUS ACT.CODES
@@ -17,8 +15,13 @@
     INCLUDE EB.OS.INCLUDES OS.REL
     INDENT = SPACE(4)
     IF WORD='EBOPTS' THEN
+        dc = COUNT(FG$SENTENCE, ' ') - 1
         CRT @(-1):'Options Help'
         CRT
+        IF WCNT GT dc THEN
+            CRT 'You are at ':WCNT:' of ':dc:' items'
+            CRT
+        END
         CRT INDENT:'. - prompt for members of a variable structure (non-basic code)'
         CRT INDENT:'A - insert date/time stamp'
         CRT INDENT:'B - Show errors from last compile'
@@ -43,8 +46,6 @@
         CRT INDENT:'    (e.g. LOCATE->INS; READ<->WRITE; FOR...->FOR...STEP-1;...and many more)'
         CRT INDENT:'X - Toggle 80/132 view'
         CRT INDENT:'Z - Record size'
-        CRT
-        CRT
         CRT
         CRT
         CRT INDENT:'Press any key...':
