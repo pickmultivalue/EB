@@ -2424,7 +2424,7 @@ SET.MSG: !
     MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(PSTIME,'MTS')
 SET.MSG.DSP:
     MSG.DSP=MSG.DFLT:' (Col=   )'
-    IF NBR.WORDS GT 1 THEN
+    IF NBR.WORDS GT 3 THEN
         IDPOS = '(':WCNT-2:'/':NBR.WORDS-2:')'
         MSG.DSP[1,LEN(IDPOS)]=IDPOS
     END
