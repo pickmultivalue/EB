@@ -44,7 +44,7 @@ MAIN$:!
         POS = @FALSE
         FOR CC = 1 TO DC UNTIL POS
             SSTR = SSTRINGS<CC>
-            L=LEN(SSTR)+2
+            L=LEN(SSTR)
             IF FG$ACT.CODE=FG$BSEARCH.CODE THEN
                 C1 = COUNT(SRCH.STRING[1,Temp1-2],SSTR)
                 IF C1 THEN
@@ -59,11 +59,11 @@ MAIN$:!
             IF POS THEN
                 IF WHOLE.WORDS OR NOCOMMENTS THEN
                     IF WHOLE.WORDS THEN
-                        CHR1=SRCH.STRING[1,1]
-                        CHR2=SRCH.STRING[L,1]
+                        CHR1=SRCH.STRING[POS-1,1]
+                        CHR2=SRCH.STRING[POS+L,1]
                         FOUND=INDEX(DELIMS,CHR1,1) AND INDEX(DELIMS,CHR2,1)
                     END ELSE FOUND = @TRUE
-                    IF FOUND THEN
+                    IF FOUND AND NOCOMMENTS THEN
                         COMMENTS = '!*"\':"'"
                         STOPSTR = @AM:COMMENTS
                         CDELIMS = STOPSTR:' ;'
