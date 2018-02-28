@@ -348,6 +348,13 @@ RETRY:
             DIMON = BG
             DIMOFF = FG
         END ELSE DIMON = ''; DIMOFF = ''
+        CALL EB_FIND(LN.POS,WHOLE.WORDS:'')
+        MIDWAY = INT(PWIDTH/2)
+        IF LN.POS > MIDWAY THEN
+            LN.POS -= MIDWAY
+            IF LN.POS < 1 THEN LN.POS = 1
+            MREC = '...':TRIM(MREC[LN.POS, -1])
+        END
         CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,PWIDTH-5],'MCP')
         CALL EB_FIND(LPOS,WHOLE.WORDS:'')
         DIFF=STR.POS-LPOS+LEN(MREC)
