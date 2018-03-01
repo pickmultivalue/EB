@@ -1,4 +1,3 @@
-* @(#) SVN_SYNC Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_SYNC(FullPaths)
 !
 ! Function to get either the latest copy or a revision of a program
@@ -17,6 +16,7 @@
     DEFFUN SVN_GETHOMEPATH()
     EQU TRUE TO 1, FALSE TO 0
 !
+RETURN ;! disable for now
     INCLUDE EB.INCLUDES SVN_DEBUG
     subversion = SVN_SUBVERSION(FullPaths<1>)
 !
@@ -45,24 +45,24 @@
         repo = subversion:'/':Repository:'/':FileName
         IO = SVN_EXEC('checkout --depth=empty ':repo:' ':homedir, TRUE)
         IF NOT(INDEX(IO, 'revision', 1)) THEN
-        RETURN IO
+            RETURN IO
         END
 !
         revision = FIELD(ItemName, ',', 2)
         IF revision THEN
-        revision = '-r ':revision:' '
-        ItemName = ItemName[1, COL1() - 1]
+            revision = '-r ':revision:' '
+            ItemName = ItemName[1, COL1() - 1]
         END
         target = homedir:'/':ItemName
         svn_args = 'update ':revision:target
         cmd = 'svn ':svn_args
         IO = SVN_EXEC(svn_args, TRUE)
         IF NOT(INDEX(IO, 'revision', 1)) THEN
-        IF NOT(LEN(IO)) THEN
-        IO = 'Error syncing:'
-        IO<3> = cmd
-        END
-        RETURN IO
+            IF NOT(LEN(IO)) THEN
+                IO = 'Error syncing:'
+                IO<3> = cmd
+            END
+            RETURN IO
         END
     NEXT i
 !

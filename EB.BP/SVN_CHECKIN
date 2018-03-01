@@ -159,7 +159,10 @@
             FullPaths<i> = FullPath         ;! so calling program can pick up new location if desired
         END
     NEXT i
-    IF LEN(sync_path) THEN
+!
+! Disable svn based logic
+!
+    IF @FALSE THEN ;! LEN(sync_path) THEN
 !
 ! Now resync the original copy
 !
