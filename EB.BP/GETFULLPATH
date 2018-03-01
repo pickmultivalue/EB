@@ -11,7 +11,7 @@
             pwd = '.'       ;! hopefully this won't be the case
         END
     END
-    FLNM = CONVERT(FLNM, '/', DIR_DELIM_CH)
+    FLNM = CHANGE(FLNM, '/', DIR_DELIM_CH)
 !
     EXECUTE shell:'jshow -f ':FLNM CAPTURING FullPath
 !

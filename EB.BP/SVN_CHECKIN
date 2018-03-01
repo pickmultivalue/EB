@@ -207,7 +207,7 @@
                     hp := obj
                 END
                 hp = GETFULLPATH(hp)
-                hp = CONVERT(hp, DIR_DELIM_CH, '/')
+                hp = CHANGE(hp, DIR_DELIM_CH, '/')
                 EXECUTE shell:'ls -s ':hp:'/':tItemName:shellend CAPTURING IO
                 IO = TRIM(IO)
                 IF INDEX(IO, 'No such ', 1) THEN

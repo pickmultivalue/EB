@@ -1,4 +1,3 @@
-* @(#) SVN_EXEC Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_EXEC(Args, Capturing)
     INCLUDE JBC.h
     shell = CHAR(255):'k'
@@ -27,7 +26,7 @@
         dir_dc = DCOUNT(new_Args, DIR_DELIM_CH)
         IF dir_dc > 1 THEN
             fileName = FIELD(new_Args, DIR_DELIM_CH, dir_dc)
-            command = 'cd ':CONVERT(new_Args[1, COL1()-1], '/', DIR_DELIM_CH):' && ':command
+            command = 'cd ':CHANGE(new_Args[1, COL1()-1], '/', DIR_DELIM_CH):' && ':command
             new_Args = fileName
         END
     END
@@ -48,7 +47,7 @@
                 END
             END
         END
-        IO = CONVERT(IO, CHAR(13):CHAR(10), @AM)
+        CONVERT CHAR(13):CHAR(10) TO @AM IN IO
         IO = CHANGE(IO, @AM:@AM, @AM)
         IO = TRIM(IO, @AM, 'T')
     END ELSE

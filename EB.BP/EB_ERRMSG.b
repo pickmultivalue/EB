@@ -60,7 +60,7 @@ MAIN$:!
         PRFX=STATUS.LINE<1,1>
         CRT PRFX:MSG:STATUS.LINE<1,2>:
     END ELSE
-        MSG = CONVERT(MSG, VM:SVM, AM:AM)
+        CONVERT VM:SVM TO AM:AM IN MSG
         IF wait THEN
             W = 0
             D = DCOUNT(MSG, AM)

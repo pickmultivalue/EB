@@ -116,7 +116,7 @@
                             END
                         CASE Y='I'
                             cmd = 'diff -Drev_':REV[2,9]
-                            path = CONVERT(FullPath, DIR_DELIM_CH, '/')
+                            path = CHANGE(FullPath, DIR_DELIM_CH, '/')
                             cmd := ' ':path:'/':ITNM:REV
                             cmd := ' ':path:'/':ITNM:'.tmp'
                             cmd := '>':path:'/':ITNM:'_diff'

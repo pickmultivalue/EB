@@ -68,7 +68,7 @@
         OPEN homedir ELSE
             EXECUTE shell:'mkdir ':homedir:shellend CAPTURING IO
         END
-        OrigPath = CONVERT(homedir, DIR_DELIM_CH, '/')
+        OrigPath = CHANGE(homedir, DIR_DELIM_CH, '/')
         Status_IO = SVN_EXEC('add --depth=empty ':OrigPath, TRUE)
         IF Status_IO[1,1] # 'A' THEN        ;! bailing out at this point
             Result = OrigPath:' svn status error:'

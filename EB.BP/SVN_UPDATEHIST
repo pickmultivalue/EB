@@ -17,7 +17,8 @@
     RETURN 0
 !        END
     END
-    Hdescription = CONVERT(Description, @AM:@VM:@SVM,';;;')
+    Hdescription=Description
+    CONVERT @AM:@VM:@SVM TO ';;;' IN Hdescription
 !
 ! Get primary history xref (of dates)
 !

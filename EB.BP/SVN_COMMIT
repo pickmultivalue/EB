@@ -1,4 +1,3 @@
-* @(#) SVN_COMMIT Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_COMMIT(FullPaths)
 !
 ! Utility to check in one or more items to SVN
@@ -50,7 +49,7 @@
         IF GETENV('PWD',homepath) THEN NULL
     END
 !    homepath = SVN_GETHOMEPATH(FullPaths<1>)
-    homepath = CONVERT(homepath, DIR_DELIM_CH, '/')
+    homepath = CHANGE(homepath, DIR_DELIM_CH, '/')
     FOR i = 1 TO nbr_items
         FullPath = homepath:DIR_DELIM_CH:FullPaths<i,1>
         newPath = FullPaths<i,2>
@@ -90,7 +89,8 @@
         IF LEN(newPath) THEN
             DESCRIPTION<-1> = 'renamed to ':newPath
         END
-        Template = CONVERT(DESCRIPTION, ';':@SVM:@VM, @AM:@AM:@AM)
+        Template=DESCRIPTION
+        CONVERT ';':@SVM:@VM TO @AM:@AM:@AM IN Template
         Template = CHANGE(Template, @AM:' ', @AM)
         IF nbr_items > 1 THEN
             DescTemplate = Template

@@ -29,7 +29,7 @@
     IF LEN(curr_dir) = 0 THEN ;! not a versioned file
         RETURN FilePath
     END
-    RETURN CONVERT(curr_dir, '/', s)
+    RETURN CHANGE(curr_dir, '/', s)
     curr_dir = TRIM(curr_dir, s, 'T')
 !
     RETURN homepath:s:curr_dir

@@ -28,7 +28,7 @@
         url = ''
         repo = ''
         loc = 0
-        IO = CONVERT(IO, CHAR(13):CHAR(10), @AM:@AM)
+        CONVERT CHAR(13):CHAR(10) TO @AM:@AM IN IO
         LOOP
             REMOVE line FROM IO AT loc SETTING delim
             lbl = FIELD(line, ':', 1)
@@ -44,7 +44,7 @@
         root = IO<1>
         path = IO<2>
         IF LEN(path) THEN
-            root = CONVERT(IO, @AM, DIR_DELIM_CH)
+            root = CHANGE(IO, @AM, DIR_DELIM_CH)
         END
         RETURN root
     END
@@ -54,6 +54,6 @@
     END
 !
     IF LEN(Delim) AND Delim # '/' THEN
-        therest = CONVERT(therest, '/', Delim)
+        therest = CHANGE(therest, '/', Delim)
     END
     RETURN therest:FileName

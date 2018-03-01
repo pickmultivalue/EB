@@ -39,7 +39,7 @@
     OPTS=OCONV(TRIM(FIELD(BUFF,'(',2)),'MCU')
     IF INDEX('Q',OPTS,1) THEN OPTS:='CFO'
     BUFF=TRIM(FIELD(BUFF,'(',1))
-    BUFF=CONVERT(BUFF,SPC,AM)
+    BUFF=CHANGE(BUFF,SPC,AM)
     IF BUFF<1>='RUN' THEN DEL BUFF<1>; DEL BUFF<1>
     PROMPT ''
     FNAME=BUFF<2>
@@ -173,7 +173,7 @@
             CRT 'Program Name: ':
             INPUT ID
             BUFF=TRIM(BUFF:SPC:ID)
-            BUFF=CONVERT(BUFF,SPC,AM)
+            BUFF=CHANGE(BUFF,SPC,AM)
             ID=BUFF<3>
         END
         IF ID='*' THEN LISTACTIVE=TRUE ELSE

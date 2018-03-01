@@ -26,7 +26,7 @@
     colors = initColors()
     DEBUG.CODES = ''
     rc = GETENV('EB_DEBUG', DEBUG.CODES)
-    DEBUG.CODES = CONVERT(DEBUG.CODES, ',', @AM)
+    DEBUG.CODES = CHANGE(DEBUG.CODES, ',', @AM)
 !
     MAT GEX=''; MAT EXTRAS=''
     DEFC INT JBASEEmulateGETINT(INT, INT)

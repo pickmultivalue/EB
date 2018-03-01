@@ -1,4 +1,3 @@
-* @(#) SVN_SRC_STATUS Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_SRC_STATUS(FileName, ItemName)
     INCLUDE JBC.h
 !
@@ -6,11 +5,11 @@
 !
     DEFFUN SVN_EXEC()
     INCLUDE EB.INCLUDES SVN_DEBUG
-    root = CONVERT(FileName, DIR_DELIM_CH, @AM)
+    root = CHANGE(FileName, DIR_DELIM_CH, @AM)
     dc = DCOUNT(root, @AM)
     fName = root<dc>
     K.lockvar = ItemName
-    root = CONVERT(root, @AM, DIR_DELIM_CH)
+    root = CHANGE(root, @AM, DIR_DELIM_CH)
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
     EXECUTE shell:'cd ':root:' && git ls-files ':K.lockvar:shellend CAPTURING IO
@@ -18,4 +17,4 @@
         EXECUTE shell:'cd ':root:' && git status ':K.lockvar:shellend CAPTURING IO
     END
     RETURN IO
-    RETURN SVN_EXEC('status -v ':CONVERT(FileName,'\', '/'):'/':ItemName, 1)
+    RETURN SVN_EXEC('status -v ':CHANGE(FileName,'\', '/'):'/':ItemName, 1)
