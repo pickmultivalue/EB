@@ -108,9 +108,9 @@
             END
         NEXT i
 !
-        CRT 'Performing svn update to merge in changes'
-        SVN_EXEC('update ':commit_path, FALSE)
-        EXECUTE shell:'chmod -w ':commit_path:shellend
+!        CRT 'Performing svn update to merge in changes'
+!        SVN_EXEC('update ':commit_path, FALSE)
+!        EXECUTE shell:'chmod -w ':commit_path:shellend
 !
         CRT
         CRT 'You may wish to compare ':commit_path:'.bck with ':commit_path
