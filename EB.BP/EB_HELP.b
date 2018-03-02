@@ -18,10 +18,10 @@
         dc = COUNT(FG$SENTENCE, ' ') - 1
         CRT @(-1):'Options Help'
         CRT
-        IF WCNT GT dc THEN
-            CRT 'You are at ':WCNT:' of ':dc:' items'
-            CRT
-        END
+!        IF WCNT GT dc THEN
+!            CRT 'You are at ':WCNT:' of ':dc:' items'
+!            CRT
+!        END
         CRT INDENT:'. - prompt for members of a variable structure (non-basic code)'
         CRT INDENT:'A - insert date/time stamp'
         CRT INDENT:'B - Show errors from last compile'
@@ -60,6 +60,7 @@
         CRT
         CRT INDENT:'General syntax:'
         CRT INDENT:'R{opts}/<old>/<new>'
+        CRT INDENT:'S{opts}/<new>/<old>'
         CRT
         CRT INDENT:'The / delimiter can be any non alphanumeric character'
         CRT

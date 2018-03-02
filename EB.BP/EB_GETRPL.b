@@ -85,7 +85,7 @@ MAIN$:!
         rdelim=''
         FOR rr=1 TO RSTRL
             c=RSTR[rr,1]
-            IF NOT(c MATCHES "1A":@VM:"1N") THEN
+            IF NOT(c MATCHES "1A" OR NUM(c)) THEN
                 IF NOT(c='-' AND rr>1 AND RSTR[rr-1,1] MATCHES "1N") THEN
                     rdelim=c
                     BREAK
@@ -315,6 +315,6 @@ DisplayPrompt:
         CRT MSG.CLR:ReplPrompt:' ':
         ICOL=LEN(ReplPrompt)+1
         IROW=(PDEPTH-1)
-        L=999;!PWIDTH-ICOL-1
+        L=PWIDTH-ICOL-1:@AM:999
         RETURN
     END
