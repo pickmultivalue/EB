@@ -1,8 +1,6 @@
     SUBROUTINE EB_PASTE(G60)
-* @(#) EB_PASTE.b Ported to jBASE 07:23:52  18 FEB 2010
     COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
     INCLUDE EB.INCLUDES lex.h
-* @(#) EB.PASTE Ported to jBASE 16:15:15  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -41,7 +39,7 @@ MAIN$:!
             SHOW.PASTE=FALSE
         END
         IF SHELL.CMD THEN
-            shell = CHAR(255):'k'
+            shell = @IM:'k'
             shellend = ' 2>&1'
             EXECUTE shell:Z:shellend CAPTURING STMP
         END ELSE

@@ -1,4 +1,3 @@
-* @(#) SVN_ADD Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_ADD(FullPaths)
 !
 ! Function to add a program to the source control repository
@@ -10,7 +9,7 @@
 !
     INCLUDE JBC.h
     DEFFUN SVN_CHECKOUT()
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     EQU TRUE TO 1, FALSE TO 0
     nbr_items = DCOUNT(FullPaths, @AM)

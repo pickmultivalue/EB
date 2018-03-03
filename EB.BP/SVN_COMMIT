@@ -16,7 +16,7 @@
     DEFFUN GETYN()
     INCLUDE JBC.h
     EQU TRUE TO 1, FALSE TO 0
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
 !
     IF NOT(SVN_OPENLOCKS(F.Locks)) THEN STOP 201, 'SVN.LOCKS'

@@ -21,7 +21,7 @@
     INCLUDE EB.EQUS OTHER.PARAMS
     EQU MAX TO 999999999
     EQU Bslsh TO '\', Fslsh TO '/'
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     colors = initColors()
     DEBUG.CODES = ''

@@ -1,5 +1,4 @@
     SUBROUTINE EB_VERSION(Re_Read_Flag)
-* @(#) EB_VERSION.b Ported to jBASE 07:23:52  18 FEB 2010
 !
     INCLUDE EB.EQUS EB.COMMON
     INCLUDE JBC.h
@@ -13,7 +12,7 @@
     DEFFUN GETFULLPATH()
 !
     Re_Read_Flag = FALSE
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     CRT MSG.CLR:
     FullPath = GETFULLPATH(FLNM)

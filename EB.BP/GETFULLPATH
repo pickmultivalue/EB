@@ -1,11 +1,10 @@
-* @(#) GETFULLPATH Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION GETFULLPATH(FLNM)
 !
 ! Return full path for a given file
 !
     DEFFUN GETFLNM()
     INCLUDE JBC.h
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN
             pwd = '.'       ;! hopefully this won't be the case

@@ -29,7 +29,7 @@
         RETURN 'SVN.LOCKS is not a file name'
     END
     EQU TRUE TO 1, FALSE TO 0
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     PROMPT ''
 !

@@ -1,4 +1,3 @@
-* @(#) SVNDELETE Ported to jBASE 07:23:52  18 FEB 2010
 ! PROGRAM SVNDELETE
 !
 ! Utility to revert one or more items to SVN
@@ -9,7 +8,7 @@
     DEFFUN SVN_SENTENCE()
     DEFFUN GETYN()
     EQU TRUE TO 1, FALSE TO 0
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
 !
     INCLUDE EB.INCLUDES SVN_DEBUG

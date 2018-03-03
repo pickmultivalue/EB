@@ -1,5 +1,4 @@
     SUBROUTINE EB_VERS_CTRL(Op, lockvar, silent)
-* @(#) EB_VERS_CTRL.b Ported to jBASE 07:23:52  18 FEB 2010
 !
 ! Check out item from source control
 !
@@ -24,7 +23,7 @@
     DEFFUN GETYN()
 !
     EQU spc TO ' '
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES SVN_DEBUG
 !

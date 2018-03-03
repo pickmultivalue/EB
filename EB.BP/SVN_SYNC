@@ -22,7 +22,7 @@ RETURN ;! disable for now
 !
 ! First get user's home dir
 !
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES GET.HOME
 !

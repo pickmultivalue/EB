@@ -10,7 +10,7 @@
     fName = root<dc>
     K.lockvar = ItemName
     root = CHANGE(root, @AM, DIR_DELIM_CH)
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     EXECUTE shell:'cd ':root:' && git ls-files ':K.lockvar:shellend CAPTURING IO
     IF LEN(IO) THEN

@@ -1,4 +1,3 @@
-* @(#) SVNSELECT Ported to jBASE 07:23:52  18 FEB 2010
     PROGRAM SVNSELECT
 !
 ! Generate a select list of SVN.LOCKS for a given file
@@ -17,7 +16,7 @@
 !
     IF NOT(SVN_OPENLOCKS(F.Locks)) THEN STOP 201, 'SVN.LOCKS'
 !
-    shell = CHAR(255):'k'
+    shell = @IM:'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES GET.HOME
     INCLUDE EB.INCLUDES SVN_DEBUG

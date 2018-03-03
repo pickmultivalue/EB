@@ -12,6 +12,7 @@
     DEFFUN FNKEYTRANS()
     MAIN$:!
 !
+    ksh = @IM:'k'
     INCLUDE EB.OS.INCLUDES OS.REL
     INDENT = SPACE(4)
     IF WORD='EBOPTS' THEN
@@ -111,7 +112,7 @@
     END
     OS.HELP=FALSE
     WORD = TRIM(WORD)
-    EXECUTE CHAR(255):'kman -k ':WORD:' 2>&1' CAPTURING list
+    EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
     loc=0
     manpages=''
     FWORD=WORD:'()'
@@ -127,7 +128,7 @@
                     INS vol BEFORE manpages<pos>
                 END
             END
-            EXECUTE CHAR(255):'kman ':vol:' ':WORD:' 2>&1'
+            EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
             OS.HELP=TRUE
         END
     WHILE delim DO REPEAT
@@ -136,13 +137,13 @@
         IF DIR_DELIM_CH = '/' THEN
             mandir = '-M $JBCRELEASEDIR/man '
         END ELSE mandir = ''
-        EXECUTE CHAR(255):'kman ':mandir:WORD:' 2>&1' CAPTURING list
+        EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
         notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
         IF notfound THEN
             CRT list
             CRT
         END ELSE
-            EXECUTE CHAR(255):'kman ':mandir:WORD:' 2>&1' CAPTURING help
+            EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
             K.HELP = '%EB_HELP*':WORD:'%'
             WRITE help ON JET.PASTE,K.HELP
             EXECUTE 'EB JET.PASTE ':K.HELP
@@ -160,7 +161,7 @@
 !        EXECUTE 'HELP UNIBASIC ':WORD
 !        OS.HELP=TRUE
 !    CASE OS.REL='JB'
-!        EXECUTE CHAR(255):'k%JBCGLOBALDIR%\man\manhtml\jbc2_':WORD:'.html'
+!        EXECUTE ksh:'%JBCGLOBALDIR%\man\manhtml\jbc2_':WORD:'.html'
 !    CASE 1; OS.HELP=FALSE
 !    END CASE
     RETURN
