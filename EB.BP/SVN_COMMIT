@@ -154,4 +154,4 @@
     DELETE F.Temp, K.Template
     DELETE F.Temp, K.Template:'.BAK'
 !
-    RETURN IO
+    RETURN CHANGE(IO, @AM, @CR:@LF)
