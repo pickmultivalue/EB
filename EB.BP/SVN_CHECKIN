@@ -1,4 +1,3 @@
-* @(#) SVN_CHECKIN Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_CHECKIN(rootpath, FullPaths, Message)
 !
 ! Function to check in the user's copy of a program.

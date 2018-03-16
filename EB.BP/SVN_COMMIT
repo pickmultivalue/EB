@@ -120,7 +120,6 @@
         EXECUTE shell:cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)
-        DEBUG
         IF Abandon THEN
             Z=TRUE; L=1
             CRT @(0, SYSTEM(3)):@(-3)

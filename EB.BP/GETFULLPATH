@@ -8,26 +8,28 @@
     shell = CHAR(255):'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN
-            pwd = '.'       ;! hopefully this won't be the case
+            pwd = '.'         ;! hopefully this won't be the case
         END
     END
     FLNM = CHANGE(FLNM, '/', DIR_DELIM_CH)
     dc = DCOUNT(FLNM, DIR_DELIM_CH)
-    ITNM = FIELD(FLNM, DIR_DELIM_CH, dc)
-    FLNM = FLNM[1, COL1()-1]
+    IF dc GT 1 THEN
+        ITNM = FIELD(FLNM, DIR_DELIM_CH, dc)
+        FLNM = FLNM[1, COL1()-1]
+    END ELSE ITNM = ''
 !
-    EXECUTE shell:'jshow -f ':FLNM CAPTURING FullPath
+    EXECUTE 'jshow -f ':FLNM CAPTURING FullPath
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
-        EXECUTE shell:'jshow -f ':temp CAPTURING FullPath
+        EXECUTE 'jshow -f ':temp CAPTURING FullPath
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
-        FullPath='x ':temp        ;! create a path with a dummy arg for FIELD below
-    END ELSE FullPath = FullPath<1>         ;! grab the first one
+        FullPath='x ':temp    ;! create a path with a dummy arg for FIELD below
+    END ELSE FullPath = FullPath<1>     ;! grab the first one
 !
-    FullPath=OCONV(FullPath, 'MCP ')        ;! remove any dodgy characters
+    FullPath=OCONV(FullPath, 'MCP ')    ;! remove any dodgy characters
     FullPath=TRIM(FullPath)
 !
 ! Get everything after the first word (i.e. result of jshow -f)
@@ -39,6 +41,8 @@
     IF FIELD(FullPath, DIR_DELIM_CH, 1) = '.' THEN
         FullPath = pwd:FullPath[COL2(),999]
     END
-    FullPath := DIR_DELIM_CH:ITNM
+    IF LEN(ITNM) THEN
+        FullPath := DIR_DELIM_CH:ITNM
+    END
 !
     RETURN FullPath

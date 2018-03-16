@@ -1,4 +1,3 @@
-* @(#) SVN_GETHOMEPATH Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GETHOMEPATH(FileName)
 !
 ! Return the user's homepath version of a given file
