@@ -18,6 +18,7 @@
     DEFFUN SVN_GETHOMEPATH()
     DEFFUN SVN_GETROOT()
     EQU TRUE TO 1, FALSE TO 0
+    EQU MAX TO 999999
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES SVN_DEBUG
@@ -59,7 +60,7 @@
 !
 ! Check to see what revision we have at the moment
 !
-    Status_IO = TRIM(SVN_SRC_STATUS(homedir, ItemName)[2, -1])
+    Status_IO = TRIM(SVN_SRC_STATUS(homedir, ItemName)[2, MAX])
     IF LEN(Status_IO) THEN
         current_rev = FIELD(Status_IO, ' ',2)
     END ELSE

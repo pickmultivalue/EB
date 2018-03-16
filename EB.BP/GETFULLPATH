@@ -12,6 +12,9 @@
         END
     END
     FLNM = CHANGE(FLNM, '/', DIR_DELIM_CH)
+    dc = DCOUNT(FLNM, DIR_DELIM_CH)
+    ITNM = FIELD(FLNM, DIR_DELIM_CH, dc)
+    FLNM = FLNM[1, COL1()-1]
 !
     EXECUTE shell:'jshow -f ':FLNM CAPTURING FullPath
 !
@@ -29,12 +32,13 @@
 !
 ! Get everything after the first word (i.e. result of jshow -f)
 !
-    FullPath=FIELD(FullPath,' ',2,99)
+    FullPath=FIELD(FullPath,' ',2,999)
 !
 ! If the path starts with ".", replace with pwd
 !
     IF FIELD(FullPath, DIR_DELIM_CH, 1) = '.' THEN
-        FullPath = pwd:FullPath[COL2(),99]
+        FullPath = pwd:FullPath[COL2(),999]
     END
+    FullPath := DIR_DELIM_CH:ITNM
 !
     RETURN FullPath

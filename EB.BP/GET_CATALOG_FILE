@@ -5,21 +5,22 @@
 !
 ! 04 DEC 2009 Peter Falson (jBASE)
 !
+    EQU MAX TO 999999
     prog_id = itnm
     IF prog_id 'R#2' = '.b' THEN
-    prog_id = itnm[1, -3]
+        prog_id = itnm[1, LEN(itnm)-3]
     END
     EXECUTE 'jshow -c ':prog_id CAPTURING io
     fname = ''
     loc = 0
     LOOP
-    REMOVE line FROM io AT loc SETTING delim
-    line = TRIM(line)
-    POS = INDEX(line, 'source file', 1)
-    IF POS THEN
-    fname = FIELD(line[POS, -1], ' ', 3)
-    delim = 0
-    END
-WHILE delim DO REPEAT
+        REMOVE line FROM io AT loc SETTING delim
+        line = TRIM(line)
+        POS = INDEX(line, 'source file', 1)
+        IF POS THEN
+            fname = FIELD(line[POS, MAX], ' ', 3)
+            delim = 0
+        END
+    WHILE delim DO REPEAT
 !
     RETURN fname

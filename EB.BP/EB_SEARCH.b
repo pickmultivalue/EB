@@ -353,7 +353,7 @@ RETRY:
         IF LN.POS > MIDWAY THEN
             LN.POS -= MIDWAY
             IF LN.POS < 1 THEN LN.POS = 1
-            MREC = '...':TRIM(MREC[LN.POS, -1])
+            MREC = '...':TRIM(MREC[LN.POS, MAX])
         END
         CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,PWIDTH-5],'MCP')
         CALL EB_FIND(LPOS,WHOLE.WORDS:'')

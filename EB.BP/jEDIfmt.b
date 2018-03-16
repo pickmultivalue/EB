@@ -73,6 +73,7 @@
     END
     OPEN FNAME TO FILE ELSE STOP 201,FNAME
     MAT IND=0; IND(1)=4; IND(2)=4
+    DEBUG
     IF FNAME = 'JET.PASTE' THEN
         ID=BUFF<3>
         rFname = FIELD(ID, '%', 2)
@@ -443,7 +444,7 @@
                     END
                 UNTIL NEXT.ATTR='' DO
                     STMT+=1
-                    LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), -1]
+                    LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
                     IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
                     ATTR=NEXT.ATTR
                 REPEAT
@@ -564,7 +565,7 @@ SPLITSTMT:
     END
     IF SEMI.COLON THEN
         T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
-        NEXT.ATTR=ATTR[SEMI.COLON+1, -1]
+        NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
         ATTR=ATTR[1,SEMI.COLON]
     END ELSE
         T.STMT=TRIM(ATTR,' ',"B")

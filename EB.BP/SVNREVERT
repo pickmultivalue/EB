@@ -11,6 +11,7 @@
     DEFFUN GETFULLPATH()
     DEFFUN GETYN()
     EQU TRUE TO 1, FALSE TO 0
+    EQU MAX TO 999999
     INCLUDE JBC.h
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
@@ -80,7 +81,7 @@
                 IF LEN(FullPath) THEN
                     Type = FIELD(FullPath, ' ',1)
                     IF INDEX('?AMU', Type, 1) THEN
-                        FullPath = FullPath[COL2()+1, -1]
+                        FullPath = FullPath[COL2()+1, MAX]
                     END
                     FullPaths<-1> = FullPath
                 END

@@ -421,8 +421,10 @@ FIRST.ITEM: !
         CRT MSG.CLR:"File does not exist! ":
         GO 10
     END
+    BAS.OPTS = ''
     OPEN 'DICT',FLNM THEN
         READ ITAB FROM 'EB_INDENT' ELSE NULL
+        READ BAS.OPTS FROM 'EB_BAS_OPTS' ELSE NULL
     END
 READ.ITEM:!
     UPDATES=TRUE
@@ -2016,12 +2018,12 @@ TCL: !
         CASE 1
             BP.FILE=FLNM; SCR.VALIDATE=ITNM
             INCLUDE EB.OS.INCLUDES DECATALOG
-            IF Y[2,1]='F' THEN BAS.OPTS:='OF'
+            IF Y[2,1]='F' THEN BAS.ARGS:='OF'
             Y=Y[1,1]
             IF Y='B' THEN
-                BAS.OPTS:='C'
-                IF ENCRYPTED='Y' THEN BAS.OPTS:='X' ELSE BAS.OPTS:='K'
-                EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.OPTS CAPTURING DSPLY RETURNING ERR.NOS
+                BAS.ARGS:='C'
+                IF ENCRYPTED='Y' THEN BAS.ARGS:='X' ELSE BAS.ARGS:='K'
+                EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.ARGS CAPTURING DSPLY RETURNING ERR.NOS
             END ELSE
                 IF INDEX('YO',Y,1) THEN
                     CRT 'Compiling...'
@@ -2038,12 +2040,12 @@ TCL: !
                     loc=0
                     LOOP
                         REMOVE inc FROM jedifilepath AT loc SETTING delim
-                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.OPTS:=' -I':inc
+                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
                     WHILE delim DO REPEAT
                     IF DIR_DELIM_CH = '\' THEN
                         FULLPATH = CHANGE(FLNM, '\', '\\')
                     END ELSE FULLPATH=FLNM
-                    EXECUTE COMPILE.VERB:BAS.OPTS:SPC:FULLPATH:SPC:ITNM:shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
                     INCLUDE EB.OS.INCLUDES RTED.BASIC
                 END
             END
@@ -2476,9 +2478,17 @@ WRAPUP: !
             END
             ORIG_PATH = SVN_GETORIGPATH(FLNM)
             Repository = FIELD(SVN_GET_REPOSITORY(FLNM), '/', 1)
-            ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, -1]
-            READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE FLNM.CAT.OPTIONS=''
+            ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, MAX]
             PROGS = CATL.LIST<2, F>
+            READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE
+                CALL EB_TRIM(firstProg, PROGS<1,1,1>, '.b', 'T')
+                EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
+                IF LEN(FLNM.CAT.OPTIONS) THEN
+                    FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS, ':', 2))
+                    FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
+                    FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+                END
+            END
             NBR.PROGS = DCOUNT(PROGS, @SVM)
             CAT.OPTS = ''
             FOR P = 1 TO NBR.PROGS
@@ -2488,7 +2498,11 @@ WRAPUP: !
                     READ CAT.OPTIONS FROM FG$EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
                 END
                 IF LEN(CAT.OPTIONS) THEN
-                    IF FIELD(TRIM(REC<1>),' ',1)='SUBROUTINE' THEN
+                    A = 1
+                    LOOP
+                        LINE1 = TRIM(REC<A>)
+                    WHILE INDEX('!*', LINE1[1,1], 1) AND LINE1 NE '' DO A++ REPEAT
+                    IF FIELD(LINE1,' ',1)='SUBROUTINE' THEN
                         CAT.OPTIONS=CAT.OPTIONS<1>
                     END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
                 END ELSE CAT.OPTIONS = ' '

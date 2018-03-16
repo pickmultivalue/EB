@@ -37,6 +37,7 @@
 !
     shellend = ' 2>&1'
     EQU TRUE TO 1, FALSE TO 0
+    EQU MAX TO 999999
 !
 ! FileName may be the local one...it only makes sense to use the original
 !
@@ -215,7 +216,7 @@ Parse_Filters:
                     CASE F_User[-1, 1] = '*'
                         M_User = "'":F_User[1, -2]:"'0X"
                     CASE F_User[1, 1] = '*'
-                        M_User = "0X'":F_User[2, -1]:"'"
+                        M_User = "0X'":F_User[2, MAX]:"'"
                     CASE 1
                         M_User = "'":F_User:"'"
                 END CASE

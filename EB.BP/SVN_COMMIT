@@ -120,6 +120,7 @@
         EXECUTE shell:cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)
+        DEBUG
         IF Abandon THEN
             Z=TRUE; L=1
             CRT @(0, SYSTEM(3)):@(-3)
@@ -141,7 +142,7 @@
             FOR i = pos TO lastline
                 FullPath = TRIM(Message<i>)
                 IF LEN(FullPath) THEN
-                    FullPaths<-1> = TRIM(FullPath[2,-1], ' ', 'L')
+                    FullPaths<-1> = TRIM(FullPath[2,999], ' ', 'L')
                 END
             NEXT i
         END

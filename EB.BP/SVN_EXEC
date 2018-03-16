@@ -1,12 +1,13 @@
     FUNCTION SVN_EXEC(Args, Capturing)
     INCLUDE JBC.h
+    EQU MAX TO 999999
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
     command = 'svn'
     noprompt = ' '; ! ' --non-interactive '
     command = 'git'
     sub_command = FIELD(Args, ' ', 1)
-    new_Args = Args[COL2(), -1]
+    new_Args = Args[COL2(), MAX]
     BEGIN CASE
         CASE sub_command = 'info'
             sub_command = 'log'

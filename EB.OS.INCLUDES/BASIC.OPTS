@@ -1,3 +1,11 @@
+BAS.ARGS = ''
 IF Y='B' OR Y='P' THEN
-  BAS.OPTS=" (":FG$TLINE:Y
-END ELSE BAS.OPTS=' -I$JBASEHOME':DIR_DELIM_CH:'include'
+    BAS.ARGS=" (":FG$TLINE:Y
+END ELSE
+  IF GETENV('JBASEHOME',jbhome) THEN
+      jbhome := DIR_DELIM_CH:'include'
+      OPEN jbhome THEN
+          BAS.ARGS=' -I':jbhome
+      END
+  END
+END

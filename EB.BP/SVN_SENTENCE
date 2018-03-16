@@ -13,6 +13,7 @@
     DEFFUN GETFULLPATH()
     INCLUDE JBC.h
     EQU TRUE TO 1, FALSE TO 0
+    EQU MAX TO 999999
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
 !
@@ -88,7 +89,7 @@
                         LOOP
                             REMOVE FullPath FROM io AT loc SETTING delim
                             IF INDEX('AMD', FullPath[1,1], 1) THEN
-                                FullPaths<-1> = TRIM(FullPath[2, -1], ' ', 'L')
+                                FullPaths<-1> = TRIM(FullPath[2, MAX], ' ', 'L')
                             END
                         WHILE delim DO REPEAT
                         IF NOT(Quiet) THEN CRT
