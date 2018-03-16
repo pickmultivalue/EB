@@ -1,5 +1,4 @@
-* @(#) GETFULLPATH Ported to jBASE 07:23:52  18 FEB 2010
-    FUNCTION GETFULLPATH(FLNM)
+    FUNCTION GETFULLPATH(INFLNM)
 !
 ! Return full path for a given file
 !
@@ -11,7 +10,7 @@
             pwd = '.'         ;! hopefully this won't be the case
         END
     END
-    FLNM = CHANGE(FLNM, '/', DIR_DELIM_CH)
+    FLNM = CHANGE(INFLNM, '/', DIR_DELIM_CH)
     dc = DCOUNT(FLNM, DIR_DELIM_CH)
     IF dc GT 1 THEN
         ITNM = FIELD(FLNM, DIR_DELIM_CH, dc)
