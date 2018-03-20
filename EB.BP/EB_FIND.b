@@ -9,6 +9,7 @@
     INCLUDE EB.EQUS OTHER.PARAMS
     INCLUDE EB.EQUS ACT.CODES
     EQU MAX TO 999999
+    DEFFUN EB_REGEX()
 MAIN$:!
 !
 ! Subroutine to search for SSTR in MREC setting POS
@@ -16,6 +17,7 @@ MAIN$:!
 !
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
+    REGEX.SEARCH=WHOLE.WORDS[3,1]
     NOCOMMENTS=WHOLE.WORDS[2,1]
     WHOLE.WORDS=WHOLE.WORDS[1,1]
     FOUND=FALSE
@@ -55,7 +57,11 @@ MAIN$:!
                         POS = 0
                     END
                 END
-            END ELSE POS=INDEX(SRCH.STRING,SSTR,1)
+            END ELSE
+                IF REGEX.SEARCH THEN
+                    POS=EB_REGEX(SRCH.STRING,SSTR, @FALSE)
+                END ELSE POS=INDEX(SRCH.STRING,SSTR,1)
+            END
             IF POS THEN
                 IF WHOLE.WORDS OR NOCOMMENTS THEN
                     IF WHOLE.WORDS THEN

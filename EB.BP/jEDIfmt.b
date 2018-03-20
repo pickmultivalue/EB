@@ -73,7 +73,6 @@
     END
     OPEN FNAME TO FILE ELSE STOP 201,FNAME
     MAT IND=0; IND(1)=4; IND(2)=4
-    DEBUG
     IF FNAME = 'JET.PASTE' THEN
         ID=BUFF<3>
         rFname = FIELD(ID, '%', 2)
