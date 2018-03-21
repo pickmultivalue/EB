@@ -1252,8 +1252,10 @@ GET.HELP:   !
                 MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
                 INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
                 IF NOT(INDROW) THEN
-                    INDROW = LAST.AM - PDEPTH + 2
+                    INDROW = LAST.AM - PDEPTH + 3
+                    IF NUM(DUMMY) THEN Y = ' !' ELSE Y = ':'
                     ROW = PDEPTH-2
+                    REC<LAST.AM+1> = DUMMY:Y
                 END ELSE ROW=1
                 SCR.UD=TRUE
             END ELSE
@@ -2484,9 +2486,11 @@ WRAPUP: !
                 CALL EB_TRIM(firstProg, PROGS<1,1,1>, '.b', 'T')
                 EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
                 IF LEN(FLNM.CAT.OPTIONS) THEN
-                    FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS, ':', 2))
-                    FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
-                    FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+                    FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS THEN
+                        FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
+                        FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
+                        FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+                    END ELSE FLNM.CAT.OPTIONS = ''
                 END
             END
             NBR.PROGS = DCOUNT(PROGS, @SVM)
