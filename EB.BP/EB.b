@@ -2502,7 +2502,8 @@ WRAPUP: !
                     LOOP
                         LINE1 = TRIM(REC<A>)
                     WHILE INDEX('!*', LINE1[1,1], 1) AND LINE1 NE '' DO A++ REPEAT
-                    IF FIELD(LINE1,' ',1)='SUBROUTINE' THEN
+                    fword = FIELD(LINE1,' ',1)
+                    IF fword EQ 'SUBROUTINE' OR fword EQ 'FUNCTION' THEN
                         CAT.OPTIONS=CAT.OPTIONS<1>
                     END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
                 END ELSE CAT.OPTIONS = ' '

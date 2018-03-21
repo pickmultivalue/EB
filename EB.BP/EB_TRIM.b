@@ -4,11 +4,16 @@
 ! Trim trailing something
 !
     SPCLEN=LEN(SPC)
-    LENTH=LEN(OLD)
+    LENTH=LEN(OLD)-SPCLEN+1
     BEGIN CASE
     CASE TYPE='T'
-        LOOP WHILE OLD[LENTH,SPCLEN]=SPC AND LENTH DO LENTH-=1 REPEAT
-        NEW=OLD[1,LENTH]
+        totfound = 0
+        LOOP
+            tmp = OLD[LENTH,SPCLEN]
+            found = tmp EQ SPC
+            totfound += found
+        WHILE found AND LENTH DO LENTH-=1 REPEAT
+        IF totfound THEN NEW=OLD[1,LENTH]
     CASE TYPE='L'
         I=1
         LOOP UNTIL OLD[I,SPCLEN]#SPC DO I+=1 REPEAT
