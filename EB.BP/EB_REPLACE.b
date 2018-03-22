@@ -1,6 +1,4 @@
     SUBROUTINE EB_REPLACE(ENDL,STRT,LINE.POS,END.POS,LEN.DIFF,MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
-* @(#) EB_REPLACE.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.REPLACE Ported to jBASE 16:15:16  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -43,6 +41,7 @@
 !
 ! Initialise counter
 !
+    CASING ON
     SOP=1
     ACNT=''
     LOOP
@@ -115,7 +114,7 @@
         END
     UNTIL NOT(STR.POS) DO
         LINE.NO=COUNT(REC[1,LINE.POS+STR.POS],@AM)+(REC[LINE.POS+STR.POS,1]#@AM)
-        IF LINE.NO>ENDL THEN RETURN     ;! finished
+        IF LINE.NO>ENDL THEN GO RTN    ;! finished
         THIS.LINE.CHANGED=FALSE
         IF LINE.NO = PREV.LINE.NO AND NOT(ALOC) THEN CONTINUE
         PREV.LINE.NO = LINE.NO
@@ -147,7 +146,7 @@
                 CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
                 CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (<Y>/N/Last) ":
                 CALL EB_UT_INPUT_ZERO(DMY,MAT EB$CHARS,FG$ACT.CODE,35,PDEPTH,FG$INPUT.CODES,'Y':@VM:'N',1,FG$TIMEOUT)
-                IF FG$ACT.CODE THEN RETURN
+                IF FG$ACT.CODE THEN GO RTN
                 IF INDEX('YL',DMY,1) ELSE GO 3090
             END ELSE DMY=''
             LOOP
@@ -177,7 +176,7 @@
                         CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
                         CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (Y/<N>/Last) ":
                         CALL EB_UT_INPUT_ZERO(DMY,MAT EB$CHARS,FG$ACT.CODE,35,PDEPTH,FG$INPUT.CODES,'Y':@VM:'N':@VM:'L',1,FG$TIMEOUT)
-                        IF FG$ACT.CODE THEN RETURN
+                        IF FG$ACT.CODE THEN GO RTN
                     END ELSE DMY='Y'
                 END ELSE DMY='N'
                 IF INDEX('N',DMY,1) ELSE
@@ -262,7 +261,7 @@
                 REC<LINE.NO>=LINE
                 CHANGED=TRUE
             END
-            IF DMY='L' THEN RETURN
+            IF DMY='L' THEN GO RTN
         END ELSE STR.POS=STR.POS+LEN(LINE)
 3090      !
         LINE.POS+=(STR.POS-OCCURS<1>+LEN(LINE)+1)
@@ -270,6 +269,8 @@
             LINE.POS+=OCCURS<1>
         END ELSE PREV.LINE.POS=LINE.POS
     REPEAT
+RTN:
+    CASING OFF
     RETURN
 CONV.CHARS:         ! convert ^nnn
     IF INDEX(TMP,'^',1) THEN
