@@ -4,6 +4,7 @@
 !
     DEFFUN GETFLNM()
     INCLUDE JBC.h
+    CASING OFF
     shell = CHAR(255):'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN

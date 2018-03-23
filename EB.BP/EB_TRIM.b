@@ -2,6 +2,7 @@
 !
 ! Trim trailing/leading/all something
 !
+    CASING OFF
     SPCLEN=LEN(SPC)
     LENTH=LEN(OLD)-SPCLEN+1
     BEGIN CASE

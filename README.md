@@ -33,6 +33,7 @@ When EB is operating on a selection of jBC code the CATALOG is performed when th
  - Zoom into an INCLUDE/CALL/GOSUB/function
  - Mouse click (reposition cursor on screen)
  - Search/replace for (W)hole words (i.e. variables)
+ - Regex search
  - History of search/replaces
  - Wild card search/replace (using @1, @2, ... as place markers)
  - Special @x{n} replacement used for auto sequencing an array or other list
@@ -45,8 +46,4 @@ When EB is operating on a selection of jBC code the CATALOG is performed when th
  - edit (V)alue for editing a multi-value attribute like a record
  - (R)otate attributes/multi-values (useful for associated multi-values)
  - Edit list item (EBL)
-
-
-## To Do
-
-Integrate "git" (currently source control assumes svn).
+ - Read only edit (EBV)

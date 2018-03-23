@@ -19,5 +19,11 @@
         END CASE
         newchars := c
     NEXT i
-
+!
+! Check for TType translator
+!
+    ttTrans = 'tt':SYSTEM(7):'_TRANS'
+    EXECUTE 'jshow -c ':ttTrans CAPTURING io
+    IF LEN(io) THEN CALL @ttTrans(newchars)
+!
     RETURN (newchars)

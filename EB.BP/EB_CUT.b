@@ -1,6 +1,4 @@
     SUBROUTINE EB_CUT(G60)
-* @(#) EB_CUT.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.CUT Ported to jBASE 16:15:14  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -154,7 +152,7 @@ MAIN$:!
                     CUT.TEXT<NO.D.L>=CUT.TEXT<NO.D.L>[1,CUT.POS<2,1,2>-1]
                 END ELSE CUT.TEXT=CUT.TEXT[CUT.POS<1,1,2>,CUT.POS<2,1,2>-CUT.POS<1,1,2>]
 ! hack for case where JET.PASTE is directory
-                IF CUT.TEXT[-1,1] = AM THEN
+                IF CUT.TEXT[LEN(CUT.TEXT),1] = AM THEN
                     status = ''
                     rc = IOCTL(JET.PASTE,JIOCTL_COMMAND_FILESTATUS,status)
                     IF status<1> = 'UD' THEN

@@ -1,8 +1,6 @@
     SUBROUTINE EB_PASTE(G60)
-* @(#) EB_PASTE.b Ported to jBASE 07:23:52  18 FEB 2010
     COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
     INCLUDE EB.INCLUDES lex.h
-* @(#) EB.PASTE Ported to jBASE 16:15:15  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -16,6 +14,7 @@
     EQU MAX TO 999999
 MAIN$:!
     G60=FALSE
+    CASING OFF
 !
     IF CHANGED THEN GOSUB 6000
     INPTYPE='LIT'
