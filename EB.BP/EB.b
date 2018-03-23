@@ -1253,9 +1253,9 @@ GET.HELP:   !
                 INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
                 IF NOT(INDROW) THEN
                     INDROW = LAST.AM - PDEPTH + 3
-                    IF NUM(DUMMY) THEN Y = ' !' ELSE Y = ':'
+                    IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
                     ROW = PDEPTH-2
-                    REC<LAST.AM+1> = DUMMY:Y
+                    REC<LAST.AM+1> = DUMMY:Y:' !'
                 END ELSE ROW=1
                 SCR.UD=TRUE
             END ELSE
@@ -2202,11 +2202,15 @@ GET.PREVWORD: !
         YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
         CRT MSG.CLR:
         IF Y='Y' THEN
-            EXECUTE "DECATALOG ":Z
+            PROG = ITNM
+            GOSUB GET.CATL
+            GOSUB PARSE.CATL
+            EXECUTE "DECATALOG ":CAT.OPTIONS:SPC:Z
         END
     END
 !
     RELEASE FIL,ITNM
+    DEBUG
     Z = SVN_DELETE(TRUE, FLNM, ITNM)
     Y = (FIELD(Z,SPC,1) = 'D')
     IF LEN(Z) = 0 OR Y THEN
@@ -2454,6 +2458,38 @@ SWITCH.FILE: !
         FLNM = HFLNM
     END
     RETURN
+GET.CATL: !
+    CALL EB_TRIM(firstProg, PROG, '.b', 'T')
+    EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
+    IF LEN(FLNM.CAT.OPTIONS) THEN
+        FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+                POS = FALSE
+            END
+        END
+        IF POS THEN
+            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
+            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
+            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+        END ELSE FLNM.CAT.OPTIONS = ''
+    END
+    RETURN
+PARSE.CATL: !
+    CAT.OPTIONS = FLNM.CAT.OPTIONS
+    IF CAT.OPTIONS#'' THEN
+        READ CAT.OPTIONS FROM FG$EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
+    END
+    IF LEN(CAT.OPTIONS) THEN
+        A = 1
+        LOOP
+            LINE1 = TRIM(REC<A>)
+        WHILE INDEX('!*', LINE1[1,1], 1) AND LINE1 NE '' DO A++ REPEAT
+        fword = FIELD(LINE1,' ',1)
+        IF fword EQ 'SUBROUTINE' OR fword EQ 'FUNCTION' THEN
+            CAT.OPTIONS=CAT.OPTIONS<1>
+        END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
+    END ELSE CAT.OPTIONS = ' '
+    RETURN
 WRAPUP: !
     IF MOD(FG$STERM,3) THEN
         CALL EB_STERM.MENU('EB.MENU','','',-1,'')
@@ -2483,34 +2519,14 @@ WRAPUP: !
             ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, MAX]
             PROGS = CATL.LIST<2, F>
             READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE
-                CALL EB_TRIM(firstProg, PROGS<1,1,1>, '.b', 'T')
-                EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
-                IF LEN(FLNM.CAT.OPTIONS) THEN
-                    FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS THEN
-                        FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
-                        FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
-                        FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
-                    END ELSE FLNM.CAT.OPTIONS = ''
-                END
+                PROG = PROGS<1,1,1>
+                GOSUB GET.CATL
             END
             NBR.PROGS = DCOUNT(PROGS, @SVM)
             CAT.OPTS = ''
             FOR P = 1 TO NBR.PROGS
                 PROG = PROGS<1, 1, P>
-                CAT.OPTIONS = FLNM.CAT.OPTIONS
-                IF CAT.OPTIONS#'' THEN
-                    READ CAT.OPTIONS FROM FG$EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
-                END
-                IF LEN(CAT.OPTIONS) THEN
-                    A = 1
-                    LOOP
-                        LINE1 = TRIM(REC<A>)
-                    WHILE INDEX('!*', LINE1[1,1], 1) AND LINE1 NE '' DO A++ REPEAT
-                    fword = FIELD(LINE1,' ',1)
-                    IF fword EQ 'SUBROUTINE' OR fword EQ 'FUNCTION' THEN
-                        CAT.OPTIONS=CAT.OPTIONS<1>
-                    END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
-                END ELSE CAT.OPTIONS = ' '
+                GOSUB PARSE.CATL
                 LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS ELSE
                     INS CAT.OPTIONS BEFORE CAT.OPTS<1,POS>
                     INS PROG BEFORE CAT.OPTS<2,POS>
