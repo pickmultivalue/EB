@@ -4,6 +4,7 @@
 !
     DEFFUN GETFLNM()
     INCLUDE JBC.h
+    CASING OFF
     shell = CHAR(255):'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN
@@ -18,12 +19,10 @@
     END ELSE ITNM = ''
 !
     EXECUTE 'jshow -f ':FLNM CAPTURING FullPath
-    IF INDEX(FullPath<1>, 'jshow -f', 1) THEN DEL FullPath<1>
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
         EXECUTE 'jshow -f ':temp CAPTURING FullPath
-        IF INDEX(FullPath<1>, 'jshow -f', 1) THEN DEL FullPath<1>
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)

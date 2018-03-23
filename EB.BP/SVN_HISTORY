@@ -211,10 +211,10 @@ Parse_Filters:
                 F_User = Value
                 L_User = LEN(CHANGE(F_User, '*', ''))
                 BEGIN CASE
-                    CASE F_User[1,1] = '*' AND F_User[-1, 1] = '*'
-                        M_User = "0X'":F_User[2, -2]:"'0X"
+                    CASE F_User[1,1] = '*' AND F_User[LEN(F_User), 1] = '*'
+                        M_User = "0X'": F_User[2, LEN(F_User)-1]:"'0X"
                     CASE F_User[-1, 1] = '*'
-                        M_User = "'":F_User[1, -2]:"'0X"
+                        M_User = "'": F_User[1, LEN(F_User)-1]:"'0X"
                     CASE F_User[1, 1] = '*'
                         M_User = "0X'":F_User[2, MAX]:"'"
                     CASE 1

@@ -1,6 +1,7 @@
 * @(#) EB.b Ported to jBASE 07:23:52  18 FEB 2010
 ! Initialisation
 ! ==============
+    CASING OFF
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -35,6 +36,10 @@
     vm_start=IF_COMPILED_PRIME
     INCLUDE EB.OS.INCLUDES GET.TCL.SENTENCE
     EDIT.MODE=FIELD(FG$SENTENCE:'(','(',2)
+    IF INDEX(EDIT.MODE, 'V', 1) THEN
+        READ.ONLY.MODE = @TRUE
+        EDIT.MODE = CHANGE(EDIT.MODE,'V','')
+    END ELSE READ.ONLY.MODE = @FALSE
     FG$SENTENCE=TRIM(FG$SENTENCE[1,COL1()-1])
     INCLUDE EB.OS.INCLUDES OS
     INCLUDE EB.OS.INCLUDES WHO
@@ -438,6 +443,7 @@ REREAD.ITEM: !
 ! If multiple items are being processed from a particular file
 ! some (or all) of them could be in the user's home dir
 !
+    IF READ.ONLY.MODE THEN GO ALREADY.LOCKED
     READU REC FROM FIL,ITNM LOCKED
         INCLUDE EB.OS.INCLUDES LOCKED.BY
         CRT MSG.CLR:"Item locked by ":OSINC$LOCKED.BY:" (":OSINC$LOCKED.PORT:")! Enter 'Y' to enquire only ":
@@ -447,6 +453,9 @@ REREAD.ITEM: !
 ALREADY.LOCKED: !
         UPDATES=FALSE
         READ REC FROM FIL,ITNM ELSE REC=''
+        IF READ.ONLY.MODE THEN
+            INCLUDE EB.INCLUDES CHECK.B
+        END
     END THEN
 ! dodgy way of checking for updates
         CALL EB_VERS_CTRL(VersStat,lockvar, tempItem)
@@ -465,18 +474,7 @@ ALREADY.LOCKED: !
                 GO ALREADY.LOCKED
         END CASE
     END ELSE
-        IF ITNM 'R#2'#'.b' THEN
-            READV REC FROM FIL,ITNM:'.b',1 THEN
-                LUK=FLNM:'*':EDIT.MODE:'*':ITNM
-                IF LAST.EB<1,1> = LUK THEN
-                    LUK:='.b'
-                    LAST.EB<1,1> = LUK
-                    WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
-                END
-                ITNM:='.b'
-                GO READ.ITEM
-            END
-        END
+        INCLUDE EB.INCLUDES CHECK.B
         IF FIRST.READ THEN
             GOSUB SWITCH.FILE
             GOSUB SET.MSG

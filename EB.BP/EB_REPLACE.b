@@ -41,7 +41,7 @@
 !
 ! Initialise counter
 !
-    CASING ON
+    CASING OFF
     SOP=1
     ACNT=''
     LOOP
@@ -270,7 +270,6 @@
         END ELSE PREV.LINE.POS=LINE.POS
     REPEAT
 RTN:
-    CASING OFF
     RETURN
 CONV.CHARS:         ! convert ^nnn
     IF INDEX(TMP,'^',1) THEN

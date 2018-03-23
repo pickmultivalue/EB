@@ -14,7 +14,7 @@
     specific_setting = cmd<3>
     
     IF (specific_setting 'R#1') = '*' THEN
-        specific_setting = specific_setting[1, -2]
+        specific_setting = specific_setting[1, LEN(specific_setting)-1]
         wild_card = @TRUE
     END ELSE wild_card = @FALSE
 

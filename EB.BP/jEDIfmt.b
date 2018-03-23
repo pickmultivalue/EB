@@ -447,7 +447,7 @@
                     IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
                     ATTR=NEXT.ATTR
                 REPEAT
-                LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), -1]
+                LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
                 IF T.OPTION THEN
                     IF M.OPTION THEN IF LNO GT 1 THEN PRINT
                     IF L.OPTION ELSE PRINT LNO OMASK:
