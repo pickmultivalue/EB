@@ -1641,63 +1641,48 @@ CHG.LROW:
             STMP=m.Z
             I=INDROW+ROW
             CHECK.LINE=REC<I>
-            FOR I = 1 TO 3
-                IF CHECK.LINE[1, LEN(merge(I))] EQ merge(I) THEN BREAK
-            NEXT I
-            IF I GT 3 THEN
-                MSG.CLR:'Position cursor on a merge line (e.g. <<<<)':
-                GOSUB GET.CHR
+            FOR m = 1 TO 3
+                IF CHECK.LINE[1, LEN(merge(m))] EQ merge(m) THEN BREAK
+            NEXT m
+            IF m GT 3 THEN
+                CRT MSG.CLR:'Position cursor on a merge line (e.g. <<<<)':
+                GOSUB GET.CHAR
                 GO STRT
             END
-            CRT MSG.CLR:"<O>rigonal,<T>heirs,<Y>ours,<C>ompare ?":
-            YNC=COL; YNR=ROW; YNCHRS='.':VM:'C':VM:'O':VM:'T':VM:'Y'; YNL=1; GOSUB GET.CHAR
+            CRT MSG.CLR:"<O>rigonal,<Y>ours,<T>heirs,<C>ompare ?":
+            YNC=COL; YNR=ROW; YNCHRS='.':VM:'C':VM:'O':VM:'Y':VM:'T'; YNL=1; GOSUB GET.CHAR
             CRT MSG.DSP:
             IF FG$ACT.CODE THEN GO STRT
             CRT MSG.AKN:
-            FTYP=OCONV(Y,"MCU")
-            BEGIN CASE
-                CASE FTYP='O'
-                    FTYP=m.X
-                    m.Z=Y
-                CASE FTYP='T'
-                    FTYP=m.Y
-                CASE FTYP='Y'
-                    FTYP=m.Z
-                    m.Z=STMP
-            END CASE
-            POS=INDEX(CHECK.LINE,m.X,1)
-            IF POS OR INDEX(CHECK.LINE,FTYP,1) THEN
+            FTYP=INDEX('OYT',OCONV(Y,"MCU"),1)
 ! Find the ORIG line if we're not there
-                LOOP UNTIL POS OR I=1 DO
-                    I-=1
-                    CHECK.LINE=REC<I>
-                    POS=INDEX(CHECK.LINE,m.X,1)
-                REPEAT
-                ROW=I-INDROW; SCRL=ROW
+            LOOP
+                IF CHECK.LINE[1, LEN(m.X)] EQ m.X THEN BREAK
+            UNTIL I=1 DO
+                I-=1
+                CHECK.LINE=REC<I>
+            REPEAT
+            Y=I
+            ROW=I-INDROW; SCRL=ROW
 ! We found ORIG so now delete up to the section we want
-                IF POS THEN
-                    LOOP
-                        REC<I>=CHECK.LINE
-                        POS=INDEX(CHECK.LINE,FTYP,1)
-                        DEL REC<I>
-                    UNTIL POS DO REPEAT
+            STMP = m.Y
+            m.Y = ''
+            LOOP
+                DEL REC<I>
+                CHECK.LINE=REC<I>
+                IF CHECK.LINE[1, LEN(STMP)] EQ STMP THEN BREAK
+                m.Y<-1> = CHECK.LINE
+            REPEAT
 ! Now found the end of this bit
-                    LOOP
-                        CHECK.LINE=REC<I>
-                    UNTIL INDEX(CHECK.LINE,m.Z,1) DO
-                        I++
-                    REPEAT
-! Now delete the remainder
-                    LOOP
-                        POS=INDEX(CHECK.LINE,STMP,1)
-                        DEL REC<I>
-                    UNTIL POS
-                        CHECK.LINE=REC<I>
-                    REPEAT
-                END
-            END ELSE
-                CRT MSG.CLR:'Please position cursor on a ':m.X:' line':
-            END
+            STMP = m.Z
+            m.Z = ''
+            LOOP
+                DEL REC<I>
+                CHECK.LINE=REC<I>
+                IF CHECK.LINE[1, LEN(STMP)] EQ STMP THEN BREAK
+                m.Z<-1> = CHECK.LINE
+            REPEAT
+            REC<I> = merge(FTYP)''
             CHANGED=FALSE; SCR.UD=TRUE
             GO STRT
 !      CALL EB_CHOICES(STRT,12,'','','',EB.VARS,Z,1,'',1,'L#31','Variables')
