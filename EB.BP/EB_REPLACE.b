@@ -160,6 +160,7 @@
                 OCCURS<OCC>=SPOS
             WHILE ALOC AND SPOS AND FIRST#'' DO REPEAT
             OCCS=OCC-(SPOS=0)
+                   DEBUG
             FOR I=OCCS TO 1 STEP -1
                 SPOS=OCCURS<I>
                 IF WHOLE THEN
