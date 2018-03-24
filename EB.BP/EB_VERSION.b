@@ -71,7 +71,7 @@
                 CALL EB_CHOICES(5,3,'',PDEPTH-5,'',history,REV,1,1,Attrs,Fmts,'Revision History':SVM:ColHdrs)
                 IF REV THEN
                     REV = ',':REV
-                    IF SVN_READ(FullPath, ITNM:REV, errmsg) THEN
+                    IF SVN_READ(FLNM, ITNM:REV, errmsg) THEN
                         IF REC = errmsg THEN
                             errmsg = 'Version the same as current record'
                             GOSUB DISPLAY_ERROR
@@ -116,7 +116,7 @@
                             END
                         CASE Y='I'
                             cmd = 'diff -Drev_':REV[2,9]
-                            path = CONVERT(FullPath, DIR_DELIM_CH, '/')
+                            path = CHANGE(FullPath, DIR_DELIM_CH, '/')
                             cmd := ' ':path:'/':ITNM:REV
                             cmd := ' ':path:'/':ITNM:'.tmp'
                             cmd := '>':path:'/':ITNM:'_diff'

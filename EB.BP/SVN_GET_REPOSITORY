@@ -1,4 +1,3 @@
-* @(#) SVN_GET_REPOSITORY Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GET_REPOSITORY(FilePath)
 !
 ! Function to return the repository for a given path
@@ -20,8 +19,8 @@
 ! and "massage" accordingly
 !
     Repo= SVN_GETPWD(IO, DIR_DELIM_CH, FALSE)
-    tRepo = CONVERT(Repo, DIR_DELIM_CH, @AM)
-    tFilePath = CONVERT(FilePath, DIR_DELIM_CH, @AM)
+    tRepo = CHANGE(Repo, DIR_DELIM_CH, @AM)
+    tFilePath = CHANGE(FilePath, DIR_DELIM_CH, @AM)
 !
 ! Reverse travers both tFilePath and tRepo
 ! to match up (and remove) the trailing dirs
@@ -31,6 +30,6 @@
     LOOP WHILE SVN_CASE(tRepo<RepoCNT>) = SVN_CASE(tFilePath<FilePathCNT>) AND RepoCNT > 1 DO
         RepoCNT--
         FilePathCNT--
-        REPEAT
-        Repo = CONVERT(FIELD(tRepo, @AM, 1, RepoCNT), @AM, '/')
-        RETURN Repo
+    REPEAT
+    Repo = CHANGE(FIELD(tRepo, @AM, 1, RepoCNT), @AM, '/')
+    RETURN Repo

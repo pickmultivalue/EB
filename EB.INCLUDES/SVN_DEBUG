@@ -1,6 +1,6 @@
     IF GETENV('SVN_DEBUG', svn_debug) THEN
         IF svn_debug#1 THEN
-            svn_debug = CONVERT(svn_debug, ',', @AM)
+            svn_debug = CHANGE(svn_debug, ',', @AM)
             LOCATE SYSTEM(40) IN svn_debug SETTING svn_debug ELSE svn_debug = 0
         END
         IF svn_debug THEN

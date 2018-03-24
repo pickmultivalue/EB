@@ -1,6 +1,4 @@
     SUBROUTINE EB_FILE(SKIP.PATCH,K.PATCHFILE,MAT PATCH,COMPILE.IT,ENCRYPTED,UPG)
-* @(#) EB_FILE.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.FILE Ported to jBASE 16:15:14  27 JUL 2001
     INCLUDE JBC.h
     INCLUDE EB.EQUS EB.COMMONS
     DEFFUN GETFLNM()
@@ -128,9 +126,9 @@ MAIN$:!
         END
         PREV.HIST=DESCRIPTION
         IF LEN(HISTORY) THEN
-            PREV.HIST = CONVERT(HISTORY<1>, @VM, @SVM)
-            PREV.HIST<1, 2> = CONVERT(HISTORY<3>, @VM, @SVM)
-            PREV.HIST<1, 3> = CONVERT(HISTORY<4>, @VM, @SVM)
+            PREV.HIST = CHANGE(HISTORY<1>, @VM, @SVM)
+            PREV.HIST<1, 2> = CHANGE(HISTORY<3>, @VM, @SVM)
+            PREV.HIST<1, 3> = CHANGE(HISTORY<4>, @VM, @SVM)
         END
         PREV.HIST = RAISE(PREV.HIST)
         PDESC=LAST.DESC
@@ -172,7 +170,8 @@ RESTART: !
                     CASE FG$ACT.CODE=FG$OPT.CODE
                         CRT MSG.CLR:
                         SAVE.PSTIME=PSTIME:VM:PETIME
-                        PSTIME=PREV.HIST<2,DCOUNT(PREV.HIST<1>,VM)>
+                        PHCNT = DCOUNT(PREV.HIST<1>,VM)
+                        PSTIME=PREV.HIST<2,PHCNT>
                         CALL EB_CHOICES(10,14,'','','',PREV.HIST,RESULT,1:SVM:1:SVM:1,AM:PSTIME,2:SVM:3:SVM:1,'L#8':CTRL.C:'MTS':SVM:'L#8':CTRL.C:'MTS':SVM:'L#55','History')
                         IF RESULT#'' THEN
                             PETIME=RESULT<1>

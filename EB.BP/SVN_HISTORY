@@ -1,4 +1,3 @@
-* @(#) SVN_HISTORY Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_HISTORY(FilePath, ItemName, Filters)
 !
 ! Function to get the history/revsion of changes of a program from subversion
@@ -38,6 +37,7 @@
 !
     shellend = ' 2>&1'
     EQU TRUE TO 1, FALSE TO 0
+    EQU MAX TO 999999
 !
 ! FileName may be the local one...it only makes sense to use the original
 !
@@ -84,7 +84,7 @@
                 history<2, n> = user
                 history<3, n> = date
                 history<4, n> = time
-                history<5, n> = CONVERT(desc, @SVM, ' ')
+                history<5, n> = CHANGE(desc, @SVM, ' ')
             END
         WHILE line # 'commit' DO
             n++
@@ -114,7 +114,7 @@
                 REMOVE line FROM IO AT loc SETTING delim
                 IF LEN(line) THEN
                     IF LEN(line_id) = 0 AND LEN(desc) = 0 THEN  ;! check if description is for multiple items
-                        line_id = CONVERT(line, '\', '/')
+                        line_id = CHANGE(line, '\', '/')
                         line_id = line_id[1, LEN(Repository)]
                         IF line_id # Repository THEN line_id = ''
                     END
@@ -126,14 +126,14 @@
 ! extract the description for ItemName
 !
             IF LEN(line_id) THEN
-                desc_id = CONVERT(Repository:'/':ItemName, '/', DIR_DELIM_CH)
+                desc_id = CHANGE(Repository:'/':ItemName, '/', DIR_DELIM_CH)
                 LOCATE desc_id IN desc<1, 1> SETTING loc THEN
                     linecnd = DCOUNT(desc<1, 1>, @SVM)
                     loc++
                     ndesc = ''
                     FOR L = loc TO linecnt
                         line = desc<1, 1, L>
-                        line_id = CONVERT(line, '\', '/')
+                        line_id = CHANGE(line, '\', '/')
                         line_id = line_id[1, LEN(Repository)]
                         IF line_id = Repository THEN BREAK
                         ndesc<1, 1, -1> = line
@@ -149,7 +149,7 @@
                 history<2, n> = user
                 history<3, n> = date
                 history<4, n> = time
-                history<5, n> = CONVERT(desc, @SVM, ' ')
+                history<5, n> = CHANGE(desc, @SVM, ' ')
                 n++
             END
             REMOVE line FROM IO AT loc SETTING delim
@@ -209,17 +209,16 @@ Parse_Filters:
                 NbrWords = DCOUNT(F_Word, @SVM)
             CASE Filter = 'User'
                 F_User = Value
-                L_User = LEN(CONVERT(F_User, '*', ''))
+                L_User = LEN(CHANGE(F_User, '*', ''))
                 BEGIN CASE
-                    CASE F_User[1,1] = '*' AND F_User[-1, 1] = '*'
-                        M_User = "0X'":F_User[2, -2]:"'0X"
+                    CASE F_User[1,1] = '*' AND F_User[LEN(F_User), 1] = '*'
+                        M_User = "0X'": F_User[2, LEN(F_User)-1]:"'0X"
                     CASE F_User[-1, 1] = '*'
-                        M_User = "'":F_User[1, -2]:"'0X"
+                        M_User = "'": F_User[1, LEN(F_User)-1]:"'0X"
                     CASE F_User[1, 1] = '*'
-                        M_User = "0X'":F_User[2, -1]:"'"
+                        M_User = "0X'":F_User[2, MAX]:"'"
                     CASE 1
                         M_User = "'":F_User:"'"
                 END CASE
         END CASE
     NEXT F
-    RETURN

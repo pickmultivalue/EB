@@ -90,7 +90,7 @@
 ! Remove any ? status items
     dc = DCOUNT(IO, @AM)
     FOR i =dc TO 1 STEP -1
-        io = CONVERT(TRIM(IO<i>), ' ', @AM)
+        io = CHANGE(TRIM(IO<i>), ' ', @AM)
         path = io<DCOUNT(io, @AM)>
         IF SVN_CASE(path) = SVN_CASE(FullPath) AND io<1> = '?' THEN
             DEL IO<i>

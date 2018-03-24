@@ -149,7 +149,7 @@
 ! CASE to IF
 !
     IF FIELD(STMP,' ',1)='CASE' THEN
-        STMP = STMP[COL2(), -1]
+        STMP = STMP[COL2(), MAX]
         SUFFIX = FIELD(STMP:';', ';', 2)
         STMP = STMP[1, COL1()-1]
         SUFFIX = TRIM(' THEN ':SUFFIX, ' ', 'L')
@@ -188,10 +188,10 @@
         V2S = ''
         IF VAR1[LEN(VAR1), 1] = ' ' THEN
             V1P = ' '
-            VAR1 = VAR1[1, -1]
+            VAR1 = VAR1[1, MAX]
         END
         IF VAR2[1, 1] = ' ' THEN
-            VAR2 = VAR2[2, -1]
+            VAR2 = VAR2[2, MAX]
             V2S = ' '
         END
         TORF = 1:@AM:0:@AM:'TRUE':@AM:'FALSE'

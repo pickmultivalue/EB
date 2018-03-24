@@ -1,6 +1,4 @@
     SUBROUTINE EB_GETRPL(MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
-* @(#) EB_GETRPL.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.GETRPL Ported to jBASE 16:15:14  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -87,7 +85,7 @@ MAIN$:!
         rdelim=''
         FOR rr=1 TO RSTRL
             c=RSTR[rr,1]
-            IF NOT(c MATCHES "1C") THEN
+            IF NOT(c MATCHES "1A" OR NUM(c)) THEN
                 IF NOT(c='-' AND rr>1 AND RSTR[rr-1,1] MATCHES "1N") THEN
                     rdelim=c
                     BREAK
@@ -315,6 +313,8 @@ DisplayPrompt:
             ReplPrompt='Search/Replace'
         END
         CRT MSG.CLR:ReplPrompt:' ':
-        ICOL=LEN(ReplPrompt)+1; IROW=(PDEPTH-1); L=PWIDTH-ICOL-1
+        ICOL=LEN(ReplPrompt)+1
+        IROW=(PDEPTH-1)
+        L=PWIDTH-ICOL-1:@AM:999
         RETURN
     END

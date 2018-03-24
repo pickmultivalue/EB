@@ -1,6 +1,7 @@
 * @(#) EB.b Ported to jBASE 07:23:52  18 FEB 2010
 ! Initialisation
 ! ==============
+    CASING OFF
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -26,7 +27,7 @@
     colors = initColors()
     DEBUG.CODES = ''
     rc = GETENV('EB_DEBUG', DEBUG.CODES)
-    DEBUG.CODES = CONVERT(DEBUG.CODES, ',', @AM)
+    DEBUG.CODES = CHANGE(DEBUG.CODES, ',', @AM)
 !
     MAT GEX=''; MAT EXTRAS=''
     DEFC INT JBASEEmulateGETINT(INT, INT)
@@ -35,6 +36,10 @@
     vm_start=IF_COMPILED_PRIME
     INCLUDE EB.OS.INCLUDES GET.TCL.SENTENCE
     EDIT.MODE=FIELD(FG$SENTENCE:'(','(',2)
+    IF INDEX(EDIT.MODE, 'V', 1) THEN
+        READ.ONLY.MODE = @TRUE
+        EDIT.MODE = CHANGE(EDIT.MODE,'V','')
+    END ELSE READ.ONLY.MODE = @FALSE
     FG$SENTENCE=TRIM(FG$SENTENCE[1,COL1()-1])
     INCLUDE EB.OS.INCLUDES OS
     INCLUDE EB.OS.INCLUDES WHO
@@ -421,8 +426,10 @@ FIRST.ITEM: !
         CRT MSG.CLR:"File does not exist! ":
         GO 10
     END
+    BAS.OPTS = ''
     OPEN 'DICT',FLNM THEN
         READ ITAB FROM 'EB_INDENT' ELSE NULL
+        READ BAS.OPTS FROM 'EB_BAS_OPTS' ELSE NULL
     END
 READ.ITEM:!
     UPDATES=TRUE
@@ -436,6 +443,7 @@ REREAD.ITEM: !
 ! If multiple items are being processed from a particular file
 ! some (or all) of them could be in the user's home dir
 !
+    IF READ.ONLY.MODE THEN GO ALREADY.LOCKED
     READU REC FROM FIL,ITNM LOCKED
         INCLUDE EB.OS.INCLUDES LOCKED.BY
         CRT MSG.CLR:"Item locked by ":OSINC$LOCKED.BY:" (":OSINC$LOCKED.PORT:")! Enter 'Y' to enquire only ":
@@ -445,6 +453,9 @@ REREAD.ITEM: !
 ALREADY.LOCKED: !
         UPDATES=FALSE
         READ REC FROM FIL,ITNM ELSE REC=''
+        IF READ.ONLY.MODE THEN
+            INCLUDE EB.INCLUDES CHECK.B
+        END
     END THEN
 ! dodgy way of checking for updates
         CALL EB_VERS_CTRL(VersStat,lockvar, tempItem)
@@ -463,18 +474,7 @@ ALREADY.LOCKED: !
                 GO ALREADY.LOCKED
         END CASE
     END ELSE
-        IF ITNM 'R#2'#'.b' THEN
-            READV REC FROM FIL,ITNM:'.b',1 THEN
-                LUK=FLNM:'*':EDIT.MODE:'*':ITNM
-                IF LAST.EB<1,1> = LUK THEN
-                    LUK:='.b'
-                    LAST.EB<1,1> = LUK
-                    WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
-                END
-                ITNM:='.b'
-                GO READ.ITEM
-            END
-        END
+        INCLUDE EB.INCLUDES CHECK.B
         IF FIRST.READ THEN
             GOSUB SWITCH.FILE
             GOSUB SET.MSG
@@ -1250,16 +1250,22 @@ GET.HELP:   !
                 MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
                 INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
                 IF NOT(INDROW) THEN
-                    INDROW = LAST.AM - PDEPTH + 2
+                    INDROW = LAST.AM - PDEPTH + 3
+                    IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
                     ROW = PDEPTH-2
+                    REC<LAST.AM+1> = DUMMY:Y:' !'
                 END ELSE ROW=1
                 SCR.UD=TRUE
             END ELSE
                 BEGIN CASE
-                    CASE DUMMY='CALL'
-                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
+                    CASE DUMMY='CALL' OR DUMMY='EXECUTE' OR DUMMY='PERFORM'
+                        callopt = DUMMY EQ 'CALL'
+                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2,99)
                         DUMMY=FIELD(DUMMY:'(','(',1)
                         DUMMY=FIELD(DUMMY:';',';',1)
+                        IF NOT(callopt) THEN
+                            DUMMY = FIELD(DUMMY, DUMMY[1,1], 2)
+                        END
                         DUMMY := ' (!'
                     CASE INDEX(OCONV(DUMMY,'MCU'),'INCLUDE',1)
                         DUMMY=RDSP(LROW)[I+1,MAX]
@@ -1297,7 +1303,23 @@ GET.HELP:   !
                             IF LEN(IO) = 0 THEN DUMMY = ''
                         END
                 END CASE
-                IF DUMMY#'' THEN DUMMY='EB ':DUMMY; GOSUB EB.SUB
+                IF DUMMY#'' THEN
+                    prog=FIELD(DUMMY,' ',1)
+                    IF prog = 'RUN' THEN
+                        prog=FIELD(DUMMY,' ',2)
+                        DUMMY=DUMMY[COL2()+1, 99]
+                    END ELSE
+                        EXECUTE 'jshow -c ':prog CAPTURING IO
+                        BEGIN CASE
+                            CASE LEN(IO)=0 ; prog=FLNM
+                            CASE INDEX(IO, 'jCL', 1)
+                                prog = FIELD(TRIM(IO), ' ',3)
+                                prog = FIELD(prog, DIR_DELIM_CH, 1, DCOUNT(prog, DIR_DELIM_CH))
+                            CASE 1; prog = ''
+                        END CASE
+                    END
+                    DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
+                END
             END
         CASE FG$ACT.CODE=FG$LST.CODE
             CRT MSG.CLR:"Type a letter from A-Z":
@@ -1609,59 +1631,72 @@ CHG.LROW:
             GOSUB CONV.HEX
             SCR.UD=TRUE; CALL EB_REFRESH
         CASE FTYP='I'
-            CRT MSG.CLR:"<O>rigonal,<T>heirs,<Y>ours ?":
-            YNC=COL; YNR=ROW; YNCHRS='.':VM:'O':VM:'T':VM:'Y'; YNL=1; GOSUB GET.CHAR
+            DIM merge(3)
+            EQU m.X TO merge(1)
+            EQU m.Y TO merge(2)
+            EQU m.Z TO merge(3)
+            m.X='<<<<<<<'
+            m.Y='======='
+            m.Z='>>>>>>>'
+            STMP=m.Z
+            I=INDROW+ROW
+            CHECK.LINE=REC<I>
+            FOR I = 1 TO 3
+                IF CHECK.LINE[1, LEN(merge(I))] EQ merge(I) THEN BREAK
+            NEXT I
+            IF I GT 3 THEN
+                MSG.CLR:'Position cursor on a merge line (e.g. <<<<)':
+                GOSUB GET.CHR
+                GO STRT
+            END
+            CRT MSG.CLR:"<O>rigonal,<T>heirs,<Y>ours,<C>ompare ?":
+            YNC=COL; YNR=ROW; YNCHRS='.':VM:'C':VM:'O':VM:'T':VM:'Y'; YNL=1; GOSUB GET.CHAR
             CRT MSG.DSP:
             IF FG$ACT.CODE THEN GO STRT
             CRT MSG.AKN:
             FTYP=OCONV(Y,"MCU")
-            STMP='<<<'
-            X='>>>> ORIGINAL'
-            Y='==== THEIRS'
-            Z='==== YOURS'
             BEGIN CASE
                 CASE FTYP='O'
-                    FTYP=X
-                    Z=Y
+                    FTYP=m.X
+                    m.Z=Y
                 CASE FTYP='T'
-                    FTYP=Y
+                    FTYP=m.Y
                 CASE FTYP='Y'
-                    FTYP=Z
-                    Z=STMP
+                    FTYP=m.Z
+                    m.Z=STMP
             END CASE
-            I=INDROW+ROW
-            CHECK.LINE=REC<I>
-            POS=INDEX(CHECK.LINE,X,1)
+            POS=INDEX(CHECK.LINE,m.X,1)
             IF POS OR INDEX(CHECK.LINE,FTYP,1) THEN
 ! Find the ORIG line if we're not there
                 LOOP UNTIL POS OR I=1 DO
                     I-=1
                     CHECK.LINE=REC<I>
-                    POS=INDEX(CHECK.LINE,X,1)
+                    POS=INDEX(CHECK.LINE,m.X,1)
                 REPEAT
                 ROW=I-INDROW; SCRL=ROW
 ! We found ORIG so now delete up to the section we want
                 IF POS THEN
                     LOOP
-                        CHECK.LINE=REC<I>
+                        REC<I>=CHECK.LINE
                         POS=INDEX(CHECK.LINE,FTYP,1)
                         DEL REC<I>
                     UNTIL POS DO REPEAT
 ! Now found the end of this bit
                     LOOP
                         CHECK.LINE=REC<I>
-                    UNTIL INDEX(CHECK.LINE,Z,1) DO
+                    UNTIL INDEX(CHECK.LINE,m.Z,1) DO
                         I++
                     REPEAT
 ! Now delete the remainder
-                    POS=FALSE
                     LOOP
+                        POS=INDEX(CHECK.LINE,STMP,1)
                         DEL REC<I>
                     UNTIL POS
                         CHECK.LINE=REC<I>
-                        POS=INDEX(CHECK.LINE,STMP,1)
                     REPEAT
                 END
+            END ELSE
+                CRT MSG.CLR:'Please position cursor on a ':m.X:' line':
             END
             CHANGED=FALSE; SCR.UD=TRUE
             GO STRT
@@ -1996,12 +2031,12 @@ TCL: !
         CASE 1
             BP.FILE=FLNM; SCR.VALIDATE=ITNM
             INCLUDE EB.OS.INCLUDES DECATALOG
-            IF Y[2,1]='F' THEN BAS.OPTS:='OF'
+            IF Y[2,1]='F' THEN BAS.ARGS:='OF'
             Y=Y[1,1]
             IF Y='B' THEN
-                BAS.OPTS:='C'
-                IF ENCRYPTED='Y' THEN BAS.OPTS:='X' ELSE BAS.OPTS:='K'
-                EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.OPTS CAPTURING DSPLY RETURNING ERR.NOS
+                BAS.ARGS:='C'
+                IF ENCRYPTED='Y' THEN BAS.ARGS:='X' ELSE BAS.ARGS:='K'
+                EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.ARGS CAPTURING DSPLY RETURNING ERR.NOS
             END ELSE
                 IF INDEX('YO',Y,1) THEN
                     CRT 'Compiling...'
@@ -2018,12 +2053,12 @@ TCL: !
                     loc=0
                     LOOP
                         REMOVE inc FROM jedifilepath AT loc SETTING delim
-                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.OPTS:=' -I':inc
+                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
                     WHILE delim DO REPEAT
                     IF DIR_DELIM_CH = '\' THEN
                         FULLPATH = CHANGE(FLNM, '\', '\\')
                     END ELSE FULLPATH=FLNM
-                    EXECUTE COMPILE.VERB:BAS.OPTS:SPC:FULLPATH:SPC:ITNM:shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
                     INCLUDE EB.OS.INCLUDES RTED.BASIC
                 END
             END
@@ -2178,11 +2213,15 @@ GET.PREVWORD: !
         YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
         CRT MSG.CLR:
         IF Y='Y' THEN
-            EXECUTE "DECATALOG ":Z
+            PROG = ITNM
+            GOSUB GET.CATL
+            GOSUB PARSE.CATL
+            EXECUTE "DECATALOG ":CAT.OPTIONS:SPC:Z
         END
     END
 !
     RELEASE FIL,ITNM
+    DEBUG
     Z = SVN_DELETE(TRUE, FLNM, ITNM)
     Y = (FIELD(Z,SPC,1) = 'D')
     IF LEN(Z) = 0 OR Y THEN
@@ -2401,10 +2440,13 @@ LAST.USED:!
     WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
     RETURN
 SET.MSG: !
-    MSG.DFLT='File:':FLNM 'R#20 ':' Item: ':ITNM 'R#15 ':' Started: ':OCONV(PSTIME,'MTS')
-    MSG.DFLT=(FLNM:'/':ITNM) 'R#50 Started: ':OCONV(PSTIME,'MTS')
+    MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(PSTIME,'MTS')
 SET.MSG.DSP:
     MSG.DSP=MSG.DFLT:' (Col=   )'
+    IF NBR.WORDS GT 3 THEN
+        IDPOS = '(':WCNT-2:'/':NBR.WORDS-2:')'
+        MSG.DSP[1,LEN(IDPOS)]=IDPOS
+    END
     MSG.COL=LEN(MSG.DSP)-4
     MSG.DSP=MSG.CLR:MSG.DSP
     IF INS.MODE THEN
@@ -2426,6 +2468,38 @@ SWITCH.FILE: !
         FIL = HFIL
         FLNM = HFLNM
     END
+    RETURN
+GET.CATL: !
+    CALL EB_TRIM(firstProg, PROG, '.b', 'T')
+    EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
+    IF LEN(FLNM.CAT.OPTIONS) THEN
+        FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+                POS = FALSE
+            END
+        END
+        IF POS THEN
+            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
+            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
+            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+        END ELSE FLNM.CAT.OPTIONS = ''
+    END
+    RETURN
+PARSE.CATL: !
+    CAT.OPTIONS = FLNM.CAT.OPTIONS
+    IF CAT.OPTIONS#'' THEN
+        READ CAT.OPTIONS FROM FG$EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
+    END
+    IF LEN(CAT.OPTIONS) THEN
+        A = 1
+        LOOP
+            LINE1 = TRIM(REC<A>)
+        WHILE INDEX('!*', LINE1[1,1], 1) AND LINE1 NE '' DO A++ REPEAT
+        fword = FIELD(LINE1,' ',1)
+        IF fword EQ 'SUBROUTINE' OR fword EQ 'FUNCTION' THEN
+            CAT.OPTIONS=CAT.OPTIONS<1>
+        END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
+    END ELSE CAT.OPTIONS = ' '
     RETURN
 WRAPUP: !
     IF MOD(FG$STERM,3) THEN
@@ -2453,22 +2527,17 @@ WRAPUP: !
             END
             ORIG_PATH = SVN_GETORIGPATH(FLNM)
             Repository = FIELD(SVN_GET_REPOSITORY(FLNM), '/', 1)
-            ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, -1]
-            READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE FLNM.CAT.OPTIONS=''
+            ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, MAX]
             PROGS = CATL.LIST<2, F>
+            READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE
+                PROG = PROGS<1,1,1>
+                GOSUB GET.CATL
+            END
             NBR.PROGS = DCOUNT(PROGS, @SVM)
             CAT.OPTS = ''
             FOR P = 1 TO NBR.PROGS
                 PROG = PROGS<1, 1, P>
-                CAT.OPTIONS = FLNM.CAT.OPTIONS
-                IF CAT.OPTIONS#'' THEN
-                    READ CAT.OPTIONS FROM FG$EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
-                END
-                IF LEN(CAT.OPTIONS) THEN
-                    IF FIELD(TRIM(REC<1>),' ',1)='SUBROUTINE' THEN
-                        CAT.OPTIONS=CAT.OPTIONS<1>
-                    END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
-                END ELSE CAT.OPTIONS = ' '
+                GOSUB PARSE.CATL
                 LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS ELSE
                     INS CAT.OPTIONS BEFORE CAT.OPTS<1,POS>
                     INS PROG BEFORE CAT.OPTS<2,POS>

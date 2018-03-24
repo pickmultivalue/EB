@@ -1,6 +1,4 @@
     SUBROUTINE EB_HELP(WORD,OS.HELP)
-* @(#) EB_HELP.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.HELP Ported to jBASE 16:15:14  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     INCLUDE EB.EQUS OTHER.PARAMS
     INCLUDE EB.EQUS ACT.CODES
@@ -17,8 +15,13 @@
     INCLUDE EB.OS.INCLUDES OS.REL
     INDENT = SPACE(4)
     IF WORD='EBOPTS' THEN
+        dc = COUNT(FG$SENTENCE, ' ') - 1
         CRT @(-1):'Options Help'
         CRT
+!        IF WCNT GT dc THEN
+!            CRT 'You are at ':WCNT:' of ':dc:' items'
+!            CRT
+!        END
         CRT INDENT:'. - prompt for members of a variable structure (non-basic code)'
         CRT INDENT:'A - insert date/time stamp'
         CRT INDENT:'B - Show errors from last compile'
@@ -45,8 +48,6 @@
         CRT INDENT:'Z - Record size'
         CRT
         CRT
-        CRT
-        CRT
         CRT INDENT:'Press any key...':
         CALL EB_GET_INPUT(CHR, CHR.NBR)
         IF FG$ACT.CODE = FG$HLP.CODE THEN GOSUB DisplayEBcmds
@@ -59,6 +60,7 @@
         CRT
         CRT INDENT:'General syntax:'
         CRT INDENT:'R{opts}/<old>/<new>'
+        CRT INDENT:'S{opts}/<new>/<old>'
         CRT
         CRT INDENT:'The / delimiter can be any non alphanumeric character'
         CRT
@@ -196,16 +198,16 @@ DisplayEBcmds:
     keyboard<-1> = 'Prev word' hash:FNKEYTRANS(EB$CHARS(28))
     keyboard<-1> = 'End of line' hash:FNKEYTRANS(EB$CHARS(29))
     keyboard<-1> = 'Next word' hash:FNKEYTRANS(EB$CHARS(30))
-    keyboard<-1> = 'Left arrow' hash:FNKEYTRANS(EB$CHARS(31))
+    keyboard<-1> = 'Leftarrow' hash:FNKEYTRANS(EB$CHARS(31))
     keyboard<-1> = 'Tab' hash:FNKEYTRANS(EB$CHARS(32))
-    keyboard<-1> = 'Down arrow' hash:FNKEYTRANS(EB$CHARS(33))
-    keyboard<-1> = 'Up arrow' hash:FNKEYTRANS(EB$CHARS(34))
-    keyboard<-1> = 'Down arrow' hash:FNKEYTRANS(EB$CHARS(35))
+    keyboard<-1> = 'Downarrow' hash:FNKEYTRANS(EB$CHARS(33))
+    keyboard<-1> = 'Uparrow' hash:FNKEYTRANS(EB$CHARS(34))
+    keyboard<-1> = 'Downarrow' hash:FNKEYTRANS(EB$CHARS(35))
     keyboard<-1> = 'Next occurrence' hash:FNKEYTRANS(EB$CHARS(36))
     keyboard<-1> = 'Paste' hash:FNKEYTRANS(EB$CHARS(37))
     keyboard<-1> = 'Top of screen/record' hash:FNKEYTRANS(EB$CHARS(38))
     keyboard<-1> = 'Toggle INS/OVR' hash:FNKEYTRANS(EB$CHARS(39))
-    keyboard<-1> = 'SPELL.CH' hash:FNKEYTRANS(EB$CHARS(40))
+!    keyboard<-1> = 'SPELL.CH' hash:FNKEYTRANS(EB$CHARS(40))
     keyboard<-1> = 'Start of line' hash:FNKEYTRANS(EB$CHARS(41))
     keyboard<-1> = 'Truncate/cut' hash:FNKEYTRANS(EB$CHARS(42))
     keyboard<-1> = 'Undelete' hash:FNKEYTRANS(EB$CHARS(43))
@@ -216,30 +218,30 @@ DisplayEBcmds:
     keyboard<-1> = 'Delete char' hash:FNKEYTRANS(EB$CHARS(48))
     keyboard<-1> = 'Delete word' hash:FNKEYTRANS(EB$CHARS(49))
 !    keyboard<-1> = 'SUS.CH' hash:FNKEYTRANS(EB$CHARS(50))
-    keyboard<-1> = 'PRV.CH' hash:FNKEYTRANS(EB$CHARS(51))
-    keyboard<-1> = 'NXT.CH' hash:FNKEYTRANS(EB$CHARS(52))
-    keyboard<-1> = 'MERGE.CH' hash:FNKEYTRANS(EB$CHARS(53))
+    keyboard<-1> = 'Page Up' hash:FNKEYTRANS(EB$CHARS(51))
+    keyboard<-1> = 'Page Down' hash:FNKEYTRANS(EB$CHARS(52))
+!    keyboard<-1> = 'MERGE.CH' hash:FNKEYTRANS(EB$CHARS(53))
     keyboard<-1> = 'Options' hash:FNKEYTRANS(EB$CHARS(54))
     keyboard<-1> = 'Zoom' hash:FNKEYTRANS(EB$CHARS(55))
     keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB$CHARS(56))
 !    keyboard<-1> = 'SCRN.SEL' hash:FNKEYTRANS(EB$CHARS(57))
     keyboard<-1> = 'Comment/select toggle' hash:FNKEYTRANS(EB$CHARS(58))
-    keyboard<-1> = 'EXIT.LN' hash:FNKEYTRANS(EB$CHARS(59))
+!    keyboard<-1> = 'EXIT.LN' hash:FNKEYTRANS(EB$CHARS(59))
 !    keyboard<-1> = 'TAG.CMD' hash:FNKEYTRANS(EB$CHARS(60))
 !    keyboard<-1> = 'HOT.KEYS' hash:FNKEYTRANS(EB$CHARS(61))
-    keyboard<-1> = 'QUICK.CH' hash:FNKEYTRANS(EB$CHARS(62))
-    keyboard<-1> = 'TUT.CH' hash:FNKEYTRANS(EB$CHARS(63))
-    keyboard<-1> = 'Mouse click' hash:FNKEYTRANS(EB$CHARS(64))
+!    keyboard<-1> = 'QUICK.CH' hash:FNKEYTRANS(EB$CHARS(62))
+!    keyboard<-1> = 'TUT.CH' hash:FNKEYTRANS(EB$CHARS(63))
+!    keyboard<-1> = 'Mouse click' hash:FNKEYTRANS(EB$CHARS(64))
 !    keyboard<-1> = 'EXPECT.CR' hash:FNKEYTRANS(EB$CHARS(65))
     keyboard<-1> = 'Backspace' hash:FNKEYTRANS(EB$CHARS(66))
-    keyboard<-1> = 'ALT.CH' hash:FNKEYTRANS(EB$CHARS(67))
+!    keyboard<-1> = 'ALT.CH' hash:FNKEYTRANS(EB$CHARS(67))
 !    keyboard<-1> = 'CLR.CMD' hash:FNKEYTRANS(EB$CHARS(68))
     keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB$CHARS(69))
     keyboard<-1> = 'Goto line/label' hash:FNKEYTRANS(EB$CHARS(70))
-    keyboard<-1> = 'MENU.CH' hash:FNKEYTRANS(EB$CHARS(71))
-    keyboard<-1> = 'ADD.CH' hash:FNKEYTRANS(EB$CHARS(72))
-    keyboard<-1> = 'APP.CH' hash:FNKEYTRANS(EB$CHARS(73))
-    keyboard<-1> = 'AMD.CH' hash:FNKEYTRANS(EB$CHARS(74))
+!    keyboard<-1> = 'MENU.CH' hash:FNKEYTRANS(EB$CHARS(71))
+!    keyboard<-1> = 'ADD.CH' hash:FNKEYTRANS(EB$CHARS(72))
+!    keyboard<-1> = 'APP.CH' hash:FNKEYTRANS(EB$CHARS(73))
+!    keyboard<-1> = 'AMD.CH' hash:FNKEYTRANS(EB$CHARS(74))
     keyboard<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB$CHARS(75))
 !    keyboard<-1> = 'FUNC.CHARS' hash:FNKEYTRANS(EB$CHARS(97))
 !    keyboard<-1> = 'FUNC.VALS' hash:FNKEYTRANS(EB$CHARS(98))

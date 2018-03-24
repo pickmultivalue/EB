@@ -1,4 +1,3 @@
-* @(#) SVN_GETROOT Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GETROOT(FilePath)
 !
 ! Return the root path tree above path recognised by SVN
@@ -16,8 +15,8 @@
 ! Reverse travers both tFilePath and tRepo
 ! to match up (and remove) the trailing dirs
 !
-    FullPath = CONVERT(FullPath, DIR_DELIM_CH, @AM)
-    ChildPath = CONVERT(ChildPath, DIR_DELIM_CH, @AM)
+    FullPath = CHANGE(FullPath, DIR_DELIM_CH, @AM)
+    ChildPath = CHANGE(ChildPath, DIR_DELIM_CH, @AM)
 !
 ! Just in case (Windows) make case insensitive versions
 !
@@ -28,6 +27,6 @@
     LOOP WHILE SVN_CASE(c_ChildPath<ChildPathCNT>) = SVN_CASE(c_FullPath<FullPathCNT>) AND FullPathCNT > 1 DO
         ChildPathCNT--
         FullPathCNT--
-        REPEAT
+    REPEAT
 !
-        RETURN CONVERT(FIELD(FullPath, @AM, 1, FullPathCNT), @AM, DIR_DELIM_CH)
+    RETURN CHANGE(FIELD(FullPath, @AM, 1, FullPathCNT), @AM, DIR_DELIM_CH)

@@ -1,4 +1,3 @@
-* @(#) SVN_CHECKIN Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_CHECKIN(rootpath, FullPaths, Message)
 !
 ! Function to check in the user's copy of a program.
@@ -108,9 +107,9 @@
             END
         NEXT i
 !
-        CRT 'Performing svn update to merge in changes'
-        SVN_EXEC('update ':commit_path, FALSE)
-        EXECUTE shell:'chmod -w ':commit_path:shellend
+!        CRT 'Performing svn update to merge in changes'
+!        SVN_EXEC('update ':commit_path, FALSE)
+!        EXECUTE shell:'chmod -w ':commit_path:shellend
 !
         CRT
         CRT 'You may wish to compare ':commit_path:'.bck with ':commit_path
@@ -123,7 +122,8 @@
 !
     DELETE F.local, commit_msg
     IF INDEX(IO, 'fatal', 1) THEN
-        Result = 'Error during commit of ':ItemName
+        CONVERT @LF:@CR TO @AM IN IO
+        Result = 'Error during commit'
         Result<3> = 'commit output:'
         Result<5> = IO
         RETURN Result
@@ -159,7 +159,10 @@
             FullPaths<i> = FullPath         ;! so calling program can pick up new location if desired
         END
     NEXT i
-    IF LEN(sync_path) THEN
+!
+! Disable svn based logic
+!
+    IF @FALSE THEN ;! LEN(sync_path) THEN
 !
 ! Now resync the original copy
 !
@@ -207,7 +210,7 @@
                     hp := obj
                 END
                 hp = GETFULLPATH(hp)
-                hp = CONVERT(hp, DIR_DELIM_CH, '/')
+                hp = CHANGE(hp, DIR_DELIM_CH, '/')
                 EXECUTE shell:'ls -s ':hp:'/':tItemName:shellend CAPTURING IO
                 IO = TRIM(IO)
                 IF INDEX(IO, 'No such ', 1) THEN
