@@ -1,4 +1,3 @@
-* @(#) SVN_GETPWD Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GETPWD(FilePath, Delim, Remove_trunk)
 !
 ! Return the portion of the given filepath
@@ -42,10 +41,10 @@
         therest = url[LEN(repo)+2, 999]
     END ELSE ;! git
         root = IO<1>
-        path = IO<2>
-        IF LEN(path) THEN
-            root = CHANGE(IO, @AM, DIR_DELIM_CH)
-        END
+!        path = IO<2>
+!        IF LEN(path) THEN
+!            root = CHANGE(IO, @AM, DIR_DELIM_CH)
+!        END
         RETURN root
     END
 !

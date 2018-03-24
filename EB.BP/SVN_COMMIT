@@ -141,7 +141,7 @@
             FOR i = pos TO lastline
                 FullPath = TRIM(Message<i>)
                 IF LEN(FullPath) THEN
-                    FullPaths<-1> = TRIM(FullPath[2,-1], ' ', 'L')
+                    FullPaths<-1> = TRIM(FullPath[2,999], ' ', 'L')
                 END
             NEXT i
         END
@@ -154,4 +154,4 @@
     DELETE F.Temp, K.Template
     DELETE F.Temp, K.Template:'.BAK'
 !
-    RETURN IO
+    RETURN CHANGE(IO, @AM, @CR:@LF)

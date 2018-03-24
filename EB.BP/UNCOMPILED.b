@@ -26,7 +26,7 @@
         STOP
     END
 
-    list_name = 'uncompiled_':fname
-    WRITELIST uncompiled ON list_name
+!    list_name = 'uncompiled_':fname
+    WRITELIST uncompiled ON '';! list_name
 
-    CHAIN 'GET-LIST ':list_name
+!    CHAIN 'GET-LIST ':list_name

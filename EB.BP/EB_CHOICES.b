@@ -77,6 +77,7 @@
     EQU OPERANDS TO '=#<>'
     EQU DQ TO '"',SQ TO "'"
     EQU NEXT.SEL TO CHAR(14), PREV.SEL TO CHAR(16)
+    EQU MAX TO 999999
 !
     MAIN$:!
 !
@@ -164,7 +165,7 @@
         ATTR=ATTRS<1,1,A>
         IF ATTR[1,1] = 'S' THEN
             SRT = ATTR[1,3]
-            ATTR = ATTR[4, -1]
+            ATTR = ATTR[4, MAX]
         END ELSE SRT = ''
         IF FIRST.ATTR='' AND ATTR#'L' AND ATTR#'N' THEN     ;* ace
             FIRST.ATTR=A
@@ -262,7 +263,7 @@
                 ATTR = ATTRS<1,1,A>
                 IF ATTR[1,1] = 'S' THEN
                     SORT.BY = ATTR[2,2]
-                    ATTR = ATTR[4,-1]
+                    ATTR = ATTR[4,MAX]
                     ATTRS<1,1,A> = ATTR
                     BREAK
                 END

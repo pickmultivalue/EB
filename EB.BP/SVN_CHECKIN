@@ -122,7 +122,8 @@
 !
     DELETE F.local, commit_msg
     IF INDEX(IO, 'fatal', 1) THEN
-        Result = 'Error during commit of ':ItemName
+        CONVERT @LF:@CR TO @AM IN IO
+        Result = 'Error during commit'
         Result<3> = 'commit output:'
         Result<5> = IO
         RETURN Result

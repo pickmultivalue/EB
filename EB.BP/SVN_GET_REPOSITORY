@@ -1,4 +1,3 @@
-* @(#) SVN_GET_REPOSITORY Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GET_REPOSITORY(FilePath)
 !
 ! Function to return the repository for a given path
@@ -8,7 +7,6 @@
     INCLUDE JBC.h
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
-    DEFFUN SVN_SUBVERSION()
     DEFFUN SVN_GETPWD()
     DEFFUN SVN_CASE()
     EQU FALSE TO 0

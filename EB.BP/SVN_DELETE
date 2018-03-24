@@ -1,4 +1,3 @@
-* @(#) SVN_DELETE Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_DELETE(RemoveFlag, FilePath, ItemName)
 !
 ! Function to remove a program from the source control repository

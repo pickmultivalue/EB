@@ -13,7 +13,8 @@
     DEFFUN GETFULLPATH()
     INCLUDE JBC.h
     EQU TRUE TO 1, FALSE TO 0
-    shell = @IM:'k'
+    EQU MAX TO 999999
+    shell = CHAR(255):'k'
     shellend = ' 2>&1'
 !
     IF UseSVNLOCKS THEN
@@ -58,7 +59,7 @@
         CASE FullPaths = '--version'
         CASE 1
             DisplaySyntax = FALSE
-            IF (UseSVNLOCKS AND LEN(FullPaths) = 0) OR FullPaths = '.' OR FullPaths[-1, 1] = '*' OR SYSTEM(11) THEN
+            IF (UseSVNLOCKS AND LEN(FullPaths) = 0) OR FullPaths = '.' OR FullPaths[LEN(FullPaths), 1] = '*' OR SYSTEM(11) THEN
                 IF SYSTEM(11) THEN
                     IF LEN(FullPaths) THEN
                         FilePath = GETFULLPATH(FullPaths):DIR_DELIM_CH
@@ -71,13 +72,13 @@
                     IF FullPaths = '.' THEN
                         FullPaths = ''
                     END ELSE
-                        IF FullPaths[-1, 1] # '*' THEN
+                        IF FullPaths[LEN(FullPaths), 1] # '*' THEN
                             READV FullPaths FROM F.Locks, user, 2 THEN
                                 FullPaths = CHANGE(FullPaths, @VM, @AM)
                             END ELSE FullPaths = ''
                         END
                     END
-                    IF LEN(FullPaths) = 0 OR FullPaths[-1, 1] = '*' THEN
+                    IF LEN(FullPaths) = 0 OR FullPaths[LEN(FullPaths), 1] = '*' THEN
                         IF NOT(Quiet) THEN
                             CRT 'Generating list from current directory, please wait...':
                         END
@@ -88,7 +89,7 @@
                         LOOP
                             REMOVE FullPath FROM io AT loc SETTING delim
                             IF INDEX('AMD', FullPath[1,1], 1) THEN
-                                FullPaths<-1> = TRIM(FullPath[2, -1], ' ', 'L')
+                                FullPaths<-1> = TRIM(FullPath[2, MAX], ' ', 'L')
                             END
                         WHILE delim DO REPEAT
                         IF NOT(Quiet) THEN CRT

@@ -1,0 +1,27 @@
+    SUBROUTINE ttvt220_TRANS(newchars)
+    BEGIN CASE
+        CASE newchars EQ '<esc>OP'; newchars = '[F1]'
+        CASE newchars EQ '<esc>OQ'; newchars = '[F2]'
+        CASE newchars EQ '<esc>OR'; newchars = '[F3]'
+        CASE newchars EQ '<esc>OS'; newchars = '[F4]'
+        CASE newchars EQ '<esc>[M'; newchars = '[F5]'
+        CASE newchars EQ '<esc>[17~'; newchars = '[F6]'
+        CASE newchars EQ '<esc>[18~'; newchars = '[F7]'
+        CASE newchars EQ '<esc>[19~'; newchars = '[F8]'
+        CASE newchars EQ '<esc>[20~'; newchars = '[F9]'
+        CASE newchars EQ '<esc>[21~'; newchars = '[F10]'
+        CASE newchars EQ '<esc>[23~'; newchars = '[F11]'
+        CASE newchars EQ '<esc>[24~'; newchars = '[F12]'
+        CASE newchars EQ '<hex 7F>'; newchars = '[Delete]'
+        CASE newchars EQ '<esc>[B'; newchars = '[Down]'
+        CASE newchars EQ '<esc>[1~'; newchars = '[End]'
+        CASE newchars EQ '<esc>[H'; newchars = '[Home]'
+        CASE newchars EQ '<esc>[2~'; newchars = '[Insert]'
+        CASE newchars EQ '<esc>[D'; newchars = '[Left]'
+        CASE newchars EQ '<esc>[6~'; newchars = '[PgDn]'
+        CASE newchars EQ '<esc>[5~'; newchars = '[PgUp]'
+        CASE newchars EQ '<esc>[C'; newchars = '[Right]'
+        CASE newchars EQ '<esc>[A'; newchars = '[Up]'
+        CASE newchars EQ '<esc>[Z'; newchars = '[shift-Tab]'
+    END CASE
+    RETURN

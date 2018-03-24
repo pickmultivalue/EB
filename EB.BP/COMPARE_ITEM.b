@@ -5,6 +5,10 @@
 ! All Rights Reserved.
 !
 !
+    INCLUDE EB.EQUS EB.COMMONS
+    COM GEX(50),EXTRAS(50)
+    COM EB.FILES(100),EB.FILE.LIST
+    COM RDSP(100), CHANGES(100)
     INCLUDE JBC.h
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
@@ -14,13 +18,15 @@
     EQU MAX TO 9999
     INCLUDE EB.OS.INCLUDES TERM.SETTINGS
     OPEN 'MD' TO F.MD ELSE STOP 'MD'
+    OPEN 'JET.PASTE' TO F.JET.PASTE ELSE STOP 'JET.PASTE'
     OPEN 'SAVEDLISTS' TO F.PF ELSE
         OPEN 'POINTER-FILE' TO F.PF ELSE
             STOP 201,'POINTER-FILE'
         END
     END
-    TCL.OPTS=OCONV(FIELD(SENTENCE():'(','(',2),'MCU')
-    FG$SENTENCE=SENTENCE()[1,COL1()-1]
+    TCL.OPTS = SYSTEM(1001)
+    FG$SENTENCE=TCL.OPTS<1>
+    TCL.OPTS=OCONV(TCL.OPTS<2>, 'MCU')
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
     T.OPTION=INDEX(TCL.OPTS,'T',1)
@@ -37,10 +43,11 @@
     END ELSE UPG=FALSE
     ORIG.DEPTH=PDEPTH
     ORIG.WIDTH=PWIDTH
-    DIM SCREEN.PARAMS(100)
+!    DIM SCREEN.PARAMS(100)
     INCLUDE EB.EQUS SCREEN.PARAMS
     INCLUDE EB.OS.INCLUDES WHO
-    CALL EB_GETTCC(FG$TLINE, MAT SCREEN.PARAMS, TERM)
+!    CALL EB_GETTCC(FG$TLINE, MAT SCREEN.PARAMS, TERM)
+    CALL EB_UT_INIT
     EQU ESC TO CHAR(27)
     TOF=CHAR(12)
     STLN=1
@@ -95,8 +102,8 @@
     END CASE
 !  CLEOL=@(-4)
     EL=@(0,PDEPTH-1):CLEOL
-    HIOFF=BG:RVON
-    HION= FG:RVOFF
+    HIOFF=BG:RVOFF
+    HION= FG:RVON
     REV.OFF=RVON
     REV.ON=RVOFF
     CL=@(0,NORMAL.DEPTH):CLEOL:HION:REV.ON
@@ -405,6 +412,7 @@ FILE.ITEM:!
                 GOSUB 990
             END ELSE
                 OK=TRUE
+                IF CMD MATCHES "'C'1N0X" THEN CMD = 'CA ':CMD[2,-1]
                 IF FIELD(CMD,' ',1)='C' THEN CMD='CA':CMD[COL2(),99]
                 BEGIN CASE
                     CASE CMD MATCHES "2A' '1N0N' '1N0N"
@@ -494,7 +502,7 @@ FILE.ITEM:!
                 GO 215
             END
         CASE CMD='EA'
-            DATA "?"
+!            DATA "?"
             GOSUB WRITEA
             DATA 'ED ':FA
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
@@ -502,7 +510,7 @@ FILE.ITEM:!
             GOSUB 600
             GOSUB 900
         CASE CMD='EB'
-            DATA "?"
+!            DATA "?"
             GOSUB WRITEB
             DATA 'ED ':FB
             EXECUTE 'SELECT ':FB:' "':NDB:'"'
@@ -513,14 +521,14 @@ FILE.ITEM:!
             GOSUB WRITEA
             DATA 'EB ':FA
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
-            READ RECA FROM FILEA,NDA ELSE NULL
+            READ RECA FROM F.JET.PASTE,NDA ELSE NULL
             GOSUB 600
             GOSUB 900
         CASE CMD='EBB'
             GOSUB WRITEB
             DATA 'EB ':FB
             EXECUTE 'SELECT ':FB:' "':NDB:'"'
-            READ RECB FROM FILEB,NDB ELSE NULL
+            READ RECB FROM F.JET.PASTE,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
         CASE CMD='I'
@@ -669,7 +677,7 @@ FILE.ITEM:!
                 DATA 'UPG.WORKFILE',''
                 DATA UPGA, UPGB
                 DATA '','',''
-                EXECUTE 'COMPARE.ITEM'
+                EXECUTE 'COMPARE_ITEM'
                 READ LINEA FROM F.UPG.WORKFILE,UPGA ELSE NULL
                 READ LINEB FROM F.UPG.WORKFILE,UPGB ELSE NULL
                 CONVERT VM:AM TO SVM:VM IN LINEA
@@ -721,7 +729,11 @@ FILE.ITEM:!
             TMPA = SWAP(TMPA, ' ;!', ';!')
             TMPB = SWAP(TMPB, ' ;!', ';!')
         END
-        IF TMPA # TMPB THEN PAD=HION ELSE PAD=HIOFF
+        IF TMPA # TMPB THEN
+            PAD=HION
+        END ELSE
+            PAD=HIOFF
+        END
         LINEA=OCONV(LINEA,'MCP')
         LINEB=OCONV(LINEB,'MCP')
         IF LINEA='' THEN
@@ -900,7 +912,11 @@ FILE.ITEM:!
                 TMPA = SWAP(TMPA, ' ;!', ';!')
                 TMPB = SWAP(TMPB, ' ;!', ';!')
             END
-            IF TMPA # TMPB THEN PAD=HION ELSE PAD=HIOFF
+            IF TMPA # TMPB THEN
+                PAD=HION
+            END ELSE
+                PAD=HIOFF
+            END
             LINEA=TRIM(OCONV(LINEA,'MCP'), ' ', 'L')
             LINEB=TRIM(OCONV(LINEB,'MCP'), ' ', 'L')
             IF LINEA='' THEN

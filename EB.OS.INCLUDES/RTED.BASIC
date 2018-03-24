@@ -1,3 +1,4 @@
+    DEFFUN EB_REGEX()
     CONVERT CR TO '' IN DSPLY
     NBR.DSPLY=DCOUNT(DSPLY,AM)
     FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
@@ -5,19 +6,31 @@
     NEXT I
     CRT
     ERR.NOS=ERR.NOS<1,1,1>
-    IF Y#'B' AND Y#'P' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'error',1)) THEN
+    IF Y#'B' AND Y#'P' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
         source = FIELD(DSPLY<2>, '"', 2)
         IF LEN(source) AND FIELD(source, DIR_DELIM_CH, DCOUNT(source, DIR_DELIM_CH)) # ITNM THEN
             WRITE DSPLY ON JET.PASTE,'%DSPLY%'
             EXECUTE 'EB ':source
         END
         TXT="re-edit"
-        ROW=DCOUNT(DSPLY[1,INDEX(DSPLY,'offset',1)],AM)
-        INDROW=TRIM(FIELD(FIELD(DSPLY<ROW>,',',2),'(',1))
-        Y=DSPLY<ROW+1>
-        Z=REC<INDROW>
-        COL=INDEX(DSPLY<ROW+2>,'^',1)
-        COL+=(LEN(Z)-LEN(Y))+4
+        offsetpos = INDEX(DSPLY,'offset',1)
+        IF offsetpos THEN
+            ERRPOS = @FALSE
+        END ELSE
+            ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
+        END
+        IF ERRPOS THEN
+            INDROW = DSPLY[ERRPOS,MAX]
+            ERRPOS = INDEX(INDROW,'Line ', 1)
+            INDROW = FIELD(INDROW[ERRPOS, MAX], ' ', 2)
+        END ELSE
+            ROW=DCOUNT(DSPLY[1,offsetpos],AM)
+            INDROW=TRIM(FIELD(FIELD(DSPLY<ROW>,',',2),'(',1))
+            Y=DSPLY<ROW+1>
+            Z=REC<INDROW>
+            COL=INDEX(DSPLY<ROW+2>,'^',1)
+            COL+=(LEN(Z)-LEN(Y))+4
+        END
         INDROW-=11
         IF COL<5 THEN COL=5
         ROW=11

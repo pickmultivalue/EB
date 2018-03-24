@@ -170,7 +170,8 @@ RESTART: !
                     CASE FG$ACT.CODE=FG$OPT.CODE
                         CRT MSG.CLR:
                         SAVE.PSTIME=PSTIME:VM:PETIME
-                        PSTIME=PREV.HIST<2,DCOUNT(PREV.HIST<1>,VM)>
+                        PHCNT = DCOUNT(PREV.HIST<1>,VM)
+                        PSTIME=PREV.HIST<2,PHCNT>
                         CALL EB_CHOICES(10,14,'','','',PREV.HIST,RESULT,1:SVM:1:SVM:1,AM:PSTIME,2:SVM:3:SVM:1,'L#8':CTRL.C:'MTS':SVM:'L#8':CTRL.C:'MTS':SVM:'L#55','History')
                         IF RESULT#'' THEN
                             PETIME=RESULT<1>

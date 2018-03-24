@@ -1,4 +1,3 @@
-* @(#) EB_EXPANDFLNM.b Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION EB_EXPANDFLNM(FLNM)
 !
     DEFFUN GETFULLPATH()
@@ -8,15 +7,15 @@
 !
     DICT=FIELD(FLNM,' ',1)
     IF DICT='DICT' THEN
-    FLNM=FLNM[COL2()+1,-1]
-    DICT:=SPC
-END ELSE DICT=''
-IF INDEX(FLNM,DIR_DELIM_CH,1) THEN
-FullPath=FLNM
-END ELSE
-FullPath = GETFULLPATH(FLNM)
-END
-IF FullPath[1,2]=('.':DIR_DELIM_CH)[1,LEN(FullPath)] THEN
-FullPath=pwd:FullPath[2,-1]
-END
-RETURN DICT:FullPath
+        FLNM=FLNM[COL2()+1,-1]
+        DICT:=SPC
+    END ELSE DICT=''
+    IF INDEX(FLNM,DIR_DELIM_CH,1) THEN
+        FullPath=FLNM
+    END ELSE
+        FullPath = GETFULLPATH(FLNM)
+    END
+    IF FullPath[1,2]=('.':DIR_DELIM_CH)[1,LEN(FullPath)] THEN
+        FullPath=pwd:FullPath[2,LEN(FullPath)]
+    END
+    RETURN DICT:FullPath

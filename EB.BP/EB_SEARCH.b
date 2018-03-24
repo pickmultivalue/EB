@@ -9,6 +9,7 @@
     INCLUDE EB.EQUS ACT.CODES
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
+    DEFFUN EB_REGEX()
 MAIN$:!
     MAX=LEN(REC)
     LAST.AM=DCOUNT(REC,AM)
@@ -144,6 +145,8 @@ MAIN$:!
     IF SSTR='' THEN SSTR=OPTIONS; OPTIONS='' ELSE OPTIONS=OCONV(OPTIONS,'MCU')
     WHOLE.WORDS=INDEX(OPTIONS,'V',1) NE 0
     WHOLE.WORDS:=INDEX(OPTIONS,'S',1) NE 0
+    REGEX.SEARCH = INDEX(OPTIONS,'R',1)
+    WHOLE.WORDS:=REGEX.SEARCH
     CASE.INSENSITIVE = INDEX(OPTIONS,'I',1)
     IF CASE.INSENSITIVE THEN SSTR = UPCASE(SSTR)
     IF INDEX(OPTIONS,'C',1) THEN        ;! convert chars
@@ -285,7 +288,11 @@ RETRY:
                 Y=RDSP(J-INDROW+1)[1+OFFSET,PWIDTH-4]
                 IF TAB.MODE THEN CALL EB_TABS(Y,PWIDTH)
                 Y=OCONV(Y[1+OFFSET,PWIDTH-4],'MCP')
-                LINE.POS=INDEX(Y,SSTR,1)
+                IF REGEX.SEARCH THEN
+                    LINE.POS=EB_REGEX(Y,SSTR, @FALSE)
+                END ELSE
+                    LINE.POS=INDEX(Y,SSTR,1)
+                END
                 IF LINE.POS THEN
                     IF WHOLE.WORDS[1,1] THEN
                         OCC=2
@@ -353,7 +360,7 @@ RETRY:
         IF LN.POS > MIDWAY THEN
             LN.POS -= MIDWAY
             IF LN.POS < 1 THEN LN.POS = 1
-            MREC = '...':TRIM(MREC[LN.POS, -1])
+            MREC = '...':TRIM(MREC[LN.POS, MAX])
         END
         CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,PWIDTH-5],'MCP')
         CALL EB_FIND(LPOS,WHOLE.WORDS:'')
