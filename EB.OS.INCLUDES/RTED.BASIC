@@ -20,9 +20,10 @@
             ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
         END
         IF ERRPOS THEN
-            INDROW = DSPLY[ERRPOS,MAX]
-            ERRPOS = INDEX(INDROW,'Line ', 1)
-            INDROW = FIELD(INDROW[ERRPOS, MAX], ' ', 2)
+            TEMP = DSPLY[ERRPOS,MAX]
+            ERRPOS = INDEX(TEMP,'Line ', 1)
+            TEMP = FIELD(TEMP[ERRPOS, MAX], ' ', 2)
+            IF TEMP MATCHES "1N0N" THEN INDROW=TEMP
         END ELSE
             ROW=DCOUNT(DSPLY[1,offsetpos],AM)
             INDROW=TRIM(FIELD(FIELD(DSPLY<ROW>,',',2),'(',1))

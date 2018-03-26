@@ -1,4 +1,3 @@
-* @(#) COMPARE_ITEM.b Ported to jBASE 07:23:52  18 FEB 2010
 !
 ! Compiled On 19 Jun 1989 At 13:25
 ! Copyright C 1989 By Amalgamated Wireless (Australasia) Limited Ne Sigma Data.
@@ -24,8 +23,8 @@
             STOP 201,'POINTER-FILE'
         END
     END
-    TCL.OPTS = SYSTEM(1001)
-    FG$SENTENCE=TCL.OPTS<1>
+    CALL JBASEParseCommandLine(args, TCL.OPTS, FG$SENTENCE)
+    FG$SENTENCE=' ':CHANGE($FG$SENTENCE, @AM, ' ')
     TCL.OPTS=OCONV(TCL.OPTS<2>, 'MCU')
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)

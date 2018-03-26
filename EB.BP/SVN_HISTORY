@@ -222,3 +222,4 @@ Parse_Filters:
                 END CASE
         END CASE
     NEXT F
+    RETURN
