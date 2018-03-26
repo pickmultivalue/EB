@@ -15,7 +15,7 @@ MAIN$:!
     LAST.AM=DCOUNT(REC,AM)
     PR="--Press <RETURN>"
     RefreshRequired=FALSE
-    CASING OFF
+    CASING ON
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
     MSG='String (A{+-}/for all;V/vars;C/char) '
