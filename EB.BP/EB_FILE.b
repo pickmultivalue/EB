@@ -95,7 +95,7 @@ MAIN$:!
                     CASE THE.REST='OS.INCLUDES'
                         DAPPL='EB'
                         DTYPE='ITEM'
-                    CASE OCONV(FULLFLNM,'MCU') 'R#2'='BP' OR FULLFLNM 'R#3'='UTL' OR FULLFLNM 'R#2'='BT' OR ITNM 'R#2'='.b'
+                    CASE OCONV(FULLFLNM,'MCU') 'R#2'='BP' OR FULLFLNM 'R#3'='UTL' OR FULLFLNM 'R#2'='BT' OR ITNM 'R#2'='.b' OR ITNM 'R#6'='.jabba'
                         DTYPE = 'BASIC'
                     CASE COMMENT='--'
                         DTYPE='SQL'

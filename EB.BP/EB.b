@@ -1,7 +1,7 @@
 * @(#) EB.b Ported to jBASE 07:23:52  18 FEB 2010
 ! Initialisation
 ! ==============
-    CASING OFF
+    CASING ON
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -486,7 +486,7 @@ ALREADY.LOCKED: !
             GOSUB SET.MSG
         END
         CRT MSG.CLR:"New record ":PR:; RQM
-        IF ITNM 'R#2'#'.b' THEN
+        IF ITNM 'R#2'#'.b' AND ITNM 'R#6' # '.jabba' THEN
             IF INDEX('!*',COMMENT,1) THEN
                 CRT MSG.CLR:"Is this a BASIC program (Y/N)?":
                 YNC=35; YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
@@ -2333,6 +2333,7 @@ GET.EDIT.MODE: !
         CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.b'; EDIT.MODE='!'
+        CASE ITNM 'R#6'='.jabba'; EDIT.MODE='!'
         CASE FLNM 'R#2'='BP'; EDIT.MODE='!'
         CASE FLNM='MD' OR FLNM='VOC'; EDIT.MODE='C'
         CASE 1
@@ -2456,6 +2457,7 @@ SWITCH.FILE: !
     RETURN
 GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.b', 'T')
+    CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
     EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
     IF LEN(FLNM.CAT.OPTIONS) THEN
         FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE

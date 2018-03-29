@@ -160,11 +160,16 @@
                 OCCURS<OCC>=SPOS
             WHILE ALOC AND SPOS AND FIRST#'' DO REPEAT
             OCCS=OCC-(SPOS=0)
-                   DEBUG
             FOR I=OCCS TO 1 STEP -1
                 SPOS=OCCURS<I>
                 IF WHOLE THEN
-                    OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND INDEX(DELIMS,LINE[SPOS+RSTRL,1],1))
+                    LOOP
+                        OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND INDEX(DELIMS,LINE[SPOS+RSTRL,1],1))
+                    UNTIL OK DO
+                        NPOS=INDEX(LINE[SPOS+1,MAX],FIRST,OCC)
+                        IF NOT(NPOS) THEN BREAK
+                        SPOS += NPOS
+                    REPEAT
                 END ELSE OK=TRUE
                 IF OK THEN
                     IF CONFIRM THEN

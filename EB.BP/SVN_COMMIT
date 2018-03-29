@@ -21,9 +21,10 @@
 !
     IF NOT(SVN_OPENLOCKS(F.Locks)) THEN STOP 201, 'SVN.LOCKS'
 !
-    IF GETENV('JBCRELEASEDIR', jbcreleasedir) THEN
-        TempFile = jbcreleasedir:DIR_DELIM_CH:'tmp'
-    END ELSE TempFile = '.'
+!    IF GETENV('JBCRELEASEDIR', jbcreleasedir) THEN
+!        TempFile = jbcreleasedir:DIR_DELIM_CH:'tmp'
+!    END ELSE
+        TempFile = '.'
 !
     OPEN TempFile TO F.Temp ELSE STOP 201, TempFile
     IF NOT(GETENV('SVN_EDITOR', Editor)) THEN Editor = 'vi'
@@ -148,6 +149,7 @@
     UNTIL ANS='Y' DO REPEAT
     IO = ''
     IF LEN(FullPaths) AND LEN(Message) THEN
+        DEBUG
         IO = SVN_CHECKIN(SVN_GETHOMEPATH(FullPaths<1>), FullPaths, Message)
     END
     CRT

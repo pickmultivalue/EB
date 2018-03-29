@@ -1,9 +1,14 @@
     SUBROUTINE EB_GETMOUSE(FG$TYPEAHEAD.BUFF,EVENT,C,R)
-* @(#) EB_GETMOUSE.b Ported to jBASE 07:23:52  18 FEB 2010
-    ECHO OFF
+!    ECHO OFF
     EVENT=FG$TYPEAHEAD.BUFF
-    cleft=3-LEN(EVENT)
+    BTN=EVENT[1,1]
+    EVENT=FIELD(EVENT,'[',2)
+    R = FIELD(EVENT,';',1)-1
+    C = FIELD(EVENT[COL2()+1,9],'R',1)-1
     FG$TYPEAHEAD.BUFF=''
+    EVENT=(' "')[BTN,1]
+    RETURN
+    cleft=3-LEN(EVENT)
     nc=SYSTEM(14)
     IF nc THEN
         IF nc>cleft THEN nc=cleft
