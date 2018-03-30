@@ -149,7 +149,6 @@
     UNTIL ANS='Y' DO REPEAT
     IO = ''
     IF LEN(FullPaths) AND LEN(Message) THEN
-        DEBUG
         IO = SVN_CHECKIN(SVN_GETHOMEPATH(FullPaths<1>), FullPaths, Message)
     END
     CRT
