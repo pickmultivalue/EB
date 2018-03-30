@@ -1,4 +1,3 @@
-* @(#) EB.b Ported to jBASE 07:23:52  18 FEB 2010
 ! Initialisation
 ! ==============
     CASING ON
@@ -224,6 +223,10 @@
         CRT APC:'6;0O':ST:
         CRT APC:'1O|AM':ST:
     END
+    IF GETENV('EBACCUTERM',accuterm) THEN
+        CRT ESC:CHAR(2):1:
+    END ELSE accuterm = FALSE
+!
     EQU RTN.VAL TO 13
     DIM PATCH(11)
     EQU SPRNO TO PATCH(1)
@@ -2493,6 +2496,7 @@ WRAPUP: !
         CALL EB_STERM.MENU('EB.MENU','','',-1,'')
         CALL EB_AT.WINDOW.CLOSE(1)
     END ELSE CRT @(0,PDEPTH)
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     ECHO ON
     IF COL.80#'' AND COL.132#'' THEN
         IF PWIDTH=131 THEN
