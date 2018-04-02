@@ -1879,6 +1879,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
 !============
 TCL: !
     IF MOD(FG$STERM,3) ELSE SCR.LR=1; CRT @(-1)
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
@@ -1896,6 +1897,7 @@ TCL: !
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
     IF MOD(FG$STERM,3) THEN CALL EB_STERM.MENU('EB.MENU','','',1,'')
+    IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     CRT CURS.ON:
     RETURN
