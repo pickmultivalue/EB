@@ -117,7 +117,7 @@
     LOOP
         cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
         EXECUTE shell:cmd CAPTURING before
-        EXECUTE Editor:' ':K.Message
+        EXECUTE shell:Editor:' ':K.Message
         EXECUTE shell:cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)

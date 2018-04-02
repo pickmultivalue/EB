@@ -2213,7 +2213,6 @@ GET.PREVWORD: !
     END
 !
     RELEASE FIL,ITNM
-    DEBUG
     Z = SVN_DELETE(TRUE, FLNM, ITNM)
     Y = (FIELD(Z,SPC,1) = 'D')
     IF LEN(Z) = 0 OR Y THEN
