@@ -339,9 +339,11 @@
         END CASE
         IF POS THEN ITNM = LAST.EB<1,POS>
         IF ITNM#'' THEN
-            FLNM=FIELD(ITNM,'*',1)
-            EDIT.MODE=FIELD(ITNM,'*',2)
-            ITNM=ITNM[COL2()+1,MAX]
+            IF INDEX(ITNM, '*', 1) THEN
+                FLNM=FIELD(ITNM,'*',1)
+                EDIT.MODE=FIELD(ITNM,'*',2)
+                ITNM=ITNM[COL2()+1,MAX]
+            END
         END ELSE
             GO WRAPUP
         END
