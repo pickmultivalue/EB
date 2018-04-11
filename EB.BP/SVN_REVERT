@@ -1,4 +1,3 @@
-* @(#) SVN_REVERT Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_REVERT(FullPaths)
 !
 ! Function to add a program to the source control repository
@@ -15,6 +14,7 @@
     DEFFUN SVN_OPENLOCKS()
     DEFFUN SVN_SRC_STATUS()
     DEFFUN GET_CATALOG_FILE()
+    DEFFUN EBJSHOW()
     EQU TRUE TO 1, FALSE TO 0
 !
     IF NOT(SVN_OPENLOCKS(F.Locks)) THEN
@@ -39,7 +39,7 @@
                 OPEN FilePath TO F.Source THEN
                     recatalog = FALSE
                     IF GET_CATALOG_FILE(ItemName) = FilePath THEN
-                        EXECUTE 'jshow -c ':ItemName CAPTURING io
+                        io = EBJSHOW('-c ':ItemName)
                         IF COUNT(io, 'source') > 1 THEN
                             EXECUTE 'DECATALOG ':FilePath:' ':ItemName CAPTURING io
                         END ELSE

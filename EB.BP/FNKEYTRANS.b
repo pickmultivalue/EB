@@ -1,4 +1,5 @@
     FUNCTION FNKEYTRANS(chars)
+    DEFFUN EBJSHOW()
     l = LEN(chars)
     newchars = ''
     FOR i = 1 TO l
@@ -23,7 +24,7 @@
 ! Check for TType translator
 !
     ttTrans = 'tt':SYSTEM(7):'_TRANS'
-    EXECUTE 'jshow -c ':ttTrans CAPTURING io
+    io = EBJSHOW('-c ':ttTrans)
     IF LEN(io) THEN CALL @ttTrans(newchars)
 !
     RETURN (newchars)

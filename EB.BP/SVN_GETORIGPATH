@@ -1,4 +1,3 @@
-* @(#) SVN_GETORIGPATH Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GETORIGPATH(FilePath)
 !
 ! Return the original path of a given file
@@ -7,6 +6,7 @@
 !
     INCLUDE JBC.h
     DEFFUN GETFLNM()
+    DEFFUN EBJSHOW()
 !
     IF FilePath = '.' THEN
         IF GETENV('pwd',currdir) ELSE
@@ -15,7 +15,7 @@
         IO = '. ':currdir
     END ELSE
         FileName = GETFLNM(FilePath)
-        EXECUTE 'jshow -f ':FileName CAPTURING IO
+        IO = EBJSHOW('-f ':FileName)
     END
 !
     RETURN FIELD(TRIM(IO<1>), ' ', 2, 99)

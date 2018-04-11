@@ -1,5 +1,4 @@
     SUBROUTINE EB_VERS_CTRL(Op, lockvar, silent)
-* @(#) EB_VERS_CTRL.b Ported to jBASE 07:23:52  18 FEB 2010
 !
 ! Check out item from source control
 !
@@ -22,6 +21,7 @@
     DEFFUN GETFULLPATH()
     DEFFUN GET_CATALOG_FILE()
     DEFFUN GETYN()
+    DEFFUN EBJSHOW()
 !
     EQU spc TO ' '
     shell = CHAR(255):'k'
@@ -35,7 +35,7 @@
         BP_FILE = GETFLNM(FLNM)
     END ELSE
         BP_FILE = FLNM
-        EXECUTE shell:'jshow -f ':FLNM CAPTURING FilePath
+        FilePath = EBJSHOW(' -f ':FLNM)
         FilePath=OCONV(FilePath, 'MCP ')
         FilePath=TRIM(FilePath)
         FilePath=FIELD(FilePath,spc,2,99)

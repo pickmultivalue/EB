@@ -3,6 +3,7 @@
 ! Return full path for a given file
 !
     DEFFUN GETFLNM()
+    DEFFUN EBJSHOW()
     INCLUDE JBC.h
     CASING OFF
     shell = CHAR(255):'k'
@@ -18,11 +19,11 @@
         FLNM = FLNM[1, COL1()-1]
     END ELSE ITNM = ''
 !
-    EXECUTE 'jshow -f ':FLNM CAPTURING FullPath
+    FullPath = EBJSHOW('-f ':FLNM)
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
-        EXECUTE 'jshow -f ':temp CAPTURING FullPath
+        FullPath = EBJSHOW('-f ':temp)
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)

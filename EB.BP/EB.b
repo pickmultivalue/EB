@@ -17,6 +17,7 @@
     DEFFUN SVN_DELETE()
     DEFFUN SVN_GETORIGPATH()
     DEFFUN SVN_GET_REPOSITORY()
+    DEFFUN EBJSHOW()
     INCLUDE EB.EQUS EB.EQUS
     INCLUDE EB.EQUS OTHER.PARAMS
     EQU MAX TO 999999999
@@ -1304,7 +1305,7 @@ GET.HELP:   !
                             END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
                         END ELSE
                             DUMMY=FIELD(DUMMY:'(','(',1)
-                            EXECUTE 'jshow -c ':DUMMY CAPTURING IO
+                            IO = EBJSHOW('-c ':DUMMY)
                             IF LEN(IO) = 0 THEN DUMMY = ''
                         END
                 END CASE
@@ -1314,7 +1315,7 @@ GET.HELP:   !
                         prog=FIELD(DUMMY,' ',2)
                         DUMMY=DUMMY[COL2()+1, 99]
                     END ELSE
-                        EXECUTE 'jshow -c ':prog CAPTURING IO
+                        IO = EBJSHOW('-c ':prog)
                         BEGIN CASE
                             CASE LEN(IO)=0 ; prog=FLNM
                             CASE INDEX(IO, 'jCL', 1)
@@ -2464,7 +2465,7 @@ SWITCH.FILE: !
 GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.b', 'T')
     CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
-    EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
+    FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
     IF LEN(FLNM.CAT.OPTIONS) THEN
         FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
             FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
@@ -2516,7 +2517,7 @@ WRAPUP: !
             FULLFLNM=FLNM
             IF INDEX(FLNM,DIR_DELIM_CH,1) THEN
                 FLNM = FIELD(FLNM,DIR_DELIM_CH,DCOUNT(FLNM,DIR_DELIM_CH))
-                EXECUTE 'jshow -f ':FLNM CAPTURING FLNMO
+                FLNMO = EBJSHOW('-f ':FLNM)
                 IF FIELD(TRIM(FLNMO),SPC,2)#FULLFLNM THEN FLNM=FULLFLNM
             END
             ORIG_PATH = SVN_GETORIGPATH(FLNM)
