@@ -41,7 +41,6 @@
 !
 ! Initialise counter
 !
-    CASING OFF
     SOP=1
     ACNT=''
     LOOP

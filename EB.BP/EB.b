@@ -1,6 +1,5 @@
 ! Initialisation
 ! ==============
-    CASING ON
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -1423,7 +1422,9 @@ SCROLL.DOWN: !
 EB.SUB: !
     CALL EB_RSS(1)
     WRITE HEADERS ON F.currdir,'eb_headers'
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     EXECUTE DUMMY
+    IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     IF MOD(FG$STERM,3) THEN
         CALL EB_STERM.MENU('EB.MENU','','',1,'')

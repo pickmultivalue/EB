@@ -113,6 +113,7 @@
     Template<-1> = @AM:EndTemplate
     WRITE Template ON F.Temp, K.Template
     TempDir = GETFULLPATH(TempFile)
+    IF TempDir EQ '' THEN TempDir = '.'
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP
         cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
