@@ -1616,6 +1616,7 @@ CHG.LROW:
         CASE FTYP='E'
             Y='%':ITNM:'%'
             WRITE REC ON JET.PASTE,Y
+            IF accuterm THEN CRT ESC:CHAR(2):0:
             ECHO ON
             DATA INDROW+LROW-1
             DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED JET.PASTE ':Y; GOSUB EB.SUB
@@ -1625,6 +1626,7 @@ CHG.LROW:
                 IF NEW.REC#REC THEN REC=NEW.REC; SCR.UD=TRUE
                 NEW.REC=''
             END
+            IF accuterm THEN CRT ESC:CHAR(2):1:
         CASE FTYP='F'
             GOSUB INDENT
         CASE FTYP='G'
@@ -2534,16 +2536,18 @@ WRAPUP: !
             FOR P = 1 TO NBR.PROGS
                 PROG = PROGS<1, 1, P>
                 GOSUB PARSE.CATL
-                LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS ELSE
+                LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS THEN
+                    CAT.OPTS<2,POS,-1> = PROG
+                END ELSE
                     INS CAT.OPTIONS BEFORE CAT.OPTS<1,POS>
                     INS PROG BEFORE CAT.OPTS<2,POS>
                 END
             NEXT P
             NBR.CATS = DCOUNT(CAT.OPTS<1>, @VM)
             FOR C = 1 TO NBR.CATS
-                PROGS = CHANGE(CAT.OPTS<2, C>, @VM, SPC)
+                PROGS = CHANGE(CAT.OPTS<2, C>, @SVM, SPC)
                 CAT.OPTIONS = CAT.OPTS<1, C>
-                EXECUTE TRIM(CATALOG.VERB:SPC:CAT.OPTIONS):SPC:FLNM:SPC:PROGS
+                EXECUTE TRIM(CATALOG.VERB:SPC:CAT.OPTIONS):SPC:FULLFLNM:SPC:PROGS
             NEXT C
         NEXT F
     END
