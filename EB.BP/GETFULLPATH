@@ -27,7 +27,10 @@
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
         FullPath='x ':temp    ;! create a path with a dummy arg for FIELD below
-    END ELSE FullPath = FullPath<1>     ;! grab the first one
+    END ELSE
+        FINDSTR 'File:' IN FullPath SETTING attr ELSE attr = 1
+        FullPath = FullPath<attr>
+    END
 !
     FullPath=OCONV(FullPath, 'MCP ')    ;! remove any dodgy characters
     FullPath=TRIM(FullPath)
