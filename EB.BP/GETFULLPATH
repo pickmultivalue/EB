@@ -38,6 +38,7 @@
 ! Get everything after the first word (i.e. result of jshow -f)
 !
     FullPath=FIELD(FullPath,' ',2,999)
+   FullPath = FIELD(FullPath, '(', 1)
 !
 ! If the path starts with ".", replace with pwd
 !

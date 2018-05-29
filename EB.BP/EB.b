@@ -1316,14 +1316,7 @@ GET.HELP:   !
                         prog=FIELD(DUMMY,' ',2)
                         DUMMY=DUMMY[COL2()+1, 99]
                     END ELSE
-                        IO = EBJSHOW('-c ':prog)
-                        BEGIN CASE
-                            CASE LEN(IO)=0 ; prog=FLNM
-                            CASE INDEX(IO, 'jCL', 1)
-                                prog = FIELD(TRIM(IO), ' ',3)
-                                prog = FIELD(prog, DIR_DELIM_CH, 1, DCOUNT(prog, DIR_DELIM_CH))
-                            CASE 1; prog = ''
-                        END CASE
+                        prog=GET_CATALOG_FILE(prog)
                     END
                     DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
                 END
@@ -2473,14 +2466,24 @@ GET.CATL: !
     FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
     IF LEN(FLNM.CAT.OPTIONS) THEN
         FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
-            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS THEN
+                A = DCOUNT(FLNM.CAT.OPTIONS, @AM)
+                POS--
+                LOOP
+                    POS++
+                    LINE1 = FLNM.CAT.OPTIONS<POS>
+                    SOP = INDEX(LINE1, DIR_DELIM_CH:'lib', 1)
+                UNTIL SOP OR POS = A DO REPEAT
+                IF NOT(SOP) THEN POS = FALSE
+            END ELSE
                 POS = FALSE
             END
         END
         IF POS THEN
-            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
-            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
-            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+            FLNM.CAT.OPTIONS = FLNM.CAT.OPTIONS<POS>
+            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS, ':',DCOUNT(FLNM.CAT.OPTIONS, ':')))
+            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH))
+            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
         END ELSE FLNM.CAT.OPTIONS = ''
     END
     RETURN
