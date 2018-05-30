@@ -5,6 +5,11 @@
     DEFFUN GETFLNM()
     DEFFUN EBJSHOW()
     INCLUDE JBC.h
+    OPEN INFLNM TO DSCB THEN
+        IF IOCTL(DSCB,JBC_COMMAND_GETFILENAME,FullPath) THEN
+            RETURN(FullPath)
+        END
+    END
     shell = CHAR(255):'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN
@@ -28,8 +33,14 @@
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
         FullPath='x ':temp    ;! create a path with a dummy arg for FIELD below
     END ELSE
-        FINDSTR 'File:' IN FullPath SETTING attr ELSE attr = 1
-        FullPath = FullPath<attr>
+        FINDSTR 'File:' IN FullPath SETTING attr THEN
+            FullPath = FullPath<attr>
+        END ELSE
+            FullPath = CHANGE(TRIM(FullPath), '---', @AM)
+            IF DCOUNT(FullPath, @AM) GT 1 THEN
+                FullPath = TRIM(FullPath<3>)
+            END ELSE FullPath = FullPath<1>
+        END
     END
 !
     FullPath=OCONV(FullPath, 'MCP ')    ;! remove any dodgy characters
@@ -49,4 +60,4 @@
         FullPath := DIR_DELIM_CH:ITNM
     END
 !
-    RETURN FullPath
+    RETURN CHANGE(FullPath, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)

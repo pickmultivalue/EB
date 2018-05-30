@@ -18,4 +18,4 @@
     IF FullPath[1,2]=('.':DIR_DELIM_CH)[1,LEN(FullPath)] THEN
         FullPath=pwd:FullPath[2,LEN(FullPath)]
     END
-    RETURN DICT:FullPath
+    RETURN CHANGE(DICT:FullPath, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)

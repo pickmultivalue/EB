@@ -1,5 +1,4 @@
     SUBROUTINE EB_READINCL(HEADERS, CodeLine, IncludeString, Header, Recursive)
-* @(#) EB_READINCL.b Ported to jBASE 07:23:52  18 FEB 2010
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -10,7 +9,7 @@
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS ACT.CODES
     EQU MAX TO 999
-    MAIN$:!
+MAIN$:!
 #ifdef WIN32
     dir_sep=';'
     fromslash='/'; toslash='\'
@@ -35,25 +34,27 @@
     CONVERT '<>' TO '' IN incid
     CONVERT fromslash TO toslash IN incid
     PathFlag=COUNT(incid,toslash)
-    IF PathFlag THEN
-        IF incid[1,1]='"' THEN
-            incid=FIELD(incid,'"',2)
-        END
-        inclib=FIELD(incid,toslash,1,PathFlag)
-!        inclib=FLNM:toslash:inclib
-        incid=incid[COL2()+1,MAX]
-    END ELSE
-        CodeLine=''
-        IF NOT(GETENV('JBCRELEASEDIR',jbcdir)) THEN jbcdir='/usr/jbc'
-        IF NOT(GETENV('INCLUDE',inclib)) THEN inclib='.:':jbcdir:'/include'
-        CONVERT dir_sep TO @AM IN inclib
-        inclib<-1>=FLNM
-    END
+    CodeLine=''
+    IF NOT(GETENV('JBCRELEASEDIR',jbcdir)) THEN jbcdir='/usr/jbc'
+    IF NOT(GETENV('INCLUDE',inclib)) THEN inclib='.:':jbcdir:'/include'
+    CONVERT dir_sep TO @AM IN inclib
+    inclib<-1>=FLNM
     IncludeString=''
     LOC=0
     IF incid[1,1]='"' THEN
         INS "." BEFORE inclib<1>
         incid=FIELD(incid,'"',2)
+    END
+    IF PathFlag THEN
+        incpath=FIELD(incid,toslash,1,PathFlag)
+        incid=incid[COL2()+1,MAX]
+        INS '.' BEFORE inclib<1>
+        dc = DCOUNT(inclib, @AM)
+        FOR d = 1 TO dc
+            inclib<d> := toslash:incpath
+        NEXT d
+    END ELSE
+        inclib<-1>='include'
     END
     Header=''
     LOCATE incid IN HEADERS<1,vm_start> BY 'AL' SETTING POS THEN

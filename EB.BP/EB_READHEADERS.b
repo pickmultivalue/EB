@@ -16,7 +16,7 @@
         idx=INDEX(TREC[LOC,LEN(TREC)],'#include',1)
         IF idx THEN
             LOOP UNTIL idx=LOC OR TREC[LOC+idx-1,1]=@AM DO idx-- REPEAT
-            LINE=TREC[LOC+idx,100]
+            LINE=TREC[LOC+idx-1,100]
             LINE=LINE<1>
             idx+=LEN(LINE)
             CONVERT TAB TO SPC IN LINE

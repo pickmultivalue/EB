@@ -100,7 +100,10 @@ MAIN$:!
                     CASE COMMENT='--'
                         DTYPE='SQL'
                     CASE 1
-                        LOCATE DAPPL IN APPLICATION.CODES<1,vm_start> SETTING POS ELSE DAPPL=''
+                        LOCATE DAPPL IN APPLICATION.CODES<1,vm_start> SETTING POS ELSE
+                            rc = DCOUNT(DAPPL, DIR_DELIM_CH)
+                            DAPPL = FIELD(DAPPL, DIR_DELIM_CH, rc)
+                        END
                         DTYPE='ITEM'
                 END CASE
             END
