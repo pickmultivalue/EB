@@ -3,8 +3,8 @@
 ! Return full path for a given file
 !
     DEFFUN GETFLNM()
+    DEFFUN EBJSHOW()
     INCLUDE JBC.h
-    CASING OFF
     shell = CHAR(255):'k'
     IF NOT(GETENV('pwd', pwd)) THEN
         IF NOT(GETENV('PWD', pwd)) THEN
@@ -18,16 +18,19 @@
         FLNM = FLNM[1, COL1()-1]
     END ELSE ITNM = ''
 !
-    EXECUTE 'jshow -f ':FLNM CAPTURING FullPath
+    FullPath = EBJSHOW('-f ':FLNM)
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
-        EXECUTE 'jshow -f ':temp CAPTURING FullPath
+        FullPath = EBJSHOW('-f ':temp)
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
         FullPath='x ':temp    ;! create a path with a dummy arg for FIELD below
-    END ELSE FullPath = FullPath<1>     ;! grab the first one
+    END ELSE
+        FINDSTR 'File:' IN FullPath SETTING attr ELSE attr = 1
+        FullPath = FullPath<attr>
+    END
 !
     FullPath=OCONV(FullPath, 'MCP ')    ;! remove any dodgy characters
     FullPath=TRIM(FullPath)
@@ -35,6 +38,7 @@
 ! Get everything after the first word (i.e. result of jshow -f)
 !
     FullPath=FIELD(FullPath,' ',2,999)
+   FullPath = FIELD(FullPath, '(', 1)
 !
 ! If the path starts with ".", replace with pwd
 !

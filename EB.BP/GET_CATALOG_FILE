@@ -1,4 +1,3 @@
-* @(#) GET_CATALOG_FILE Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION GET_CATALOG_FILE(itnm)
 !
 ! Program designed to find the source file a given program id
@@ -6,11 +5,12 @@
 ! 04 DEC 2009 Peter Falson (jBASE)
 !
     EQU MAX TO 999999
+    DEFFUN EBJSHOW()
     prog_id = itnm
     IF prog_id 'R#2' = '.b' THEN
         prog_id = itnm[1, LEN(itnm)-3]
     END
-    EXECUTE 'jshow -c ':prog_id CAPTURING io
+    io = EBJSHOW('-c ':prog_id)
     fname = ''
     loc = 0
     LOOP

@@ -1,7 +1,5 @@
-* @(#) EB.b Ported to jBASE 07:23:52  18 FEB 2010
 ! Initialisation
 ! ==============
-    CASING ON
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -18,6 +16,7 @@
     DEFFUN SVN_DELETE()
     DEFFUN SVN_GETORIGPATH()
     DEFFUN SVN_GET_REPOSITORY()
+    DEFFUN EBJSHOW()
     INCLUDE EB.EQUS EB.EQUS
     INCLUDE EB.EQUS OTHER.PARAMS
     EQU MAX TO 999999999
@@ -224,6 +223,10 @@
         CRT APC:'6;0O':ST:
         CRT APC:'1O|AM':ST:
     END
+    IF GETENV('EBACCUTERM',accuterm) THEN
+        CRT ESC:CHAR(2):1:
+    END ELSE accuterm = FALSE
+!
     EQU RTN.VAL TO 13
     DIM PATCH(11)
     EQU SPRNO TO PATCH(1)
@@ -274,13 +277,15 @@
     CATL.LIST=''
     CALL EB_RSS(0)
     CALL EB_OPEN('',FLNM,FIL,0,FPOS)
-    IF ITNM='' OR NOT(FPOS) THEN
+    IF LEN(FLNM) AND FLNM NE '.' AND FLNM NE '..' AND (ITNM='' OR NOT(FPOS)) THEN
+        SITNM = ITNM
         ITNM=FLNM
         INCLUDE EB.OS.INCLUDES GET.FLNM
         IF FLNM='' THEN
             FLNM=ITNM
             ITNM=''
         END
+        IF LEN(SITNM) THEN ITNM<1,1,-1> = SITNM
     END
     READ LAST.EB FROM FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB' ELSE LAST.EB=''
     IF ITNM='' THEN
@@ -336,9 +341,11 @@
         END CASE
         IF POS THEN ITNM = LAST.EB<1,POS>
         IF ITNM#'' THEN
-            FLNM=FIELD(ITNM,'*',1)
-            EDIT.MODE=FIELD(ITNM,'*',2)
-            ITNM=ITNM[COL2()+1,MAX]
+            IF INDEX(ITNM, '*', 1) THEN
+                FLNM=FIELD(ITNM,'*',1)
+                EDIT.MODE=FIELD(ITNM,'*',2)
+                ITNM=ITNM[COL2()+1,MAX]
+            END
         END ELSE
             GO WRAPUP
         END
@@ -1299,7 +1306,7 @@ GET.HELP:   !
                             END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
                         END ELSE
                             DUMMY=FIELD(DUMMY:'(','(',1)
-                            EXECUTE 'jshow -c ':DUMMY CAPTURING IO
+                            IO = EBJSHOW('-c ':DUMMY)
                             IF LEN(IO) = 0 THEN DUMMY = ''
                         END
                 END CASE
@@ -1309,14 +1316,7 @@ GET.HELP:   !
                         prog=FIELD(DUMMY,' ',2)
                         DUMMY=DUMMY[COL2()+1, 99]
                     END ELSE
-                        EXECUTE 'jshow -c ':prog CAPTURING IO
-                        BEGIN CASE
-                            CASE LEN(IO)=0 ; prog=FLNM
-                            CASE INDEX(IO, 'jCL', 1)
-                                prog = FIELD(TRIM(IO), ' ',3)
-                                prog = FIELD(prog, DIR_DELIM_CH, 1, DCOUNT(prog, DIR_DELIM_CH))
-                            CASE 1; prog = ''
-                        END CASE
+                        prog=GET_CATALOG_FILE(prog)
                     END
                     DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
                 END
@@ -1417,7 +1417,9 @@ SCROLL.DOWN: !
 EB.SUB: !
     CALL EB_RSS(1)
     WRITE HEADERS ON F.currdir,'eb_headers'
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     EXECUTE DUMMY
+    IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     IF MOD(FG$STERM,3) THEN
         CALL EB_STERM.MENU('EB.MENU','','',1,'')
@@ -1609,6 +1611,7 @@ CHG.LROW:
         CASE FTYP='E'
             Y='%':ITNM:'%'
             WRITE REC ON JET.PASTE,Y
+            IF accuterm THEN CRT ESC:CHAR(2):0:
             ECHO ON
             DATA INDROW+LROW-1
             DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED JET.PASTE ':Y; GOSUB EB.SUB
@@ -1618,6 +1621,7 @@ CHG.LROW:
                 IF NEW.REC#REC THEN REC=NEW.REC; SCR.UD=TRUE
                 NEW.REC=''
             END
+            IF accuterm THEN CRT ESC:CHAR(2):1:
         CASE FTYP='F'
             GOSUB INDENT
         CASE FTYP='G'
@@ -1876,6 +1880,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
 !============
 TCL: !
     IF MOD(FG$STERM,3) ELSE SCR.LR=1; CRT @(-1)
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
@@ -1893,6 +1898,7 @@ TCL: !
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
     IF MOD(FG$STERM,3) THEN CALL EB_STERM.MENU('EB.MENU','','',1,'')
+    IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     CRT CURS.ON:
     RETURN
@@ -2206,7 +2212,6 @@ GET.PREVWORD: !
     END
 !
     RELEASE FIL,ITNM
-    DEBUG
     Z = SVN_DELETE(TRUE, FLNM, ITNM)
     Y = (FIELD(Z,SPC,1) = 'D')
     IF LEN(Z) = 0 OR Y THEN
@@ -2458,17 +2463,27 @@ SWITCH.FILE: !
 GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.b', 'T')
     CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
-    EXECUTE 'jshow -c ':firstProg CAPTURING FLNM.CAT.OPTIONS
+    FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
     IF LEN(FLNM.CAT.OPTIONS) THEN
         FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
-            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
+            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS THEN
+                A = DCOUNT(FLNM.CAT.OPTIONS, @AM)
+                POS--
+                LOOP
+                    POS++
+                    LINE1 = FLNM.CAT.OPTIONS<POS>
+                    SOP = INDEX(LINE1, DIR_DELIM_CH:'lib', 1)
+                UNTIL SOP OR POS = A DO REPEAT
+                IF NOT(SOP) THEN POS = FALSE
+            END ELSE
                 POS = FALSE
             END
         END
         IF POS THEN
-            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS<POS>, ':', 2))
-            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH) - 1)
-            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'lib':@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
+            FLNM.CAT.OPTIONS = FLNM.CAT.OPTIONS<POS>
+            FLNM.CAT.OPTIONS = TRIM(FIELD(FLNM.CAT.OPTIONS, ':',DCOUNT(FLNM.CAT.OPTIONS, ':')))
+            FLNM.CAT.OPTIONS = FIELD(FLNM.CAT.OPTIONS, DIR_DELIM_CH, 1, COUNT(FLNM.CAT.OPTIONS, DIR_DELIM_CH))
+            FLNM.CAT.OPTIONS = '-L':FLNM.CAT.OPTIONS:@AM:'-o':FLNM.CAT.OPTIONS:DIR_DELIM_CH:'bin'
         END ELSE FLNM.CAT.OPTIONS = ''
     END
     RETURN
@@ -2493,6 +2508,7 @@ WRAPUP: !
         CALL EB_STERM.MENU('EB.MENU','','',-1,'')
         CALL EB_AT.WINDOW.CLOSE(1)
     END ELSE CRT @(0,PDEPTH)
+    IF accuterm THEN CRT ESC:CHAR(2):0:
     ECHO ON
     IF COL.80#'' AND COL.132#'' THEN
         IF PWIDTH=131 THEN
@@ -2509,7 +2525,7 @@ WRAPUP: !
             FULLFLNM=FLNM
             IF INDEX(FLNM,DIR_DELIM_CH,1) THEN
                 FLNM = FIELD(FLNM,DIR_DELIM_CH,DCOUNT(FLNM,DIR_DELIM_CH))
-                EXECUTE 'jshow -f ':FLNM CAPTURING FLNMO
+                FLNMO = EBJSHOW('-f ':FLNM)
                 IF FIELD(TRIM(FLNMO),SPC,2)#FULLFLNM THEN FLNM=FULLFLNM
             END
             ORIG_PATH = SVN_GETORIGPATH(FLNM)
@@ -2525,16 +2541,18 @@ WRAPUP: !
             FOR P = 1 TO NBR.PROGS
                 PROG = PROGS<1, 1, P>
                 GOSUB PARSE.CATL
-                LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS ELSE
+                LOCATE CAT.OPTIONS IN CAT.OPTS<1> SETTING POS THEN
+                    CAT.OPTS<2,POS,-1> = PROG
+                END ELSE
                     INS CAT.OPTIONS BEFORE CAT.OPTS<1,POS>
                     INS PROG BEFORE CAT.OPTS<2,POS>
                 END
             NEXT P
             NBR.CATS = DCOUNT(CAT.OPTS<1>, @VM)
             FOR C = 1 TO NBR.CATS
-                PROGS = CHANGE(CAT.OPTS<2, C>, @VM, SPC)
+                PROGS = CHANGE(CAT.OPTS<2, C>, @SVM, SPC)
                 CAT.OPTIONS = CAT.OPTS<1, C>
-                EXECUTE TRIM(CATALOG.VERB:SPC:CAT.OPTIONS):SPC:FLNM:SPC:PROGS
+                EXECUTE TRIM(CATALOG.VERB:SPC:CAT.OPTIONS):SPC:FULLFLNM:SPC:PROGS
             NEXT C
         NEXT F
     END

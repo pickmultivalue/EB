@@ -10,6 +10,7 @@
     DEFFUN SVN_OPENLOCKS()
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
+    DEFFUN EBJSHOW()
 !
     Re_Read_Flag = FALSE
     shell = @IM:'k'
@@ -84,7 +85,7 @@
                         CALL EB_REFRESH
                         RETURN
                     END
-                    EXECUTE shell:'jshow -c diff':shellend CAPTURING diff
+                    diff = EBJSHOW('-c diff':shellend)
                     msg = '(C)ompare with current'
                     opts = 'C'
                     IF diff#'' THEN

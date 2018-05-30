@@ -113,11 +113,12 @@
     Template<-1> = @AM:EndTemplate
     WRITE Template ON F.Temp, K.Template
     TempDir = GETFULLPATH(TempFile)
+    IF TempDir EQ '' THEN TempDir = '.'
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP
         cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
         EXECUTE shell:cmd CAPTURING before
-        EXECUTE Editor:' ':K.Message
+        EXECUTE shell:Editor:' ':K.Message
         EXECUTE shell:cmd CAPTURING after
         READ Message FROM F.Temp, K.Template ELSE RETURN
         Abandon = (before = after)
@@ -149,7 +150,6 @@
     UNTIL ANS='Y' DO REPEAT
     IO = ''
     IF LEN(FullPaths) AND LEN(Message) THEN
-        DEBUG
         IO = SVN_CHECKIN(SVN_GETHOMEPATH(FullPaths<1>), FullPaths, Message)
     END
     CRT

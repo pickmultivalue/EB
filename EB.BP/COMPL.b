@@ -147,7 +147,7 @@
         WRITELIST LIST ON FLNM:'v':SFLNM:SUFFIX
         IF COMPARE.ITEM THEN
             DATA.STACK='COMPARE_ITEM ':FLNM:' ':SFLNM
-            IF T.OPTION THEN DATA.STACK := '(T'
+            IF T.OPTION THEN DATA.STACK := ' (T'
             DATA DATA.STACK
             EXECUTE 'GET-LIST ':FLNM:'v':SFLNM
         END ELSE

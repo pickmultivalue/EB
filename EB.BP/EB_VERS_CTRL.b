@@ -21,6 +21,7 @@
     DEFFUN GETFULLPATH()
     DEFFUN GET_CATALOG_FILE()
     DEFFUN GETYN()
+    DEFFUN EBJSHOW()
 !
     EQU spc TO ' '
     shell = @IM:'k'
@@ -34,7 +35,7 @@
         BP_FILE = GETFLNM(FLNM)
     END ELSE
         BP_FILE = FLNM
-        EXECUTE shell:'jshow -f ':FLNM CAPTURING FilePath
+        FilePath = EBJSHOW(' -f ':FLNM)
         FilePath=OCONV(FilePath, 'MCP ')
         FilePath=TRIM(FilePath)
         FilePath=FIELD(FilePath,spc,2,99)
