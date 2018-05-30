@@ -224,9 +224,8 @@
         CRT APC:'6;0O':ST:
         CRT APC:'1O|AM':ST:
     END
-    IF GETENV('EBACCUTERM',accuterm) THEN
-        CRT ESC:CHAR(2):1:
-    END ELSE accuterm = FALSE
+    IF NOT(GETENV('EBACCUTERM',accuterm)) THEN accuterm = TRUE
+    IF accuterm THEN CRT ESC:CHAR(2):1:
 !
     EQU RTN.VAL TO 13
     DIM PATCH(11)
@@ -584,6 +583,7 @@ ALREADY.LOCKED: !
         HEADERS=''
 !      CALL EB_READHEADERS(REC, HEADERS)
     END
+    UNDO_STACK = ''
     GO STRT         ;! Skip over subroutines
 !==========
 AUTO.SAVE:! time check
@@ -592,6 +592,7 @@ AUTO.SAVE:! time check
 !==========
 SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
     IF NEW.CHARS#'' THEN GOSUB ADD.CHARS
+UPDATE.REC:!
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
             CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
@@ -748,6 +749,7 @@ TOP: !
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
                 GO TOP
             END ELSE
+                GOSUB ADD_TO_UNDO
                 IF INS.MODE THEN
                     SP1=""
                     IF COL>4 THEN
@@ -851,6 +853,7 @@ SCROLL.LINE:    !
                 LROW+=1; CRT LF:; GO TOP
             END
         CASE CHR=CR
+            GOSUB ADD_TO_UNDO
             TABLEN=ITAB<ITABPOS>
             IF LROW=(PDEPTH-1) THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
@@ -930,6 +933,7 @@ SCROLL.LINE:    !
             CALL EB_SEARCH
             GOTO TOP
         CASE FG$ACT.CODE=FG$DEL.CHAR.CODE
+            GOSUB ADD_TO_UNDO
             IF TRIM(RDSP(LROW)[LCOL,MAX])='' THEN
                 IF TRIM(RDSP(LROW))#'' THEN
                     CALL EB_TRIM(RDSP(LROW),RDSP(LROW):'',SPC,'T')
@@ -946,17 +950,19 @@ SCROLL.LINE:    !
                 END ELSE
                     CRT @(COL,ROW):CLEOL:; CRTLN=RDSP(LROW)[LCOL+1,PWIDTH+1-COL]; GOSUB CRT.LN
                 END
-                INS RDSP(LROW)[LCOL,1] BEFORE DEL.LIST<1>
+!                INS RDSP(LROW)[LCOL,1] BEFORE DEL.LIST<1>
                 RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
                 GOSUB CHG.LROW; LLEN-=1; GO TOP
             END
         CASE FG$ACT.CODE=FG$INS.CODE
+            GOSUB ADD_TO_UNDO
             IF INS.CHAR#'' THEN CRT @(COL,ROW):INS.CHAR: ELSE
                 CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW)[LCOL,PWIDTH-COL]; GOSUB CRT.LN
             END
             RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:SPC:RDSP(LROW)[LCOL,MAX])
             GOSUB CHG.LROW; LLEN+=1; GO TOP
         CASE FG$ACT.CODE=FG$TAG.CODE
+            GOSUB ADD_TO_UNDO
             IF RDSP(LROW)[1,COMMENTLEN]#COMMENT<1,1,1> THEN
                 RDSP(LROW)=COMMENT<1,1,1>:RDSP(LROW)[1,MAX]:COMMENT<1,1,2>
                 Y=1
@@ -993,10 +999,15 @@ SCROLL.LINE:    !
         CASE FG$ACT.CODE=FG$BWORD.CODE
             IF LCOL>1 THEN GOSUB BACK.WORD
         CASE FG$ACT.CODE=FG$DEL.LINE.CODE OR FG$ACT.CODE=FG$CUT.CODE OR FG$ACT.CODE=FG$SEL.CODE
+            GOSUB ADD_TO_UNDO
+            SREC = REC
             CALL EB_CUT(G60)
+            IF REC = SREC THEN GOSUB POP_UNDO
+            SREC = ''
             IF SCR.UD THEN GO STRT
             IF G60 THEN GO TOP
         CASE FG$ACT.CODE=FG$INS.LINE.CODE OR FG$ACT.CODE=FG$PASTE.CODE OR FG$ACT.CODE=FG$ADD.CODE
+            GOSUB ADD_TO_UNDO
             IF FG$ACT.CODE=FG$ADD.CODE THEN
                 IF LROW>(PDEPTH-2) THEN
                     IF CHANGED THEN GOSUB SCRN.TO.REC
@@ -1163,9 +1174,10 @@ GEOL:       !
                 SCR.LR=1
             END
         CASE FG$ACT.CODE=FG$DEL.WORD.CODE
+            GOSUB ADD_TO_UNDO
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             GOSUB GET.WORD
-            INS WORD BEFORE DEL.LIST<1>
+!            INS WORD BEFORE DEL.LIST<1>
             RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
             CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
@@ -1184,16 +1196,20 @@ GET.HELP:   !
                 IF MOD(FG$STERM,3) ELSE SCR.UD=TRUE
             END
         CASE FG$ACT.CODE=FG$L.CASE.CODE
+            GOSUB ADD_TO_UNDO
             INCLUDE EB.INCLUDES EB.CASE
         CASE FG$ACT.CODE=FG$ABT.CODE
             IF CHANGED THEN GOSUB SCRN.TO.REC
             GOSUB Abort
         CASE FG$ACT.CODE=FG$UNDEL.CODE
-            I=FALSE; Z=DEL.LIST<1>; GOSUB INS.TXT; DEL DEL.LIST<1>
+DEBUG
+            GOSUB POP_UNDO
+!            I=FALSE; Z=DEL.LIST<1>; GOSUB INS.TXT; DEL DEL.LIST<1>
             GO TOP
         CASE FG$ACT.CODE=FG$TAB.CODE
             TABLEN=ITAB<ITABPOS>
             IF TRIM(RDSP(LROW))#'' THEN
+                GOSUB ADD_TO_UNDO
                 TABSPC=SPACE(TABLEN)
                 IF COMMENT[1,1]='/' THEN
                     TMP=TAB
@@ -1234,12 +1250,16 @@ GET.HELP:   !
             GOSUB TCL
         CASE CHR=REP.STR
             IF CHANGED THEN GOSUB SCRN.TO.REC
+            SREC = REC
+            GOSUB ADD_TO_UNDO
             CALL EB_GETRPL(MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
             IF FG$ACT.CODE = FG$AMD.CODE THEN
                 GOSUB SAVE.ITEM
                 FG$ACT.CODE = FG$AMD.CODE
                 GO NEXT.ITEM
             END
+            IF REC = SREC THEN GOSUB POP_UNDO
+            SREC = ''
         CASE FG$ACT.CODE=FG$JMP.CODE
             IF CHANGED THEN GOSUB SCRN.TO.REC
             LLEN1=LLEN+1
@@ -1317,7 +1337,9 @@ GET.HELP:   !
                         prog=FIELD(DUMMY,' ',2)
                         DUMMY=DUMMY[COL2()+1, 99]
                     END ELSE
-                        prog=GET_CATALOG_FILE(prog)
+                        IF DCOUNT(DUMMY, ' ') = 1 THEN
+                            prog=GET_CATALOG_FILE(prog)
+                        END ELSE prog = ''
                     END
                     DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
                 END
@@ -1386,6 +1408,7 @@ GET.HELP:   !
     GO STRT
     INCLUDE EB.INCLUDES CRT.LN
 ADD.CHARS:!
+    GOSUB ADD_TO_UNDO
     IF NOT(STRT) THEN
         CALL EB_TABCOL(RDSP(LROW),COL-LEN(NEW.CHARS),LCOL,TRUE)
         STRT=LCOL
@@ -2503,6 +2526,21 @@ PARSE.CATL: !
             CAT.OPTIONS=CAT.OPTIONS<1>
         END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
     END ELSE CAT.OPTIONS = ' '
+    RETURN
+ADD_TO_UNDO:
+    GOSUB UPDATE.REC
+    IF REC # RAISE(UNDO_STACK<1>) THEN
+        INS COL:SVM:ROW:VM:LOWER(REC) BEFORE UNDO_STACK<1>
+    END
+    RETURN
+POP_UNDO:
+    IF LEN(UNDO_STACK) THEN
+        REC = RAISE(UNDO_STACK<1>)
+        COL=REC<1,1,1>; ROW = REC<1,1,2>; DEL REC<1,1>
+        DEL UNDO_STACK<1>
+        CALL EB_REFRESH
+    END
+    SCR.UD = 1
     RETURN
 WRAPUP: !
     IF MOD(FG$STERM,3) THEN
