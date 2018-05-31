@@ -2498,8 +2498,15 @@ GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
     FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
     IF LEN(FLNM.CAT.OPTIONS) THEN
-        FINDSTR 'Executable:' IN FLNM.CAT.OPTIONS SETTING POS ELSE
-            FINDSTR 'Subroutine:' IN FLNM.CAT.OPTIONS SETTING POS THEN
+        SOP = @FALSE
+        POS = INDEX(FLNM.CAT.OPTIONS, 'Executable:', 1)
+        IF NOT(POS) THEN
+            POS = INDEX(FLNM.CAT.OPTIONS, 'Subroutine:', 1)
+            SOP = POS
+        END
+        IF POS THEN
+            POS = DCOUNT(FLNM.CAT.OPTIONS[1,POS], @AM)
+            IF SOP THEN
                 A = DCOUNT(FLNM.CAT.OPTIONS, @AM)
                 POS--
                 LOOP
