@@ -85,6 +85,7 @@ EQU UserName    TO EXTRAS(33)
 EQU SFIL        TO EXTRAS(34)
 EQU HFIL        TO EXTRAS(35)
 EQU UNDO_STACK  TO EXTRAS(36)
+EQU MD_flag     TO EXTRAS(37)
 
 EQU VersEdit   TO 1
 EQU VersSync   TO 2

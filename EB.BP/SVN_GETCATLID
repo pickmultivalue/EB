@@ -1,4 +1,3 @@
-* @(#) SVN_GETCATLID Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_GETCATLID(ItemName)
 !
 ! Function to return full source path of a catalogged program
@@ -15,14 +14,14 @@
     FileName = GETFULLPATH(FileName)
 !
     OPEN FileName TO F.Source ELSE
-    RETURN ''       ;! error
+        RETURN ''       ;! error
     END
 !
     READV temp FROM F.Source, ItemName, 1 ELSE
-    ItemName := '.b'
-    READV temp FROM F.Source, ItemName, 1 ELSE
-    RETURN ''       ;! error
-    END
+        ItemName := '.b'
+        READV temp FROM F.Source, ItemName, 1 ELSE
+            RETURN ''       ;! error
+        END
     END
 !
     RETURN FileName:DIR_DELIM_CH:ItemName

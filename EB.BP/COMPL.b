@@ -1,4 +1,3 @@
-* @(#) COMPL.b Ported to jBASE 07:23:52  18 FEB 2010
     INCLUDE JBC.h
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
@@ -18,6 +17,7 @@
     A.OPTION=INDEX(OPTIONS,'A',1)
     M.OPTION=INDEX(OPTIONS,'M',1)
     I.OPTION=INDEX(OPTIONS,'I',1)
+    O.OPTION=INDEX(OPTIONS,'O',1)
     COMPARE.ITEM=INDEX(OPTIONS,'C',1)
     IF OPTIONS#'' THEN SENT=SENT[1,COL1()-1]
     FLNM=FIELD(SENT,' ',2)
@@ -39,6 +39,7 @@
         CRT 'V option trims trailing VMs'
         CRT 'C option starts off COMPARE.ITEM for the different items'
         CRT 'I option suppress output'
+        CRT 'O option include object code'
         CRT 'M include missing items'
         STOP
     END
@@ -66,8 +67,14 @@
         READNEXT ID ELSE EOF=1
     UNTIL EOF OR SYSTEM(14) DO
         sfx = FIELD(ID,'.',DCOUNT(ID,'.'))
-        LOCATE sfx IN bad_suffixes<am_start> SETTING bpos ELSE bpos = FALSE
-        IF ID[1,1]='_' OR ID[1,1]='!' OR ID[1,1]='$' OR bpos ELSE
+        IF O.OPTION THEN
+            bpos = @FALSE
+        END ELSE
+            LOCATE sfx IN bad_suffixes<am_start> SETTING bpos ELSE
+                bpos = (ID[1,1]='_' OR ID[1,1]='!' OR ID[1,1]='$')
+            END
+        END
+        IF NOT(bpos) THEN
             READ FITEM FROM FIRST,ID ELSE FITEM=''
             UPGITEM=FITEM; UPGFNAME=FLNM; UPGINAME=ID
             GOSUB DECRYPT
@@ -83,10 +90,10 @@
                 END
                 FCOUNT=DCOUNT(FITEM,AM)
                 SCOUNT=DCOUNT(SFITEM,AM)
-!        IF T.OPTION THEN
-!          FITEM=TRIM(FITEM,' ',"A")
-!          SFITEM=TRIM(SFITEM,' ',"A")
-!        END
+                IF T.OPTION THEN
+                    FITEM=TRIM(FITEM,' ',"A")
+                    SFITEM=TRIM(SFITEM,' ',"A")
+                END
                 IF FITEM#SFITEM THEN
                     I=1
                     FPOS=0; SPOS=0
