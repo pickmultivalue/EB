@@ -24,8 +24,12 @@
     IF LEN(uncompiled) = 0 THEN
         CRT 'All compiled'
         STOP
+    END ELSE
+        dc = DCOUNT(uncompiled, @AM)
+        CRT
+        CRT dc:' item':(IF dc GT 1 THEN 's' ELSE ''):' selected'
+        CRT
     END
-
 !    list_name = 'uncompiled_':fname
     WRITELIST uncompiled ON '';! list_name
 

@@ -4,6 +4,7 @@
 ! All Rights Reserved.
 !
 !
+    DEFFUN EBJSHOW()
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
