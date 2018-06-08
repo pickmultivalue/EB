@@ -180,7 +180,7 @@ DisplayEBcmds:
     keyboard<-1> = 'Next field' hash:FNKEYTRANS(EB$CHARS(9))
     keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB$CHARS(10))
     keyboard<-1> = 'Help' hash:FNKEYTRANS(EB$CHARS(11))
-!    keyboard<-1> = 'FUNK.CH' hash:FNKEYTRANS(EB$CHARS(12))
+    keyboard<-1> = 'Redo' hash:FNKEYTRANS(EB$CHARS(12))
 !    keyboard<-1> = 'DEL.CMD' hash:FNKEYTRANS(EB$CHARS(13))
 !    keyboard<-1> = 'AMD.CMD' hash:FNKEYTRANS(EB$CHARS(14))
 !    keyboard<-1> = 'PRT.CMD' hash:FNKEYTRANS(EB$CHARS(15))

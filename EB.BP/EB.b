@@ -585,6 +585,7 @@ ALREADY.LOCKED: !
         CALL EB_READHEADERS(REC, HEADERS)
     END
     UNDO_STACK = ''
+    UNDO_POS = 0
     GO STRT         ;! Skip over subroutines
 !==========
 AUTO.SAVE:! time check
@@ -1126,8 +1127,7 @@ SCROLL.LINE:    !
             OFFSET+=5
             SCR.LR=1; COL=5
         CASE FG$ACT.CODE=FG$FUNK.CODE
-            CALL EB_FUNKEYS
-            IF MOD(FG$STERM,3) THEN CALL EB_STERM.MENU('EB.MENU','','',1,'')
+            GOSUB REV_UNDO
             GO TOP
         CASE FG$ACT.CODE=FG$IND.CODE
             GOSUB CHG.LROW
@@ -2553,13 +2553,22 @@ PRE_ADD_TO_UNDO:
     END
     RETURN
 POP_UNDO:
-    IF LEN(UNDO_STACK) THEN
-        REC = RAISE(UNDO_STACK<1>)
-        COL=REC<1,1>; ROW = REC<1,2>; INDROW = REC<1,3>; DEL REC<1>
-        DEL UNDO_STACK<1>
-        SCR.UD = 1
-        CALL EB_REFRESH
+    IF DCOUNT(UNDO_STACK, @AM) GT UNDO_POS THEN
+        UNDO_POS++
+        GOSUB DO_UNDO
     END ELSE CRT BELL:
+    RETURN
+REV_UNDO:
+    IF UNDO_POS GT 1 THEN
+        UNDO_POS--
+        GOSUB DO_UNDO
+    END ELSE CRT BELL:
+    RETURN
+DO_UNDO:
+    REC = RAISE(UNDO_STACK<UNDO_POS>)
+    COL=REC<1,1>; ROW = REC<1,2>; INDROW = REC<1,3>; DEL REC<1>
+    SCR.UD = 1
+    CALL EB_REFRESH
     RETURN
 WRAPUP: !
     IF MOD(FG$STERM,3) THEN
