@@ -1,9 +1,6 @@
     SUBROUTINE EB_REFRESH
-* Changed by PORTBAS ->     SUBROUTINE EB_REFRESH
-* @(#) EB_REFRESH.b Ported to jBASE 07:23:52  18 FEB 2010
     COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
     INCLUDE EB.INCLUDES lex.h
-* @(#) EB.REFRESH Ported to jBASE 16:15:16  27 JUL 2001
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST

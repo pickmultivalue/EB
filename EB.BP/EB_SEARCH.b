@@ -1,4 +1,6 @@
     SUBROUTINE EB_SEARCH
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -9,6 +11,7 @@
     INCLUDE EB.EQUS ACT.CODES
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
+    INCLUDE EB.EQUS COLOURS
     DEFFUN EB_REGEX()
 MAIN$:!
     MAX=LEN(REC)
@@ -316,7 +319,8 @@ RETRY:
                     DIMON = BG
                     DIMOFF = FG
                 END ELSE DIMON = ''; DIMOFF = ''
-                CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":Y:
+                CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":;!Y:
+                CRTLN=Y; GOSUB CRT.LN
             NEXT J
         END
         LROW=STR.LINE
@@ -416,4 +420,23 @@ FORMAT: !
 SETMREC:
     MREC=REC[RPOS,EPOS]
     IF CASE.INSENSITIVE THEN MREC = UPCASE(MREC)
+    RETURN
+CRT.LN: !
+    IF LEN(colors<1,1>) EQ 0 THEN
+        CRT CRTLN:
+        RETURN
+    END
+    CRTLN = CHANGE(CRTLN, BG, '_bg_')
+    CRTLN = CHANGE(CRTLN, FG, '_fg_')
+    CRTLN = LOWER(lexLine(CRTLN,colors) )
+    tokens = RAISE(RAISE(CRTLN<1,2>))
+    sitokenCounte = 0
+    FOR tokenCount = 1 TO DCOUNT(tokens,@FM)
+        io = tokens<tokenCount,3>:tokens<tokenCount,1>
+        io = CHANGE(io, '_bg_', RVON)
+        io = CHANGE(io, '_fg_', RVOFF)
+        CRT io:
+        sitokenCounte += tokens<tokenCount,4>
+    NEXT tokenCount
+    CRT WHITE<1,1>:FG:
     RETURN

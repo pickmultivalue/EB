@@ -1,4 +1,3 @@
-* @(#) lexLine.b Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION lexLine(line,colours)
     COMMON /EB_LEXER/reservedWords, colors, COMMENTS, COMMENTLEN
 * token should have the following structure
