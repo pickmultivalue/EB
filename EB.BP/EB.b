@@ -25,7 +25,6 @@
     EQU Bslsh TO '\', Fslsh TO '/'
     shell = @IM:'k'
     shellend = ' 2>&1'
-    colors = initColors()
     DEBUG.CODES = ''
     rc = GETENV('EB_DEBUG', DEBUG.CODES)
     DEBUG.CODES = CHANGE(DEBUG.CODES, ',', @AM)
@@ -111,6 +110,7 @@
     FG$CRT.PAGES='RTED'
     FG$CRT.PAGE=1
     MATREAD COLOURS FROM FG$EB.PARAMS,'COLOUR@':FG$TERM.TYPE ELSE MAT COLOURS=''
+    colors = initColors(MAT COLOURS)
     IF EMBED.ATTR<1,1> THEN HLON=RVON; HLOFF=RVOFF ELSE HLON=BG; HLOFF=FG
     INCLUDE EB.EQUS COLOURS
     IF WHITE<1,1>#'' THEN
@@ -2504,6 +2504,9 @@ GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.b', 'T')
     CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
     FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
+    IF NOT(LEN(FLNM.CAT.OPTIONS)) AND firstProg EQ UPCASE(firstProg) THEN
+        FLNM.CAT.OPTIONS = EBJSHOW('-c ':LOWCASE(firstProg))
+    END
     IF LEN(FLNM.CAT.OPTIONS) THEN
         SOP = @FALSE
         POS = INDEX(FLNM.CAT.OPTIONS, 'Executable:', 1)

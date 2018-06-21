@@ -3,6 +3,7 @@ CRT.LN:   !
     CONVERT VM:SVM TO ']\' IN CRTLN
     IF TAB.MODE THEN CALL EB_TABS(CRTLN,PWIDTH)
     CRTLN = OCONV(CRTLN,'MCP')
+    IF isComment(CRTLN) AND LEN(colors<1,1>) EQ 0 THEN CRT BG:
     CRTLN = LOWER(lexLine(CRTLN,colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
     sitokenCounte = 0
@@ -10,5 +11,5 @@ CRT.LN:   !
         CRT tokens<tokenCount,3>:tokens<tokenCount,1>:
         sitokenCounte += tokens<tokenCount,4>
     NEXT tokenCount
-    CRT C_WHITE:
+    CRT C_WHITE:FG:
     RETURN
