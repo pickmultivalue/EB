@@ -1,5 +1,5 @@
     SUBROUTINE EB_SEARCH
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
@@ -428,7 +428,7 @@ CRT.LN: !
     END
     CRTLN = CHANGE(CRTLN, BG, '_bg_')
     CRTLN = CHANGE(CRTLN, FG, '_fg_')
-    CRTLN = LOWER(lexLine(CRTLN,colors) )
+    CRTLN = LOWER(lexLine(RDSP(J-INDROW+1),CRTLN,colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
     sitokenCounte = 0
     FOR tokenCount = 1 TO DCOUNT(tokens,@FM)

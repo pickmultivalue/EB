@@ -1,6 +1,5 @@
-* @(#) isReservedWord.b Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION isReservedWord(token)
-    COMMON /EB_LEXER/reservedWords
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
     am_start=IF_COMPILED_PRIME

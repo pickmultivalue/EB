@@ -1,5 +1,5 @@
     SUBROUTINE EB_PASTE(G60)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
@@ -60,7 +60,8 @@ MAIN$:!
             LOOP
                 Y=X+PDEPTH-2
                 FOR K=X TO Y
-                    CRT @(0,K-X):CLEOL:K"R#4":" ":; CRTLN=STMP<K>[1,PWIDTH-4]; GOSUB CRT.LN
+                    CRT @(0,K-X):CLEOL:K"R#4":" ":
+                    CRTLN=STMP<K>;CRT.X=1;CRT.Y=PWIDTH-4; GOSUB CRT.LN
                 NEXT K
                 CRT MSG.CLR:"Press <return>":
                 L=30; Z=''
@@ -123,8 +124,8 @@ MAIN$:!
                 INS CHECK.LINE BEFORE REC<INDROW+ROW>
                 IF SCR.UD=-1 THEN
                     CRT @(0,ROW):INS.LINE:@(5,ROW):
-                    CRTLN=CHECK.LINE[1,PWIDTH-4]
-                    CALL EB_TABS(CRTLN,PWIDTH)
+                    CRTLN=CHECK.LINE;CRT.X=1;CRT.Y=PWIDTH-4
+!                    CALL EB_TABS(CRTLN,PWIDTH)
                     GOSUB CRT.LN
                 END
             END ELSE INS IDENT BEFORE REC<INDROW+ROW>

@@ -1,10 +1,11 @@
 CRT.LN:   !
-    CHR1=RDSP(LROW)[1,COMMENTLEN]
+    wholeLine = CRTLN
+    CRTLN = CRTLN[CRT.X,CRT.Y]
     CONVERT VM:SVM TO ']\' IN CRTLN
     IF TAB.MODE THEN CALL EB_TABS(CRTLN,PWIDTH)
     CRTLN = OCONV(CRTLN,'MCP')
-    IF isComment(CRTLN) AND LEN(colors<1,1>) EQ 0 THEN CRT BG:
-    CRTLN = LOWER(lexLine(CRTLN,colors) )
+    IF isComment(wholeLine) AND LEN(colors<1,1>) EQ 0 THEN CRT BG:
+    CRTLN = LOWER(lexLine(wholeLine, CRTLN, colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
     sitokenCounte = 0
     FOR tokenCount = 1 TO DCOUNT(tokens,@FM)

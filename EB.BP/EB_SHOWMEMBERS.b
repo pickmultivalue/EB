@@ -1,6 +1,5 @@
     SUBROUTINE EB_SHOWMEMBERS(WORD)
-* @(#) EB_SHOWMEMBERS.b Ported to jBASE 07:23:52  18 FEB 2010
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)

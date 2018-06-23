@@ -1,26 +1,36 @@
-  FLNMS = EBJSHOW('-c ':ITNM)
-  IF LEN(FLNMS) EQ 0 THEN
-      IF ITNM = UPCASE(ITNM) THEN
-          ITNM = LOWCASE(ITNM)
-      END ELSE
-          ITNM = UPCASE(ITNM)
-      END
-      FLNMS = EBJSHOW('-c ':ITNM)
-  END
-  IF FLNMS#'' THEN
-      FLNMDC = DCOUNT(FLNMS,@AM)
-      FOR FLNMI = 1 TO FLNMDC
-          FLNM = FLNMS<FLNMI>
-          FLNMPOS=INDEX(FLNM,'source file',1)
-          IF FLNMPOS THEN
-              FLNM=FIELD(FLNM[FLNMPOS,MAX],' ',3)
-              FLNM=TRIM(OCONV(FLNM,'MCP '))
-              IF FLNM='unknown' THEN FLNM='.'
-              BREAK
-          END ELSE FLNM=''
-      NEXT FLNMI
-  END ELSE
-      IF NOT(INDEX(ITNM, DIR_DELIM_CH, 1)) THEN ITNM='.':DIR_DELIM_CH:ITNM
-      FLNM=FIELD(ITNM,DIR_DELIM_CH,1,COUNT(ITNM,DIR_DELIM_CH))
-      ITNM=ITNM[COL2()+1,MAX]
-  END
+    FLNMS = ''
+    IF INDEX(ITNM, DIR_DELIM_CH, 1) THEN
+        FLNM = FIELD(ITNM, DIR_DELIM_CH, 1, COUNT(ITNM, DIR_DELIM_CH))
+        OPENPATH FLNM TO FIL THEN
+            ITNM = ITNM[COL2()+1, 999]
+            FLNMS = FLNM
+        END
+    END
+    IF LEN(FLNMS) EQ 0 THEN
+        FLNMS = EBJSHOW('-c ':ITNM)
+        IF LEN(FLNMS) EQ 0 THEN
+            IF ITNM = UPCASE(ITNM) THEN
+                ITNM = LOWCASE(ITNM)
+            END ELSE
+                ITNM = UPCASE(ITNM)
+            END
+            FLNMS = EBJSHOW('-c ':ITNM)
+        END
+        IF FLNMS#'' THEN
+            FLNMDC = DCOUNT(FLNMS,@AM)
+            FOR FLNMI = 1 TO FLNMDC
+                FLNM = FLNMS<FLNMI>
+                FLNMPOS=INDEX(FLNM,'source file',1)
+                IF FLNMPOS THEN
+                    FLNM=FIELD(FLNM[FLNMPOS,MAX],' ',3)
+                    FLNM=TRIM(OCONV(FLNM,'MCP '))
+                    IF FLNM='unknown' THEN FLNM='.'
+                    BREAK
+                END ELSE FLNM=''
+            NEXT FLNMI
+        END ELSE
+            IF NOT(INDEX(ITNM, DIR_DELIM_CH, 1)) THEN ITNM='.':DIR_DELIM_CH:ITNM
+            FLNM=FIELD(ITNM,DIR_DELIM_CH,1,COUNT(ITNM,DIR_DELIM_CH))
+            ITNM=ITNM[COL2()+1,MAX]
+        END
+    END

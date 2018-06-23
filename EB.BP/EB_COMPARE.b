@@ -1,8 +1,6 @@
     SUBROUTINE EB_COMPARE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
-* @(#) EB_COMPARE.b Ported to jBASE 07:23:52  18 FEB 2010
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
-* @(#) EB.MERGE Ported to jBASE 16:15:15  27 JUL 2001
 !
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)

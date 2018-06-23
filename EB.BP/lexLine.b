@@ -1,5 +1,5 @@
-    FUNCTION lexLine(line,colours)
-    COMMON /EB_LEXER/reservedWords, colors, COMMENTS, COMMENTLEN
+    FUNCTION lexLine(wholeline, line,colours)
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
 * token should have the following structure
 *
 *   token
@@ -20,7 +20,7 @@
     IF line = ""  THEN RETURN result
 
 *-- Flag as whole line is a comment
-    temp = TRIM(line)
+    temp = TRIM(wholeline)
     CHANGE " " TO "" IN temp
 !    IF temp[1,1] MATCHES "*":@VM:"!":@VM:"#" OR isComment(temp) THEN
     IF isComment(temp) THEN

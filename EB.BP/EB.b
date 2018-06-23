@@ -4,7 +4,7 @@
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
     COM RDSP(100), CHANGES(100)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.INCLUDES jbcReserved.h
     INCLUDE EB.INCLUDES cReserved.h
@@ -842,7 +842,7 @@ CHECK.CODES: !
                                 DIMOFF = FG
                             END ELSE DIMON = ''; DIMOFF = ''
                             CRT DIMON:INDROW 'R#4 ':DIMOFF:
-                            CRTLN=RDSP(1)[1+OFFSET,PWIDTH-4]
+                            CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
                             S=LROW; LROW=1; GOSUB CRT.LN; LROW=S
                             CRT MSG.DSP:
                         END ELSE SCR.UD=TRUE; SCR.LR=TRUE
@@ -957,10 +957,10 @@ SCROLL.LINE:    !
             END ELSE
                 IF NOT(TAB.MODE) AND DEL.CHAR#'' THEN
                     CRT @(COL,ROW):DEL.CHAR:
-                    CRTLN=RDSP(LROW)[PWIDTH-4+OFFSET,2]
-                    IF CRTLN[2,1]#'' THEN CRT @(PWIDTH-1,ROW):; GOSUB CRT.LN
+                    CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
+                    IF CRTLN[CRT.X+1,1]#'' THEN CRT @(PWIDTH-1,ROW):; GOSUB CRT.LN
                 END ELSE
-                    CRT @(COL,ROW):CLEOL:; CRTLN=RDSP(LROW)[LCOL+1,PWIDTH+1-COL]; GOSUB CRT.LN
+                    CRT @(COL,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+1;CRT.Y=PWIDTH+1-COL; GOSUB CRT.LN
                 END
 !                INS RDSP(LROW)[LCOL,1] BEFORE DEL.LIST<1>
                 RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
@@ -969,7 +969,7 @@ SCROLL.LINE:    !
         CASE FG$ACT.CODE=FG$INS.CODE
             GOSUB ADD_TO_UNDO
             IF INS.CHAR#'' THEN CRT @(COL,ROW):INS.CHAR: ELSE
-                CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW)[LCOL,PWIDTH-COL]; GOSUB CRT.LN
+                CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
             END
             RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:SPC:RDSP(LROW)[LCOL,MAX])
             GOSUB CHG.LROW; LLEN+=1; GO TOP
@@ -985,7 +985,7 @@ SCROLL.LINE:    !
                     RDSP(LROW)=RDSP(LROW)[1,LEN(RDSP(LROW))-2]
                 END
             END
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1,PWIDTH-5]; GOSUB CRT.LN
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
             IF COL>5 THEN
                 COL+=Y
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
@@ -1142,7 +1142,7 @@ SCROLL.LINE:    !
             GOSUB INDENT
         CASE FG$ACT.CODE=FG$SUS.CODE
             RDSP(LROW)=REC<INDROW+ROW>
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
             CHANGES(LROW)=FALSE
         CASE FG$ACT.CODE=FG$TOP.CODE
             IF ROW#0 THEN
@@ -1196,7 +1196,7 @@ GEOL:       !
             GOSUB GET.WORD
 !            INS WORD BEFORE DEL.LIST<1>
             RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN; CRT @(COL,ROW):
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
         CASE FG$ACT.CODE=FG$HLP.CODE
 GET.HELP:   !
@@ -1238,7 +1238,7 @@ GET.HELP:   !
                     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
                 END ELSE
                     IF INS.CHAR#'' THEN CRT @(COL,ROW):STR(INS.CHAR,TABLEN): ELSE
-                        CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=RDSP(LROW)[LCOL+OFFSET,PWIDTH-1-COL]; GOSUB CRT.LN
+                        CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+OFFSET;CRT.Y=PWIDTH-1-COL; GOSUB CRT.LN
                     END
                     RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:TMP:RDSP(LROW)[LCOL,MAX])
                 END
@@ -1448,7 +1448,7 @@ SCROLL.DOWN: !
         DIMOFF = FG
     END ELSE DIMON = ''; DIMOFF = ''
     CRT @(0,(PDEPTH-2)):CLEOL:DIMON:I 'R#4 ':DIMOFF:
-    CRTLN=RDSP(PDEPTH-1)[1+OFFSET,PWIDTH-4]
+    CRTLN=RDSP(PDEPTH-1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
     GOSUB CRT.LN
     IF DEL.LINE='' THEN CRT MSG.DSP:
     Y=2
@@ -1778,7 +1778,7 @@ CHG.LROW:
             CONVERT VM:AM TO SVM:VM IN STMP
             IF STMP#RDSP(LROW) THEN RDSP(LROW)=STMP; GOSUB CHG.LROW
             IF MOD(FG$STERM,3) THEN
-                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN
+                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
             END ELSE SCR.UD=1
         CASE FTYP='S'
             STMP=RDSP(LROW)
@@ -1786,7 +1786,7 @@ CHG.LROW:
             IF POS THEN
                 RDSP(LROW)=STMP
                 GOSUB CHG.LROW
-                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW)[1+OFFSET,PWIDTH-4]; GOSUB CRT.LN
+                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
             END
         CASE FTYP='X'
 !      GOSUB ABORT
@@ -1830,7 +1830,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     CHANGES(LROW+1)=TRUE
     IF LROW<(PDEPTH-1) THEN
         SCR.LR=1-2*(INS.LINE#''); SCRL=ROW
-        CRT CLEOL:@(0,ROW+1):INS.LINE:@(5,ROW+1):; CRTLN=RDSP(LROW+1)[1,PWIDTH-5]; GOSUB CRT.LN
+        CRT CLEOL:@(0,ROW+1):INS.LINE:@(5,ROW+1):; CRTLN=RDSP(LROW+1);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
         GOSUB CHG.LROW
     END ELSE
         GOSUB CHG.LROW
@@ -1878,10 +1878,11 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     IF TAB.MODE THEN
         CALL EB_TABCOL(RDSP(LROW+J.LINE),0,LCOL,FALSE)
         CRTLN=RDSP(LROW+J.LINE)
+        CRT.X=1;CRT.Y=PWIDTH+1-COL
         CRT @(5,ROW):
     END ELSE
         CRT @(COL-DUMMY,ROW):SPC:CLEOL:
-        CRTLN=TMP[1,PWIDTH+1-COL]
+        CRTLN=TMP;CRT.X=1;CRT.Y=PWIDTH+1-COL
     END
     GOSUB CRT.LN
     CHANGES(LROW+J.LINE)=TRUE
@@ -2129,7 +2130,7 @@ INS.TXT: !
     RDSP(LROW)=Y:Z:RDSP(LROW)[LCOL,MAX]
     Y=LEN(Z)
     GOSUB CHG.LROW; LLEN+=Y
-    CRT @(COL,ROW):; CRTLN=RDSP(LROW)[LCOL,PWIDTH-COL]; GOSUB CRT.LN
+    CRT @(COL,ROW):; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
     IF I THEN
         LCOL+=Y
         CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
@@ -2439,6 +2440,7 @@ SET.MODE: !
         CASE COUNT(EDIT.MODE,'c')
             reservedWords = cReserved
             comments='//':@VM:'/*'          ;! crude for now
+            comments<-1>=@VM:'*/'           ;! end of comment
         CASE 1
             reservedWords = jbcReserved
             comments='!':@VM:'*'
