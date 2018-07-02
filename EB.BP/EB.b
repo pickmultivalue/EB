@@ -40,6 +40,7 @@
         READ.ONLY.MODE = @TRUE
         EDIT.MODE = CHANGE(EDIT.MODE,'V','')
     END ELSE READ.ONLY.MODE = @FALSE
+    BINARY.MODE = INDEX(EDIT.MODE, 'B', 1)
     FG$SENTENCE=TRIM(FG$SENTENCE[1,COL1()-1])
     INCLUDE EB.OS.INCLUDES OS
     INCLUDE EB.OS.INCLUDES WHO
@@ -446,6 +447,9 @@ READ.ITEM:!
     lockvar=TRUE
     FIRST.READ=(SFLNM#HFLNM)
 REREAD.ITEM: !
+    IF BINARY.MODE THEN
+        rc = IOCTL(FIL, JIOCTL_COMMAND_CONVERT, "RB,WB")
+    END
 !
 ! Tricky bit here....
 ! If multiple items are being processed from a particular file
