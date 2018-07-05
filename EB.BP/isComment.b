@@ -9,6 +9,7 @@
     terminatechars = test[LEN(test)-commentlen+1, commentlen]
 !
     result = IS_UNKNOWN
+    incomment = @FALSE
 !
     LOCATE commentchars IN comments<1> SETTING cpos THEN
         incomment = LEN(comments<2,cpos>)
