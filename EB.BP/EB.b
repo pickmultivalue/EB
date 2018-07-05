@@ -287,7 +287,9 @@
             FLNM=ITNM
             ITNM=''
         END
-        IF LEN(SITNM) THEN ITNM<1,1,-1> = SITNM
+        IF LEN(SITNM) THEN
+            FG$SENTENCE = SITNM:' ':FG$SENTENCE
+        END
     END
     READ LAST.EB FROM FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB' ELSE LAST.EB=''
     IF ITNM='' THEN

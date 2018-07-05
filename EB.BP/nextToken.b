@@ -1,11 +1,12 @@
     FUNCTION nextToken(currentPos,endPos,line,lastProcessed)
 
-    inQuotes = 0
-    buildingToken = 0
+    EQU spc TO ' '
+    inQuotes = @FALSE
+    buildingToken = @FALSE
     quoteChar = ""
     token = ""
     result = ""
-    buildingSpace = 0
+    buildingSpace = @FALSE
 
     INCLUDE EB.INCLUDES lexCharTypes.h
 
@@ -15,43 +16,43 @@
         BEGIN CASE
             CASE INDEX(wraps,char,1)
                 IF inQuotes THEN
-                    IF quoteChar = char THEN
+                    IF quoteChar EQ char THEN
                         token := char
                         result = token
                         RETURN result
                     END ELSE token := char
                 END ELSE
-                    inQuotes = 1
+                    inQuotes = @TRUE
                     quoteChar = char
                     token := char
                 END
 
             CASE inQuotes
                 token := char
-                buildingToken = 1
+                buildingToken = @TRUE
 
-            CASE char = " "
+            CASE char EQ spc
                 IF buildingToken THEN
                     result = token
                     lastProcessed -= 1
                 END ELSE
                     x = 0
-                    IF line[ (lastProcessed+1) , 1] = " " THEN
-                        LOOP WHILE line[ (lastProcessed) , 1] = " "
+                    IF line[lastProcessed+1, 1] EQ spc THEN
+                        LOOP WHILE line[lastProcessed, 1] EQ spc
                             lastProcessed += 1
                             x += 1
                         REPEAT
                         result = SPACE(x)
                         lastProcessed -= 1
                     END ELSE
-                        result = " "
+                        result = spc
                     END
                 END
                 RETURN result
 
             CASE INDEX(numbers,char,1)
                 token := char
-                buildingToken = 1
+                buildingToken = @TRUE
             CASE INDEX(breaks,char,1) AND NOT(inQuotes)
                 IF buildingToken THEN
                     result = token
@@ -62,7 +63,7 @@
                 RETURN result
             CASE 1
                 token := char
-                buildingToken = 1
+                buildingToken = @TRUE
         END CASE
     NEXT lastProcessed
 
