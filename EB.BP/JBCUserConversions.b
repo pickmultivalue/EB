@@ -1,6 +1,4 @@
     SUBROUTINE JBCUserConversions(result, source, code, type, error)
-* Changed by PORTBAS ->     SUBROUTINE JBCUserConversions (result, source, code, type, error)
-* @(#) JBCUserConversion.b Ported to jBASE 07:23:52  18 FEB 2010
     BEGIN CASE
         CASE code MATCHES "'VDOTL#'0N" OR code MATCHES "'VDOTR#'0N" OR code MATCHES "'VDOTC#'0N"
             DispLen = OCONV(code,'MCN')

@@ -1,10 +1,4 @@
     SUBROUTINE EB_EREPLACE(STMP,Sub,REP,TOT.CNT,START.POS)
-* @(#) EB_EREPLACE.b Ported to jBASE 07:23:52  18 FEB 2010
-* Changed by PORTBAS ->     SUBROUTINE EBLA.EREPLACE(STMP,SUB,REP,TOT.CNT,START.POS)
-* @(#) EB.EREPLACE Ported to jBASE 16:15:14  27 JUL 2001
-*  The following variable names were converted
-*   SUB
-*
     EQU MAX TO 9999999
     IF Sub=REP THEN RETURN
     START.POS=1
