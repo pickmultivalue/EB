@@ -519,7 +519,7 @@ ALREADY.LOCKED: !
             END ELSE Y='N'
         END ELSE
             Y='Y'
-            Z=ITNM[1,-3]
+            Z=FIELD(ITNM, '.', 1, COUNT(ITNM,'.'))
         END
         IF Y='Y' THEN
             REC='! PROGRAM ':Z:AM:BASE.ITEM
