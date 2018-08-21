@@ -1,4 +1,3 @@
-* @(#) SVN_OPENLOCKS Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_OPENLOCKS(F.Locks)
 !
 ! OPEN 'SVN.LOCKS' and pass back the file variable
@@ -6,9 +5,10 @@
 ! Returns 1 if succussful, 0 if not
 !
     INCLUDE JBC.h
+    DEFFUN EBGETHOME()
     fname = 'SVN.LOCKS'
 !
-    OPEN fname TO F.Locks ELSE
+    OPEN EBGETHOME():fname TO F.Locks ELSE
         rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
         fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:fname
         OPEN fname TO F.Locks ELSE
