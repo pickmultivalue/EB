@@ -601,7 +601,8 @@ ALREADY.LOCKED: !
         CALL EB_READHEADERS(REC, HEADERS)
     END
     UNDO_STACK = ''
-    UNDO_POS = 0
+    UNDO_POS = 1
+    GOSUB ADD_TO_UNDO
     GO STRT         ;! Skip over subroutines
 !==========
 AUTO.SAVE:! time check
@@ -1236,7 +1237,7 @@ GET.HELP:   !
             IF TRIM(RDSP(LROW))#'' THEN
                 GOSUB ADD_TO_UNDO
                 TABSPC=SPACE(TABLEN)
-                IF COMMENT[1,1]='/' THEN
+                IF TAB.MODE THEN
                     TMP=TAB
                 END ELSE
                     TMP=TABSPC
