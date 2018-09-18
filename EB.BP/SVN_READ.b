@@ -41,11 +41,11 @@
         ItemName = ItemName[1, COL1()-1]
     END
     root = SVN_GETROOT(FilePath)
-    #ifdef WIN32
+#ifdef WIN32
     JOIN_CMD='&&'
-    #else
+#else
     JOIN_CMD=';'
-    #endif
+#endif
     cmd='cd ':root:JOIN_CMD:'git show ':revision:':':ItemName
     EXECUTE shell:cmd:shellend CAPTURING Record
     IF FIELD(Record, ':', 1) = 'fatal' THEN

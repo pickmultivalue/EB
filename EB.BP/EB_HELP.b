@@ -112,15 +112,18 @@ MAIN$:!
     END
     OS.HELP=FALSE
     WORD = TRIM(WORD)
-    EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
+    EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
+    IF LEN(list) EQ 0 THEN
+        EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
+    END
     loc=0
     manpages=''
-    FWORD=WORD;!:'()'
+    FWORD=UPCASE(WORD);!:'()'
     LOOP
         REMOVE line FROM list AT loc SETTING delim
         line=SWAP(line,', ',@VM)
         FINDSTR FWORD IN line<1,vm_start> SETTING POS THEN
-            vol=OCONV(line,'MCN')
+            vol=OCONV(FIELD(line,'(',2),'MCN')
             IF vol#'' THEN
                 POS=INDEX(line,vol,1)
                 vol=FIELD(line[POS,9],')',1)
