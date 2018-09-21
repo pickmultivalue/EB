@@ -50,7 +50,8 @@
     Repository := '/':FileName
     repo = Repository
 !
-    IO = SVN_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
+!    IO = SVN_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
+    IO = SVN_EXEC('log ':FileName:DIR_DELIM_CH:ItemName, TRUE)
 !
     history = ''
     loc = 0

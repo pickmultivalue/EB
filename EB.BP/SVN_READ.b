@@ -46,7 +46,7 @@
 #else
     JOIN_CMD=';'
 #endif
-    cmd='cd ':root:JOIN_CMD:'git show ':revision:':':ItemName
+    cmd='cd ':root:JOIN_CMD:'git show ':revision:':.':DIR_DELIM_CH:ItemName
     EXECUTE shell:cmd:shellend CAPTURING Record
     IF FIELD(Record, ':', 1) = 'fatal' THEN
         FilePath = CHANGE(FilePath, homedir:DIR_DELIM_CH, '')
