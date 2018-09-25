@@ -26,6 +26,8 @@ MAIN$:!
     CRT MSG.CLR:MSG:
     SAVEROW=ROW
     L=PWIDTH-1-ICOL; SSTR=''; SRCH.STR=''
+    SPWIDTH = PWIDTH
+    PWIDTH = 999
     OPTIONS=''
     RPOS=1
     IF FG$ACT.CODE=FG$MULTI.CODE THEN FG$ACT.CODE=FALSE ELSE FG$LAST.ACT.CODE=FG$ACT.CODE
@@ -54,7 +56,7 @@ MAIN$:!
         IF LEN(Z)=0 THEN Z=SSS<RPOS>
     END
     IF FG$ACT.CODE=FG$SEARCH.CODE THEN FG$ACT.CODE=FALSE
-    IF FG$ACT.CODE THEN GO 4099
+    IF FG$ACT.CODE THEN GO 4096
     LOCATE Z IN SSS<am_start> SETTING POS ELSE
         IF POS<20 THEN POS=0 ELSE POS=20
     END
@@ -79,7 +81,7 @@ MAIN$:!
         DUMMY=RDSP(LROW); GOSUB FORMAT
         SPOS=INDEX(REC,AM,INDROW+ROW)
         curlies = 0
-        IF DUMMY='' THEN GO 4099 ELSE
+        IF DUMMY='' THEN GO 4096 ELSE
             STRT=INDROW+ROW+LNM
             IF DUMMY[1,3]#'!#!' THEN
                 Y=I-Indent
@@ -126,7 +128,7 @@ MAIN$:!
                     LOCATE SSTR IN DUMMY<am_start> SETTING POS ELSE
                         LOCATE LINE IN DUMMY<am_start> SETTING POS ELSE
                             DUMMY=SWAP(DUMMY,AM,' or ')
-                            CRT @(0,(PDEPTH-1)):BELL:CLEOL:'Expected ':DUMMY[1,PWIDTH-14]:'...':; RQM
+                            CRT @(0,(PDEPTH-1)):BELL:CLEOL:'Expected ':DUMMY[1,SPWIDTH-14]:'...':; RQM
                         END
                     END
                 END
@@ -136,12 +138,12 @@ MAIN$:!
                 END ELSE ROW=STRT-INDROW; COL=I+Indent
                 SCR.UD=1
                 CALL EB_REFRESH
-                RETURN
-            END ELSE GO 4099
+                GO 4099
+            END ELSE GO 4096
         END
     END
-    IF SSTR=ESC THEN GO 4099
-    IF SSTR="" AND PSSTR="" THEN GO 4099
+    IF SSTR=ESC THEN GO 4096
+    IF SSTR="" AND PSSTR="" THEN GO 4096
     REPEATSEARCH = (SSTR=PSSTR)
     OPTIONS=FIELD(SSTR,'/',1)
     SSTR=SSTR[COL2()+1,MAX]
@@ -283,15 +285,27 @@ RETRY:
             CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         END
         LCOL=STR.POS+COL
+        SCOL = COL
         CALL EB_TABCOL(RDSP(STR.LINE),COL,LCOL,FALSE)
-        IF OFFSET AND LCOL<PWIDTH OR OFFSET#OLD.OFFSET THEN SCR.LR=1
+        IF COL GE (SPWIDTH-3) THEN
+            ADJUST = COL-SCOL
+        END ELSE
+            ADJUST = 0-OFFSET
+        END
+            OFFSET += ADJUST
+            COL -= ADJUST;!+3 ;! 3?
+            LCOL -= ADJUST;!+3 ;! 3?
+!        END
+        IF OFFSET AND COL<SPWIDTH OR OFFSET#OLD.OFFSET THEN SCR.LR=1
         IF SCR.LR=1 THEN
+            CALL EB_REFRESH
             SCR.LR=0
+            IF 0 THEN
             DUMMY=INDROW+(PDEPTH-2)
             FOR J=INDROW TO DUMMY
-                Y=RDSP(J-INDROW+1)[1+OFFSET,PWIDTH-4]
-                IF TAB.MODE THEN CALL EB_TABS(Y,PWIDTH)
-                Y=OCONV(Y[1+OFFSET,PWIDTH-4],'MCP')
+                Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-4]
+                IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH)
+                Y=OCONV(Y[1+OFFSET,SPWIDTH-4],'MCP')
                 IF REGEX.SEARCH THEN
                     LINE.POS=EB_REGEX(Y,SSTR, @FALSE)
                 END ELSE
@@ -322,17 +336,19 @@ RETRY:
                 CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":;!Y:
                 CRTLN=Y; GOSUB CRT.LN
             NEXT J
+            END
         END
         LROW=STR.LINE
     END
-4099 !
+4096 !
     CRT MSG.DSP:
     PSSTR=SRCH.STR:AM:OPTIONS
     MREC=""; SSTR=""
+4099 !
+    PWIDTH = SPWIDTH
     RETURN
 !========
 4100 ! Display all occurrences of a string.
-!    IF NOT(INDEX(REC,SSTR,1)) THEN GO 4099
     FOUND=0
     OCC=1; PGE=1
     HLIM=0
@@ -361,13 +377,13 @@ RETRY:
             DIMOFF = FG
         END ELSE DIMON = ''; DIMOFF = ''
         CALL EB_FIND(LN.POS,WHOLE.WORDS:'')
-        MIDWAY = INT(PWIDTH/2)
+        MIDWAY = INT(SPWIDTH/2)
         IF LN.POS > MIDWAY THEN
             LN.POS -= MIDWAY
             IF LN.POS < 1 THEN LN.POS = 1
             MREC = '...':TRIM(MREC[LN.POS, MAX])
         END
-        CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,PWIDTH-5],'MCP')
+        CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,SPWIDTH-5],'MCP')
         CALL EB_FIND(LPOS,WHOLE.WORDS:'')
         DIFF=STR.POS-LPOS+LEN(MREC)
         STRT+=DIFF
