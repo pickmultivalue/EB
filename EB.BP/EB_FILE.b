@@ -29,6 +29,7 @@ MAIN$:!
     EQU REL.NO TO PATCH(10)
     EQU PATCH.ITEM TO PATCH(11)
 !
+    CALL EB_OPEN('','.',F.currdir,1,0)
     REC = CHANGE(REC, CHAR(9):@AM, @AM)
     WRITE REC ON FIL,ITNM
     Y=FLNM:'*':ITNM
@@ -318,8 +319,12 @@ COMPILE:    !
                         COMPILE.IT='Y'
                         INPTYPE='U'
                         CRT @(0,PDEPTH):BG:
-                        MSG='Compile (N)o/[(Y)es, Basic (O)nly, (C)atalog Only'
-                        IF TYPE='SQL' OR COMMENT='--' THEN MSG := ']' ELSE MSG := '/(B)ackground]'
+!                        MSG='Compile (N)o/[(Y)es, Basic (O)nly, (C)atalog Only'
+!                        IF TYPE='SQL' OR COMMENT='--' THEN MSG := ']' ELSE MSG := '/(B)ackground]'
+                        MSG='(B)asic, (C)atalog, (A)ll, (P)hantom'
+                        READV dummy FROM F.currdir,'Makefile',1 THEN
+                            MSG='(M)ake, ':MSG
+                        END
                         IF FG$OSTYPE='AP' THEN
                             REL=SYSTEM(100)
                             IF INDEX(REL,';',1) THEN
@@ -331,8 +336,25 @@ COMPILE:    !
                             MSG := '{F}'
                             L=2
                         END ELSE L=1
-                        MSG := ')'
-                        CRT MSG:FG:CLEOL:; Z=COMPILE.IT; CRT @(LEN(MSG)+1,PDEPTH):; GOSUB INPT
+!                        MSG := ')'
+                        COL=LEN(MSG)+1
+                        Z=COMPILE.IT
+                        YNCHRS=COMPILE.IT
+                        letters = MSG
+                        MSG = ''
+                        LOOP
+                            POS = INDEX(letters,'(',1)
+                        WHILE POS DO
+                            letter = letters[POS+1,1]
+                            MSG := letters[1,POS]:RVON:letter:RVOFF:
+                            letters=letters[POS+2,999]
+                            LOCATE letter IN YNCHRS<1> SETTING POS ELSE
+                                INS letter BEFORE YNCHRS<1,POS>
+                            END
+                        REPEAT
+                        MSG := letters
+                        CRT BG:MSG:FG:CLEOL:
+                        YNL=1; GOSUB GET.CHAR
                         IF NOT(FG$ACT.CODE) THEN
                             COMPILE.IT=Z
                             CRT
@@ -369,4 +391,9 @@ INPT: !
     CALL EB_UT_WP(Z,INPTYPE,L,0,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
     IF INPTYPE='U' THEN Z=OCONV(Z,'MCU')
     INPTYPE='AN'
+    RETURN
+GET.CHAR: !
+    LOOP
+        CALL EB_UT_INPUT_ZERO(Z,MAT EB$CHARS,FG$ACT.CODE,COL,PDEPTH,FG$INPUT.CODES,YNCHRS,YNL,FG$TIMEOUT:AM:FG$MONITOR.SECS)
+    UNTIL LEN(Z) OR FG$ACT.CODE DO REPEAT
     RETURN

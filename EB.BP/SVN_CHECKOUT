@@ -227,7 +227,8 @@ Ask_Checkout:
         CRT FilePath:' ':tItemName:' is under source control.'
         CRT
 !            ANS = GETYN('Do you want to check it out and edit the checked out copy', 'Y', 2)
-        ANS = GETYN('Do you want add it to the commit stage', 'Y', 2)
+!        ANS = GETYN('Do you want add it to the commit stage', 'Y', 2)
+ANS = 'Y' ;! default for git
         IF ANS = 'Y' THEN
             result = SVN_CHECKOUT(FALSE, FilePath, tItemName)
         END

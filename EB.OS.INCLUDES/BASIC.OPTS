@@ -1,5 +1,5 @@
 BAS.ARGS = ''
-IF Y='B' OR Y='P' THEN
+IF Y='P' THEN
     BAS.ARGS=" (":FG$TLINE:Y
 END ELSE
   IF GETENV('JBASEHOME',jbhome) THEN

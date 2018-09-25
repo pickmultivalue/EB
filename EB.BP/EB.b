@@ -1998,7 +1998,7 @@ TCL: !
     GO STRT
 !======================
 10000 CRT
-    IF INDEX('YBCO',Y[1,1],1) ELSE
+    IF INDEX('BCAM',Y[1,1],1) ELSE
         IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
         REC=''; GO NEXT.ITEM
     END
@@ -2077,32 +2077,36 @@ TCL: !
             INCLUDE EB.OS.INCLUDES DECATALOG
             IF Y[2,1]='F' THEN BAS.ARGS:='OF'
             Y=Y[1,1]
-            IF Y='B' THEN
+            IF Y='P' THEN
                 BAS.ARGS:='C'
                 IF ENCRYPTED='Y' THEN BAS.ARGS:='X' ELSE BAS.ARGS:='K'
                 EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.ARGS CAPTURING DSPLY RETURNING ERR.NOS
             END ELSE
-                IF INDEX('YO',Y,1) THEN
+                IF INDEX('BAM',Y,1) THEN
                     CRT 'Compiling...'
-                    IF NOT(GETENV('JEDIFILEPATH',jedifilepath)) THEN
-                        jedifilepath = '.'
+                    IF Y='M' THEN
+                        EXECUTE shell:'make':shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    END ELSE
+                        IF NOT(GETENV('JEDIFILEPATH',jedifilepath)) THEN
+                            jedifilepath = '.'
+                        END
+                        IF INDEX(jedifilepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
+                        CONVERT dirsep TO @AM IN jedifilepath
+                        IF GETENV('INCLUDE',includepath) ELSE includepath='.'
+                        IF INDEX(includepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
+                        incpath=includepath
+                        CONVERT dirsep TO @AM IN incpath
+                        jedifilepath<-1>=incpath
+                        loc=0
+                        LOOP
+                            REMOVE inc FROM jedifilepath AT loc SETTING delim
+                            IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
+                        WHILE delim DO REPEAT
+                        IF DIR_DELIM_CH = '\' THEN
+                            FULLPATH = CHANGE(FLNM, '\', '\\')
+                        END ELSE FULLPATH=FLNM
+                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
                     END
-                    IF INDEX(jedifilepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
-                    CONVERT dirsep TO @AM IN jedifilepath
-                    IF GETENV('INCLUDE',includepath) ELSE includepath='.'
-                    IF INDEX(includepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
-                    incpath=includepath
-                    CONVERT dirsep TO @AM IN incpath
-                    jedifilepath<-1>=incpath
-                    loc=0
-                    LOOP
-                        REMOVE inc FROM jedifilepath AT loc SETTING delim
-                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
-                    WHILE delim DO REPEAT
-                    IF DIR_DELIM_CH = '\' THEN
-                        FULLPATH = CHANGE(FLNM, '\', '\\')
-                    END ELSE FULLPATH=FLNM
-                    EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
                     INCLUDE EB.OS.INCLUDES RTED.BASIC
                 END
             END
@@ -2118,7 +2122,7 @@ TCL: !
     DELETE FIL,'%':ITNM:'%'
     IF SCR.UD=1 THEN GO STRT
     IF ENCRYPTED='Y' OR TYPE='DEBUG' ELSE GOSUB CHKSUM
-    IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' AND NOT(INDEX('BO',Y,1)) THEN
+    IF (TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG') AND INDEX('AC',Y,1) THEN
         IF FG$OSTYPE='JB' THEN
             LOCATE FLNM IN CATL.LIST<1> SETTING FPOS ELSE
                 INS FLNM BEFORE CATL.LIST<1,FPOS>
@@ -2302,8 +2306,8 @@ Abort: !
             Z='F'; INPTYPE='U':AM:AM:2; L=4; GOSUB INPT
             BEGIN CASE
                 CASE Z='FI' ; FG$TYPEAHEAD.BUFF='N'
-                CASE Z='FIB' ; FG$TYPEAHEAD.BUFF='O'
-                CASE Z='FIBC' ; FG$TYPEAHEAD.BUFF='Y'
+                CASE Z='FIB' ; FG$TYPEAHEAD.BUFF='B'
+                CASE Z='FIBC' ; FG$TYPEAHEAD.BUFF='A'
                 CASE Z='FIC' ; FG$TYPEAHEAD.BUFF='C'
             END CASE
             FG$TYPEAHEAD.BUFF:=CR
