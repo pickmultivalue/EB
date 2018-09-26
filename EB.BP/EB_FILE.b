@@ -311,7 +311,28 @@ RESTART: !
             END
 COMPILE:    !
             IF PATCH.FLD>=PR.FLD THEN
+                MSG = ''
+                make = @FALSE
+                IF TYPE EQ 'MAKE' THEN
+                    make = @TRUE
+                END ELSE
+                    IF GETCWD(currdir) THEN
+                        l = MINIMUM(LEN(FLNM):@AM:LEN(currdir))
+                        IF FLNM[1,l] EQ currdir[1, l] THEN
+                            READ dummy FROM F.currdir,'Makefile' THEN
+                                make = @TRUE
+                            END
+                        END
+                    END
+                END
+                IF make THEN
+                    MSG := '(M)ake':MSG
+                END
                 IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' THEN
+                    MSG<-1> ='(B)asic, (C)atalog, (A)ll, (P)hantom'
+                    MSG = CHANGE(MSG, @AM, ', ')
+                END
+                IF LEN(MSG) THEN
                     IF (FG$TYPEAHEAD.BUFF) THEN
                         COMPILE.IT = FIELD(FG$TYPEAHEAD.BUFF, CR, 1)
                         FG$TYPEAHEAD.BUFF = ''
@@ -321,10 +342,6 @@ COMPILE:    !
                         CRT @(0,PDEPTH):BG:
 !                        MSG='Compile (N)o/[(Y)es, Basic (O)nly, (C)atalog Only'
 !                        IF TYPE='SQL' OR COMMENT='--' THEN MSG := ']' ELSE MSG := '/(B)ackground]'
-                        MSG='(B)asic, (C)atalog, (A)ll, (P)hantom'
-                        READV dummy FROM F.currdir,'Makefile',1 THEN
-                            MSG='(M)ake, ':MSG
-                        END
                         IF FG$OSTYPE='AP' THEN
                             REL=SYSTEM(100)
                             IF INDEX(REL,';',1) THEN
@@ -357,6 +374,7 @@ COMPILE:    !
                         YNL=1; GOSUB GET.CHAR
                         IF NOT(FG$ACT.CODE) THEN
                             COMPILE.IT=Z
+                            IF Z EQ 'M' THEN TYPE='MAKE'
                             CRT
                         END ELSE
                             IF FG$ACT.CODE=FG$ABT.CODE THEN

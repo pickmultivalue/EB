@@ -6,36 +6,48 @@
     NEXT I
     CRT
     ERR.NOS=ERR.NOS<1,1,1>
-    IF Y#'B' AND Y#'P' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
-        source = FIELD(DSPLY<2>, '"', 2)
-        IF LEN(source) AND FIELD(source, DIR_DELIM_CH, DCOUNT(source, DIR_DELIM_CH)) # ITNM THEN
-            WRITE DSPLY ON JET.PASTE,'%DSPLY%'
-            EXECUTE 'EB ':source
+    IF Y#'P' THEN
+        suffix = FIELD(ITNM, '.', 2)
+        IF suffix[1,1] EQ 'c' AND INDEX(DSPLY, 'error: ', 1) OR suffix[1,1] NE 'c' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
+            source = FIELD(DSPLY<2>, '"', 2)
+            IF LEN(source) AND FIELD(source, DIR_DELIM_CH, DCOUNT(source, DIR_DELIM_CH)) # ITNM THEN
+                WRITE DSPLY ON JET.PASTE,'%DSPLY%'
+                EXECUTE 'EB ':source
+            END
+            TXT="re-edit"
+            IF suffix[1,1] EQ 'c' THEN
+                offsetpos = INDEX(DSPLY, 'error: ', 1)
+            END ELSE
+                offsetpos = INDEX(DSPLY,'offset',1)
+            END
+            IF offsetpos THEN
+                ERRPOS = @FALSE
+            END ELSE
+                ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
+            END
+            IF ERRPOS THEN
+                TEMP = DSPLY[ERRPOS,MAX]
+                ERRPOS = INDEX(TEMP,'Line ', 1)
+                TEMP = FIELD(TEMP[ERRPOS, MAX], ' ', 2)
+                IF TEMP MATCHES "1N0N" THEN INDROW=TEMP
+            END ELSE
+                ROW=DCOUNT(DSPLY[1,offsetpos],AM)
+                COL=INDEX(DSPLY<ROW+2>,'^',1)
+                Y=DSPLY<ROW+1>
+                DSPLY = DSPLY<ROW>
+                IF suffix[1,1] EQ 'c' THEN
+                    INDROW = FIELD(DSPLY, ':', 2)
+                END ELSE
+                    INDROW=TRIM(FIELD(FIELD(DSPLY,',',2),'(',1))
+                END
+                Z=REC<INDROW>
+                COL+=(LEN(Z)-LEN(Y))+4
+            END
+            INDROW-=11
+            IF COL<5 THEN COL=5
+            ROW=11
+            IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
+            CRT MSG.CLR:
+            SCR.UD=1
         END
-        TXT="re-edit"
-        offsetpos = INDEX(DSPLY,'offset',1)
-        IF offsetpos THEN
-            ERRPOS = @FALSE
-        END ELSE
-            ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
-        END
-        IF ERRPOS THEN
-            TEMP = DSPLY[ERRPOS,MAX]
-            ERRPOS = INDEX(TEMP,'Line ', 1)
-            TEMP = FIELD(TEMP[ERRPOS, MAX], ' ', 2)
-            IF TEMP MATCHES "1N0N" THEN INDROW=TEMP
-        END ELSE
-            ROW=DCOUNT(DSPLY[1,offsetpos],AM)
-            INDROW=TRIM(FIELD(FIELD(DSPLY<ROW>,',',2),'(',1))
-            Y=DSPLY<ROW+1>
-            Z=REC<INDROW>
-            COL=INDEX(DSPLY<ROW+2>,'^',1)
-            COL+=(LEN(Z)-LEN(Y))+4
-        END
-        INDROW-=11
-        IF COL<5 THEN COL=5
-        ROW=11
-        IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
-        CRT MSG.CLR:
-        SCR.UD=1
     END

@@ -1575,7 +1575,7 @@ EB.SUB: !
                 IF ITNM#'' THEN
                     GOSUB FILE.ITEM
                     READ REC FROM FIL,ITNM ELSE REC=''
-                    IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' THEN GO 10000 ELSE
+                    IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' OR TYPE='MAKE' THEN GO 10000 ELSE
                         IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
                         CRT; GO NEXT.ITEM
                     END
