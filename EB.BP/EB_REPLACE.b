@@ -249,7 +249,7 @@
             NEXT I
             IF LINE#ORIG.LINE THEN
                 CRTLN=LINE
-                CALL EB_TABS(CRTLN,PWIDTH)
+                CALL EB_TABS(CRTLN,PWIDTH,0,0)
                 IF ENDL=STRT AND NOT(CONFIRM) THEN
                     CRT CRTLN[1,PWIDTH-4] LHASH:
                 END ELSE

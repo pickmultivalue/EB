@@ -97,7 +97,7 @@ MAIN$:!
             DEL REC<INDROW+ROW>
             IF I THEN
                 IDENT=STMP<1>
-                CALL EB_TABS(IDENT,PWIDTH)
+                CALL EB_TABS(IDENT,PWIDTH,0,0)
                 IF FIELD(TRIM(IDENT),' ',1)='}' OR FIELD(TRIM(IDENT),' ',1)='END' OR FIELD(TRIM(IDENT),' ',1)='CASE' THEN I-=TABLEN
                 LCOL=I; SCRL=ROW
                 J=1
@@ -125,7 +125,6 @@ MAIN$:!
                 IF SCR.UD=-1 THEN
                     CRT @(0,ROW):INS.LINE:@(5,ROW):
                     CRTLN=CHECK.LINE;CRT.X=1;CRT.Y=PWIDTH-4
-!                    CALL EB_TABS(CRTLN,PWIDTH)
                     GOSUB CRT.LN
                 END
             END ELSE INS IDENT BEFORE REC<INDROW+ROW>
@@ -135,7 +134,6 @@ MAIN$:!
         IF SCOL THEN
             LCOL=SCOL
             CALL EB_TABCOL(CHECK.LINE,COL,LCOL,FALSE)
-!      COL=LCOL+4
         END
     END
     CHANGED=TRUE

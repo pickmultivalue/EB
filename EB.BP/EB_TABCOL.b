@@ -24,12 +24,25 @@
             TCOL=DCOL-4+OFFSET
         END
     END ELSE
-        IF TAB.MODE THEN
-            NEWLN=CRTLN[1,TCOL]
-            CALL EB_TABS(NEWLN,PWIDTH)
-            NCOL=LEN(NEWLN)
-        END ELSE NCOL=TCOL
-        DCOL=NCOL-OFFSET+4
-        IF DCOL<0 THEN DCOL+=OFFSET
+        GOSUB SETCOL
     END
+    RETURN
+!
+SETCOL:
+    IF TAB.MODE THEN
+        NCOL = 0
+        TC = TCOL-1
+        FOR C = 1 TO TC
+            IF CRTLN[C,1] EQ TABCH THEN
+                R = MOD(NCOL,Indent)
+                NCOL += Indent -R
+            END ELSE NCOL++
+        NEXT C
+        NCOL++
+!        NEWLN=CRTLN[1,TCOL]
+!        CALL EB_TABS(NEWLN,PWIDTH)
+!        NCOL=LEN(NEWLN)
+    END ELSE NCOL=TCOL
+    DCOL=NCOL-OFFSET+4
+    IF DCOL<0 THEN DCOL+=OFFSET
     RETURN

@@ -22,7 +22,7 @@
                     END
                 END ELSE SP1=' '
                 RDSP(LROW)=RDSP(LROW)[1,LCOL-2]:SP1:RDSP(LROW)[LCOL,MAX]
-                IF LCOL=LLEN+1 THEN LLEN-=1; RDSP(LROW)=RDSP(LROW)[1,LLEN]
+                IF LCOL EQ LLEN+1 THEN LLEN-=1; RDSP(LROW)=RDSP(LROW)[1,LLEN]
                 COL-=1; GOSUB CHG.LROW
                 IF COL>4 THEN CRT @(COL,ROW):SP1:
                 LCOL-=1

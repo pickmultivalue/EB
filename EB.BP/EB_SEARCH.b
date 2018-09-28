@@ -102,7 +102,7 @@ MAIN$:!
             IF LINE='' THEN
                 INCLUDE EB.OS.INCLUDES REMOVE.LINE
             END
-            CALL EB_TABS(LINE,PWIDTH)
+            CALL EB_TABS(LINE,PWIDTH,0,0)
             LOOP
                 done = (STRT=1 AND LNM<0)
                 IF curlies THEN
@@ -115,7 +115,7 @@ MAIN$:!
             UNTIL done DO
                 STRT+=LNM
                 INCLUDE EB.OS.INCLUDES REMOVE.LINE
-                CALL EB_TABS(LINE,PWIDTH)
+                CALL EB_TABS(LINE,PWIDTH,0,0)
                 IF DUMMY[1,3]#'!#!' THEN
                     IF INDEX(COMMENT,TRIM(LINE)[1,COMMENTLEN],1) THEN LINE=COMMENT
                 END
@@ -304,7 +304,7 @@ RETRY:
             DUMMY=INDROW+(PDEPTH-2)
             FOR J=INDROW TO DUMMY
                 Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-4]
-                IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH)
+                IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH,0,0)
                 Y=OCONV(Y[1+OFFSET,SPWIDTH-4],'MCP')
                 IF REGEX.SEARCH THEN
                     LINE.POS=EB_REGEX(Y,SSTR, @FALSE)

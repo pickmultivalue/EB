@@ -311,7 +311,7 @@ RESTART: !
             END
 COMPILE:    !
             IF PATCH.FLD>=PR.FLD THEN
-                MSG = ''
+                MSG = '(N)o'
                 make = @FALSE
                 IF TYPE EQ 'MAKE' THEN
                     make = @TRUE
@@ -326,7 +326,7 @@ COMPILE:    !
                     END
                 END
                 IF make THEN
-                    MSG := '(M)ake':MSG
+                    MSG := '(M)ake'
                 END
                 IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' THEN
                     MSG<-1> ='(B)asic, (C)atalog, (A)ll, (P)hantom'

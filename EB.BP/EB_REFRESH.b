@@ -33,7 +33,11 @@ MAIN$:!
             CALL EB_ADD(START,LCOL,LLEN,INS.MODE,NEW.CHARS,RDSP(LROW))
             CHANGED=TRUE; CHANGES(LROW)=TRUE
         END
-        CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+        CRT @(5,ROW):CLEOL:
+        CRTLN=RDSP(LROW)
+        CRT.X=1+OFFSET
+        CRT.Y=PWIDTH-4
+        GOSUB CRT.LN
     END
     IF COL<5 THEN
         COL=83-COL
@@ -64,7 +68,11 @@ MAIN$:!
                 END ELSE DIMON = ''; DIMOFF = ''
                 CRT @(0,RR):DIMON:J "R#4 ":DIMOFF:
                 IF SCR.UD>0 OR (RR-(PDEPTH-2)-SCR.UD)>0 THEN
-                    CRT CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+                    CRT CLEOL:
+                    CRTLN=RDSP(LROW)
+                    CRT.X=1+OFFSET
+                    CRT.Y=PWIDTH-4
+                    GOSUB CRT.LN
                 END
             END ELSE IF J=CUT.POS THEN CRT @(4,RR):'[':
             IF J=CUT.POS<1,1,1> THEN
@@ -94,14 +102,16 @@ MAIN$:!
                 CRT CLEOL:
                 S=LROW
                 LROW=J
-                CRTLN=RDSP(J);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+                CRTLN=RDSP(J)
+                CRT.X=1+OFFSET
+                CRT.Y=PWIDTH-4
+                GOSUB CRT.LN
                 S=LROW
             END
         NEXT J
         CRT MSG.DSP:
         SCR.LR=FALSE; SCRL=0
     END
-    LCOL=COL+OFFSET-4
     LROW=ROW+1
     LAST.NBR=FIRST.ALPHA
     LAST.ROW=INDROW+ROW

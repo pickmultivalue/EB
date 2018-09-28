@@ -1,8 +1,9 @@
 CRT.LN:   !
     wholeLine = CRTLN
-    CRTLN = CRTLN[CRT.X,CRT.Y]
+    IF TAB.MODE THEN
+        CALL EB_TABS(CRTLN,PWIDTH,CRT.X,CRT.Y)
+    END ELSE CRTLN = CRTLN[CRT.X,CRT.Y]
     CONVERT VM:SVM TO ']\' IN CRTLN
-    IF TAB.MODE THEN CALL EB_TABS(CRTLN,PWIDTH)
     CRTLN = OCONV(CRTLN,'MCP')
     IF isComment(wholeLine) AND LEN(colors<1,1>) EQ 0 THEN CRT BG:
     CRTLN = LOWER(lexLine(wholeLine, CRTLN, colors) )
