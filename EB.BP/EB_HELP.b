@@ -110,6 +110,23 @@ MAIN$:!
             IF FG$ACT.CODE = FG$HLP.CODE THEN GOSUB DisplayEBcmds
             FG$ACT.CODE=FALSE
             OS.HELP=TRUE
+        CASE WORD='EBCUT'
+            CRT @(-1):'Cut/Paste Help'
+            CRT
+            CRT INDENT:'Enter a number for quick reusable paste items'
+            CRT INDENT:'Enter a name for more permanent paste items'
+            CRT INDENT:'Special commands:'
+            CRT
+            CRT INDENT:'! - comment out block'
+            CRT INDENT:'> - indent block'
+            CRT INDENT:'< - unindent block'
+            CRT INDENT:'^ - rotate block'
+            CRT
+            CRT INDENT:'Press any key...':
+            CALL EB_GET_INPUT(CHR, CHR.NBR)
+            IF FG$ACT.CODE = FG$HLP.CODE THEN GOSUB DisplayEBcmds
+            FG$ACT.CODE=FALSE
+            OS.HELP=TRUE
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)

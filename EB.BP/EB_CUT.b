@@ -48,7 +48,11 @@ MAIN$:!
                 CRT MSG.CLR:"Enter Paste Name or Number ":
                 L=20; Z=''
                 GOSUB INPT
-            WHILE INDEX(0,Z,1) DO REPEAT
+            WHILE INDEX(0,Z,1) DO
+                IF FG$ACT.CODE = FG$HLP.CODE THEN
+                    CALL EB_HELP('EBCUT', @FALSE)
+                END
+            REPEAT
             IF INDEX(ESC,Z,1) THEN
                 Y=CUT.POS<1,1,2>
                 CUT.POS=CUT.POS<1,1,1>
@@ -83,12 +87,23 @@ MAIN$:!
             FG$ACT.CODE=FG$SEL.CODE
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN]#COMMENT<1,1,1>
         END
+        IF Z EQ '^' THEN
+            ROTATE = ''
+            INDROW--
+            FOR J=1 TO NO.D.L
+                ROTATE<-1> = REC<INDROW+ROW+J>
+            NEXT J
+            INDROW++
+            CALL EB_ROTATE(ROTATE)
+        END
         TABLEN=ITAB<1,1>
-        MODIFY=INDEX('!<>',Z,1) AND LEN(Z)
+        MODIFY=INDEX('!<>^',Z,1) AND LEN(Z)
         FOR J=1 TO NO.D.L
             IF MODIFY THEN
                 LINE=REC<INDROW+ROW>
                 BEGIN CASE
+                    CASE Z EQ '^'
+                        LINE=ROTATE<J>
                     CASE Z='!' ;  ;! comment out lines
                         IF ZFLAG THEN
                             LINE=COMMENT<1,1,1>:LINE:COMMENT<1,1,2>
