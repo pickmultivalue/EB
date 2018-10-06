@@ -961,15 +961,15 @@ SCROLL.LINE:    !
                 CRT @(0,ROW+1):DEL.LINE
                 J.LINE=1; GO 2210
             END ELSE
+                RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
                 IF NOT(TAB.MODE) AND DEL.CHAR#'' THEN
                     CRT @(COL,ROW):DEL.CHAR:
                     CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
                     IF CRTLN[CRT.X+1,1]#'' THEN CRT @(PWIDTH-1,ROW):; GOSUB CRT.LN
                 END ELSE
-                    CRT @(COL,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+1;CRT.Y=PWIDTH+1-COL; GOSUB CRT.LN
+                    CRT @(COL-1,ROW):CLEOL:
+                    CRTLN=RDSP(LROW);CRT.X=LCOL+2;CRT.Y=PWIDTH+1-COL; GOSUB CRT.LN
                 END
-!                INS RDSP(LROW)[LCOL,1] BEFORE DEL.LIST<1>
-                RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
                 GOSUB CHG.LROW; LLEN-=1; GO TOP
             END
         CASE FG$ACT.CODE=FG$INS.CODE
@@ -1634,7 +1634,8 @@ CHG.LROW:
     IF FG$ACT.CODE=FG$ALT.CODE THEN
         FG$ACT.CODE=FALSE
     END ELSE
-        CRT MSG.CLR:"<T>abs,<M>erge,<D>up,<S>av,<E>d,Ed<V>al,<P>rt,Si<z>,<B>asicErrs,<R>otate ?":
+        cmds ="<T>abs,<M>erge,<D>upe,<S>ave,<E>d,Ed<V>al,<P>rt,Si<z>e,<B>asicErrs,<R>otate,<C>ompare ?"
+        CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF)
         YNC=COL; YNR=ROW;
         YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
