@@ -1751,7 +1751,7 @@ CHG.LROW:
                 IF CHECK.LINE[1, LEN(STMP)] EQ STMP THEN BREAK
                 m.Z<-1> = CHECK.LINE
             REPEAT
-            REC<I> = merge(FTYP)''
+            REC<I> = merge(FTYP)
             CHANGED=FALSE; SCR.UD=TRUE
             GO STRT
 !      CALL EB_CHOICES(STRT,12,'','','',EB.VARS,Z,1,'',1,'L#31','Variables')
