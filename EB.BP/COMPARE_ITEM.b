@@ -294,37 +294,42 @@
     NDB='%':IDB:'%'
     integrate = @FALSE
     IF FA:IDA EQ FB:IDB THEN ;! integrate?
-        IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, @AM:'<<<<', 1) THEN
+        IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, '<<<<', 1) THEN
             integrate = @TRUE
+            occ = 1
             LOOP
-                pos = INDEX(RECA, @AM:'<<<<<<<', 1)
+                pos = INDEX(RECA, '<<<<<<<', occ)
             WHILE pos DO
-                amc = DCOUNT(RECA[1, pos+1], @AM)
-                DEL RECA<amc>
-                DIFFA = ''
-                AMA = 1
-                LOOP
-                    LINEA = RECA<amc>
+                IF pos GT 1 AND RECA[pos-1,1] NE @AM THEN
+                    occ++
+                END ELSE
+                    amc = DCOUNT(RECA[1, pos+1], @AM)
                     DEL RECA<amc>
-                UNTIL LINEA[1,7] = '=======' DO
-                    DIFFA<AMA> = LINEA
-                    AMA++
-                REPEAT
-                DIFFB = ''
-                AMB = 1
-                LOOP
-                    LINEB = RECA<amc>
-                UNTIL LINEB[1,7] = '>>>>>>>' DO
-                    DEL RECA<amc>
-                    DIFFB<AMB> = LINEB
-                    AMB++
-                REPEAT
-                AMC = MAXIMUM(AMA:@AM:AMB)-1
-                LINEA = ''
-                FOR A = 1 TO AMC
-                    LINEA<A> = INTEG:DIFFA<A>:INTEG:DIFFB<A>
-                NEXT A
-                RECA<amc> = LINEA:INTEG:AMA:INTEG:AMB
+                    DIFFA = ''
+                    AMA = 1
+                    LOOP
+                        LINEA = RECA<amc>
+                        DEL RECA<amc>
+                    UNTIL LINEA[1,7] = '=======' DO
+                        DIFFA<AMA> = LINEA
+                        AMA++
+                    REPEAT
+                    DIFFB = ''
+                    AMB = 1
+                    LOOP
+                        LINEB = RECA<amc>
+                    UNTIL LINEB[1,7] = '>>>>>>>' DO
+                        DEL RECA<amc>
+                        DIFFB<AMB> = LINEB
+                        AMB++
+                    REPEAT
+                    AMC = MAXIMUM(AMA:@AM:AMB)-1
+                    LINEA = ''
+                    FOR A = 1 TO AMC
+                        LINEA<A> = INTEG:DIFFA<A>:INTEG:DIFFB<A>
+                    NEXT A
+                    RECA<amc> = LINEA:INTEG:AMA:INTEG:AMB
+                END
             REPEAT
             RECB = RECA
         END
@@ -935,7 +940,9 @@ FILE.ITEM:!
     AMA=STARTA -1
     AMB=STARTB -1
 ! Set Display Columns And Rows
-    ENDLINE=MAX.LINES+1
+    IF integrate THEN
+        ENDLINE = MAXIMUM(DCOUNT(RECA,@AM):@AM:DCOUNT(RECB,@AM))
+    END ELSE ENDLINE=MAX.LINES+1
     UPDA=FALSE
     UPDB=FALSE
     LASTA=''; LASTB=''
@@ -973,6 +980,11 @@ FILE.ITEM:!
                 END
             END
             IF LASTA NE LASTB THEN
+                IF CMD[2,1] EQ 'B' THEN
+                    LINEA = LASTB
+                    LASTB = LASTA
+                    LASTA = LINEA
+                END
                 LOOP WHILE LASTB GT LASTA DO
                     DEL RECA<AMA>
                     DEL RECB<AMA>

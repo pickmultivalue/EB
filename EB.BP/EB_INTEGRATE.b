@@ -29,7 +29,7 @@
         GOSUB GET.CHAR
         RETURN
     END
-    cmds = "<O>rigonal,<Y>ours,<T>heirs,<C>ompare ?"
+    cmds = "<O>riginal,<Y>ours,<T>heirs,<C>ompare ?"
     CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF)
     YNCHRS='.':VM:'C':VM:'O':VM:'Y':VM:'T'; YNL=1; GOSUB GET.CHAR
     CRT MSG.DSP:
