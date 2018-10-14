@@ -1700,62 +1700,8 @@ CHG.LROW:
             GOSUB CONV.HEX
             SCR.UD=TRUE; CALL EB_REFRESH
         CASE FTYP='I'
-            DIM merge(3)
-            EQU m.X TO merge(1)
-            EQU m.Y TO merge(2)
-            EQU m.Z TO merge(3)
-            m.X='<<<<<<<'
-            m.Y='======='
-            m.Z='>>>>>>>'
-            STMP=m.Z
-            I=INDROW+ROW
-            CHECK.LINE=REC<I>
-            FOR m = 1 TO 3
-                IF CHECK.LINE[1, LEN(merge(m))] EQ merge(m) THEN BREAK
-            NEXT m
-            IF m GT 3 THEN
-                CRT MSG.CLR:'Position cursor on a merge line (e.g. <<<<)':
-                GOSUB GET.CHAR
-                GO STRT
-            END
-            CRT MSG.CLR:"<O>rigonal,<Y>ours,<T>heirs,<C>ompare ?":
-            YNC=COL; YNR=ROW; YNCHRS='.':VM:'C':VM:'O':VM:'Y':VM:'T'; YNL=1; GOSUB GET.CHAR
-            CRT MSG.DSP:
-            IF FG$ACT.CODE THEN GO STRT
-            CRT MSG.AKN:
-            FTYP=INDEX('OYT',OCONV(Y,"MCU"),1)
-! Find the ORIG line if we're not there
-            LOOP
-                IF CHECK.LINE[1, LEN(m.X)] EQ m.X THEN BREAK
-            UNTIL I=1 DO
-                I-=1
-                CHECK.LINE=REC<I>
-            REPEAT
-            Y=I
-            ROW=I-INDROW; SCRL=ROW
-! We found ORIG so now delete up to the section we want
-            STMP = m.Y
-            m.Y = ''
-            LOOP
-                DEL REC<I>
-                CHECK.LINE=REC<I>
-                IF CHECK.LINE[1, LEN(STMP)] EQ STMP THEN BREAK
-                m.Y<-1> = CHECK.LINE
-            REPEAT
-! Now found the end of this bit
-            STMP = m.Z
-            m.Z = ''
-            LOOP
-                DEL REC<I>
-                CHECK.LINE=REC<I>
-                IF CHECK.LINE[1, LEN(STMP)] EQ STMP THEN BREAK
-                m.Z<-1> = CHECK.LINE
-            REPEAT
-            REC<I> = merge(FTYP)
-            CHANGED=FALSE; SCR.UD=TRUE
+            CALL EB_INTEGRATE
             GO STRT
-!      CALL EB_CHOICES(STRT,12,'','','',EB.VARS,Z,1,'',1,'L#31','Variables')
-!      IF Z#'' THEN I=TRUE; GOSUB INS.TXT
         CASE FTYP='T'
             tab_display = NOT(tab_display)
             SCR.LR=1
