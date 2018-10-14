@@ -1635,7 +1635,7 @@ CHG.LROW:
     IF FG$ACT.CODE=FG$ALT.CODE THEN
         FG$ACT.CODE=FALSE
     END ELSE
-        cmds ="<T>abs,<M>erge,<D>upe,<S>ave,<E>d,Ed<V>al,<P>rt,Si<z>e,<B>asicErrs,<R>otate,<C>ompare ?"
+        cmds ="<T>abs,<M>er,<ge,<D>upe,<S>ave,<E>d,Ed<V>al,<P>rt,Si<z>e,<B>asicErrs,<R>otate,<C>ompare,<I>ntegrate ?"
         CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF)
         YNC=COL; YNR=ROW;
         YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'

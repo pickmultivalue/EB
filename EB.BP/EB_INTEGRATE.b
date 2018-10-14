@@ -1,4 +1,5 @@
     SUBROUTINE EB_INTEGRATE
+    INCLUDE JBC.h
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -18,20 +19,40 @@
     STMP=m.Z
     I=INDROW+ROW
     CHECK.LINE=REC<I>
+    YNC=COL; YNR=ROW
     FOR m = 1 TO 3
         IF CHECK.LINE[1, LEN(merge(m))] EQ merge(m) THEN BREAK
     NEXT m
     IF m GT 3 THEN
         CRT MSG.CLR:'Position cursor on a merge line (e.g. <<<<)':
+        YNCHRS='';YNL=0
         GOSUB GET.CHAR
         RETURN
     END
-    CRT MSG.CLR:"<O>rigonal,<Y>ours,<T>heirs,<C>ompare ?":
-    YNC=COL; YNR=ROW; YNCHRS='.':VM:'C':VM:'O':VM:'Y':VM:'T'; YNL=1; GOSUB GET.CHAR
+    cmds = "<O>rigonal,<Y>ours,<T>heirs,<C>ompare ?"
+    CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF)
+    YNCHRS='.':VM:'C':VM:'O':VM:'Y':VM:'T'; YNL=1; GOSUB GET.CHAR
     CRT MSG.DSP:
     IF FG$ACT.CODE THEN RETURN
+    Y = UPCASE(Y)
+    IF Y EQ 'C' THEN
+!        CALL EB_COMPARE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
+!        SCR.UD=TRUE ;!SCRL=0
+!        MREC=''
+!        CRT MSG.DSP:
+!        GO STRT
+        IDC = ITNM:'.COMP1'
+        WRITE REC ON FIL,IDC
+        ID = FLNM:DIR_DELIM_CH:IDC
+        EXECUTE 'COMPARE_ITEM ':ID:' ':ID
+        READ MREC FROM FIL,IDC ELSE NULL
+        DELETE FIL,IDC
+        CHANGED=(MREC NE REC); SCR.UD=TRUE
+        REC = MREC
+        RETURN
+    END
     CRT MSG.AKN:
-    FTYP=INDEX('OYT',OCONV(Y,"MCU"),1)
+    FTYP=INDEX('OYT',Y,1)
 ! Find the ORIG line if we're not there
     LOOP
         IF CHECK.LINE[1, LEN(m.X)] EQ m.X THEN BREAK
@@ -64,4 +85,5 @@
     RETURN
 GET.CHAR: !
     CALL EB_UT_INPUT_ZERO(Y,MAT EB$CHARS,FG$ACT.CODE,YNC,YNR,FG$INPUT.CODES,YNCHRS,YNL,FG$TIMEOUT:AM:FG$MONITOR.SECS)
+    ECHO ON
     RETURN

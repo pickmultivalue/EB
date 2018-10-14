@@ -1,10 +1,7 @@
-!
-! Compiled On 19 Jun 1989 At 13:25
-! Copyright C 1989 By Amalgamated Wireless (Australasia) Limited Ne Sigma Data.
-! All Rights Reserved.
-!
+! Side by side (or above/below) comparison tool
 !
     DEFFUN EBJSHOW()
+    DEFFUN EBGETHOME()
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -17,9 +14,10 @@
     EQU Bslsh TO '\', Fslsh TO '/'
     EQU MAX TO 9999
     INCLUDE EB.OS.INCLUDES TERM.SETTINGS
-    OPEN 'JET.PASTE' TO F.JET.PASTE ELSE STOP 'JET.PASTE'
-    OPEN 'SAVEDLISTS' TO F.PF ELSE
-        OPEN 'POINTER-FILE' TO F.PF ELSE
+    path = EBGETHOME()
+    OPEN path:'JET.PASTE' TO F.JET.PASTE ELSE STOP 'JET.PASTE'
+    OPEN path:'SAVEDLISTS' TO F.PF ELSE
+        OPEN path:'POINTER-FILE' TO F.PF ELSE
             STOP 201,'POINTER-FILE'
         END
     END
@@ -32,6 +30,7 @@
     EQU SVM TO CHAR(252)
     EQU VM TO CHAR(253)
     EQU AM TO CHAR(254)
+    EQU INTEG TO CHAR(230)
     EQU BELL TO CHAR(7)
     EQU OTHERWISE TO 1
     EQU TRUE TO 1, FALSE TO 0
@@ -42,10 +41,8 @@
     END ELSE UPG=FALSE
     ORIG.DEPTH=PDEPTH
     ORIG.WIDTH=PWIDTH
-!    DIM SCREEN.PARAMS(100)
     INCLUDE EB.EQUS SCREEN.PARAMS
     INCLUDE EB.OS.INCLUDES WHO
-!    CALL EB_GETTCC(FG$TLINE, MAT SCREEN.PARAMS, TERM)
     CALL EB_UT_INIT
     EQU ESC TO CHAR(27)
     TOF=CHAR(12)
@@ -57,15 +54,12 @@
     DELAREQ=FALSE; DELBREQ=FALSE
     VERT.FLAG=FALSE
     WIDE.FLAG=TRUE
-!# Start Of Bug Fix By Dwa On 19/05/88.
     DEEP.FLAG=TRUE
-!#  end  of bug fix by dwa on 19/05/88.
     WRAP.FLAG=FALSE
     READN=FALSE
     DEFAULT.OFFSET=99
     NORMAL.LEN=79
     WIDE.LEN=132
-!    WIDE.LEN=PWIDTH
     COL.WIDTH = (WIDE.LEN-8)/2
     COL.POS = COL.WIDTH-1
     NORMAL.DEPTH=23
@@ -292,14 +286,51 @@
             INS TMP BEFORE RECA<1>
             DATA 'A10'
         END
-        ORIGA=RECA
-    END ELSE RECA=''; ORIGA=''
+    END ELSE RECA=''
     READ RECB FROM FILEB,IDB THEN
         GOSUB DECRYPTB
-        ORIGB=RECB
-    END ELSE RECB=''; ORIGB=''
+    END ELSE RECB=''
     NDA='%':IDA:'%'
     NDB='%':IDB:'%'
+    integrate = @FALSE
+    IF FA:IDA EQ FB:IDB THEN ;! integrate?
+        IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, @AM:'<<<<', 1) THEN
+            integrate = @TRUE
+            LOOP
+                pos = INDEX(RECA, @AM:'<<<<<<<', 1)
+            WHILE pos DO
+                amc = DCOUNT(RECA[1, pos+1], @AM)
+                DEL RECA<amc>
+                DIFFA = ''
+                AMA = 1
+                LOOP
+                    LINEA = RECA<amc>
+                    DEL RECA<amc>
+                UNTIL LINEA[1,7] = '=======' DO
+                    DIFFA<AMA> = LINEA
+                    AMA++
+                REPEAT
+                DIFFB = ''
+                AMB = 1
+                LOOP
+                    LINEB = RECA<amc>
+                UNTIL LINEB[1,7] = '>>>>>>>' DO
+                    DEL RECA<amc>
+                    DIFFB<AMB> = LINEB
+                    AMB++
+                REPEAT
+                AMC = MAXIMUM(AMA:@AM:AMB)-1
+                LINEA = ''
+                FOR A = 1 TO AMC
+                    LINEA<A> = INTEG:DIFFA<A>:INTEG:DIFFB<A>
+                NEXT A
+                RECA<amc> = LINEA:INTEG:AMA:INTEG:AMB
+            REPEAT
+            RECB = RECA
+        END
+    END
+    ORIGA=RECA
+    ORIGB=RECB
 !
     IF UPGBACKUP THEN
         TMP=FIELD(IDA,'\',1)
@@ -310,9 +341,9 @@
     PREV.LOC=''
     STARTA=1
     STARTB=1
-    GOSUB 1300          ;! set screen type
-    GOSUB 600 ;! Format Display Mode
-    GOSUB 900 ;! display both items
+    GOSUB 1300 ;! set screen type
+    GOSUB 600  ;! Format Display Mode
+    GOSUB 900  ;! display both items
 210 ! Enter Command Option
     IF DEEP.FLAG THEN
         CL=@(0,WIDE.DEPTH):CLEOL:HION:REV.ON
@@ -376,6 +407,8 @@ FILE.ITEM:!
                 WIDE.FLAG=FALSE
                 DEEP.FLAG=FALSE
                 GOSUB 1300
+                CALLSTACK = SYSTEM(16)
+                IF CALLSTACK THEN GOTO 99999
                 CRT @(-1)
                 CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
                 CRT @(0,2):'ENTER FILE A: ':FA
@@ -710,24 +743,7 @@ FILE.ITEM:!
         NBRA=AMA PDAJ
         AMB=STARTB+J-1
         NBRB=AMB PDBJ
-        LINEA=TRIM(RECA<AMA>)
-        LINEB=TRIM(RECB<AMB>)
-        TMPA=LINEA
-        TMPB=LINEB
-        IF (T.OPTION) THEN
-            CONVERT TAB TO SPC IN TMPA
-            CONVERT TAB TO SPC IN TMPB
-            TMPA=TRIM(TMPA)
-            TMPB=TRIM(TMPB)
-        END
-        IF PATCHFILE THEN
-            IF INDEX('!*',LINEA[1,1],1) THEN TMPA=TRIM(TMPA[2,999])
-            IF INDEX('!*',LINEB[1,1],1) THEN TMPB=TRIM(TMPB[2,999])
-            TMPA = SWAP(TMPA, ';*', ';!')
-            TMPB = SWAP(TMPB, ';*', ';!')
-            TMPA = SWAP(TMPA, ' ;!', ';!')
-            TMPB = SWAP(TMPB, ' ;!', ';!')
-        END
+        GOSUB GETLINES
         IF TMPA # TMPB THEN
             PAD=HION
         END ELSE
@@ -889,28 +905,7 @@ FILE.ITEM:!
         IF J<STLN ELSE
             NBRA=AMA PDAJ
             NBRB=AMB PDBJ
-            LINEA=RECA<AMA>
-            LINEB=RECB<AMB>
-            LINEA=TRIM(LINEA,VM,'T')
-            LINEA=TRIM(LINEA,SVM,'T')
-            LINEB=TRIM(LINEB,VM,'T')
-            LINEB=TRIM(LINEB,SVM,'T')
-            TMPA=LINEA
-            TMPB=LINEB
-            IF (T.OPTION) THEN
-                CONVERT TAB TO SPC IN TMPA
-                CONVERT TAB TO SPC IN TMPB
-                TMPA=TRIM(TMPA)
-                TMPB=TRIM(TMPB)
-            END
-            IF PATCHFILE THEN
-                IF INDEX('!*',LINEA[1,1],1) THEN TMPA=TRIM(TMPA[2,999])
-                IF INDEX('!*',LINEB[1,1],1) THEN TMPB=TRIM(TMPB[2,999])
-                TMPA = SWAP(TMPA, ';*', ';!')
-                TMPB = SWAP(TMPB, ';*', ';!')
-                TMPA = SWAP(TMPA, ' ;!', ';!')
-                TMPB = SWAP(TMPB, ' ;!', ';!')
-            END
+            GOSUB GETLINES
             IF TMPA # TMPB THEN
                 PAD=HION
             END ELSE
@@ -943,12 +938,14 @@ FILE.ITEM:!
     ENDLINE=MAX.LINES+1
     UPDA=FALSE
     UPDB=FALSE
+    LASTA=''; LASTB=''
     FOR J=1 TO ENDLINE
         AMA+=1
         AMB+=1
         LINEA=RECA<AMA>
         LINEB=RECB<AMB>
-        IF LINEA#'' OR LINEB#'' THEN
+        GOSUB GETINTEGRATE
+        IF integrate OR LINEA#'' OR LINEB#'' THEN
             TMPA=LINEA
             TMPB=LINEB
             IF (T.OPTION) THEN
@@ -959,14 +956,14 @@ FILE.ITEM:!
             END
             IF TMPA # TMPB THEN
                 IF CMD[2,1]='B' THEN
-                    RECA<AMA>=LINEB
                     UPDA=TRUE
                     LINEA=LINEB
                 END ELSE
-                    RECB<AMB>=LINEA
                     UPDB=TRUE
                     LINEB=LINEA
                 END
+                RECA<AMA>=LINEA
+                RECB<AMB>=LINEB
                 IF VERT.FLAG THEN
                     CRT @(START.COLA,START.ROWA+J):CLEOL:AMA PDAJ:LINEA[1,LINE.LEN-6]:
                     CRT @(START.COLB,START.ROWA+J):AMB PDBJ:LINEB[1,LINE.LEN-6]:
@@ -974,6 +971,17 @@ FILE.ITEM:!
                     CRT @(START.COLA,START.ROWA+J):CLEOL:AMA PDAJ:LINEA[1,LINE.LEN-2]:
                     CRT @(START.COLB,START.ROWB+J):CLEOL:AMB PDBJ:LINEB[1,LINE.LEN-2]:
                 END
+            END
+            IF LASTA NE LASTB THEN
+                LOOP WHILE LASTB GT LASTA DO
+                    DEL RECA<AMA>
+                    DEL RECB<AMA>
+                    AMA--
+                    LASTB--
+                REPEAT
+                GOSUB 600
+                GOSUB 900
+                BREAK
             END
         END
     NEXT J
@@ -1039,8 +1047,25 @@ FILE.ITEM:!
     IF STARTB < 1 THEN STARTB=1
     AMA=STARTA+MAX.LINES+1
     AMB=STARTB+MAX.LINES+1
-    CRT CL:'Now searching next difference ':
-    INCLUDE EB.OS.INCLUDES FIND.NEXT.DIFF
+    IF integrate THEN
+        occ = 1
+        LOOP
+            pos = INDEX(RECA, @AM:INTEG, occ)
+            IF pos THEN
+                amc = DCOUNT(RECA[1, pos], @AM)
+            END ELSE amc = @FALSE
+        UNTIL pos EQ @FALSE OR amc GE AMA DO occ++ REPEAT
+        IF amc THEN
+            amc += 5
+            AMA = amc
+            AMB = amc
+            CHKA = 'A'
+            CHKB = 'B'
+        END ELSE RETURN
+    END ELSE
+        CRT CL:'Now searching next difference ':
+        INCLUDE EB.OS.INCLUDES FIND.NEXT.DIFF
+    END
 1099 !
     IF CHKA#CHKB THEN
         STARTA=AMA - 5
@@ -1297,4 +1322,37 @@ OPEN.FILEB: !
 UPDATE.CHANGE: !
     IF CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FA; CRT FA:' written to POINTER-FILE'
     IF CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FB; CRT FB:' written to POINTER-FILE'
+    RETURN
+GETLINES: !
+    LINEA=RECA<AMA>
+    LINEB=RECB<AMB>
+    GOSUB GETINTEGRATE
+    LINEA=TRIM(LINEA,VM,'T')
+    LINEA=TRIM(LINEA,SVM,'T')
+    LINEB=TRIM(LINEB,VM,'T')
+    LINEB=TRIM(LINEB,SVM,'T')
+    TMPA=LINEA
+    TMPB=LINEB
+    IF (T.OPTION) THEN
+        CONVERT TAB TO SPC IN TMPA
+        CONVERT TAB TO SPC IN TMPB
+        TMPA=TRIM(TMPA)
+        TMPB=TRIM(TMPB)
+    END
+    IF PATCHFILE THEN
+        IF INDEX('!*',LINEA[1,1],1) THEN TMPA=TRIM(TMPA[2,999])
+        IF INDEX('!*',LINEB[1,1],1) THEN TMPB=TRIM(TMPB[2,999])
+        TMPA = SWAP(TMPA, ';*', ';!')
+        TMPB = SWAP(TMPB, ';*', ';!')
+        TMPA = SWAP(TMPA, ' ;!', ';!')
+        TMPB = SWAP(TMPB, ' ;!', ';!')
+    END
+    RETURN
+GETINTEGRATE: !
+    IF integrate AND INDEX(LINEA, INTEG, 1) THEN
+        LASTA = FIELD(LINEA, INTEG, 4)
+        LASTB = FIELD(LINEA, INTEG, 5)
+        LINEA = FIELD(LINEA, INTEG, 2)
+        LINEB = FIELD(LINEB, INTEG, 3)
+    END
     RETURN
