@@ -1188,12 +1188,12 @@ GEOL:       !
             I=OFFSET
             IF OFFSET AND (COL>PWIDTH) THEN COL-=(PWIDTH-5)
             LOOP WHILE (COL>PWIDTH) DO
-                LCOL-=(PWIDTH-5)
+                COL-=(PWIDTH-5)
                 OFFSET+=(PWIDTH-5)
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             REPEAT
             IF I#OFFSET THEN
-                COL++
+!                COL++
                 SCR.LR=1
             END
         CASE FG$ACT.CODE=FG$DEL.WORD.CODE
