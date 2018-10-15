@@ -1193,8 +1193,6 @@ GEOL:       !
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
             REPEAT
             IF I#OFFSET THEN
-                DEBUG
-                LCOL++
                 COL++
                 SCR.LR=1
             END
