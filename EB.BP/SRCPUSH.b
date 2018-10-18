@@ -10,5 +10,5 @@
 !
     INCLUDE EB.INCLUDES SVN_DEBUG
 !
-    EXECUTE shell:'git PUSH':shellend CAPTURING io
+    EXECUTE shell:'git push ':shellend CAPTURING io
     RETURN io
