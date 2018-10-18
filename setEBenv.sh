@@ -1,0 +1,2 @@
+PATH=`pwd`/bin:$PATH
+export JBCOBJECTLIST=`pwd`/lib:$JBCOBJECTLIST
