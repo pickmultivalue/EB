@@ -6,6 +6,8 @@
 !
     DEFFUN SVN_COMMIT()
     DEFFUN SVN_SENTENCE()
+    DEFFUN GETYN()
+    DEFFUN SRCPUSH()
     INCLUDE JBC.h
     EQU TRUE TO 1, FALSE TO 0
     shell = @IM:'k'
@@ -29,7 +31,9 @@
                 IF INDEX(status,'renamed',1) THEN
                     FullPath<1, -1> = FIELD(line, ' ', 4)
                 END
-                FullPaths<-1> = FullPath
+                LOCATE FullPath IN FullPaths SETTING fpos ELSE
+                    FullPaths<-1> = FullPath
+                END
             END
         NEXT a
     END
@@ -48,7 +52,15 @@
                 lastDelim = delim
             WHILE delim DO REPEAT
         END ELSE
-            CRT SVN_COMMIT(FullPaths)
+            result = SVN_COMMIT(FullPaths)
+            IF LEN(result) THEN
+                CRT result
+                DEBUG
+            END ELSE
+                IF GETYN('Push to respository', '', 1) EQ 'Y' THEN
+                    CRT SRCPUSH()
+                END
+            END
         END
     END ELSE
         CRT

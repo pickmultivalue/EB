@@ -1,4 +1,3 @@
-* @(#) GETFLNM Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION GETFLNM(filepath)
 !
 ! Return the last portion of a file path
@@ -8,4 +7,6 @@
 !
     INCLUDE JBC.h
 !
-    RETURN FIELD(filepath, DIR_DELIM_CH, DCOUNT(filepath, DIR_DELIM_CH))
+    dc = DCOUNT(filepath, DIR_DELIM_CH)
+    IF filepath[LEN(filepath),1] EQ DIR_DELIM_CH THEN dc--
+    RETURN FIELD(filepath, DIR_DELIM_CH, dc)

@@ -37,7 +37,7 @@
         END
     END
     new_Args = sub_command:' ':pre_Args:new_Args
-    cmd = command:noprompt:new_Args:shellend
+    cmd = command:noprompt:new_Args
     icmd = command:' ':new_Args
 
     IF Capturing THEN

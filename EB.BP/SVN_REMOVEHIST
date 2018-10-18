@@ -1,4 +1,3 @@
-* @(#) SVN_REMOVEHIST Ported to jBASE 07:23:52  18 FEB 2010
     FUNCTION SVN_REMOVEHIST(F.Hist, ItemName)
 !
 ! Remove SVN.HISTORY items (after check in)
