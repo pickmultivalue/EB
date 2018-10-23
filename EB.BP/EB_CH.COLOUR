@@ -1,3 +1,0 @@
-  SUBROUTINE EB_CH.COLOUR(fgColour, bgColour)
-!  DEBUG
-  RETURN
