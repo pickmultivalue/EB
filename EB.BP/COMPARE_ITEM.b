@@ -579,9 +579,9 @@ FILE.ITEM:!
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE cmd='SVN'
+        CASE cmd='SVN' OR cmd = 'GIT'
             OP=FIELD(CMD,' ',2)
-            NewCmd='svn ':OP
+            NewCmd=(IF cmd EQ 'SVN' THEN 'svn' ELSE 'git'):' ':OP
             OP=2
             LOOP
                 arg=FIELD(CMD,' ',OP)

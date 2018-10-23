@@ -6,6 +6,7 @@
     EQU TABCH TO CHAR(9), SPC TO ' ', TRUE TO 1, FALSE TO 0
     EQU TABDSP TO '>'
     Indent=ITAB<ITABPOS>
+    IF NOT(NUM(Indent)) OR NOT(Indent) THEN Indent = 4
     TABSPC=SPACE(Indent)
     Nbr.Tabs=DCOUNT(CRTLN,TABCH)
     IF CRTLN 'R#1'=TABCH THEN

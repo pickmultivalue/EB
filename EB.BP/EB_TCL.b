@@ -1,12 +1,5 @@
     SUBROUTINE EB_TCL
 !
-!=============================================
-! GALA 4GL
-!
-! Copyright (C) GENERAL AUTOMATION AUSTRALASIA Pty. Ltd.
-!
-! Written by Peter Falson - March 1989
-!
 !=========== Program's Purpose ===============
 !
 ! TCL Stacker
@@ -106,19 +99,11 @@ MAIN$:!
         OPTIONS<6>=1
     END
     LOOP
-        IF MOD(FG$STERM,3) THEN
-            OPTIONS<8>='TCL Shell'
-            CALL GALAPROGRAM130(FG$EB.CONTROL,'',OPTIONS)
-        END
         IF SYSTEM(11) OR TCL.LIST#'' THEN PROMPT.CHR='>' ELSE PROMPT.CHR=' '
         CRT EB.PROMPT:PROMPT.CHR:CLEOL:
         COMMAND=''
         IF GUI THEN
             CALL EB_GUI_SEND('r','')
-!      ECHO OFF
-!      INPUT COMMAND
-!      ECHO ON
-!    END ELSE
         END
         CALL EB_INPUT(COMMAND,'AN',200,0,MAT EB$CHARS,MAT OTHER.PARAMS,FG$EB.PARAMS,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,'','','','')
         CRT
@@ -584,10 +569,6 @@ PERFORM.COMMAND: !
         PROCESS.ID=FIELD(EXEC.CMD,' ',1)
         READ TITLE FROM FG$PROCESSES,PROCESS.ID ELSE TITLE=COMMAND
         CHECK=TITLE<2>; TITLE=TITLE<1>
-        IF MOD(FG$STERM,3) THEN
-            OPTIONS<8>='TCL: ':TITLE
-            CALL GALAPROGRAM130(FG$EB.CONTROL,'',OPTIONS)
-        END
         CRT @(0):EXEC.CMD:CLEOL
         IF FG$OSTYPE='JB' OR INDEX('BT',CHECK,1) THEN
             IF CHECK#'' AND INDEX('BT',CHECK,1) THEN

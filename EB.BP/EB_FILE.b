@@ -2,11 +2,12 @@
     INCLUDE JBC.h
     INCLUDE EB.EQUS EB.COMMONS
     DEFFUN GETFLNM()
-    DEFFUN SVN_GETORIGPATH()
-    DEFFUN SVN_READHIST()
-    DEFFUN SVN_UPDATEHIST()
-    DEFFUN SVN_OPENHIST()
-    DEFFUN SVN_CHECKOUT()
+
+    DEFFUN SRC_GETORIGPATH()
+    DEFFUN SRC_READHIST()
+    DEFFUN SRC_UPDATEHIST()
+    DEFFUN SRC_OPENHIST()
+    DEFFUN SRC_CHECKOUT()
 !
     COM GEX(50),EXTRAS(50)
     COM EB.FILES(100),EB.FILE.LIST
@@ -34,8 +35,7 @@ MAIN$:!
     WRITE REC ON FIL,ITNM
     Y=FLNM:'*':ITNM
     DELETE JET.PASTE,ITNM:'.sav'
-    UPDHIST = SVN_OPENHIST(F.HISTFILE, FLNM)
-!    CALL EB_OPEN('',FLNM:',EB_HISTORY',F.HISTFILE,0,UPDHIST)
+    UPDHIST = SRC_OPENHIST(F.HISTFILE, FLNM)
     COMPILE.IT=''
     CALL EB_ASSIGN_OPEN('EB.STDPARAMS',FPOS,F.STD.PARAMS,0)
     FULLFLNM=TRIM(DCT<2>:' ':DCT<1>)
@@ -78,7 +78,7 @@ MAIN$:!
 !
     INCLUDE EB.OS.INCLUDES OS
     IF FULLFLNM='EB.MISC' THEN TYPE='BASIC'; PATCH.FLD=PR.FLD; GO COMPILE
-    PFLNM = SVN_GETORIGPATH(FLNM)
+    PFLNM = SRC_GETORIGPATH(FLNM)
     IF OPEN.PATCH OR UPDHIST THEN
         FileName = GETFLNM(FLNM)
         DAPPL=FIELD(FileName,'.',1); THE.REST=FileName[COL2()+1,MAX]
@@ -114,7 +114,7 @@ MAIN$:!
         DESCRIPTION=LAST.DESC
         TYPE = DTYPE
         APPL = DAPPL
-        HISTORY = SVN_READHIST(1, FLNM, ITNM, DATE(), '', '', FG$LOGNAME)
+        HISTORY = SRC_READHIST(1, FLNM, ITNM, DATE(), '', '', FG$LOGNAME)
         IF OPEN.PATCH THEN
             PFLNM=SWAP(PFLNM,'@','<{AT}>')
             PITNM=SWAP(ITNM,'@','<{AT}>')
@@ -234,7 +234,7 @@ RESTART: !
                             UNTIL HID=AM DO
                                 IF NOT(INDEX(HID, '@', 1)) THEN
                                     IF HID#ITNM THEN
-                                        PHISTORY = SVN_READHIST(1, FLNM, HID, '', '', '', '')
+                                        PHISTORY = SRC_READHIST(1, FLNM, HID, '', '', '', '')
                                         IF LEN(PHISTORY) THEN
                                             PDESC = PHISTORY<1>
                                             HID = OCONV(HID, 'VDOTC#':IDLEN)
@@ -299,7 +299,7 @@ RESTART: !
             IF PATCH.FLD=PR.FLD THEN
                 FilePath = FULLFLNM
                 IF UPDHIST THEN
-                    IF NOT(SVN_UPDATEHIST(FLNM, ITNM, DATE(), PSTIME, PETIME, PDESC)) THEN
+                    IF NOT(SRC_UPDATEHIST(FLNM, ITNM, DATE(), PSTIME, PETIME, PDESC)) THEN
                         CRT MSG.CLR:'Warning: history could not be updated':; GOSUB INPT
                     END
                 END
@@ -307,7 +307,7 @@ RESTART: !
                     PATCH.ITEM=REC
                     MATWRITE PATCH ON F.PATCHFILE,K.PATCHFILE
                 END
-                result = SVN_CHECKOUT(TRUE, FLNM, ITNM)
+                result = SRC_CHECKOUT(TRUE, FLNM, ITNM)
             END
 COMPILE:    !
             IF PATCH.FLD>=PR.FLD THEN

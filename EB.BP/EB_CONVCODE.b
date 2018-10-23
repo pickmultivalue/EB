@@ -1,6 +1,4 @@
     SUBROUTINE EB_CONVCODE(KeyCode, CHR, FG$ACT.CODE)
-* @(#) EB_CONVCODE.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.CONVCODE Ported to jBASE 16:15:14  27 JUL 2001
 !
 ! Converts jBASE standard input codes to EB's codes
 !

@@ -1,4 +1,3 @@
-* @(#) COMPL2.b Ported to jBASE 07:23:52  18 FEB 2010
 * PROGRAM COMPL
     dir1 = SENTENCE(1)
     dir2 = SENTENCE(2)

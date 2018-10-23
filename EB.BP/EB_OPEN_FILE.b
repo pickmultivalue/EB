@@ -1,13 +1,4 @@
     SUBROUTINE EB_OPEN_FILE(FILE.NAME,POS)
-* @(#) EB_OPEN_FILE.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.OPEN.FILE Ported to jBASE 16:15:15  27 JUL 2001
-!
-!=============================================
-! GALA 4GL
-!
-! Copyright (C) GENERAL AUTOMATION AUSTRALASIA Pty. Ltd.
-!
-! Written by Peter Falson - March 1989
 !
 !=========== Program's Purpose ===============
 !

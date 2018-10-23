@@ -14,9 +14,9 @@
     DEFFUN GET_CATALOG_FILE()
     DEFFUN EB_CLOSE()
     DEFFUN EB_EXPANDFLNM()
-    DEFFUN SVN_DELETE()
-    DEFFUN SVN_GETORIGPATH()
-    DEFFUN SVN_GET_REPOSITORY()
+    DEFFUN SRC_DELETE()
+    DEFFUN SRC_GETORIGPATH()
+    DEFFUN SRC_GET_REPOSITORY()
     DEFFUN EBJSHOW()
     DEFFUN GETFULLPATH()
     DEFFUN EBGETHOME()
@@ -118,7 +118,7 @@
     INCLUDE EB.EQUS COLOURS
     IF WHITE<1,1>#'' THEN
         INCLUDE EB.EQUS COLOUR.CODES
-        IF WHITE<1,1>#'' THEN CALL EB_CH.COLOUR(WHITE<1,1>,BLUE<1,2>)
+        IF WHITE<1,1>#'' THEN CALL EB_CH_COLOUR(WHITE<1,1>,BLUE<1,2>)
         FG$CHOICE.COLOURS=WHITE<1,1>:VM:RED<1,2>:VM:YELLOW<1,1>
     END
     INCLUDE EB.EQUS EB.CHARS
@@ -966,7 +966,10 @@ SCROLL.LINE:    !
                 IF NOT(TAB.MODE) AND DEL.CHAR#'' THEN
                     CRT @(COL,ROW):DEL.CHAR:
                     CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
-                    IF CRTLN[CRT.X+1,1]#'' THEN CRT @(PWIDTH-1,ROW):; GOSUB CRT.LN
+                    IF CRTLN[CRT.X+1,1]#'' THEN
+                        CRT @(PWIDTH,ROW):
+                        GOSUB CRT.LN
+                    END
                 END ELSE
                     CRT @(COL-1,ROW):CLEOL:
                     CRTLN=RDSP(LROW);CRT.X=LCOL+2;CRT.Y=PWIDTH+1-COL; GOSUB CRT.LN
@@ -1832,7 +1835,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     IF J.LINE<0 THEN
         RDSP(LROW+J.LINE):=" ":TMP
     END ELSE
-        LCOL=LEN(RDSP(LROW+J.LINE))+1
+!        LCOL=LEN(RDSP(LROW+J.LINE))+1
         RDSP(LROW+J.LINE)=RDSP(LROW):SPC:TMP
     END
     IF TAB.MODE THEN
@@ -2217,7 +2220,7 @@ GET.PREVWORD: !
     END
 !
     RELEASE FIL,ITNM
-    Z = SVN_DELETE(TRUE, FLNM, ITNM)
+    Z = SRC_DELETE(TRUE, FLNM, ITNM)
     Y = (FIELD(Z,SPC,1) = 'D')
     IF LEN(Z) = 0 OR Y THEN
         Z = ITNM:" deleted!"
@@ -2570,8 +2573,8 @@ WRAPUP: !
                 FLNMO = GETFULLPATH(FLNM)
                 IF FIELD(TRIM(FLNMO),SPC,2)#FULLFLNM THEN FLNM=FULLFLNM
             END
-            ORIG_PATH = SVN_GETORIGPATH(FLNM)
-            Repository = FIELD(SVN_GET_REPOSITORY(FLNM), '/', 1)
+            ORIG_PATH = SRC_GETORIGPATH(FLNM)
+            Repository = FIELD(SRC_GET_REPOSITORY(FLNM), '/', 1)
             ORIG_PATH = ORIG_PATH[INDEX(ORIG_PATH, DIR_DELIM_CH:Repository, 1) + 1, MAX]
             PROGS = CATL.LIST<2, F>
             READ FLNM.CAT.OPTIONS FROM FG$EB.PARAMS,ORIG_PATH:'_lib' ELSE

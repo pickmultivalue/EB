@@ -2,13 +2,6 @@
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
 !
-!=============================================
-! GALA 4GL
-!
-! Copyright (C) GENERAL AUTOMATION AUSTRALASIA Pty. Ltd.
-!
-! Written by Peter Falson - March 1989
-!
 !=========== Program's Purpose ===============
 !
 ! Display error message

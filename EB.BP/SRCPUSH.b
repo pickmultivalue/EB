@@ -8,7 +8,13 @@
     shell = @IM:'k'
     shellend = ' 2>&1'
 !
-    INCLUDE EB.INCLUDES SVN_DEBUG
+    INCLUDE EB.INCLUDES SRC_DEBUG
 !
-    EXECUTE shell:'git push ':shellend CAPTURING io
+    DEFFUN GETSRCTYPE()
+    scType = GETSRCTYPE()
+    io = ''
+    BEGIN CASE
+        CASE scType = 'GIT'
+            EXECUTE shell:'git push ':shellend CAPTURING io
+    END CASE
     RETURN io

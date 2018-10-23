@@ -1,0 +1,2 @@
+  SUBROUTINE EB_CH_COLOUR(fgColour, bgColour)
+  RETURN

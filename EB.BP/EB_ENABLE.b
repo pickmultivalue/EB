@@ -9,8 +9,8 @@
     Files<-1> = 'EB.TERM-TYPES'
     Files<-1> = 'JET.PASTE'
     Files<-1> = 'POINTER-FILE'
-    Files<-1> = 'SVN.HISTORY'
-    Files<-1> = 'SVN.LOCKS'
+    Files<-1> = 'SRC.HISTORY'
+    Files<-1> = 'SRC.LOCKS'
     Qptr = 'Q':@AM:'EB'
     dc = DCOUNT(Files, @AM)
     FOR f = 1 TO dc

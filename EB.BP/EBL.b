@@ -1,4 +1,3 @@
-* @(#) EBL.b Ported to jBASE 07:23:52  18 FEB 2010
     OPEN 'SAVEDLISTS' THEN
         FNAME='SAVEDLISTS'
     END ELSE

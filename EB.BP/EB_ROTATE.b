@@ -1,6 +1,4 @@
     SUBROUTINE EB_ROTATE(DYNARRAY)
-* @(#) EB_ROTATE.b Ported to jBASE 07:23:52  18 FEB 2010
-* @(#) EB.ROTATE Ported to jBASE 16:15:16  27 JUL 2001
 ! Subroutine to rotate dynamic array on an x-y axis
     EQU AM TO CHAR(254),VM TO CHAR(253)
     ACNT=DCOUNT(DYNARRAY,AM)

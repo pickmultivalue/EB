@@ -5,18 +5,18 @@
     INCLUDE EB.EQUS EB.COMMON
     INCLUDE JBC.h
     DEFFUN EB_CLOSE()
-    DEFFUN SVN_CASE()
-    DEFFUN SVN_CHECKOUT()
-    DEFFUN SVN_COMMIT()
-    DEFFUN SVN_ADD()
-    DEFFUN SVN_SYNC()
-    DEFFUN SVN_DELETE()
-    DEFFUN SVN_REVERT()
-    DEFFUN SVN_GETORIGPATH()
-    DEFFUN SVN_GETHOMEPATH()
-    DEFFUN SVN_OPENLOCKS()
-    DEFFUN SVN_SRC_STATUS()
-    DEFFUN SVN_EXEC()
+    DEFFUN SRC_CASE()
+    DEFFUN SRC_CHECKOUT()
+    DEFFUN SRC_COMMIT()
+    DEFFUN SRC_ADD()
+    DEFFUN SRC_SYNC()
+    DEFFUN SRC_DELETE()
+    DEFFUN SRC_REVERT()
+    DEFFUN SRC_GETORIGPATH()
+    DEFFUN SRC_GETHOMEPATH()
+    DEFFUN SRC_OPENLOCKS()
+    DEFFUN SRC_SRC_STATUS()
+    DEFFUN SRC_EXEC()
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
     DEFFUN GET_CATALOG_FILE()
@@ -26,7 +26,7 @@
     EQU spc TO ' '
     shell = @IM:'k'
     shellend = ' 2>&1'
-    INCLUDE EB.INCLUDES SVN_DEBUG
+    INCLUDE EB.INCLUDES SRC_DEBUG
 !
 ! FLNM is (typically) the "BP" file
 !
@@ -60,25 +60,25 @@
 ! Get unix login's home dir
 !
             INCLUDE EB.INCLUDES GET.HOME
-            BP_DIR = SVN_GETHOMEPATH(BP_FILE)
+            BP_DIR = SRC_GETHOMEPATH(BP_FILE)
             IF BP_DIR = FilePath THEN     ;! already in user's home
                 RETURN
             END
 !
 ! Find out if anyone else is working on it and warn user
 !
-            IF NOT(SVN_OPENLOCKS(F.VAR)) THEN STOP 201,'SVN.LOCKS'
+            IF NOT(SRC_OPENLOCKS(F.VAR)) THEN STOP 201,'SRC.LOCKS'
             K.lockvar = GETFULLPATH(BP_FILE):DIR_DELIM_CH:ITNM
-            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
-            gitinfo = SVN_EXEC('info ':K.lockvar, TRUE)
+            IO = TRIM(SRC_SRC_STATUS(FilePath, ITNM))
+            gitinfo = SRC_EXEC('info ':K.lockvar, TRUE)
             lockvar = LEN(gitinfo) = 0
             RETURN
             LocalCopy = 'Make local copy'
-            READV lockvar FROM F.VAR, SVN_CASE(K.lockvar), 1 THEN
+            READV lockvar FROM F.VAR, SRC_CASE(K.lockvar), 1 THEN
                 CALL EB_CHOICES(10,3,'','',VM:LocalCopy,lockvar,ANS,1,'',1,'L#50','Warning - Currently being worked on by')
             END ELSE ANS = LocalCopy
             IF ANS = LocalCopy THEN
-                IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
+                IO = TRIM(SRC_SRC_STATUS(FilePath, ITNM))
                 IF LEN(IO) AND NOT(INDEX(IO[1,2], 'M', 1)) THEN
                     lockvar = ''
                 END ELSE
@@ -90,7 +90,7 @@
                 CRT MSG.CLR:"Confirm edit of ":ANS:"'s version of ":K.lockvar:" (Y/N) ":
                 Z = TRUE; L = 1; INPTYPE='YN'; GOSUB INPT
                 IF Z THEN
-                    FLNM = SVN_GETHOMEPATH(BP_FILE)
+                    FLNM = SRC_GETHOMEPATH(BP_FILE)
                     IF ANS # user THEN
                         EXECUTE shell:'echo ~':ANS CAPTURING userhome
                         IF userhome = '~':ANS THEN userhome = CHANGE(homepath, DIR_DELIM_CH:user, DIR_DELIM_CH:ANS)
@@ -100,7 +100,7 @@
                 END ELSE lockvar = TRUE       ;! locked no check out
             END
         CASE Op=VersEdit
-!            IO = TRIM(SVN_SRC_STATUS(FilePath, ITNM))
+!            IO = TRIM(SRC_SRC_STATUS(FilePath, ITNM))
 !            IF FIELD(IO, ' ', 1) MATCHES "1N0N" THEN          ;! under source control
             EXECUTE shell:'git ls-files ':K.lockvar:shellend CAPTURING IO
             IF LEN(IO) THEN
@@ -111,10 +111,10 @@
                 END
                 lockvar=TRUE
                 IF NOT(Z) THEN RETURN
-                IF SVN_CASE(FilePath) = SVN_CASE(currdir) THEN
+                IF SRC_CASE(FilePath) = SRC_CASE(currdir) THEN
                     Z = '.'
                 END ELSE Z = FilePath
-                errmsg = SVN_CHECKOUT(FALSE, Z, ITNM)
+                errmsg = SRC_CHECKOUT(FALSE, Z, ITNM)
                 IF LEN(errmsg) THEN
                     CALL EB_ERRMSG(errmsg, 1)
                     SCR.UD = 1
@@ -132,7 +132,7 @@
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
             FullPath = FilePath:DIR_DELIM_CH:ITNM
-            errmsg = SVN_ADD(FullPath)
+            errmsg = SRC_ADD(FullPath)
             IF LEN(errmsg) THEN
                 CALL EB_ERRMSG(errmsg, 1)
                 CALL EB_REFRESH
@@ -149,7 +149,7 @@
             END
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
-            errmsg = SVN_DELETE(TRUE, FilePath, ITNM)
+            errmsg = SRC_DELETE(TRUE, FilePath, ITNM)
             IF FIELD(TRIM(errmsg), ' ', 1) # 'D' THEN
                 CALL EB_ERRMSG(errmsg, 1)
                 CALL EB_REFRESH
@@ -166,7 +166,7 @@
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
             FullPath = FilePath:DIR_DELIM_CH:ITNM
-            errmsg = SVN_REVERT(FullPath)
+            errmsg = SRC_REVERT(FullPath)
             IF NOT(LEN(errmsg)) THEN errmsg = 'No revert took place'
             IF FIELD(TRIM(errmsg), ' ', 1) # 'Reverted' THEN
                 CALL EB_ERRMSG(errmsg, 1)
@@ -203,7 +203,7 @@
                 CALL EB_ERRMSG(errmsg, 1)
                 CRT MSG.CLR:
             END
-            errmsg = SVN_COMMIT(FullPath)
+            errmsg = SRC_COMMIT(FullPath)
             CALL SPLITFILEPATH(FullPath, FilePath, ITNM)
             IF LEN(errmsg) THEN
                 SCR.UD=1
@@ -223,7 +223,7 @@
             END
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
-            errmsg = SVN_SYNC(FilePath:DIR_DELIM_CH:ITNM)
+            errmsg = SRC_SYNC(FilePath:DIR_DELIM_CH:ITNM)
             IF LEN(errmsg) THEN
                 CALL EB_ERRMSG(errmsg, 1)
                 SCR.UD = 1

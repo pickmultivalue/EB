@@ -11,7 +11,6 @@
     EQU LF.VAL TO 10
     EQU HARD.RTN TO '<'
     INCLUDE EB.OS.INCLUDES AT.MINUS.CODES
-!INCLUDE jutil.h
     Timeout=300
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
@@ -184,7 +183,7 @@ PROCESS.RTN: !
         OLD.POS=INP.POS
         Sub=0
 !
-! Has a valid GALA function been keyed in
+! Has a valid function been keyed in
 !
         IF NOT(FG$ACT.CODE) THEN
             STMP=PREV.CHARS:WPCHR

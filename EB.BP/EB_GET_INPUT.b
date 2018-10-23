@@ -1,5 +1,4 @@
     SUBROUTINE EB_GET_INPUT(CHR, CHR.NBR)
-* @(#) EB_GET_INPUT.b Ported to jBASE 07:23:52  18 FEB 2010
     INCLUDE EB.EQUS EB.COMMONS
     GO MAIN$
 !=========== Program's Purpose ===============

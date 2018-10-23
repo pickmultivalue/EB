@@ -1,14 +1,6 @@
     SUBROUTINE EB_MERRMSG(MSG.PRE,MSG,MSG.POST,RESP,VALID.RESP)
-* @(#) EB_MERRMSG.b Ported to jBASE 07:23:52  18 FEB 2010
     INCLUDE EB.EQUS EB.COMMONS
     GO MAIN$
-!
-!=============================================
-! GALA 4GL
-!
-! Copyright (C) GENERAL AUTOMATION AUSTRALASIA Pty. Ltd.
-!
-! Written by Peter Falson - March 1989
 !
 !=========== Program's Purpose ===============
 !

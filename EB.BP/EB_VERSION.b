@@ -2,12 +2,12 @@
 !
     INCLUDE EB.EQUS EB.COMMON
     INCLUDE JBC.h
-    DEFFUN SVN_SRC_STATUS()
-    DEFFUN SVN_HISTORY()
-    DEFFUN SVN_READ()
-    DEFFUN SVN_GETHOMEPATH()
-    DEFFUN SVN_CASE()
-    DEFFUN SVN_OPENLOCKS()
+    DEFFUN SRC_SRC_STATUS()
+    DEFFUN SRC_HISTORY()
+    DEFFUN SRC_READ()
+    DEFFUN SRC_GETHOMEPATH()
+    DEFFUN SRC_CASE()
+    DEFFUN SRC_OPENLOCKS()
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
     DEFFUN EBJSHOW()
@@ -17,13 +17,13 @@
     shellend = ' 2>&1'
     CRT MSG.CLR:
     FullPath = GETFULLPATH(FLNM)
-    SourceStatus = SVN_SRC_STATUS(FullPath, ITNM)
+    SourceStatus = SRC_SRC_STATUS(FullPath, ITNM)
     IF LEN(SourceStatus) THEN
         YNCHRS='D':VM:'H':VM:'R':VM:'S':VM:ESC
-        IF NOT(SVN_OPENLOCKS(F.Locks)) THEN STOP 201,'SVN.LOCKS'
+        IF NOT(SRC_OPENLOCKS(F.Locks)) THEN STOP 201,'SRC.LOCKS'
         Commit = TRUE
-        IF FullPath # SVN_GETHOMEPATH(FullPath) THEN
-            K.Locks = SVN_CASE(FullPath:DIR_DELIM_CH:ITNM)
+        IF FullPath # SRC_GETHOMEPATH(FullPath) THEN
+            K.Locks = SRC_CASE(FullPath:DIR_DELIM_CH:ITNM)
             READV users FROM F.Locks, K.Locks, 1 THEN Commit = FALSE
         END
         IF Commit THEN
@@ -49,7 +49,7 @@
             CASE Y='A'; Y=VersAdd
             CASE Y='D'; Y=VersDelete
             CASE Y='H'
-                history = SVN_HISTORY(FullPath, ITNM, '')
+                history = SRC_HISTORY(FullPath, ITNM, '')
                 IF LEN(history) THEN
                     IF ORIG.REC#REC THEN
                         Y = 'Warning: any changes will be lost. Continue? (Y)es, (N)o '
@@ -71,7 +71,7 @@
                 CALL EB_CHOICES(5,3,'',PDEPTH-5,'',history,REV,1,1,Attrs,Fmts,'Revision History':SVM:ColHdrs)
                 IF REV THEN
                     REV = ',':REV
-                    IF SVN_READ(FLNM, ITNM:REV, errmsg) THEN
+                    IF SRC_READ(FLNM, ITNM:REV, errmsg) THEN
                         IF REC = errmsg THEN
                             errmsg = 'Version the same as current record'
                             GOSUB DISPLAY_ERROR
