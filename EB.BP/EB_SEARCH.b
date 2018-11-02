@@ -390,7 +390,7 @@ RETRY:
         MAX-=DIFF
         OCC+=1
     REPEAT
-    IF FOUND THEN CRT ELSE RETURN
+    IF FOUND THEN CRT ELSE GO 4099
 4120 !
     RefreshRequired=TRUE
     IF NOT(STR.POS) THEN
@@ -414,7 +414,7 @@ RETRY:
         CALL EB_REFRESH       ;! INDROW=-INDROW
     END
     SSTR=''
-    RETURN
+    GO 4099
 INPT: !
     POS=1
     EDITED=FALSE
