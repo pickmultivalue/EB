@@ -327,7 +327,8 @@
                             END
                         END
                     NEXT I
-                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#50':CTRL.C:'G*1':SVM:'L#25':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
+                    POPUP_WIDTH=SYSTEM(2)-30
+                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#25':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
                     FLNM=''
                 END
                 IF ITNM#ITNM<1,1,1> THEN
