@@ -26,31 +26,47 @@ MAIN$:!
         GOSUB INPT
         CRT MSG.CLR:
         IF INDEX(ESC,Z,1) THEN G60=TRUE; RETURN
-        IF Z[1,1]='!' THEN
-            SHELL.CMD=TRUE
-            Z=Z[2,MAX]
+        SHELL.CMD=FALSE
+        SHOW.PASTE=FALSE
+        IF Z EQ '^' THEN
+            STMP = ''
+            CRT MSG.CLR:"Paste in your code now..."
+            CRT
+            RQM
+            LOOP
+                INPUT Z
+            UNTIL Z EQ ESC DO
+                IF LEN(Z) THEN
+                    STMP<-1> = Z
+                END ELSE STMP := @AM
+                IF NOT(SYSTEM(14)) THEN
+                    RQM
+                    IF NOT(SYSTEM(14)) THEN BREAK
+                END
+            REPEAT
         END ELSE
-            SHELL.CMD=FALSE
-        END
-        IF Z[1,1]='?' THEN
-            SHOW.PASTE=TRUE
-            Z=Z[2,MAX]
-        END ELSE
-            SHOW.PASTE=FALSE
-        END
-        IF SHELL.CMD THEN
-            shell = @IM:'k'
-            shellend = ' 2>&1'
-            EXECUTE shell:Z:shellend CAPTURING STMP
-        END ELSE
-            IF INDEX(0,Z,1) THEN
-                IF DCOUNT(DEL.LINES,AM) THEN
-                    STMP=DEL.LINES<1>:AM
-                    IF NOT(SHOW.PASTE) THEN DEL DEL.LINES<1>
-                END ELSE STMP=''
+            IF Z[1,1]='!' THEN
+                SHELL.CMD=TRUE
+                Z=Z[2,MAX]
+            END
+            IF Z[1,1]='?' THEN
+                SHOW.PASTE=TRUE
+                Z=Z[2,MAX]
+            END
+            IF SHELL.CMD THEN
+                shell = @IM:'k'
+                shellend = ' 2>&1'
+                EXECUTE shell:Z:shellend CAPTURING STMP
             END ELSE
-                IF NUM(Z) THEN Z='PASTE*':FG$LOGNAME:'*':Z
-                READ STMP FROM JET.PASTE,Z ELSE STMP=''
+                IF INDEX(0,Z,1) THEN
+                    IF DCOUNT(DEL.LINES,AM) THEN
+                        STMP=DEL.LINES<1>:AM
+                        IF NOT(SHOW.PASTE) THEN DEL DEL.LINES<1>
+                    END ELSE STMP=''
+                END ELSE
+                    IF NUM(Z) THEN Z='PASTE*':FG$LOGNAME:'*':Z
+                    READ STMP FROM JET.PASTE,Z ELSE STMP=''
+                END
             END
         END
         IF NOT(LEN(STMP)) THEN G60=TRUE; RETURN
