@@ -964,7 +964,8 @@ SCROLL.LINE:    !
                 J.LINE=1; GO 2210
             END ELSE
                 RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
-                IF NOT(TAB.MODE) AND DEL.CHAR#'' THEN
+!                IF NOT(TAB.MODE) AND DEL.CHAR#'' THEN
+                IF DEL.CHAR#'' THEN
                     CRT @(COL,ROW):DEL.CHAR:
                     CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
                     IF CRTLN[CRT.X+1,1]#'' THEN
