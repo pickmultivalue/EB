@@ -34,7 +34,8 @@ MAIN$:!
             CRT
             RQM
             LOOP
-                INPUT Z
+                L=SYSTEM(14)
+                INPUT Z,L
             UNTIL Z EQ ESC DO
                 IF LEN(Z) THEN
                     STMP<-1> = Z
