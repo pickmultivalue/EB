@@ -1638,9 +1638,9 @@ CHG.LROW:
     IF FG$ACT.CODE=FG$ALT.CODE THEN
         FG$ACT.CODE=FALSE
     END ELSE
-        cmds ="<T>abs,<M>erge,<D>upe,<S>ave,<E>d,Ed<V>al,<P>rt,Si<z>e,<B>asicErrs,<R>otate,<C>ompare,<I>ntegrate ?"
-        CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF)
-        YNC=COL; YNR=ROW;
+        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,M<o>ve,<P>rt,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e ?"
+        CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):
+        YNC=PWIDTH; YNR=PDEPTH;
         YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
         CRT MSG.DSP:

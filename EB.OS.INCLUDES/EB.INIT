@@ -3,7 +3,6 @@ INCLUDE jCmdKeys.h
 !#ifdef jBASE3
 !CALL CommandInit
 !#else
-stack = SYSTEM(1029) ;! fix segv
 CALL JBASECommandInit
 !#endif
 Timeout=300
