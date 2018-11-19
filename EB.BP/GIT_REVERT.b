@@ -66,6 +66,7 @@
                 END
             END ELSE
                 IO = GIT_EXEC('revert ':itm, TRUE)
+                IF IO EQ '' THEN IO = 'reverted'
             END
         END ELSE IO=''
     NEXT i

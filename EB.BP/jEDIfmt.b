@@ -1,6 +1,9 @@
 !
 ! Format Basic Program Listing
+!
+    INCLUDE JBC.h
     DEFC INT JBASEEmulateGETINT(INT, INT)
+    DEFFUN EBGETHOME()
 
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
     am_start=IF_COMPILED_PRIME
@@ -72,20 +75,21 @@
         STOP
     END
     OPEN FNAME TO FILE ELSE STOP 201,FNAME
+    path = EBGETHOME()
     MAT IND=0; IND(1)=4; IND(2)=4
-    IF FNAME = 'JET.PASTE' THEN
+    IF FIELD(FNAME, DIR_DELIM_CH, DCOUNT(FNAME, DIR_DELIM_CH)) EQ 'JET.PASTE' THEN
         ID=BUFF<3>
         rFname = FIELD(ID, '%', 2)
         IF rFname = '' THEN rFname = FNAME
     END
     OPEN 'DICT',rFname TO DFILE THEN
         MATREAD IND FROM DFILE,'EB_INDENT' ELSE
-            OPEN 'EB.PARAMS' THEN
+            OPEN path:'EB.PARAMS' THEN
                 MATREAD IND FROM 'EB_INDENT' ELSE NULL
             END
         END
     END ELSE
-        OPEN 'EB.PARAMS' THEN
+        OPEN path:'EB.PARAMS' THEN
             MATREAD IND FROM 'EB_INDENT' ELSE NULL
         END
     END

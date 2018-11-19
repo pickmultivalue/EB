@@ -1682,7 +1682,7 @@ CHG.LROW:
             IF accuterm THEN CRT ESC:CHAR(2):0:
             ECHO ON
             DATA INDROW+LROW-1
-            DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED JET.PASTE ':Y; GOSUB EB.SUB
+            DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED ':path:'JET.PASTE ':Y; GOSUB EB.SUB
             ECHO OFF
             READ NEW.REC FROM JET.PASTE,Y THEN
                 DELETE JET.PASTE,Y
@@ -1737,7 +1737,7 @@ CHG.LROW:
             CONVERT VM:SVM TO AM:VM IN STMP
             Y='%':ITNM:'.':INDROW+LROW-1:'%'
             WRITE STMP ON JET.PASTE,Y
-            DUMMY='EB JET.PASTE ':Y
+            DUMMY='EB ':path:'JET.PASTE ':Y
             GOSUB EB.SUB
             READ STMP FROM JET.PASTE,Y ELSE NULL
             DELETE JET.PASTE,Y
@@ -2113,7 +2113,7 @@ INDENT: !
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Formatting program...':
     ECHO OFF
-    DUMMY='jEDIfmt JET.PASTE ':Y
+     DUMMY='jEDIfmt ':path:'JET.PASTE ':Y
     IF TYPE='SQL' THEN DUMMY:=' (Q'
     EXECUTE DUMMY
     ECHO ON
@@ -2126,7 +2126,7 @@ UNINDENT: !
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Unformatting program...':
     ECHO OFF
-    EXECUTE 'EBUFMT JET.PASTE ':Y
+    EXECUTE 'EBUFMT ':path:'JET.PASTE ':Y
     ECHO ON
     READ REC FROM JET.PASTE,Y ELSE NULL
     DELETE JET.PASTE,Y
@@ -2480,9 +2480,9 @@ GET.CATL: !
     END
     IF LEN(FLNM.CAT.OPTIONS) THEN
         SOP = @FALSE
-        POS = INDEX(FLNM.CAT.OPTIONS, 'Executable:', 1)
+        POS = INDEX(FLNM.CAT.OPTIONS, 'Executable', 1)
         IF NOT(POS) THEN
-            POS = INDEX(FLNM.CAT.OPTIONS, 'Subroutine:', 1)
+            POS = INDEX(FLNM.CAT.OPTIONS, 'Subroutine', 1)
             SOP = POS
         END
         IF POS THEN
