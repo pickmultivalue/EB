@@ -2473,7 +2473,7 @@ SWITCH.FILE: !
     RETURN
 GET.CATL: !
     CALL EB_TRIM(firstProg, PROG, '.b', 'T')
-    CALL EB_TRIM(firstProg, PROG, '.jabba', 'T')
+    CALL EB_TRIM(firstProg, firstProg, '.jabba', 'T')
     FLNM.CAT.OPTIONS = EBJSHOW('-c ':firstProg)
     IF NOT(LEN(FLNM.CAT.OPTIONS)) AND firstProg EQ UPCASE(firstProg) THEN
         FLNM.CAT.OPTIONS = EBJSHOW('-c ':LOWCASE(firstProg))
