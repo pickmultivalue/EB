@@ -9,6 +9,8 @@
     prog_id = itnm
     IF (prog_id 'R#2') = '.b' THEN
         prog_id = itnm[1, LEN(itnm)-2]
+    END ELSE IF (prog_id 'R#6') = '.jabba' THEN
+        prog_id = itnm[1, LEN(itnm)-6]
     END
     io = EBJSHOW('-c ':prog_id)
     fname = ''
