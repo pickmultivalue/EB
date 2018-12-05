@@ -46,7 +46,8 @@ EB.BP]MOBJECT/EB.o: EB.BP/EB.b EB.EQUS/ACT.CODES EB.EQUS/COLOUR.CODES EB.EQUS/CO
 bin/EB: EB.BP]MOBJECT/EB.o
 	CATALOG -o./bin EB.BP EB.b
 	cp ./bin/EB ./bin/eb
-	cp ./bin/EB.so* ./bin/eb.so*
+	cp ./bin/EB.so ./bin/eb.so
+	cp ./bin/EB.so.el ./bin/eb.so.el
 
 EB.BP]MOBJECT/EBCRT.o: EB.BP/EBCRT.b EB.EQUS/SCREEN.PARAMS
 	BASIC EB.BP EBCRT.b

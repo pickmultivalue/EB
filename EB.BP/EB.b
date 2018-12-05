@@ -1638,10 +1638,10 @@ CHG.LROW:
     IF FG$ACT.CODE=FG$ALT.CODE THEN
         FG$ACT.CODE=FALSE
     END ELSE
-        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,M<o>ve,<P>rt,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e ?"
+        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e ?"
         CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):
         YNC=PWIDTH; YNR=PDEPTH;
-        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
+        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
         CRT MSG.DSP:
         IF FG$ACT.CODE=FG$OPT.CODE THEN Y='.'; FG$ACT.CODE=FALSE
@@ -1727,6 +1727,63 @@ CHG.LROW:
             WRITEU REC ON FIL,ITNM
             IF HEX.MODE THEN REC=STMP
             PREV.TIME=TIME()
+        CASE FTYP='Q' ;! grab the code under IF or END ELSE and remove the remainder IF/END
+            STMP = TRIM(RDSP(LROW))
+            Z=INDROW+LROW-1
+            STL = 0; MIDL = 0 ; ENDL = 0
+            FTYP = ''
+            BEGIN CASE
+                CASE FIELD(STMP,' ',1) EQ 'IF'
+                    STL = Z+1
+                    FTYP = 'I'
+                CASE FIELD(STMP,' ',1,2) EQ 'END ELSE'
+                    MIDL = Z
+                    FTYP = 'E'
+            END CASE
+            IF LEN(FTYP) THEN
+                LOCATE '//' IN SSS SETTING Z THEN DEL SSS<Z>
+                INS '//' BEFORE SSS<1>
+                FG$ACT.CODE=FG$MULTI.CODE
+                CALL EB_SEARCH
+                Z=INDROW+LROW-1
+                IF STL THEN
+                    MIDL = Z
+                END ELSE
+                    ENDL = Z-1
+                    PSSTR = '\\'
+                END
+                FG$ACT.CODE=FG$MULTI.CODE
+                CALL EB_SEARCH
+                IF NOT(STL) THEN
+                    FG$ACT.CODE=FG$MULTI.CODE
+                    CALL EB_SEARCH
+                END
+                Z=INDROW+LROW-1
+                IF ENDL THEN
+                    STL = Z+1
+                END ELSE
+                    ENDL = Z-1
+                END
+                DUMMY = ''
+                Z = 1
+                IF FTYP = 'I' THEN
+                    MIDL--
+                    FOR L = STL TO MIDL
+                        DUMMY<Z++> = REC<L>
+                    NEXT L
+                END ELSE
+                    MIDL++
+                    FOR L = MIDL TO ENDL
+                        DUMMY<Z++> = REC<L>
+                    NEXT L
+                END
+                STL--
+                ENDL++
+                FOR L = STL TO ENDL
+                    DEL REC<STL>
+                NEXT L
+                INS DUMMY BEFORE REC<STL>
+            END
         CASE FTYP='R'
             CALL EB_ROTATE(REC)
             SCR.UD=TRUE
@@ -2113,7 +2170,7 @@ INDENT: !
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Formatting program...':
     ECHO OFF
-     DUMMY='jEDIfmt ':path:'JET.PASTE ':Y
+    DUMMY='jEDIfmt ':path:'JET.PASTE ':Y
     IF TYPE='SQL' THEN DUMMY:=' (Q'
     EXECUTE DUMMY
     ECHO ON
