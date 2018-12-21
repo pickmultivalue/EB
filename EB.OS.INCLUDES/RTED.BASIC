@@ -37,15 +37,17 @@
                 IF offsetpos THEN
                     ROW=DCOUNT(DSPLY[1,offsetpos],AM)
                     COL=INDEX(DSPLY<ROW+2>,'^',1)
-                    Y=DSPLY<ROW+1>
-                    DSPLY = DSPLY<ROW>
-                    IF suffix[1,1] EQ 'c' THEN
-                        INDROW = FIELD(DSPLY, ':', 2)
-                    END ELSE
-                        INDROW=TRIM(FIELD(FIELD(DSPLY,',',2),'(',1))
+                    IF COL THEN
+                        Y=DSPLY<ROW+1>
+                        DSPLY = DSPLY<ROW>
+                        IF suffix[1,1] EQ 'c' THEN
+                            INDROW = FIELD(DSPLY, ':', 2)
+                        END ELSE
+                            INDROW=TRIM(FIELD(FIELD(DSPLY,',',2),'(',1))
+                        END
+                        Z=REC<INDROW>
+                        COL+=(LEN(Z)-LEN(Y))+4
                     END
-                    Z=REC<INDROW>
-                    COL+=(LEN(Z)-LEN(Y))+4
                 END
             END
             INDROW-=11

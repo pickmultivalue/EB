@@ -12,10 +12,11 @@
 !
     INCLUDE JBC.h
     DEFFUN SRC_OPENHIST()
+    DEFFUN EBGETHOME()
 
     IF LEN(FileName) THEN
         fname = FileName:','
-    END ELSE fname = ''
+    END ELSE fname = EBGETHOME()
 !
     histfile = 'SRC.HISTORY'
     fname := histfile
