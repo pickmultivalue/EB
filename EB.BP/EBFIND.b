@@ -4,9 +4,13 @@
     types = ''
     dir = '.' 
     sort = '' 
+    nocase = '' 
     IF LEN(dashes) THEN
         FINDSTR '-d' IN dashes SETTING pos THEN
             dir = dashes<pos>[3,99] 
+        END
+        FINDSTR '-i' IN dashes SETTING pos THEN
+            nocase = dashes<pos>[3,99] 
         END
         FINDSTR '-s' IN dashes SETTING pos THEN
             sort = '|/usr/bin/sort' 
@@ -19,4 +23,4 @@
     IF LEN(types) THEN
         types = ' -name "*.':types:'"'
     END 
-    EXECUTE @IM:'kEB `find ':dir:' -type f ':types:' -exec fgrep -l ':sent:' {} \;':sort:'`' 
+    EXECUTE @IM:'kEB `find ':dir:' -type f ':types:' -exec fgrep -l':nocase:' ':sent:' {} \;':sort:'`' 

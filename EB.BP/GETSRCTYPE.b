@@ -3,7 +3,7 @@
   cmd = ' status 2>&1'
   result = 'UNKNOWN'
   supported = 'git':@AM:'svn'
-  reject = 'Not a git repository':@AM:'is not a working'
+  reject = 'ot a git repository':@AM:'is not a working'
   dc = DCOUNT(supported, @AM)
   FOR d = 1 TO dc
       type = supported<d>

@@ -15,4 +15,6 @@
             RETURN GIT_GETPWD(FilePath, Delim, Remove_trunk)
         CASE scType = 'SVN'
             RETURN SVN_GETPWD(FilePath, Delim, Remove_trunk)
+        CASE 1
+            RETURN '' 
     END CASE
