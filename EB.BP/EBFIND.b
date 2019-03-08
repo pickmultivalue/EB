@@ -4,13 +4,17 @@
     types = ''
     dir = '.' 
     sort = '' 
-    nocase = '' 
+    nocase = ''
+    findkey = @FALSE 
     IF LEN(dashes) THEN
         FINDSTR '-d' IN dashes SETTING pos THEN
             dir = dashes<pos>[3,99] 
         END
         FINDSTR '-i' IN dashes SETTING pos THEN
-            nocase = dashes<pos>[3,99] 
+            nocase = 'i' 
+        END
+        FINDSTR '-k' IN dashes SETTING pos THEN
+            findkey = @TRUE 
         END
         FINDSTR '-s' IN dashes SETTING pos THEN
             sort = '|/usr/bin/sort' 
@@ -19,8 +23,18 @@
             types = dashes<pos>[3,99] 
         END
     END
-    sent = DQUOTE(CHANGE(sent, @AM, ' '))
-    IF LEN(types) THEN
-        types = ' -name "*.':types:'"'
+    sent = CHANGE(sent, @AM, ' ')
+    IF sent[1,1] NE '"' THEN sent = DQUOTE(sent) 
+    find_cmd = 'find ':dir:' -type f' 
+    IF findkey THEN
+        find_cmd :=' -name ':DQUOTE(sent)
+    END ELSE 
+        IF LEN(types) THEN
+            find_cmd := ' -name "*.':types:'"'
+        END 
+        find_cmd :=' -exec fgrep -l':nocase:' -- ':sent:' {} \;':sort
     END 
-    EXECUTE @IM:'kEB `find ':dir:' -type f ':types:' -exec fgrep -l':nocase:' ':sent:' {} \;':sort:'`' 
+    EXECUTE @IM:'k':find_cmd CAPTURING list
+    IF LEN(list) THEN 
+        EXECUTE @IM:'kEB ':CHANGE(list, @AM, ' ') 
+    END ELSE CRT 'No match' 

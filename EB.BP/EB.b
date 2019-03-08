@@ -624,8 +624,8 @@ SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
 UPDATE.REC:!
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
-!            CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
-!            IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
+            CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
+            IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
             REC<I+INDROW-1>=RDSP(I)
             CHANGED=TRUE
         END
@@ -1612,7 +1612,22 @@ SAVE.ITEM: !
     IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
     CALL EB_TRIM(REC,REC:'',AM,'T')
     DELETE FIL,ITNM:".BAK"
-    WRITE REC ON FIL,ITNM
+    WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+        IF setvar EQ 24576 THEN
+            YNL='Permission denied: add +w ? (Y/N) '
+            CRT MSG.CLR:YNL:
+            YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
+            CRT MSG.CLR:
+            IF Y='Y' THEN
+                EXECUTE 'chmod +w ':GETFULLPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result 
+                WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+                    CRT MSG.CLR:' unable to update (':setvar:')'
+                    Y='N' 
+                END
+            END 
+            IF Y#'N' THEN RETURN 
+        END
+    END
     DELETE JET.PASTE,ITNM:'.sav'
     RETURN
 !==================================================!

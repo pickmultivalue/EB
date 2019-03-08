@@ -32,7 +32,20 @@ MAIN$:!
 !
     CALL EB_OPEN('','.',F.currdir,1,0)
     REC = CHANGE(REC, CHAR(9):@AM, @AM)
-    WRITE REC ON FIL,ITNM
+    WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+        YNL='Permission denied: add +w ? (Y/N) '
+        CRT MSG.CLR:YNL:
+        YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
+        CRT MSG.CLR:
+        IF Y='Y' THEN
+            EXECUTE 'jchmod +w ':SRC_GETORIGPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result
+            WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+                CRT MSG.CLR:' unable to update (':setvar:')'
+                Y='N' 
+            END
+        END 
+        IF Y#'N' THEN RETURN 
+    END
     Y=FLNM:'*':ITNM
     DELETE JET.PASTE,ITNM:'.sav'
     UPDHIST = SRC_OPENHIST(F.HISTFILE, FLNM)
