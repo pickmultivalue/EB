@@ -624,8 +624,10 @@ SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
 UPDATE.REC:!
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
-            CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
-            IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
+            IF I NE LROW THEN 
+                CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
+                IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
+            END 
             REC<I+INDROW-1>=RDSP(I)
             CHANGED=TRUE
         END
@@ -2415,6 +2417,7 @@ GET.EDIT.MODE: !
     BEGIN CASE
         CASE ITNM 'R#4'='.sql'; EDIT.MODE='Q'
         CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
+        CASE ITNM 'R#4'='.hpp'; EDIT.MODE='cpp'
         CASE ITNM 'R#4'='.sqc'; EDIT.MODE='c'
         CASE ITNM 'R#5'='.java'; EDIT.MODE='c'
         CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
