@@ -65,7 +65,7 @@
     WRITE commit_message ON F.local, commit_msg
     IO = GIT_EXEC('commit -F ':commit_msg:' ':commit_path, TRUE)
 !
-    IF INDEX(IO, 'working copy', 1) THEN
+    IF INDEX(IO, 'working copy', 1) OR INDEX(IO, 'rror', 1) OR INDEX(IO, 'ailed', 1) THEN
         CRT end_of_screen:'Warning: commit of ':commit_path:' failed'
         CRT
         CRT IO

@@ -364,6 +364,8 @@
     cmd=OCONV(FIELD(CMD,' ',1),'MCU')
     CMD=cmd:CMD[COL2(),999]
     CRT RVOFF:
+    LASTA=DCOUNT(RECA,AM)
+    LASTB=DCOUNT(RECB,AM)
     BEGIN CASE
         CASE CMD='W'        ;! wide screen
             WIDE.FLAG=TRUE
@@ -616,8 +618,6 @@ FILE.ITEM:!
 215         CRT CL:'Searching for "':TEXT:'", please wait ':CLEOL:
 ! Find String In Item A
             J=STARTA
-            LASTA=DCOUNT(RECA,AM)
-            LASTB=DCOUNT(RECB,AM)
 220         !
             J+=1
             IF J>LASTA THEN
