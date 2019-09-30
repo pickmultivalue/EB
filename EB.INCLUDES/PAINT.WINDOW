@@ -18,7 +18,7 @@
         ANS='Y';YNC=16;YNR=23;GOSUB INPUT.YN
         CRT @(0,23):CLEOL:
         IF ANS='Y' THEN
-            FG$CHANGES=TRUE
+            FG_CHANGES=TRUE
             IF COL#0 THEN HASH1='L#':COL ELSE HASH1=''
             WIDTH=WIDTH-2
             DEPTH=DEPTH-2

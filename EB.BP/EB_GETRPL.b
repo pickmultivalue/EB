@@ -30,12 +30,12 @@ MAIN$:!
     LOOP
         CRT @(ICOL,IROW):
         IF RPOS AND RPOS<21 THEN Z=RSS<1,RPOS>
-        IF FG$ACT.CODE = FG$AMD.CODE THEN
+        IF FG_ACT.CODE = FG_AMD.CODE THEN
             POS = FALSE
         END ELSE
             INPTYPE='LIT'; GOSUB INPT
-            LOCATE FG$ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
-            IF FG$ACT.CODE=FG$HLP.CODE THEN
+            LOCATE FG_ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
+            IF FG_ACT.CODE=FG_HLP.CODE THEN
                 CALL EB_HELP('EBREPLACE', TRUE)
                 SCR.LR=1
                 CALL EB_REFRESH
@@ -45,23 +45,23 @@ MAIN$:!
         END
     WHILE POS DO
         BEGIN CASE
-            CASE FG$ACT.CODE=FG$OPT.CODE
+            CASE FG_ACT.CODE=FG_OPT.CODE
                 CALL EB_CHOICES(50,8,31,10,'',RSS,Z,1,RPOS,1,'L#30','Previous Searches')
-            CASE FG$ACT.CODE=FG$SKP.CODE OR FG$ACT.CODE=FG$MULTI.CODE; RPOS+=1
-            CASE FG$ACT.CODE=FG$SEL.CODE
+            CASE FG_ACT.CODE=FG_SKP.CODE OR FG_ACT.CODE=FG_MULTI.CODE; RPOS+=1
+            CASE FG_ACT.CODE=FG_SEL.CODE
                 ReplMode=NOT(ReplMode)
                 GOSUB DisplayPrompt
             CASE 1; RPOS-=1
         END CASE
         IF RPOS<1 THEN RPOS=0
-        FG$ACT.CODE=FALSE
+        FG_ACT.CODE=FALSE
     REPEAT
-    IF FG$TIMEDOUT OR FG$ACT.CODE=FG$ABT.CODE THEN
+    IF FG_TIMEDOUT OR FG_ACT.CODE=FG_ABT.CODE THEN
         CRT MSG.CLR:
         RETURN
     END
     CONVERT VM TO AM IN RSS
-    IF FG$ACT.CODE AND FG$ACT.CODE # FG$AMD.CODE THEN GO 3099
+    IF FG_ACT.CODE AND FG_ACT.CODE # FG_AMD.CODE THEN GO 3099
     LOCATE Z IN RSS<am_start> SETTING RPOS ELSE
         IF RPOS<50 THEN RPOS=0 ELSE
             RPOS=50
@@ -131,19 +131,19 @@ MAIN$:!
             CRT @(ICOL,IROW):
             IF PPOS AND PPOS<21 THEN Z=PSS<1,PPOS>
             INPTYPE='LIT'; GOSUB INPT
-            LOCATE FG$ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
+            LOCATE FG_ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
         WHILE POS DO
             BEGIN CASE
-                CASE FG$ACT.CODE=FG$OPT.CODE
+                CASE FG_ACT.CODE=FG_OPT.CODE
                     CALL EB_CHOICES(50,8,31,10,'',PSS,Z,1,PPOS,1,'L#30','Previous Replaces')
-                CASE FG$ACT.CODE=FG$SKP.CODE OR FG$ACT.CODE=FG$MULTI.CODE; PPOS+=1
+                CASE FG_ACT.CODE=FG_SKP.CODE OR FG_ACT.CODE=FG_MULTI.CODE; PPOS+=1
                 CASE 1; PPOS-=1
             END CASE
             IF PPOS<1 THEN PPOS=0
-            FG$ACT.CODE=FALSE
+            FG_ACT.CODE=FALSE
         REPEAT
         CONVERT VM TO AM IN PSS
-        IF FG$ACT.CODE THEN GO 3099
+        IF FG_ACT.CODE THEN GO 3099
         DEL PSS<1>
         LOCATE Z IN PSS<am_start> SETTING WPOS ELSE
             IF WPOS<50 THEN WPOS=0 ELSE WPOS=50
@@ -211,8 +211,8 @@ MAIN$:!
                     CRT MSG.CLR:RPL.PROMPTS(I):Y:@(-9):
                     YNCHRS<3>=RPL.PARMS(I)
                     YNC=RPL.COLS(I); GOSUB GET.CHAR
-                    IF FG$ACT.CODE THEN
-                        IF FG$ACT.CODE=FG$BCK.CODE AND I>1 THEN I-=2 ELSE GO 3099
+                    IF FG_ACT.CODE THEN
+                        IF FG_ACT.CODE=FG_BCK.CODE AND I>1 THEN I-=2 ELSE GO 3099
                     END ELSE
                         RPL.PARMS(I)=(Y#'N')
                     END
@@ -260,9 +260,9 @@ MAIN$:!
 3095    !
         BEGIN CASE
             CASE LSTR='FI'
-                FG$ACT.CODE = FG$AMD.CODE
+                FG_ACT.CODE = FG_AMD.CODE
             CASE LSTR='A'
-                FG$ACT.CODE = FG$MULTI.CODE
+                FG_ACT.CODE = FG_MULTI.CODE
             CASE 1
                 IF ENDL#STRT THEN
                     CRT; CRT MSG.CLR:"That's all!  ":PR:" for original page, or line number? ":
@@ -294,7 +294,7 @@ INPT:   !
         INPTYPE='AN'
         RETURN
 GET.CHAR: !
-        CALL EB_UT_INPUT_ZERO(Y,MAT EB$CHARS,FG$ACT.CODE,YNC,YNR,FG$INPUT.CODES,YNCHRS,YNL,FG$TIMEOUT)
+        CALL EB_UT_INPUT_ZERO(Y,MAT EB_CHARS,FG_ACT.CODE,YNC,YNR,FG_INPUT.CODES,YNCHRS,YNL,FG_TIMEOUT)
         RETURN
 6000    ! Incorporate changed lines into dynamic array, REC.
         CHANGES(LROW)=TRUE

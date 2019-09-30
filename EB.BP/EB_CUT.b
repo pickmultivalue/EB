@@ -15,9 +15,9 @@
 MAIN$:!
     G60=FALSE
     INPTYPE='AN'
-    IF FG$ACT.CODE=FG$CUT.CODE OR FG$ACT.CODE=FG$SEL.CODE THEN CHR=SDEL
+    IF FG_ACT.CODE=FG_CUT.CODE OR FG_ACT.CODE=FG_SEL.CODE THEN CHR=SDEL
     IF CHR=SDEL THEN
-        IF FG$ACT.CODE=FG$CUT.CODE AND CUT.POS='' THEN
+        IF FG_ACT.CODE=FG_CUT.CODE AND CUT.POS='' THEN
             INS RDSP(LROW)[LCOL,MAX] BEFORE DEL.LIST<1>
             RDSP(LROW)=(RDSP(LROW)[1,LCOL-1])
             LLEN=LEN(RDSP(LROW))
@@ -43,13 +43,13 @@ MAIN$:!
                 G60=TRUE
                 RETURN
             END
-            SAVE.ACT=FG$ACT.CODE
+            SAVE.ACT=FG_ACT.CODE
             LOOP
                 CRT MSG.CLR:"Enter Paste Name or Number ":
                 L=20; Z=''
                 GOSUB INPT
             WHILE INDEX(0,Z,1) DO
-                IF FG$ACT.CODE = FG$HLP.CODE THEN
+                IF FG_ACT.CODE = FG_HLP.CODE THEN
                     CALL EB_HELP('EBCUT', @FALSE)
                 END
             REPEAT
@@ -65,7 +65,7 @@ MAIN$:!
                 CUT.POS=''; G60=TRUE; RETURN
             END
             IF CHANGED THEN GOSUB 6000
-            FG$ACT.CODE=SAVE.ACT
+            FG_ACT.CODE=SAVE.ACT
             IF SECOND.CUT<1,1,1><CUT.POS<1,1,1> THEN
                 INDROW=CUT.POS<1,1,1>+1; ROW=0
                 INS SECOND.CUT BEFORE CUT.POS<1>
@@ -84,7 +84,7 @@ MAIN$:!
         SCR.UD=(DEL.LINE#'' AND (ROW+NO.D.L)<=(PDEPTH-1) AND CHR=SDEL AND ROW>=0 AND CUT.POS<1,1,1><=CUT.POS<2,1,1> OR CHR#SDEL)
         Y=INDROW
         IF Z='!' THEN
-            FG$ACT.CODE=FG$SEL.CODE
+            FG_ACT.CODE=FG_SEL.CODE
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN]#COMMENT<1,1,1>
         END
         IF Z EQ '^' THEN
@@ -136,7 +136,7 @@ MAIN$:!
                 INDROW+=1
             END ELSE
                 CUT.TEXT<-1>=REC<INDROW+ROW>
-                IF FG$ACT.CODE#FG$SEL.CODE THEN   ;! Cut
+                IF FG_ACT.CODE#FG_SEL.CODE THEN   ;! Cut
                     IF SCR.UD AND (NOT(CHR=SDEL) OR J#NO.D.L) THEN CRT @(0,ROW):DEL.LINE:
                     DEL REC<INDROW+ROW>
                     CALL EB_MARKADJ(INDROW+ROW,1,-1)
@@ -146,9 +146,9 @@ MAIN$:!
         NEXT J
         IF Z#'!' THEN
             IF CHR=SDEL THEN
-                IF NUM(Z) THEN Z='PASTE*':FG$LOGNAME:'*':Z
+                IF NUM(Z) THEN Z='PASTE*':FG_LOGNAME:'*':Z
                 PASTE.TEXT=CUT.TEXT<1>[1,CUT.POS<1,1,2>-1]:CUT.TEXT<NO.D.L>[CUT.POS<2,1,2>,MAX]
-                IF FG$ACT.CODE=FG$CUT.CODE THEN
+                IF FG_ACT.CODE=FG_CUT.CODE THEN
                     INS PASTE.TEXT BEFORE REC<INDROW+ROW>
                     CALL EB_MARKADJ(INDROW+ROW,DCOUNT(PASTE.TEXT,AM),1)
                     LCOL=CUT.POS<1,1,2>
@@ -179,7 +179,7 @@ MAIN$:!
                 INS CUT.TEXT BEFORE DEL.LINES<1>
             END
         END ELSE SCR.UD=TRUE; G60=TRUE
-        IF FG$ACT.CODE#FG$SEL.CODE THEN ;! Copy
+        IF FG_ACT.CODE#FG_SEL.CODE THEN ;! Copy
             IF SCR.UD THEN
                 SCR.UD=NO.D.L-2*NO.D.L*(DEL.LINE#'')
             END ELSE

@@ -6,28 +6,28 @@
             ST=CPOS; FI=PASTE; GOSUB FOREGROUND
         END
         PASTE=FALSE
-        IF FG$STERM ELSE CRT @(0,23):CLEOL:
+        IF FG_STERM ELSE CRT @(0,23):CLEOL:
     END ELSE
-        IF FG$STERM THEN
-            FG$ACT.CODE=FG$OPT.CODE
+        IF FG_STERM THEN
+            FG_ACT.CODE=FG_OPT.CODE
         END ELSE
-            CRT @(0,23):CLEOL:FG$ERROR.MSGS<48>:' ':
-            ST=LEN(FG$ERROR.MSGS<48>:' ')
+            CRT @(0,23):CLEOL:FG_ERROR.MSGS<48>:' ':
+            ST=LEN(FG_ERROR.MSGS<48>:' ')
             CALL EB_WP(PASTE.NBR,'AN',ST,23,40,0)
         END
-        IF FG$ACT.CODE=FG$OPT.CODE THEN
-            CALL EB_CHOICES(30,8,'','','',FG$PASTE.LIST,PASTE.NBR,1,'',1:SVM:2,'L#20':SVM:'L#20','Stored Pastes')
+        IF FG_ACT.CODE=FG_OPT.CODE THEN
+            CALL EB_CHOICES(30,8,'','','',FG_PASTE.LIST,PASTE.NBR,1,'',1:SVM:2,'L#20':SVM:'L#20','Stored Pastes')
             PASTE.NBR=PASTE.NBR<1,1>
-            FG$ACT.CODE=FALSE
+            FG_ACT.CODE=FALSE
         END
         IF PASTE.NBR#'' THEN
-            LOCATE PASTE.NBR IN FG$PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
-                PASTE.STRING=FG$PASTE.LIST<2,PASTE.POS>
+            LOCATE PASTE.NBR IN FG_PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
+                PASTE.STRING=FG_PASTE.LIST<2,PASTE.POS>
                 GOSUB INSERT.STRING
             END ELSE
-                CALL EB_ERRMSG(PASTE.NBR:FG$ERROR.MSGS<49>)
+                CALL EB_ERRMSG(PASTE.NBR:FG_ERROR.MSGS<49>)
             END
         END
-        FG$ACT.CODE=FALSE
+        FG_ACT.CODE=FALSE
         INCLUDE EB.INCLUDES WP.INS.CURSOR
     END

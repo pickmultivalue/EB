@@ -1,6 +1,6 @@
 BAS.ARGS = ''
 IF Y='P' THEN
-    BAS.ARGS=" (":FG$TLINE:Y
+    BAS.ARGS=" (":FG_TLINE:Y
 END ELSE
   IF GETENV('JBASEHOME',jbhome) THEN
       jbhome := DIR_DELIM_CH:'include'

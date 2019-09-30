@@ -2,53 +2,53 @@
 ! These variables drive GA controlling
 ! cursor movement, display, data and updates
 !
-EQU FG$DFLT.BUTTON      TO DRV.PARAMS(1)  ;! focused button
-EQU FG$FINISHED         TO DRV.PARAMS(2)  ;! Exit from first field
-EQU FG$UPDATE           TO DRV.PARAMS(3)  ;! true if Updating (-1 for DEL)
-EQU FG$ABORTED          TO DRV.PARAMS(4)  ;! true if Aborted
-EQU FG$AMEND            TO DRV.PARAMS(5)  ;! validate Amend Commands
-EQU FG$PAGING           TO DRV.PARAMS(6)  ;! flag for MV field test
-EQU FG$FLD              TO DRV.PARAMS(7)  ;! Field Number
-EQU FG$SCRN.DATA        TO DRV.PARAMS(8)  ;! Data on screen
-EQU FG$DISPLAY.LIST     TO DRV.PARAMS(9)  ;! List of Fields to Refresh
-EQU FG$PROCESSING.FIELD TO DRV.PARAMS(10) ;! Used for Re-prompt of Field
-EQU FG$PANE             TO DRV.PARAMS(11) ;! current MV for window
-EQU FG$INS.PANE         TO DRV.PARAMS(12) ;! MV insertion point for window
-EQU FG$LAST.PANE        TO DRV.PARAMS(13) ;! last MV for each window
-EQU FG$NBR.PANES        TO DRV.PARAMS(14) ;! number of MVs / window
-EQU FG$WINDOW           TO DRV.PARAMS(15) ;! current MV window
-EQU FG$SCREEN.PAGE      TO DRV.PARAMS(16) ;! current screen page
-EQU FG$CHANGES          TO DRV.PARAMS(17) ;! flag if fields have changed
-EQU FG$SCREEN.RETURN    TO DRV.PARAMS(18) ;! flag to control subscreen calls from program
-EQU FG$LAST.VALUE       TO DRV.PARAMS(19) ;! previous values (for totals)
-EQU FG$CURRENT.PAGE     TO DRV.PARAMS(20) ;! current page of MV window
-EQU FG$INPUT.LIST       TO DRV.PARAMS(21) ;! process order of fields
-EQU FG$INPUT.POS        TO DRV.PARAMS(22) ;! position in above list
-EQU FG$SUB.SCREEN       TO DRV.PARAMS(23) ;! screen to call
-EQU FG$NEXT.IDS         TO DRV.PARAMS(24) ;! Auto-Generated Ids
-EQU FG$NEXT.KEYS        TO DRV.PARAMS(25) ;! Auto-Generated Keys
-EQU FG$FILE.CHANGES     TO DRV.PARAMS(26) ;! MV flags to force updates
-EQU FG$HILIGHT          TO DRV.PARAMS(27) ;! Display field hilited flag
-EQU FG$HILINE           TO DRV.PARAMS(28) ;! Display window hilited flag
-EQU FG$DEFAULT.DATA     TO DRV.PARAMS(29) ;! current defaults for this screen
-EQU FG$ENQUIRY.ONLY     TO DRV.PARAMS(30) ;! Enquiry Only Flag
-EQU FG$TICKER.POS       TO DRV.PARAMS(31) ;! Hold ticker-tape [pos,...]
-EQU FG$NORMAL.INPUT     TO DRV.PARAMS(32) ;! Used by EB.MAIN
-EQU FG$SUB.CALL.VAL     TO DRV.PARAMS(33) ;! Unique calling value for subscreens
-EQU FG$PGES.ASSIGNED    TO DRV.PARAMS(34) ;! MV list of page nbrs read/processed
-EQU FG$PANES.ASSIGNED   TO DRV.PARAMS(35) ;! MV/SMV list of lines in windows read
-EQU FG$ORIG.VALS        TO DRV.PARAMS(36) ;! original value if field changed
-EQU FG$PREV.ROW         TO DRV.PARAMS(37) ;! MV list of last rows printed on in window
-EQU FG$ORIG.MVS         TO DRV.PARAMS(38) ;! list of MV positions after reading record
-EQU FG$KEY.FLDS         TO DRV.PARAMS(39) ;! MV list of key flds not read
-EQU FG$LAST.KEY         TO DRV.PARAMS(40) ;! MV/fld: Last value used to read
-EQU FG$DISABLED         TO DRV.PARAMS(41) ;! Disabled fields
-EQU FG$REQUIRED.FIELDS  TO DRV.PARAMS(42) ;! List of mandory fields yet to be filled
-EQU FG$LAST.DEFAULT     TO DRV.PARAMS(43) ;! last value loaded from FG$DEFAULT.DATA
-EQU FG$FIRST.READ       TO DRV.PARAMS(44) ;! File nbr which first loaded value for field
-EQU FG$AMEND.LIST       TO DRV.PARAMS(45) ;! INPUT.LIST over-ride
-EQU FG$SCROLL.BARS      TO DRV.PARAMS(46) ;! scroll bar flags
-EQU FG$ACTIVE.CODE      TO DRV.PARAMS(47) ;! ACT.CODE prior to sub-screen
-EQU FG$MAIN.SCREEN      TO DRV.PARAMS(48) ;! Top of tree calling screen
-EQU FG$KEYS.READ        TO DRV.PARAMS(49) ;! List of original keys per file
-EQU FG$PREV.FLD         TO DRV.PARAMS(50) ;! Previous field
+EQU FG_DFLT.BUTTON      TO DRV.PARAMS(1)  ;! focused button
+EQU FG_FINISHED         TO DRV.PARAMS(2)  ;! Exit from first field
+EQU FG_UPDATE           TO DRV.PARAMS(3)  ;! true if Updating (-1 for DEL)
+EQU FG_ABORTED          TO DRV.PARAMS(4)  ;! true if Aborted
+EQU FG_AMEND            TO DRV.PARAMS(5)  ;! validate Amend Commands
+EQU FG_PAGING           TO DRV.PARAMS(6)  ;! flag for MV field test
+EQU FG_FLD              TO DRV.PARAMS(7)  ;! Field Number
+EQU FG_SCRN.DATA        TO DRV.PARAMS(8)  ;! Data on screen
+EQU FG_DISPLAY.LIST     TO DRV.PARAMS(9)  ;! List of Fields to Refresh
+EQU FG_PROCESSING.FIELD TO DRV.PARAMS(10) ;! Used for Re-prompt of Field
+EQU FG_PANE             TO DRV.PARAMS(11) ;! current MV for window
+EQU FG_INS.PANE         TO DRV.PARAMS(12) ;! MV insertion point for window
+EQU FG_LAST.PANE        TO DRV.PARAMS(13) ;! last MV for each window
+EQU FG_NBR.PANES        TO DRV.PARAMS(14) ;! number of MVs / window
+EQU FG_WINDOW           TO DRV.PARAMS(15) ;! current MV window
+EQU FG_SCREEN.PAGE      TO DRV.PARAMS(16) ;! current screen page
+EQU FG_CHANGES          TO DRV.PARAMS(17) ;! flag if fields have changed
+EQU FG_SCREEN.RETURN    TO DRV.PARAMS(18) ;! flag to control subscreen calls from program
+EQU FG_LAST.VALUE       TO DRV.PARAMS(19) ;! previous values (for totals)
+EQU FG_CURRENT.PAGE     TO DRV.PARAMS(20) ;! current page of MV window
+EQU FG_INPUT.LIST       TO DRV.PARAMS(21) ;! process order of fields
+EQU FG_INPUT.POS        TO DRV.PARAMS(22) ;! position in above list
+EQU FG_SUB.SCREEN       TO DRV.PARAMS(23) ;! screen to call
+EQU FG_NEXT.IDS         TO DRV.PARAMS(24) ;! Auto-Generated Ids
+EQU FG_NEXT.KEYS        TO DRV.PARAMS(25) ;! Auto-Generated Keys
+EQU FG_FILE.CHANGES     TO DRV.PARAMS(26) ;! MV flags to force updates
+EQU FG_HILIGHT          TO DRV.PARAMS(27) ;! Display field hilited flag
+EQU FG_HILINE           TO DRV.PARAMS(28) ;! Display window hilited flag
+EQU FG_DEFAULT.DATA     TO DRV.PARAMS(29) ;! current defaults for this screen
+EQU FG_ENQUIRY.ONLY     TO DRV.PARAMS(30) ;! Enquiry Only Flag
+EQU FG_TICKER.POS       TO DRV.PARAMS(31) ;! Hold ticker-tape [pos,...]
+EQU FG_NORMAL.INPUT     TO DRV.PARAMS(32) ;! Used by EB.MAIN
+EQU FG_SUB.CALL.VAL     TO DRV.PARAMS(33) ;! Unique calling value for subscreens
+EQU FG_PGES.ASSIGNED    TO DRV.PARAMS(34) ;! MV list of page nbrs read/processed
+EQU FG_PANES.ASSIGNED   TO DRV.PARAMS(35) ;! MV/SMV list of lines in windows read
+EQU FG_ORIG.VALS        TO DRV.PARAMS(36) ;! original value if field changed
+EQU FG_PREV.ROW         TO DRV.PARAMS(37) ;! MV list of last rows printed on in window
+EQU FG_ORIG.MVS         TO DRV.PARAMS(38) ;! list of MV positions after reading record
+EQU FG_KEY.FLDS         TO DRV.PARAMS(39) ;! MV list of key flds not read
+EQU FG_LAST.KEY         TO DRV.PARAMS(40) ;! MV/fld: Last value used to read
+EQU FG_DISABLED         TO DRV.PARAMS(41) ;! Disabled fields
+EQU FG_REQUIRED.FIELDS  TO DRV.PARAMS(42) ;! List of mandory fields yet to be filled
+EQU FG_LAST.DEFAULT     TO DRV.PARAMS(43) ;! last value loaded from FG_DEFAULT.DATA
+EQU FG_FIRST.READ       TO DRV.PARAMS(44) ;! File nbr which first loaded value for field
+EQU FG_AMEND.LIST       TO DRV.PARAMS(45) ;! INPUT.LIST over-ride
+EQU FG_SCROLL.BARS      TO DRV.PARAMS(46) ;! scroll bar flags
+EQU FG_ACTIVE.CODE      TO DRV.PARAMS(47) ;! ACT.CODE prior to sub-screen
+EQU FG_MAIN.SCREEN      TO DRV.PARAMS(48) ;! Top of tree calling screen
+EQU FG_KEYS.READ        TO DRV.PARAMS(49) ;! List of original keys per file
+EQU FG_PREV.FLD         TO DRV.PARAMS(50) ;! Previous field

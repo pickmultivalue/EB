@@ -8,15 +8,15 @@
         CRT @(0,23):RVON:BG:ACT.PROMPT:FG:INFO<I>:BG:RVOFF:FG:CLEOL:
         LOOP
             CALL EB_WP(WINDOW(I),'N0',20,23,2,0)
-        WHILE FG$ACT.CODE DO
+        WHILE FG_ACT.CODE DO
             BEGIN CASE
-            CASE FG$ACT.CODE=FG$ABT.CODE OR FG$ACT.CODE=FG$END.CODE
-                FG$ACT.CODE=FALSE
+            CASE FG_ACT.CODE=FG_ABT.CODE OR FG_ACT.CODE=FG_END.CODE
+                FG_ACT.CODE=FALSE
                 CRT @(0,23):CLEOL:
                 GOTO 10
             CASE 1
                 INCLUDE EB.INCLUDES ON.INP
-                FG$ACT.CODE=FALSE
+                FG_ACT.CODE=FALSE
             END CASE
         REPEAT
     NEXT I
@@ -34,7 +34,7 @@
     INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
     ANS='Y';YNC=16;YNR=23;GOSUB INPUT.YN
     IF ANS='Y' THEN
-        FG$CHANGES=TRUE
+        FG_CHANGES=TRUE
         TEMP=THIS.SCREEN<ROW+1>
         THIS.SCREEN<ROW+1>=TEMP[1,COL] HASH:UPPER:TEMP[COL+2,80]
         FIRST=FIRST+1

@@ -1,5 +1,5 @@
 ! PROGRAM EBKEYS
-    DIM EB$CHARS(100)
+    DIM EB_CHARS(100)
     INCLUDE EB.EQUS EB.CHARS
     cmd = SYSTEM(1000)
     
@@ -20,10 +20,10 @@
 
     key = 'EB.CHARS@':ttype
 
-    MATREAD EB$CHARS FROM f.params, key THEN
+    MATREAD EB_CHARS FROM f.params, key THEN
         status = 'updated'
     END ELSE
-        MAT EB$CHARS =''
+        MAT EB_CHARS =''
         CRT 'New term type...';RQM
         status = 'created'
     END
@@ -52,7 +52,7 @@
         END ELSE match_setting = setting
 
         IF NOT(LEN(specific_setting)) OR match_setting = specific_setting THEN
-            chars = EB$CHARS(attr)
+            chars = EB_CHARS(attr)
             save_chars = chars
             GOSUB get_key
 
@@ -60,7 +60,7 @@
                 IF chars = ' ' THEN chars = ''
 
                 FOR i = 2 TO 100
-                    existing = EB$CHARS(i)
+                    existing = EB_CHARS(i)
                     IF existing = chars AND i # attr THEN
                         CRT 'Sequence already in use in ':settings<i>:' (':i:')'
                         BREAK
@@ -70,7 +70,7 @@
                 IF chars # save_chars THEN
                     IF i > 100 THEN
                         changed = @TRUE
-                        EB$CHARS(attr) = chars
+                        EB_CHARS(attr) = chars
                         CRT OCONV(chars, 'MX')
                         CRT OCONV(chars, 'MCP')
                     END
@@ -83,11 +83,11 @@
     IF changed THEN
         len = 0
         FOR attr = 2 TO 100
-            l = LEN(EB$CHARS(attr))
+            l = LEN(EB_CHARS(attr))
             IF l > len THEN len = l
         NEXT attr
 
-        EB$CHARS(1) = len
+        EB_CHARS(1) = len
 
         attr = ''
         setting = 'Update ':key
@@ -95,7 +95,7 @@
         GOSUB get_key
 
         IF OCONV(chars, 'MCU') = 'Y' THEN
-            MATWRITE EB$CHARS ON f.params, key
+            MATWRITE EB_CHARS ON f.params, key
             CRT key:' ':status
         END
     END

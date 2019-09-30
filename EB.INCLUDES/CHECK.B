@@ -7,7 +7,7 @@
                 IF LAST.EB<1,1> = LUK THEN
                     LUK:=jbc_suffix
                     LAST.EB<1,1> = LUK
-                    WRITE LAST.EB ON FG$EB.CONTROL,FG$LOGNAME:'.LAST.EB'
+                    WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
                 END
                 ITNM:=jbc_suffix
                 GO READ.ITEM

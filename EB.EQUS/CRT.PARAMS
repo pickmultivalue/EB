@@ -2,53 +2,53 @@
 ! Used by GALA these variables are setup from parameters
 ! in SCR.PARAMS and various other files relating to the screen
 !
-  EQU FG$FIELD         TO CRT.PARAMS(1) ;! current data entry
-  EQU FG$OLD.FIELD     TO CRT.PARAMS(2) ;! previous value
-  EQU FG$EXTRAS.USED   TO CRT.PARAMS(3) ;! flag to save EXTRAS when changing screens
-  EQU FG$SEQUENCE      TO CRT.PARAMS(4) ;! Seq Nbr used for subscreens
-  EQU FG$POPUP         TO CRT.PARAMS(5) ;! Popup window flag
-  EQU FG$APPL          TO CRT.PARAMS(6) ;! Used by EB.MAIN
-  EQU FG$W.COL         TO CRT.PARAMS(7) ;! Popup position
-  EQU FG$W.ROW         TO CRT.PARAMS(8) ;! Popup position
-  EQU FG$CALL.SCREEN   TO CRT.PARAMS(9) ;! Screen we came from
-  EQU FG$CALL.SEQUENCE TO CRT.PARAMS(10);! SEQUENCE of call screen
-  EQU FG$SELECT.ACTIVE TO CRT.PARAMS(11);! Is there a SELECT ?
-  EQU FG$CALL.MV       TO CRT.PARAMS(12);! Call FG$PANE we came from
-  EQU FG$ZOOM          TO CRT.PARAMS(13);! Were we called or zoomed
-  EQU FG$GRAPH.BOX     TO CRT.PARAMS(14);! Popup Window for this screen
-  EQU FG$PROCESS.LINKS TO CRT.PARAMS(15);! MV list of zoom screens
-  EQU FG$LINK.FIELDS   TO CRT.PARAMS(16);! SMV list of fields/zoom screen
-  EQU FG$FILE.NAMES    TO CRT.PARAMS(17);! Actual file-names opened
-  EQU FG$DEFAULTS      TO CRT.PARAMS(18);! Call values setup at zoom time
-  EQU FG$POPUP.PAGE    TO CRT.PARAMS(19);! Page/Sequence nbr of call screen
-  EQU FG$LAST.ROW      TO CRT.PARAMS(20);! Last row printed per window
-  EQU FG$PROG.CALL     TO CRT.PARAMS(21);! Screen call initiated by program
-  EQU FG$SKIP.REFRESH  TO CRT.PARAMS(22);! Skip refresh after subscreen
-  EQU FG$NEXT.FLD      TO CRT.PARAMS(23);! Next field to process
-  EQU FG$LAST.ACT      TO CRT.PARAMS(24);! Save amend command
-  EQU FG$CALL.FILES    TO CRT.PARAMS(25);! File names from calling screen
-  EQU FG$ID.CHOICES    TO CRT.PARAMS(26);! passed on from prev screen
-  EQU FG$ENQUIRY.SET   TO CRT.PARAMS(27);! TRUE if user has enquiry only access
-  EQU FG$SP.ASSIGNMENT TO CRT.PARAMS(28);! This screen's sp-assignment
-  EQU FG$LINK.FLAGS    TO CRT.PARAMS(29);! SMV list of flags (paired with LINK.FIELDS)
-  EQU FG$FORCE.FLAGS   TO CRT.PARAMS(30);! FORCE.DATA flags
-  EQU FG$SUBS.FILES    TO CRT.PARAMS(31);! Substitute files
-  EQU FG$WITH.FILES    TO CRT.PARAMS(32);! Substitute files
-  EQU FG$NBR.OCCS      TO CRT.PARAMS(33);! Substitute files
-  EQU FG$SHORT.CODE    TO CRT.PARAMS(34)
-  EQU FG$CALL.ASSOC    TO CRT.PARAMS(35);! calling assoc name
-  EQU FG$DIALOG.BOX    TO CRT.PARAMS(36);! dialog box flag
-  EQU FG$DBX.PANE      TO CRT.PARAMS(37);! dialog box version (if more than one copy running)
-  EQU FG$NEXT.PANE     TO CRT.PARAMS(38)
-  EQU FG$BUTTONS       TO CRT.PARAMS(39);! Button labels
-  EQU FG$JOB.NAME      TO CRT.PARAMS(40);! job name for spooler
-  EQU FG$AUDIT.FLAGS   TO CRT.PARAMS(41);! MV per file
-  EQU FG$IDS.READ      TO CRT.PARAMS(42);! ID.CHOICES processed
-  EQU FG$TITLE         TO CRT.PARAMS(43);! Process title
-  EQU FG$MENU.AMEND    TO CRT.PARAMS(44);! pull-down validation program
-  EQU FG$USER.INPUT    TO CRT.PARAMS(45);! user-input flag
-  EQU FG$COPY.FLDS     TO CRT.PARAMS(46);! list of fld numbers for COPY cmd
-  EQU FG$DBX.NAME      TO CRT.PARAMS(47);! dialog box name
-  EQU FG$DROP.DOWNS    TO CRT.PARAMS(48);! drop-down buttons
-  EQU FG$CLEAR.SCREEN  TO CRT.PARAMS(49);! clear gala screen
-  EQU FG$NEXT.EVENT    TO CRT.PARAMS(50);! next event retrieved outside
+  EQU FG_FIELD         TO CRT.PARAMS(1) ;! current data entry
+  EQU FG_OLD.FIELD     TO CRT.PARAMS(2) ;! previous value
+  EQU FG_EXTRAS.USED   TO CRT.PARAMS(3) ;! flag to save EXTRAS when changing screens
+  EQU FG_SEQUENCE      TO CRT.PARAMS(4) ;! Seq Nbr used for subscreens
+  EQU FG_POPUP         TO CRT.PARAMS(5) ;! Popup window flag
+  EQU FG_APPL          TO CRT.PARAMS(6) ;! Used by EB.MAIN
+  EQU FG_W.COL         TO CRT.PARAMS(7) ;! Popup position
+  EQU FG_W.ROW         TO CRT.PARAMS(8) ;! Popup position
+  EQU FG_CALL.SCREEN   TO CRT.PARAMS(9) ;! Screen we came from
+  EQU FG_CALL.SEQUENCE TO CRT.PARAMS(10);! SEQUENCE of call screen
+  EQU FG_SELECT.ACTIVE TO CRT.PARAMS(11);! Is there a SELECT ?
+  EQU FG_CALL.MV       TO CRT.PARAMS(12);! Call FG_PANE we came from
+  EQU FG_ZOOM          TO CRT.PARAMS(13);! Were we called or zoomed
+  EQU FG_GRAPH.BOX     TO CRT.PARAMS(14);! Popup Window for this screen
+  EQU FG_PROCESS.LINKS TO CRT.PARAMS(15);! MV list of zoom screens
+  EQU FG_LINK.FIELDS   TO CRT.PARAMS(16);! SMV list of fields/zoom screen
+  EQU FG_FILE.NAMES    TO CRT.PARAMS(17);! Actual file-names opened
+  EQU FG_DEFAULTS      TO CRT.PARAMS(18);! Call values setup at zoom time
+  EQU FG_POPUP.PAGE    TO CRT.PARAMS(19);! Page/Sequence nbr of call screen
+  EQU FG_LAST.ROW      TO CRT.PARAMS(20);! Last row printed per window
+  EQU FG_PROG.CALL     TO CRT.PARAMS(21);! Screen call initiated by program
+  EQU FG_SKIP.REFRESH  TO CRT.PARAMS(22);! Skip refresh after subscreen
+  EQU FG_NEXT.FLD      TO CRT.PARAMS(23);! Next field to process
+  EQU FG_LAST.ACT      TO CRT.PARAMS(24);! Save amend command
+  EQU FG_CALL.FILES    TO CRT.PARAMS(25);! File names from calling screen
+  EQU FG_ID.CHOICES    TO CRT.PARAMS(26);! passed on from prev screen
+  EQU FG_ENQUIRY.SET   TO CRT.PARAMS(27);! TRUE if user has enquiry only access
+  EQU FG_SP.ASSIGNMENT TO CRT.PARAMS(28);! This screen's sp-assignment
+  EQU FG_LINK.FLAGS    TO CRT.PARAMS(29);! SMV list of flags (paired with LINK.FIELDS)
+  EQU FG_FORCE.FLAGS   TO CRT.PARAMS(30);! FORCE.DATA flags
+  EQU FG_SUBS.FILES    TO CRT.PARAMS(31);! Substitute files
+  EQU FG_WITH.FILES    TO CRT.PARAMS(32);! Substitute files
+  EQU FG_NBR.OCCS      TO CRT.PARAMS(33);! Substitute files
+  EQU FG_SHORT.CODE    TO CRT.PARAMS(34)
+  EQU FG_CALL.ASSOC    TO CRT.PARAMS(35);! calling assoc name
+  EQU FG_DIALOG.BOX    TO CRT.PARAMS(36);! dialog box flag
+  EQU FG_DBX.PANE      TO CRT.PARAMS(37);! dialog box version (if more than one copy running)
+  EQU FG_NEXT.PANE     TO CRT.PARAMS(38)
+  EQU FG_BUTTONS       TO CRT.PARAMS(39);! Button labels
+  EQU FG_JOB.NAME      TO CRT.PARAMS(40);! job name for spooler
+  EQU FG_AUDIT.FLAGS   TO CRT.PARAMS(41);! MV per file
+  EQU FG_IDS.READ      TO CRT.PARAMS(42);! ID.CHOICES processed
+  EQU FG_TITLE         TO CRT.PARAMS(43);! Process title
+  EQU FG_MENU.AMEND    TO CRT.PARAMS(44);! pull-down validation program
+  EQU FG_USER.INPUT    TO CRT.PARAMS(45);! user-input flag
+  EQU FG_COPY.FLDS     TO CRT.PARAMS(46);! list of fld numbers for COPY cmd
+  EQU FG_DBX.NAME      TO CRT.PARAMS(47);! dialog box name
+  EQU FG_DROP.DOWNS    TO CRT.PARAMS(48);! drop-down buttons
+  EQU FG_CLEAR.SCREEN  TO CRT.PARAMS(49);! clear gala screen
+  EQU FG_NEXT.EVENT    TO CRT.PARAMS(50);! next event retrieved outside

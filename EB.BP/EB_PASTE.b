@@ -19,7 +19,7 @@ MAIN$:!
     IF CHANGED THEN GOSUB 6000
     INPTYPE='LIT'
     SCOL=''
-    IF FG$ACT.CODE=FG$PASTE.CODE THEN
+    IF FG_ACT.CODE=FG_PASTE.CODE THEN
         MSG='Enter Paste Name or 0 for previous deleted lines '
         ICOL=LEN(MSG); IROW=(PDEPTH-1)
         CRT MSG.CLR:MSG:
@@ -66,7 +66,7 @@ MAIN$:!
                         IF NOT(SHOW.PASTE) THEN DEL DEL.LINES<1>
                     END ELSE STMP=''
                 END ELSE
-                    IF NUM(Z) THEN Z='PASTE*':FG$LOGNAME:'*':Z
+                    IF NUM(Z) THEN Z='PASTE*':FG_LOGNAME:'*':Z
                     READ STMP FROM JET.PASTE,Z ELSE STMP=''
                 END
             END
@@ -162,8 +162,8 @@ INPT: !
     POS=1
     EDITED=FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
-    IF FG$ACT.CODE = FG$OPT.CODE THEN
-        FG$ACT.CODE=FALSE
+    IF FG_ACT.CODE = FG_OPT.CODE THEN
+        FG_ACT.CODE=FALSE
         CALL EB_CHOICES(20,3,'',10,EBGETHOME():'JET.PASTE','',Z,1,1,0:SVM:1,'L#20':SVM:'L#40':CTRL.C:'MCP','Paste items':SVM:'Item')
     END
     INPTYPE='AN'

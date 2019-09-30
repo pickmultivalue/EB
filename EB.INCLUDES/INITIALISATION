@@ -1,78 +1,78 @@
 * @(#) INITIALISATION Ported to jBASE 15:13:20  17 APR 2000
-    IF FG$UPDATE THEN         ;! new screen
+    IF FG_UPDATE THEN         ;! new screen
 !
 ! Initialize screen controlling parameters
 !
-        FG$FIELD=FG$DEFAULT.DATA;STMP=FG$ACT;MAT SAVE.VARIABLES=''
-        MAT DRV.PARAMS='';FG$ACT=STMP;FG$ENQUIRY.ONLY=FG$ENQUIRY.SET
-        FG$DEFAULT.DATA=FG$FIELD;FG$FIELD=''
-        IF FG$CALL.SCREEN#'' AND NOT(FG$ZOOM) ELSE MAT RECORDS=NULLS;MAT KEYS=''          ;! 12/10/93 split key fix
-        IF FG$SCR.NBR.FIELDS#'' THEN FG$FLD=1 ELSE FG$AMEND=TRUE
-        FG$PANE=1;FG$CURRENT.PAGE=1:STR(VM:1,COUNT(FG$SCR.FI.PAGE,VM));FG$LAST.PANE=''
-        FG$SCREEN.PAGE=1
-        FG$ACT.CODE=FALSE
-! FG$FILE.NAMES=FG$SCR.FILES;! reset incase field opening required
-        IF FG$SCR.FILE.FLDS#'' THEN
-            FI=DCOUNT(FG$SCR.FILE.FLDS,VM)
+        FG_FIELD=FG_DEFAULT.DATA;STMP=FG_ACT;MAT SAVE.VARIABLES=''
+        MAT DRV.PARAMS='';FG_ACT=STMP;FG_ENQUIRY.ONLY=FG_ENQUIRY.SET
+        FG_DEFAULT.DATA=FG_FIELD;FG_FIELD=''
+        IF FG_CALL.SCREEN#'' AND NOT(FG_ZOOM) ELSE MAT RECORDS=NULLS;MAT KEYS=''          ;! 12/10/93 split key fix
+        IF FG_SCR.NBR.FIELDS#'' THEN FG_FLD=1 ELSE FG_AMEND=TRUE
+        FG_PANE=1;FG_CURRENT.PAGE=1:STR(VM:1,COUNT(FG_SCR.FI.PAGE,VM));FG_LAST.PANE=''
+        FG_SCREEN.PAGE=1
+        FG_ACT.CODE=FALSE
+! FG_FILE.NAMES=FG_SCR.FILES;! reset incase field opening required
+        IF FG_SCR.FILE.FLDS#'' THEN
+            FI=DCOUNT(FG_SCR.FILE.FLDS,VM)
             FOR I=1 TO FI
-                FL=FG$SCR.FILE.FLDS<1,I>
-                IF FL THEN FG$FILE.NAMES<1,FL>=''
+                FL=FG_SCR.FILE.FLDS<1,I>
+                IF FL THEN FG_FILE.NAMES<1,FL>=''
             NEXT I
         END
-        IF FG$AMEND ELSE
+        IF FG_AMEND ELSE
             FULL.REFRESH=FALSE
-            IF INDEX(FG$SCR.DEFAULT.TYPE,'DF',1) THEN CALL EB_DEFAULT
+            IF INDEX(FG_SCR.DEFAULT.TYPE,'DF',1) THEN CALL EB_DEFAULT
             MAT DAT='';MAT WIN.PANE=''
 ! any static records to be read ?
-            FOR FL=1 TO FG$SCR.NBR.FILES UNTIL FULL.REFRESH
-                STMP=FG$SCR.FILE.KEYS<1,FL>
+            FOR FL=1 TO FG_SCR.NBR.FILES UNTIL FULL.REFRESH
+                STMP=FG_SCR.FILE.KEYS<1,FL>
                 IF (NOT(NUM(STMP)) AND DCOUNT(STMP,SVM)=1) OR (STMP='' AND KEYS(FL)#'') THEN FULL.REFRESH=TRUE
             NEXT FL
             IF FULL.REFRESH THEN
                 CALL EB_DATA.SETUP(FL-1,FULL.REFRESH)
-                IF NOT(FG$VALID) THEN FG$FINISHED=TRUE;GOTO FINISH
+                IF NOT(FG_VALID) THEN FG_FINISHED=TRUE;GOTO FINISH
             END
             IF FULL.REFRESH THEN
-                FG$AMEND=TRUE
+                FG_AMEND=TRUE
                 FULL.REFRESH=FALSE
-                IF FG$REFRESH<2 OR FG$REFRESH=5 THEN FG$REFRESH=10
+                IF FG_REFRESH<2 OR FG_REFRESH=5 THEN FG_REFRESH=10
             END ELSE
-                FULL.REFRESH=(FG$CALL.SCREEN='')
-                IF NOT(FULL.REFRESH OR FG$POPUP) AND FG$REFRESH=2 THEN FG$REFRESH=1
+                FULL.REFRESH=(FG_CALL.SCREEN='')
+                IF NOT(FULL.REFRESH OR FG_POPUP) AND FG_REFRESH=2 THEN FG_REFRESH=1
             END
 !
 ! Is there a SELECT list active ?
 !
-            IF FG$SELECT.ACTIVE THEN
+            IF FG_SELECT.ACTIVE THEN
 !
 ! Assume first key
 !
-                READNEXT FULL.KEY FROM SELECTS(FG$SELECT.ACTIVE) THEN
+                READNEXT FULL.KEY FROM SELECTS(FG_SELECT.ACTIVE) THEN
                     CALL EB_READNEXT(FULL.KEY)
                 END ELSE
 !
 ! If Updating or Aborting and not a control screen...
 !============================================
-                    IF FG$SCR.CONTROL ELSE FG$FINISHED=TRUE;GOTO FINISH
+                    IF FG_SCR.CONTROL ELSE FG_FINISHED=TRUE;GOTO FINISH
 !============================================
 !
 ! Select list exhausted
 !
-                    FG$SELECT.LISTS<1,FG$SELECT.ACTIVE>='';FG$SELECT.ACTIVE=FALSE
+                    FG_SELECT.LISTS<1,FG_SELECT.ACTIVE>='';FG_SELECT.ACTIVE=FALSE
                 END
             END
 !
 ! Any default values ?
 !
-            IF FG$PASSED.DATA='' AND LEN(FG$DEFAULT.DATA)=COUNT(FG$DEFAULT.DATA,AM) ELSE
-                DFLD=FG$FLD
+            IF FG_PASSED.DATA='' AND LEN(FG_DEFAULT.DATA)=COUNT(FG_DEFAULT.DATA,AM) ELSE
+                DFLD=FG_FLD
                 CALL EB_GET.DFLTS
             END
         END
-        FG$FINISHED=FALSE;FG$UPDATE=FALSE;FG$ABORTED=FALSE
-        IF FG$CALL.SCREEN#'' AND NOT(FG$ZOOM) THEN FG$CHANGES=FALSE ELSE SUB.CHANGES=FALSE
-        FG$INS.PANE=0;ORIG.PANE=1;ORIG.WINDOW=1
-! FG$WINDOW=1
+        FG_FINISHED=FALSE;FG_UPDATE=FALSE;FG_ABORTED=FALSE
+        IF FG_CALL.SCREEN#'' AND NOT(FG_ZOOM) THEN FG_CHANGES=FALSE ELSE SUB.CHANGES=FALSE
+        FG_INS.PANE=0;ORIG.PANE=1;ORIG.WINDOW=1
+! FG_WINDOW=1
     END
 !
-    IF FG$REFRESH THEN CALL EB_REFRESH
+    IF FG_REFRESH THEN CALL EB_REFRESH

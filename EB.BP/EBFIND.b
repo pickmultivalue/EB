@@ -1,6 +1,5 @@
 ! PROGRAM EBFIND
     CALL JBASEParseCommandLine1(dashes, parens, sent)
-    IF LEN(sent) EQ 0 THEN STOP
     types = ''
     dir = '.' 
     ignore = '' 
@@ -8,7 +7,29 @@
     nocase = ''
     verbose = @FALSE 
     findkey = @FALSE 
+    showHelp = @FALSE
     IF LEN(dashes) THEN
+        FINDSTR '-?' IN dashes SETTING pos THEN
+            showHelp = @TRUE
+        END
+        FINDSTR '-h' IN dashes SETTING pos THEN
+            showHelp = @TRUE
+        END
+        IF showHelp THEN
+            CRT; CRT 'EBFIND uses "find" to search for matching files then executes EB on the result'
+            CRT
+            CRT 'Options:'
+            CRT
+            CRT '-d<dir>       starting dir'
+            CRT '-i            ignore case'
+            CRT '-k<name>      find file with <name>'
+            CRT '-s            sort the result'
+            CRT '-t<types>     comma delimited list of types'
+            CRT '-I<ignore>    pattern to ignore (e.g. -I"*QA*")'
+            CRT '-v            display the find command used'
+            CRT
+            STOP
+        END
         FINDSTR '-d' IN dashes SETTING pos THEN
             dir = dashes<pos>[3,99] 
         END
@@ -31,6 +52,7 @@
             ignore = dashes<pos>[3,99]
         END
     END
+    IF LEN(sent) EQ 0 THEN STOP
     sent = CHANGE(sent, @AM, ' ')
     IF sent[1,1] NE '"' THEN sent = DQUOTE(sent) 
     find_cmd = 'find ':dir:' -type f'
@@ -44,7 +66,7 @@
             FOR t = 1 TO DCOUNT(types, ',')
                 matching<-1> = '-name "*.':FIELD(types,',',t):'"'
             NEXT t
-            find_cmd := ' \( ':CHANGE(matching, @AM, ' -o '):' \)' 
+            find_cmd := ' \( ':CHANGE(matching, @AM, ' -oE '):' \)' 
         END 
         find_cmd :=' -exec fgrep -l':nocase:' -- ':sent:' {} \;':sort
     END

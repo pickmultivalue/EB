@@ -5,7 +5,7 @@
 !=========== Program's Purpose ===============
 !
 ! No echo input prompt to return a value or
-! a FG$ACT.CODE.
+! a FG_ACT.CODE.
 !
 !=============================================
 !
@@ -24,7 +24,7 @@
     vm_start=IF_COMPILED_PRIME
 !
 !===================================================
-    IF FG$TIMEDOUT THEN CHR=''; FG$ACT.CODE=FG$ABT.CODE; RETURN
+    IF FG_TIMEDOUT THEN CHR=''; FG_ACT.CODE=FG_ABT.CODE; RETURN
 !===================================================
 !
     EQU RTN.VAL TO 13
@@ -54,17 +54,17 @@
         CONV=(ALPHAS=OCONV(ALPHAS,'MCU'))
         SUB.JUST='R#':MAX.SUB
     END
-    MAX.JUST='R#':FG$MAX.CHARS
-    IF FG$MAX.CHARS>=MAX.SUB THEN MAX.LEN=FG$MAX.CHARS ELSE MAX.LEN=MAX.SUB
+    MAX.JUST='R#':FG_MAX.CHARS
+    IF FG_MAX.CHARS>=MAX.SUB THEN MAX.LEN=FG_MAX.CHARS ELSE MAX.LEN=MAX.SUB
 !
-    IF FG$ACT.CODE THEN FG$LAST.ACT.CODE=FG$ACT.CODE; FG$ACT.CODE=FALSE
-    SAVE.CODES=FG$INPUT.CODES
-    FG$INPUT.CODES=CODES
+    IF FG_ACT.CODE THEN FG_LAST.ACT.CODE=FG_ACT.CODE; FG_ACT.CODE=FALSE
+    SAVE.CODES=FG_INPUT.CODES
+    FG_INPUT.CODES=CODES
     IF (COL:ROW)#'' THEN CRT @(COL,ROW):DFLT.CHR:
 !INCLUDE EB.INCLUDES GET.CHR
     INCLUDE EB.INCLUDES INPUT.ZERO
     IF CHR.NBR=13 THEN CHR=DFLT.CHR
     ECHO ON
-    FG$INPUT.CODES=SAVE.CODES
+    FG_INPUT.CODES=SAVE.CODES
     RETURN
 END

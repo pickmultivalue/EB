@@ -4,7 +4,7 @@
 !=========== Program's Purpose ===============
 !
 ! No echo input prompt to return a value or
-! a FG$ACT.CODE.
+! a FG_ACT.CODE.
 !
 !=============================================
 !
@@ -19,32 +19,32 @@ MAIN$:!
     vm_start=IF_COMPILED_PRIME
 !
 !===================================================
-    IF FG$TIMEDOUT THEN CHR=''; FG$ACT.CODE=FG$ABT.CODE; RETURN
+    IF FG_TIMEDOUT THEN CHR=''; FG_ACT.CODE=FG_ABT.CODE; RETURN
 !===================================================
 !
     EQU RTN.VAL TO 13
     Timeout = 300
 !
     ECHO OFF
-    MAX.LEN=FG$MAX.CHARS
+    MAX.LEN=FG_MAX.CHARS
     PREV.CHARS=''
-    FG$ACT.CODE=FALSE
+    FG_ACT.CODE=FALSE
     SYSTEM.14 = 0
 !
-! If FG$TYPEAHEAD was not null, process any "normal" characters as input
+! If FG_TYPEAHEAD was not null, process any "normal" characters as input
 !
-    IF LEN(FG$TYPEAHEAD.BUFF)>0 THEN
-        CHR=FG$TYPEAHEAD.BUFF[1,1]; FG$TYPEAHEAD.BUFF=FG$TYPEAHEAD.BUFF[2,999]
+    IF LEN(FG_TYPEAHEAD.BUFF)>0 THEN
+        CHR=FG_TYPEAHEAD.BUFF[1,1]; FG_TYPEAHEAD.BUFF=FG_TYPEAHEAD.BUFF[2,999]
         CHR.NBR=SEQ(CHR)
     END ELSE
         INCLUDE EB.OS.INCLUDES UT.INPUT.TIMEOUT
         INCLUDE EB.OS.INCLUDES SYSTEM.14
     END
 
-    IF FG$TIMEDOUT THEN RETURN
+    IF FG_TIMEDOUT THEN RETURN
     IF CHR.NBR=RTN.VAL OR (CHR.NBR>=FIRST.ASCII AND CHR.NBR<=LAST.ASCII) THEN RETURN
 
-    IF COUNT(FG$INPUT.CODES,CHR)=0 THEN
+    IF COUNT(FG_INPUT.CODES,CHR)=0 THEN
         RETURN
     END
 !
@@ -61,21 +61,21 @@ MAIN$:!
         WHILE SYSTEM.14 AND POS<MAX.LEN DO
             FOR IC=1 TO SYSTEM.14
                 INCLUDE EB.OS.INCLUDES INPUT.ZERO
-                FG$TYPEAHEAD.BUFF:=CHR
+                FG_TYPEAHEAD.BUFF:=CHR
                 POS++
             NEXT IC
             INCLUDE EB.OS.INCLUDES INPUT.DELAY
             INCLUDE EB.OS.INCLUDES SYSTEM.14
         REPEAT
     END
-    PREV.CHARS := FG$TYPEAHEAD.BUFF
+    PREV.CHARS := FG_TYPEAHEAD.BUFF
     l = MAX.LEN
     LOOP
         CHR1=PREV.CHARS[1,l]
-        LOCATE(CHR1,FG$INPUT.CODES,1;FG$ACT.CODE) ELSE FG$ACT.CODE=FALSE
-    UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
-    IF NOT(FG$ACT.CODE) THEN l=1
-    FG$TYPEAHEAD.BUFF = PREV.CHARS[l+1, LEN(PREV.CHARS)]
+        LOCATE(CHR1,FG_INPUT.CODES,1;FG_ACT.CODE) ELSE FG_ACT.CODE=FALSE
+    UNTIL FG_ACT.CODE OR l=1 DO l-- REPEAT
+    IF NOT(FG_ACT.CODE) THEN l=1
+    FG_TYPEAHEAD.BUFF = PREV.CHARS[l+1, LEN(PREV.CHARS)]
     CHR = ''; CHR.NBR=-1
     ECHO ON
     RETURN

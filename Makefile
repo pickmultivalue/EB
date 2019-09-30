@@ -687,4 +687,5 @@ rebuild: $(libobjs) $(binobjs)
 
 clean:
 	-rm ./lib/lib*.*
+	-rm ./bin/*
 	-rm EB.BP]MOBJECT/*

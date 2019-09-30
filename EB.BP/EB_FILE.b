@@ -127,7 +127,7 @@ MAIN$:!
         DESCRIPTION=LAST.DESC
         TYPE = DTYPE
         APPL = DAPPL
-        HISTORY = SRC_READHIST(1, FLNM, ITNM, DATE(), '', '', FG$LOGNAME)
+        HISTORY = SRC_READHIST(1, FLNM, ITNM, DATE(), '', '', FG_LOGNAME)
         IF OPEN.PATCH THEN
             PFLNM=SWAP(PFLNM,'@','<{AT}>')
             PITNM=SWAP(ITNM,'@','<{AT}>')
@@ -150,7 +150,7 @@ MAIN$:!
         PREV.HIST = RAISE(PREV.HIST)
         PDESC=LAST.DESC
         PETIME=TIME()
-        CHANGED.BY=FG$TUSER:'@':SITE.NAME
+        CHANGED.BY=FG_TUSER:'@':SITE.NAME
         CRT @(0,10):@(-3):
         CRT @(0,11):STR('=',PWIDTH):
 RESTART: !
@@ -158,7 +158,7 @@ RESTART: !
             IF PATCH.FLD=TYPE.FLD THEN
                 INPTYPE='U'
                 CRT @(0,12):BG:'Type:':FG:; L=20; Z=TYPE; CRT @(15,12):; GOSUB INPT
-                IF NOT(FG$ACT.CODE) THEN
+                IF NOT(FG_ACT.CODE) THEN
                     TYPE=Z
                     LOCATE TYPE IN PATCH.TYPES<1,vm_start> SETTING POS ELSE TYPE=''
                     IF TYPE='NOPATCH' OR TYPE='DEBUG' THEN PATCH.FLD=COMP.FLD ELSE
@@ -166,9 +166,9 @@ RESTART: !
                     END
                 END ELSE
                     BEGIN CASE
-                        CASE FG$ACT.CODE=FG$ABT.CODE
+                        CASE FG_ACT.CODE=FG_ABT.CODE
                             PATCH.FLD=LAST.FLD
-                        CASE FG$ACT.CODE=FG$OPT.CODE
+                        CASE FG_ACT.CODE=FG_OPT.CODE
                             CALL EB_CHOICES(50,12,'','','',PATCH.TYPES,TYPE,1,'':AM:TYPE:AM:AM:AM:1,1,'L#10','Types')
                     END CASE
                 END
@@ -180,11 +180,11 @@ RESTART: !
                 INPTYPE='T'
                 GOSUB 1550
                 BEGIN CASE
-                    CASE FG$ACT.CODE=FG$BCK.CODE
+                    CASE FG_ACT.CODE=FG_BCK.CODE
                         PATCH.FLD-=1
-                    CASE FG$ACT.CODE=FG$ABT.CODE
+                    CASE FG_ACT.CODE=FG_ABT.CODE
                         PATCH.FLD=LAST.FLD
-                    CASE FG$ACT.CODE=FG$OPT.CODE
+                    CASE FG_ACT.CODE=FG_OPT.CODE
                         CRT MSG.CLR:
                         SAVE.PSTIME=PSTIME:VM:PETIME
                         PHCNT = DCOUNT(PREV.HIST<1>,VM)
@@ -210,9 +210,9 @@ RESTART: !
                 INPTYPE='T'
                 GOSUB 1550
                 BEGIN CASE
-                    CASE FG$ACT.CODE=FG$BCK.CODE
+                    CASE FG_ACT.CODE=FG_BCK.CODE
                         PATCH.FLD-=1
-                    CASE FG$ACT.CODE=FG$ABT.CODE
+                    CASE FG_ACT.CODE=FG_ABT.CODE
                         PATCH.FLD=LAST.FLD
                     CASE 1
                         PETIME=Z
@@ -225,13 +225,13 @@ RESTART: !
                 L=400; Z=PDESC; CRT @(0,15):
                 INPTYPE='AN':AM:AM:LEN(Z)+1
                 GOSUB 1550
-                FG$TYPEAHEAD.BUFF = ''
+                FG_TYPEAHEAD.BUFF = ''
                 BEGIN CASE
-                    CASE FG$ACT.CODE=FG$BCK.CODE
+                    CASE FG_ACT.CODE=FG_BCK.CODE
                         PATCH.FLD-=1
-                    CASE FG$ACT.CODE=FG$ABT.CODE
+                    CASE FG_ACT.CODE=FG_ABT.CODE
                         PATCH.FLD=LAST.FLD
-                    CASE FG$ACT.CODE=FG$OPT.CODE
+                    CASE FG_ACT.CODE=FG_OPT.CODE
                         IF UPDHIST THEN
                             CRT MSG.CLR:'Building history...':
                             IF PDESC#'' THEN Z=PDESC:';' ELSE Z=''
@@ -273,38 +273,38 @@ RESTART: !
             IF PATCH.FLD=APPL.FLD THEN
                 INPTYPE='U'
                 CRT @(0,20):BG:'Application:':FG:; L=10; Z=APPL; CRT @(15,20):; GOSUB INPT
-                IF NOT(FG$ACT.CODE) THEN
+                IF NOT(FG_ACT.CODE) THEN
                     APPL=Z
                     IF APPL#'' THEN PATCH.FLD+=1
                 END ELSE
                     BEGIN CASE
-                        CASE FG$ACT.CODE=FG$ABT.CODE
+                        CASE FG_ACT.CODE=FG_ABT.CODE
                             PATCH.FLD=LAST.FLD
-                        CASE FG$ACT.CODE=FG$OPT.CODE
+                        CASE FG_ACT.CODE=FG_OPT.CODE
                             CALL EB_CHOICES(50,12,'','','EB.CONTROL','APPLICATIONS',APPL,1,'':AM:APPL:AM:AM:AM:1,1:SVM:2,'L#10':SVM:'L#30','Applications')
-                        CASE 1; FG$ACT.CODE=FG$BCK.CODE
+                        CASE 1; FG_ACT.CODE=FG_BCK.CODE
                             PATCH.FLD-=1
                     END CASE
                 END
             END
 !
-            READV REL.NO FROM FG$EB.CONTROL,APPL:'.REL',1 ELSE REL.NO=''
+            READV REL.NO FROM FG_EB.CONTROL,APPL:'.REL',1 ELSE REL.NO=''
             IF PATCH.FLD=REL.FLD THEN
                 CRT @(0,21):BG:'Release:':FG:; L=7; Z=REL.NO; CRT @(15,21):; GOSUB INPT
-                IF NOT(FG$ACT.CODE) THEN
+                IF NOT(FG_ACT.CODE) THEN
                     REL.NO=Z
                     PATCH.FLD+=1
                 END ELSE
-                    IF FG$ACT.CODE=FG$ABT.CODE THEN PATCH.FLD=LAST.FLD ELSE PATCH.FLD-=1
+                    IF FG_ACT.CODE=FG_ABT.CODE THEN PATCH.FLD=LAST.FLD ELSE PATCH.FLD-=1
                 END
             END
 !
             IF PATCH.FLD=PR.FLD THEN
                 CRT @(0,22):BG:'PR:':FG:; L=60; Z=SPRNO; CRT @(15,22):; GOSUB INPT
-                IF NOT(FG$ACT.CODE) THEN
+                IF NOT(FG_ACT.CODE) THEN
                     SPRNO=Z
                 END ELSE
-                    IF FG$ACT.CODE=FG$ABT.CODE THEN PATCH.FLD=LAST.FLD ELSE PATCH.FLD-=1
+                    IF FG_ACT.CODE=FG_ABT.CODE THEN PATCH.FLD=LAST.FLD ELSE PATCH.FLD-=1
                 END
             END
         UNTIL PATCH.FLD>=PR.FLD DO REPEAT
@@ -346,16 +346,16 @@ COMPILE:    !
                     MSG = CHANGE(MSG, @AM, ', ')
                 END
                 IF LEN(MSG) THEN
-                    IF (FG$TYPEAHEAD.BUFF) THEN
-                        COMPILE.IT = FIELD(FG$TYPEAHEAD.BUFF, CR, 1)
-                        FG$TYPEAHEAD.BUFF = ''
+                    IF (FG_TYPEAHEAD.BUFF) THEN
+                        COMPILE.IT = FIELD(FG_TYPEAHEAD.BUFF, CR, 1)
+                        FG_TYPEAHEAD.BUFF = ''
                     END ELSE
                         COMPILE.IT='Y'
                         INPTYPE='U'
                         CRT @(0,PDEPTH):BG:
 !                        MSG='Compile (N)o/[(Y)es, Basic (O)nly, (C)atalog Only'
 !                        IF TYPE='SQL' OR COMMENT='--' THEN MSG := ']' ELSE MSG := '/(B)ackground]'
-                        IF FG$OSTYPE='AP' THEN
+                        IF FG_OSTYPE='AP' THEN
                             REL=SYSTEM(100)
                             IF INDEX(REL,';',1) THEN
                                 REL=OCONV(REL,'G6;1')
@@ -385,12 +385,12 @@ COMPILE:    !
                         MSG := letters
                         CRT BG:MSG:FG:CLEOL:
                         YNL=1; GOSUB GET.CHAR
-                        IF NOT(FG$ACT.CODE) THEN
+                        IF NOT(FG_ACT.CODE) THEN
                             COMPILE.IT=Z
                             IF Z EQ 'M' THEN TYPE='MAKE'
                             CRT
                         END ELSE
-                            IF FG$ACT.CODE=FG$ABT.CODE THEN
+                            IF FG_ACT.CODE=FG_ABT.CODE THEN
                                 COMPILE.IT=''
                                 PATCH.FLD=LAST.FLD
                             END ELSE
@@ -425,6 +425,6 @@ INPT: !
     RETURN
 GET.CHAR: !
     LOOP
-        CALL EB_UT_INPUT_ZERO(Z,MAT EB$CHARS,FG$ACT.CODE,COL,PDEPTH,FG$INPUT.CODES,YNCHRS,YNL,FG$TIMEOUT:AM:FG$MONITOR.SECS)
-    UNTIL LEN(Z) OR FG$ACT.CODE DO REPEAT
+        CALL EB_UT_INPUT_ZERO(Z,MAT EB_CHARS,FG_ACT.CODE,COL,PDEPTH,FG_INPUT.CODES,YNCHRS,YNL,FG_TIMEOUT:AM:FG_MONITOR.SECS)
+    UNTIL LEN(Z) OR FG_ACT.CODE DO REPEAT
     RETURN

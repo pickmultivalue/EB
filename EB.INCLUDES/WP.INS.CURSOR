@@ -4,12 +4,12 @@
         IF CURS.BLOCK<1,1>#'' THEN
             INCLUDE EB.OS.INCLUDES PC.LINE.CURSOR
         END ELSE
-            IF NOT(FG$POPUP) THEN CRT @(75,23):RVON:'ins':RVOFF:
+            IF NOT(FG_POPUP) THEN CRT @(75,23):RVON:'ins':RVOFF:
         END
     END ELSE
         IF CURS.BLOCK<1,1>#'' THEN
             INCLUDE EB.OS.INCLUDES PC.BLOCK.CURSOR
         END ELSE
-            IF NOT(FG$POPUP) THEN CRT @(75,23):CLEOL:
+            IF NOT(FG_POPUP) THEN CRT @(75,23):CLEOL:
         END
     END

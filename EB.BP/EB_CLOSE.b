@@ -14,7 +14,7 @@ MAIN$:!
 ! OPEN MD first
 !
     IF FNAME#'MD' THEN
-        DFNAME=FNAME:'/':FG$TACC.NAME
+        DFNAME=FNAME:'/':FG_TACC.NAME
         GOSUB CLOSE.FILE
         IF MD_flag THEN
             IF DNAME='' THEN

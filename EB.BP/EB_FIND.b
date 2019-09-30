@@ -43,13 +43,13 @@ MAIN$:!
     NEXT L
     DC = DCOUNT(SSTRINGS, @AM)
     STR.POS=0
-    IF FG$ACT.CODE=FG$BSEARCH.CODE THEN Temp1=LEN(MREC)
+    IF FG_ACT.CODE=FG_BSEARCH.CODE THEN Temp1=LEN(MREC)
     LOOP
         POS = @FALSE
         FOR CC = 1 TO DC UNTIL POS
             SSTR = SSTRINGS<CC>
             L=LEN(SSTR)
-            IF FG$ACT.CODE=FG$BSEARCH.CODE THEN
+            IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
                 C1 = COUNT(SRCH.STRING[1,Temp1-2],SSTR)
                 IF C1 THEN
                     POS = INDEX(SRCH.STRING,SSTR,C1)

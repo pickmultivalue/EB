@@ -1,7 +1,7 @@
 ECHO OFF
 PREV.CHARS=''
 PREV.SUBS=''
-FG$ACT.CODE=FALSE
+FG_ACT.CODE=FALSE
 CODE=FALSE
 CHR.FOUND=FALSE
 CHR.NBR=''
@@ -9,16 +9,16 @@ LOOP
     CRT @(COL,ROW):
     LAST.NBR=CHR.NBR
 !
-! If FG$TYPEAHEAD was not null, process any "normal" characters as input
+! If FG_TYPEAHEAD was not null, process any "normal" characters as input
 !
-    IF FG$TYPEAHEAD.BUFF#'' THEN
-        CHR=FG$TYPEAHEAD.BUFF[1,1]
-        FG$TYPEAHEAD.BUFF=FG$TYPEAHEAD.BUFF[2,999]
+    IF FG_TYPEAHEAD.BUFF#'' THEN
+        CHR=FG_TYPEAHEAD.BUFF[1,1]
+        FG_TYPEAHEAD.BUFF=FG_TYPEAHEAD.BUFF[2,999]
         CHR.NBR=SEQ(CHR)
     END ELSE
         INCLUDE EB.OS.INCLUDES UT.INPUT.TIMEOUT
     END
-    IF NOT(FG$TIMEDOUT) THEN
+    IF NOT(FG_TIMEDOUT) THEN
         IF COUNT(CODES,PREV.CHARS:CHR)>1 AND CHR.NBR#RTN.VAL AND (CHR.NBR<FIRST.ASCII OR CHR.NBR>LAST.ASCII) THEN
 !
 ! following code tries to trap all characters from single key-stroke
@@ -30,13 +30,13 @@ LOOP
             LOOP
                 INCLUDE EB.OS.INCLUDES INPUT.DELAY
                 INCLUDE EB.OS.INCLUDES SYSTEM.14
-            WHILE SYSTEM.14 AND POS<MAX.LEN OR LEN(FG$TYPEAHEAD.BUFF) DO
+            WHILE SYSTEM.14 AND POS<MAX.LEN OR LEN(FG_TYPEAHEAD.BUFF) DO
                 PREV.CHARS=PREV.CHARS:CHR
                 PREV.SUBS=PREV.SUBS:CHR
                 POS+=1
                 INCLUDE EB.OS.INCLUDES INPUT.TIMEOUT
-                IF FG$EXPECT.CR AND CHR#'' THEN
-                    LOCATE PREV.CHARS:CHR:CR IN FG$FUNC.CHARS<1, vm_start> SETTING POS THEN
+                IF FG_EXPECT.CR AND CHR#'' THEN
+                    LOCATE PREV.CHARS:CHR:CR IN FG_FUNC.CHARS<1, vm_start> SETTING POS THEN
                         INCLUDE EB.OS.INCLUDES SYSTEM.14
                         IF NOT(SYSTEM.14) THEN
                             INCLUDE EB.OS.INCLUDES INPUT.DELAY
@@ -77,12 +77,12 @@ LOOP
                     FKEY=CHR1
                     INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
                     INCLUDE EB.OS.INCLUDES CHECK.SUB.SUB
-                UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
-            UNTIL LAST.CHR=1 OR FG$ACT.CODE OR CODE DO
+                UNTIL FG_ACT.CODE OR l=1 DO l-- REPEAT
+            UNTIL LAST.CHR=1 OR FG_ACT.CODE OR CODE DO
                 PREV.CHARS=PREV.CHARS[2,99]
                 LAST.CHR-=1
             REPEAT
-            IF NOT(CODE OR FG$ACT.CODE) AND NOT(CONV) THEN
+            IF NOT(CODE OR FG_ACT.CODE) AND NOT(CONV) THEN
                 PREV.CHARS=OCONV(SAVE.CHARS,'MCU')
                 IF PREV.CHARS#SAVE.CHARS THEN
                     LAST.CHR=SAVE.LEN
@@ -93,9 +93,9 @@ LOOP
                             FKEY=CHR1
                             INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
                             INCLUDE EB.OS.INCLUDES CHECK.SUB.SUB
-                            IF FG$ACT.CODE=FG$ABT.CODE THEN DEBUG
-                        UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
-                    UNTIL LAST.CHR=1 OR FG$ACT.CODE OR CODE DO
+                            IF FG_ACT.CODE=FG_ABT.CODE THEN DEBUG
+                        UNTIL FG_ACT.CODE OR l=1 DO l-- REPEAT
+                    UNTIL LAST.CHR=1 OR FG_ACT.CODE OR CODE DO
                         PREV.CHARS=PREV.CHARS[2,99]
                         LAST.CHR-=1
                     REPEAT
@@ -107,10 +107,10 @@ LOOP
         END
         IF CODE THEN
             CHR=CHR1
-            IF FG$TYPEAHEAD.BUFF='' THEN FG$TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
+            IF FG_TYPEAHEAD.BUFF='' THEN FG_TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
             CHR.FOUND=TRUE
         END ELSE
-            IF FG$ACT.CODE ELSE
+            IF FG_ACT.CODE ELSE
                 IF MATCH.SET#'' THEN
                     IF CHR1 MATCHES MATCH.SET THEN CHR=CHR1; CHR.FOUND=TRUE
                 END
@@ -122,18 +122,18 @@ LOOP
                         CHR1=PREV.CHARS[1,l]
                         FKEY=CHR1
                         INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
-                        IF FG$ACT.CODE=FG$ABT.CODE THEN DEBUG
-                    UNTIL FG$ACT.CODE OR l=1 DO l-- REPEAT
-                UNTIL LAST.CHR=1 OR FG$ACT.CODE DO
+                        IF FG_ACT.CODE=FG_ABT.CODE THEN DEBUG
+                    UNTIL FG_ACT.CODE OR l=1 DO l-- REPEAT
+                UNTIL LAST.CHR=1 OR FG_ACT.CODE DO
                     PREV.CHARS=PREV.CHARS[2,99]
                     LAST.CHR-=1
                 REPEAT
             END
-            IF FG$ACT.CODE THEN
+            IF FG_ACT.CODE THEN
                 CHR=FKEY
-                IF FG$TYPEAHEAD.BUFF='' THEN FG$TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
+                IF FG_TYPEAHEAD.BUFF='' THEN FG_TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,99]
             END
         END
-    END ELSE FG$ACT.CODE=FG$ABT.CODE
-UNTIL CHR.FOUND OR CHR.NBR=13 OR FG$ACT.CODE DO REPEAT
+    END ELSE FG_ACT.CODE=FG_ABT.CODE
+UNTIL CHR.FOUND OR CHR.NBR=13 OR FG_ACT.CODE DO REPEAT
 ECHO ON

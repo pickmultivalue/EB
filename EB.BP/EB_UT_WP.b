@@ -18,13 +18,13 @@
     vm_start=IF_COMPILED_PRIME
     DIMM=BG
     BRIGHT=FG
-    FG$TAG.CMD.CODE='T'
-    FG$FLD=1
+    FG_TAG.CMD.CODE='T'
+    FG_FLD=1
     EQU THE.REST TO 9999
     WPCOL=0; Sub=''; HELP.ID=''
     IF UNASSIGNED(INP.STRING) THEN INP.STRING=''  ;!SPACE(LENTH)
     IF INIT.FLAG#AM THEN INP.STRING=INIT.FLAG
-    FG$OLD.FIELD=INP.STRING
+    FG_OLD.FIELD=INP.STRING
 !    BACK=@(-AM.BACK)          ;!CHAR(21)
 !    FWD=@(-AM.FWD)  ;!CHAR(6)
     ERASE=@(-1)     ;* Used when in debug to clear protect from screen
@@ -43,17 +43,17 @@
 !
 !!#ifdef jBASE
     MATCH.SET=''
-    CODES=FG$INPUT.CODES
+    CODES=FG_INPUT.CODES
     SUB.CODES=''
     SUB.CODE1=-1; SUB.CODE2=-1
     MAX.SUB=1
     SUB.JUST='R#1'
     CONV=0
-    MAX.JUST='R#':FG$MAX.CHARS
-    IF FG$MAX.CHARS>MAX.SUB THEN MAX.LEN=FG$MAX.CHARS+FG$EXPECT.CR*0 ELSE MAX.LEN=MAX.SUB
+    MAX.JUST='R#':FG_MAX.CHARS
+    IF FG_MAX.CHARS>MAX.SUB THEN MAX.LEN=FG_MAX.CHARS+FG_EXPECT.CR*0 ELSE MAX.LEN=MAX.SUB
 !!#endif
-    MAX.JUST='R#':FG$MAX.CHARS
-    MAX.LEN=FG$MAX.CHARS      ;!+FG$EXPECT.CR
+    MAX.JUST='R#':FG_MAX.CHARS
+    MAX.LEN=FG_MAX.CHARS      ;!+FG_EXPECT.CR
     ERRS=0
     LAST.CHR=''
     WORD.WRAP=''
@@ -70,8 +70,8 @@
     TABS=SPACE(8)
     DO.SPELL=FALSE
 ! initialize Paragraph Reformat codes
-    P=FG$ERROR.MSGS<46,1>
-    D=FG$ERROR.MSGS<46,3>
+    P=FG_ERROR.MSGS<46,1>
+    D=FG_ERROR.MSGS<46,3>
 !
 ! Display "WP Mode"
 !
@@ -81,9 +81,9 @@
     JUST=INP.FLD<2>
     NUM.FIELD=INDEX('NM',TYPE[1,1],1)
     DFLD=0
-    FG$ACT.CODE=''
+    FG_ACT.CODE=''
     CHR1=''
-    EXIT.CODE=FG$END.CODE
+    EXIT.CODE=FG_END.CODE
 !
 ! Get length from SCR.PARAMS ?
 !
@@ -165,9 +165,9 @@ STARTLBL: !
         IF NOT(RTN.REQUIRED) AND LAST.NBR THEN
             WPCHR.NBR = RTN.VAL
         END ELSE
-            FG$ACT.CODE=FALSE
+            FG_ACT.CODE=FALSE
             CALL EB_GET_INPUT(WPCHR, WPCHR.NBR)
-            IF FG$TIMEDOUT THEN FG$ACT.CODE=FG$ABT.CODE
+            IF FG_TIMEDOUT THEN FG_ACT.CODE=FG_ABT.CODE
         END
 !
 ! Was the <RETURN> or <Line-Feed> key used ?
@@ -185,28 +185,28 @@ PROCESS.RTN: !
 !
 ! Has a valid function been keyed in
 !
-        IF NOT(FG$ACT.CODE) THEN
+        IF NOT(FG_ACT.CODE) THEN
             STMP=PREV.CHARS:WPCHR
             IF (OCONV(STMP,'MCP')=STMP AND (OCONV(STMP,'MCA')=STMP OR OCONV(STMP,'MCN')=STMP)) OR TRIM(STMP)='' ELSE
-                IF FG$MAX.CHARS<3 AND OCONV(LAST.CHR,'MCA')#'' AND PREV.CHARS='' THEN IF WPCHR.NBR>=FIRST.ALPHA AND WPCHR.NBR<=LAST.ALPHA THEN GO ASCII.START
+                IF FG_MAX.CHARS<3 AND OCONV(LAST.CHR,'MCA')#'' AND PREV.CHARS='' THEN IF WPCHR.NBR>=FIRST.ALPHA AND WPCHR.NBR<=LAST.ALPHA THEN GO ASCII.START
                 PREV.CHARS=PREV.CHARS:WPCHR
                 NBR.CHARS=LEN(PREV.CHARS)
-                IF NBR.CHARS>FG$MAX.CHARS THEN NBR.CHARS=FG$MAX.CHARS
-                FOR TRAP=1 TO NBR.CHARS UNTIL FG$ACT.CODE
+                IF NBR.CHARS>FG_MAX.CHARS THEN NBR.CHARS=FG_MAX.CHARS
+                FOR TRAP=1 TO NBR.CHARS UNTIL FG_ACT.CODE
                     CHR1=PREV.CHARS[1,TRAP]
                     BEGIN CASE
                         CASE NBR.CHARS=1
-                        CASE COUNT(FG$INPUT.CODES,CHR1)=1
-                        CASE COUNT(FG$HOT.KEYS,CHR1)=1
+                        CASE COUNT(FG_INPUT.CODES,CHR1)=1
+                        CASE COUNT(FG_HOT.KEYS,CHR1)=1
                         CASE 1; CHR1=''
                     END CASE
                     IF CHR1#'' THEN
                         INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
                     END
                 NEXT TRAP
-                IF FG$ACT.CODE ELSE
-                    FOR TRAP=2 TO NBR.CHARS UNTIL FG$ACT.CODE
-                        CHR1=PREV.CHARS[TRAP,FG$MAX.CHARS]
+                IF FG_ACT.CODE ELSE
+                    FOR TRAP=2 TO NBR.CHARS UNTIL FG_ACT.CODE
+                        CHR1=PREV.CHARS[TRAP,FG_MAX.CHARS]
                         INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
                     NEXT TRAP
                 END
@@ -216,39 +216,39 @@ PROCESS.RTN: !
 ! Ignore certain functions if Word Processing
 !
         SUB.CODE=FALSE
-        IF FG$ACT.CODE THEN
-            IF FG$TYPEAHEAD.BUFF='' AND PREV.CHARS#'' THEN
-                FG$TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,THE.REST]
+        IF FG_ACT.CODE THEN
+            IF FG_TYPEAHEAD.BUFF='' AND PREV.CHARS#'' THEN
+                FG_TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,THE.REST]
             END
             BEGIN CASE
-                CASE FG$ACT.CODE=FG$LEFT.CODE
-                    SUB.CODE=FG$LEFT.CODE
-                    FG$ACT.CODE=FALSE
-                CASE FG$ACT.CODE=FG$RIGHT.CODE
-                    SUB.CODE=FG$RIGHT.CODE
-                    FG$ACT.CODE=FALSE
-                CASE FG$ACT.CODE=FG$ABT.CODE
+                CASE FG_ACT.CODE=FG_LEFT.CODE
+                    SUB.CODE=FG_LEFT.CODE
+                    FG_ACT.CODE=FALSE
+                CASE FG_ACT.CODE=FG_RIGHT.CODE
+                    SUB.CODE=FG_RIGHT.CODE
+                    FG_ACT.CODE=FALSE
+                CASE FG_ACT.CODE=FG_ABT.CODE
                     RTN.STRING=EB.CMD<1>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
-                CASE FG$ACT.CODE=FG$BCK.CODE
+                CASE FG_ACT.CODE=FG_BCK.CODE
                     RTN.STRING=EB.CMD<2>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
-                CASE FG$ACT.CODE=FG$EXIT.LN.CODE
+                CASE FG_ACT.CODE=FG_EXIT.LN.CODE
                     RTN.STRING=EB.CMD<3>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
-                CASE FG$ACT.CODE=FG$SKP.CODE
-                CASE FG$ACT.CODE=FG$SEL.CODE
-                CASE FG$ACT.CODE=FG$SEARCH.CODE
-                CASE FG$ACT.CODE=FG$NXT.KEY.CODE
-                CASE FG$ACT.CODE=FG$PRV.KEY.CODE
-                CASE FG$ACT.CODE=FG$INS.LINE.CODE
-                CASE FG$ACT.CODE=FG$DEL.LINE.CODE
-                CASE FG$ACT.CODE=FG$PRVS.CODE
-                CASE FG$ACT.CODE=FG$NXTS.CODE
-                CASE FG$ACT.CODE=FG$MOUSE.CODE
-                    CALL EB_GETMOUSE(FG$TYPEAHEAD.BUFF, EVENT, C, R)
-                    FG$ACT.CODE=FALSE
-                CASE FG$ACT.CODE=FG$OPT.CODE
+                CASE FG_ACT.CODE=FG_SKP.CODE
+                CASE FG_ACT.CODE=FG_SEL.CODE
+                CASE FG_ACT.CODE=FG_SEARCH.CODE
+                CASE FG_ACT.CODE=FG_NXT.KEY.CODE
+                CASE FG_ACT.CODE=FG_PRV.KEY.CODE
+                CASE FG_ACT.CODE=FG_INS.LINE.CODE
+                CASE FG_ACT.CODE=FG_DEL.LINE.CODE
+                CASE FG_ACT.CODE=FG_PRVS.CODE
+                CASE FG_ACT.CODE=FG_NXTS.CODE
+                CASE FG_ACT.CODE=FG_MOUSE.CODE
+                    CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
+                    FG_ACT.CODE=FALSE
+                CASE FG_ACT.CODE=FG_OPT.CODE
                     IF LEN(CHOICES) OR LEN(F_CHOICES) THEN
                         IF CHOICES = '?' THEN
                             RTN.STRING=CHOICES
@@ -266,36 +266,36 @@ PROCESS.RTN: !
                                 RTN.CHOICES = DELETE(INP.STRING, 1)
                                 INP.STRING = INP.STRING<1>
                                 RTN.STRING = INP.STRING
-                                FG$ACT.CODE = TRUE
+                                FG_ACT.CODE = TRUE
                             END ELSE
-                                INP.STRING = FG$OLD.FIELD
-                                FG$ACT.CODE = FALSE
+                                INP.STRING = FG_OLD.FIELD
+                                FG_ACT.CODE = FALSE
                             END
                             IF LEN(CC) THEN
                                 CRT @(CC+INP.POS-1,RR):
                                 GOSUB CRT.UNDERLINE
                             END
-                            IF FG$ACT.CODE THEN
-                                FG$ACT.CODE = FALSE
+                            IF FG_ACT.CODE THEN
+                                FG_ACT.CODE = FALSE
                                 BREAK
                             END
                         END
                     END
-                CASE FG$ACT.CODE=FG$END.CODE
+                CASE FG_ACT.CODE=FG_END.CODE
                     RTN.STRING=EB.CMD<4>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
 ! TAB
-                CASE FG$ACT.CODE=FG$TAB.CODE          ;!OR INDEX(PREV.CHARS,FG$TAB.CH,1)
+                CASE FG_ACT.CODE=FG_TAB.CODE          ;!OR INDEX(PREV.CHARS,FG_TAB.CH,1)
                     IF TYPE='MENU' ELSE
                         WPCHR.NBR=RTN.VAL
                         GOTO PROCESS.RTN
                     END
 ! Back TAB
-                CASE FG$ACT.CODE=FG$BTAB.CODE OR INDEX(PREV.CHARS,FG$BTAB.CH,1) AND LEN(FG$BTAB.CH)
+                CASE FG_ACT.CODE=FG_BTAB.CODE OR INDEX(PREV.CHARS,FG_BTAB.CH,1) AND LEN(FG_BTAB.CH)
                     IF TYPE='MENU' ELSE
                         GOTO FINISH
                     END
-                CASE FG$ACT.CODE=FG$HLP.CODE
+                CASE FG_ACT.CODE=FG_HLP.CODE
                     IF LEN(HELP.TEXT) THEN
                         CRT @(-1):
                         FOR H = 1 TO HVMC
@@ -306,10 +306,10 @@ PROCESS.RTN: !
                         INPUT X,0:
                         IF LEN(REPAINT) THEN
                             CRT REPAINT:
-                            FG$ACT.CODE = FALSE
+                            FG_ACT.CODE = FALSE
                         END
                     END
-                CASE FG$ACT.CODE=FG$JMP.CODE
+                CASE FG_ACT.CODE=FG_JMP.CODE
                     IF HELP.ID#'' THEN
                         CALL EB_BASIC_ZOOM(HELP.ID)
                         RTN.STRING=EB.CMD<5>          ;* refresh
@@ -317,21 +317,21 @@ PROCESS.RTN: !
                         RTN.STRING=EB.CMD<7>          ;* Zoom
                     END
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
-                CASE FG$ACT.CODE=FG$RFR.CODE
+                CASE FG_ACT.CODE=FG_RFR.CODE
                     RTN.STRING=EB.CMD<5>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
                 CASE 1
                     WPCHR.NBR=0
-                    SUB.CODE=FG$ACT.CODE
-                    FG$ACT.CODE=FALSE
+                    SUB.CODE=FG_ACT.CODE
+                    FG_ACT.CODE=FALSE
                     PREV.CHARS=''
             END CASE
         END
-        IF FG$ACT.CODE THEN
-            IF FG$ACT.CODE=FG$HLP.CODE THEN
+        IF FG_ACT.CODE THEN
+            IF FG_ACT.CODE=FG_HLP.CODE THEN
                 IF HELP.ID#'' THEN
-                    CALL EB_UT_HELP(HELP.ID,FG$EB.PARAMS,TERM.TYPE)
-                    FG$ACT.CODE=FALSE
+                    CALL EB_UT_HELP(HELP.ID,FG_EB.PARAMS,TERM.TYPE)
+                    FG_ACT.CODE=FALSE
                     GOTO STARTLBL
                 END ELSE
                     RTN.STRING=EB.CMD<6>          ;* Help key
@@ -376,7 +376,7 @@ ASCII.INPUT:    !
                         CRT BELL:
                     END ELSE
                         IF INP.POS=1 AND TRIM(INP.STRING)#'' THEN
-                            IF WORD.PROCESSING OR LAST.CHR=FG$BS.CH ELSE
+                            IF WORD.PROCESSING OR LAST.CHR=FG_BS.CH ELSE
                                 INP.POS=2
                                 WPCOL+=1
                                 GOSUB 10          ;! cleol
@@ -407,64 +407,64 @@ ASCII.INPUT:    !
         END
         BEGIN CASE
 ! <ctrl>E - End of Line
-            CASE SUB.CODE=FG$EOL.CODE
+            CASE SUB.CODE=FG_EOL.CODE
                 Sub=3
 ! <ctrl>X - Start of Line
-            CASE SUB.CODE=FG$SOL.CODE
+            CASE SUB.CODE=FG_SOL.CODE
                 Sub=4
 ! INS char
-            CASE SUB.CODE=FG$INS.CODE
+            CASE SUB.CODE=FG_INS.CODE
                 IF INDEX(' ',INP.STRING[MAXLENTH,1],1) THEN Sub=5 ELSE CRT BELL:
 ! Set INS
-            CASE SUB.CODE=FG$INSERT.CODE
+            CASE SUB.CODE=FG_INSERT.CODE
                 Sub=6
 ! BackSpace or <==
-            CASE WPCHR.NBR=SEQ(FG$BS.CH) OR SUB.CODE=FG$LEFT.CODE
+            CASE WPCHR.NBR=SEQ(FG_BS.CH) OR SUB.CODE=FG_LEFT.CODE
                 IF INP.POS>1 THEN
                     Sub=7
                 END ELSE
-                    IF TYPE='MENU' THEN FG$ACT.CODE=FG$LEFT.CODE; RETURN
+                    IF TYPE='MENU' THEN FG_ACT.CODE=FG_LEFT.CODE; RETURN
                 END
 ! ==>
-            CASE SUB.CODE=FG$RIGHT.CODE
+            CASE SUB.CODE=FG_RIGHT.CODE
                 IF INP.POS<MAXLENTH THEN
                     Sub=23
                 END ELSE
                     CRT BELL:
                 END
 ! DEL char
-            CASE SUB.CODE=FG$DEL.CHAR.CODE
+            CASE SUB.CODE=FG_DEL.CHAR.CODE
                 DUMMY=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
                 IF DUMMY#'' THEN Sub=8
 ! DEL
-            CASE SUB.CODE=FG$DEL.WORD.CODE
+            CASE SUB.CODE=FG_DEL.WORD.CODE
                 Sub=9
 ! DEL line
-            CASE SUB.CODE=FG$DEL.LINE.CODE
+            CASE SUB.CODE=FG_DEL.LINE.CODE
                 Sub=10
 ! <ctrl>DEL (undelete)
-            CASE SUB.CODE=FG$UNDEL.CODE
+            CASE SUB.CODE=FG_UNDEL.CODE
                 Sub=11
 ! <ctrl>D back a word
-            CASE SUB.CODE=FG$BWORD.CODE AND INP.POS>1
+            CASE SUB.CODE=FG_BWORD.CODE AND INP.POS>1
                 Sub=12
 ! <ctrl> next word
-            CASE SUB.CODE=FG$FWORD.CODE
+            CASE SUB.CODE=FG_FWORD.CODE
                 Sub=14
 ! => (skip)
-            CASE SUB.CODE=FG$SKP.CODE
+            CASE SUB.CODE=FG_SKP.CODE
                 IF INP.POS<=MAXLENTH THEN
-                    IF TYPE='MENU' AND INP.POS=1 THEN FG$ACT.CODE=FG$RIGHT.CODE; RETURN
+                    IF TYPE='MENU' AND INP.POS=1 THEN FG_ACT.CODE=FG_RIGHT.CODE; RETURN
                     Sub=15
                 END
 ! <ctrl>C Change case of word
-            CASE SUB.CODE=FG$CASE.CODE OR SUB.CODE=FG$L.CASE.CODE
+            CASE SUB.CODE=FG_CASE.CODE OR SUB.CODE=FG_L.CASE.CODE
                 Sub=18
 ! <ctrl>] Cut
-            CASE SUB.CODE=FG$CUT.CODE
+            CASE SUB.CODE=FG_CUT.CODE
                 Sub=20
 ! <ctrl>P Paste
-            CASE SUB.CODE=FG$PASTE.CODE
+            CASE SUB.CODE=FG_PASTE.CODE
                 Sub=21
             CASE RTN.KEY
                 RTN.KEY=FALSE
@@ -474,25 +474,25 @@ ASCII.INPUT:    !
                     INP.STRING=TRIM(INP.STRING,' ',"T")
                     IF NOT(INDEX(INP.STRING,NULL.CHAR,1)) THEN INP.STRING:=NULL.CHAR
                 END
-                PREV.CHARS=FG$DOWN.CH
+                PREV.CHARS=FG_DOWN.CH
                 INP.POS=1
                 WPCOL=ORIG.COL
                 Sub=13
 !/|\ |
 ! | (up-arrow) and \|/ (down arrow)
-            CASE WORD.PROCESSING AND SUB.CODE=FG$BCK.CODE OR SUB.CODE=FG$SKP.CODE OR SUB.CODE=FG$TOP.CODE
+            CASE WORD.PROCESSING AND SUB.CODE=FG_BCK.CODE OR SUB.CODE=FG_SKP.CODE OR SUB.CODE=FG_TOP.CODE
                 Sub=13
 ! <ctrl>O Multi-function facility
 ! or
 ! INS Line
-            CASE TYPE='MENU' AND SUB.CODE=FG$MULTI.CODE
-                FG$ACT.CODE=FG$TAG.CMD.CODE; RETURN
-            CASE SUB.CODE=FG$PRVS.CODE OR SUB.CODE=FG$NXTS.CODE
+            CASE TYPE='MENU' AND SUB.CODE=FG_MULTI.CODE
+                FG_ACT.CODE=FG_TAG.CMD.CODE; RETURN
+            CASE SUB.CODE=FG_PRVS.CODE OR SUB.CODE=FG_NXTS.CODE
                 IF NOT(NORMAL.FIELD) THEN
-                    IF SUB.CODE=FG$NXTS.CODE THEN
-                        IF INP.FLD='ACT' THEN FG$ACT.CODE=FG$SKP.CODE ELSE FG$ACT.CODE=FG$NXTS.CODE
+                    IF SUB.CODE=FG_NXTS.CODE THEN
+                        IF INP.FLD='ACT' THEN FG_ACT.CODE=FG_SKP.CODE ELSE FG_ACT.CODE=FG_NXTS.CODE
                     END ELSE
-                        IF INP.FLD='ACT' THEN FG$ACT.CODE=FG$BCK.CODE ELSE FG$ACT.CODE=FG$PRVS.CODE
+                        IF INP.FLD='ACT' THEN FG_ACT.CODE=FG_BCK.CODE ELSE FG_ACT.CODE=FG_PRVS.CODE
                     END
                     GO FINISH
                 END
@@ -579,7 +579,7 @@ VALID.INPUT.CHECK: !
                         STMP=ICONV(STMP,'MTS')
                 END CASE
             END
-            IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG$ERROR.MSGS<79>
+            IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG_ERROR.MSGS<79>
         CASE NUM.FIELD
             IF INP.STRING[1,1]='$' THEN INP.STRING=INP.STRING[2,MAXLENTH]
             IF NUM(INP.STRING) THEN
@@ -590,12 +590,12 @@ VALID.INPUT.CHECK: !
                     IF INP.STRING=INP.STRING STMP THEN STMP=1 ELSE STMP=0
                 END
                 IF NOT(STMP) THEN
-                    ERRMSG=STMP:FG$ERROR.MSGS<78>
+                    ERRMSG=STMP:FG_ERROR.MSGS<78>
                 END
-            END ELSE ERRMSG=FG$ERROR.MSGS<76>
+            END ELSE ERRMSG=FG_ERROR.MSGS<76>
         CASE TYPE='A'
             STMP=OCONV(INP.STRING,'MCA')
-            IF STMP#INP.STRING THEN ERRMSG=FG$ERROR.MSGS<41>
+            IF STMP#INP.STRING THEN ERRMSG=FG_ERROR.MSGS<41>
         CASE TYPE='U'
             INP.STRING=OCONV(INP.STRING,'MCU')
         CASE TYPE='L'
@@ -617,7 +617,7 @@ VALID.INPUT.CHECK: !
     END
     IF ERRMSG#'' THEN
         RTN.KEY=FALSE
-        INP.STRING=FG$OLD.FIELD
+        INP.STRING=FG_OLD.FIELD
         INP.POS=1; WPCOL=ORIG.COL
         CRT @(0,23):ERRMSG:
     END
@@ -751,7 +751,7 @@ GET.WORD: !
     WPCOL-=1
     INP.POS-=1
     CRT BACK:
-    IF WPCHR.NBR=SEQ(FG$BS.CH) THEN
+    IF WPCHR.NBR=SEQ(FG_BS.CH) THEN
         CRT SPC:BACK:
         TRAIL=1
         INP.STRING=INP.STRING[1,INP.POS-1]:INP.STRING[INP.POS+1,MAXLENTH]
@@ -768,7 +768,7 @@ GET.WORD: !
     END
     RETURN
 8   !
-    FG$DELETE.LIST=INP.STRING[INP.POS,1]:AM:FG$DELETE.LIST
+    FG_DELETE.LIST=INP.STRING[INP.POS,1]:AM:FG_DELETE.LIST
 DEL.LABEL:!
     INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[INP.POS+1,MAXLENTH])[1,MAXLENTH]
     IF UNDERLINE.FLAG ELSE INP.STRING:=' '
@@ -794,7 +794,7 @@ DEL.LABEL:!
     END ELSE
         NEXT.CHAR=''
     END
-    FG$DELETE.LIST=WORD:NEXT.CHAR:AM:FG$DELETE.LIST
+    FG_DELETE.LIST=WORD:NEXT.CHAR:AM:FG_DELETE.LIST
     INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[NEW.POS,MAXLENTH])    ;! JUST
     TRAIL=WORD.LENGTH+1
     IF UNDERLINE.FLAG ELSE INP.STRING:=SPACE(TRAIL)
@@ -806,15 +806,15 @@ DEL.LABEL:!
     RETURN
 10  !
     TRAIL=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
-    FG$DELETE.LIST=INP.STRING[INP.POS,MAXLENTH]:AM:FG$DELETE.LIST
+    FG_DELETE.LIST=INP.STRING[INP.POS,MAXLENTH]:AM:FG_DELETE.LIST
     TRAIL=LEN(TRAIL)
     IF UNDERLINE.FLAG ELSE CRT SPACE(TRAIL):STR(BACK,TRAIL):
     INP.STRING=INP.STRING[1,INP.POS-1]
     GOSUB CRT.UNDERLINE
     RETURN
 11  !
-    PASTE.STRING=FG$DELETE.LIST<1>
-    DEL FG$DELETE.LIST<1>
+    PASTE.STRING=FG_DELETE.LIST<1>
+    DEL FG_DELETE.LIST<1>
     GOSUB INSERT.STRING
     RETURN
 12  !
@@ -924,7 +924,7 @@ DEL.LABEL:!
     RETURN
 18  !
     INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
-    IF INDEX(PREV.CHARS,FG$CASE.CH,1) AND LEN(FG$CASE.CH) THEN
+    IF INDEX(PREV.CHARS,FG_CASE.CH,1) AND LEN(FG_CASE.CH) THEN
         GOSUB FIND.WORD
     END ELSE
         NEW.POS=LENTH

@@ -20,7 +20,7 @@
                 STMP=ICONV(INP.STRING:' ':OCONV(TODAYS$DATE,DY.CONV)+1,'D')
             END
         END CASE
-        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG$ERROR.MSGS<41>
+        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG_ERROR.MSGS<41>
     CASE TYPE='T'
         INP.STRING=OCONV(INP.STRING,'MCU')
         IF INDEX(INP.STRING,':',1) THEN
@@ -43,25 +43,25 @@
                 STMP=ICONV(STMP,'MTS')
             END CASE
         END
-        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG$ERROR.MSGS<79>
+        IF STMP#'' THEN INP.STRING=STMP ELSE ERRMSG=FG_ERROR.MSGS<79>
     CASE NUM.FIELD
         IF INP.STRING[1,1]='$' THEN INP.STRING=INP.STRING[2,LENTH]
         IF NUM(INP.STRING) THEN
             IF TYPE[1,1]='M' THEN STMP=2 ELSE STMP=TYPE[2,2]+0
             IF INP.STRING=INP.STRING STMP THEN STMP=1 ELSE
-                ERRMSG=STMP:FG$ERROR.MSGS<78>
+                ERRMSG=STMP:FG_ERROR.MSGS<78>
             END
         END ELSE
-            FL=FG$SCR.FILE.IDS<1,INP.FLD>
+            FL=FG_SCR.FILE.IDS<1,INP.FLD>
             IF FL#'' THEN
-                IF FG$SCR.BFILES<1,FL> THEN
-                    FG$FIELD=INP.STRING
+                IF FG_SCR.BFILES<1,FL> THEN
+                    FG_FIELD=INP.STRING
                     CALL EB.LOOKUP
-                    IF FG$VALID THEN
-                        INP.STRING=FG$FIELD
+                    IF FG_VALID THEN
+                        INP.STRING=FG_FIELD
                         GOTO FINISH
                     END ELSE
-                        FG$VALID=TRUE
+                        FG_VALID=TRUE
                         RTN.KEY=FALSE
                         CPOS=1; COL=ORIG.COL
                         GOSUB CRT.UNDERLINE
@@ -69,11 +69,11 @@
                     END
                 END
             END
-            ERRMSG=FG$ERROR.MSGS<76>
+            ERRMSG=FG_ERROR.MSGS<76>
         END
     CASE TYPE 'R#1'='A'
         STMP=OCONV(INP.STRING,'MCA')
-        IF STMP#INP.STRING THEN ERRMSG=FG$ERROR.MSGS<41>
+        IF STMP#INP.STRING THEN ERRMSG=FG_ERROR.MSGS<41>
     CASE TYPE 'R#1'='U'
         INP.STRING=OCONV(INP.STRING,'MCU')
     CASE TYPE 'R#1'='L'
@@ -84,13 +84,13 @@
     END CASE
     IF ERRMSG#'' THEN
         RTN.KEY=FALSE
-        INP.STRING=FG$OLD.FIELD
+        INP.STRING=FG_OLD.FIELD
         CPOS=1; COL=ORIG.COL
         IF INDEX('NM',TYPE[1,1],1) ELSE ERRS=ERRS+1
         CALL EB.ERRMSG(ERRMSG:BELL)
         IF ERRS=3 THEN
             RQM; CALL EB.HELP('',20,7,40,10)
-            IF FG$REFRESH THEN CALL EB.REFRESH
+            IF FG_REFRESH THEN CALL EB.REFRESH
             ERRS=0
         END
     END

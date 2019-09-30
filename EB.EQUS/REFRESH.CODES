@@ -1,15 +1,15 @@
 !
 ! These equates symbolise the REFRESH codes in GA
 !
-EQU FG$MASK            TO 1  ;! Clear Screen and display Mask
-EQU FG$REDISPLAY       TO 2  ;! Refresh mask plus data upto current fld
-EQU FG$PAGING.ONLY     TO 3  ;! Refresh current paging section
-EQU FG$REDISPLAY.DATA  TO 4  ;! Refresh data upto current fld
-EQU FG$CLEAR.DATA      TO 5  ;! Clear all data
-EQU FG$SELECTIVE       TO 6  ;! Selective refresh of fields in DISPLAY.LIST
-EQU FG$SELECTIVE.LINES TO 7  ;! Selective refresh of single pane in window
-EQU FG$MASK.ONLY       TO 8  ;! Display Mask (Do not clear screen)
-EQU FG$FULL.NOCLEAR    TO 9  ;! Full Refresh (Do not clear screen)
-EQU FG$DATA.CLEAR      TO 10 ;! Clear all data then Refresh all data
-EQU FG$FULL            TO 11 ;! Full Refresh
-EQU FG$DATA.ONLY       TO 12 ;! Refresh all data
+EQU FG_MASK            TO 1  ;! Clear Screen and display Mask
+EQU FG_REDISPLAY       TO 2  ;! Refresh mask plus data upto current fld
+EQU FG_PAGING.ONLY     TO 3  ;! Refresh current paging section
+EQU FG_REDISPLAY.DATA  TO 4  ;! Refresh data upto current fld
+EQU FG_CLEAR.DATA      TO 5  ;! Clear all data
+EQU FG_SELECTIVE       TO 6  ;! Selective refresh of fields in DISPLAY.LIST
+EQU FG_SELECTIVE.LINES TO 7  ;! Selective refresh of single pane in window
+EQU FG_MASK.ONLY       TO 8  ;! Display Mask (Do not clear screen)
+EQU FG_FULL.NOCLEAR    TO 9  ;! Full Refresh (Do not clear screen)
+EQU FG_DATA.CLEAR      TO 10 ;! Clear all data then Refresh all data
+EQU FG_FULL            TO 11 ;! Full Refresh
+EQU FG_DATA.ONLY       TO 12 ;! Refresh all data

@@ -16,15 +16,15 @@
         LABEL=MOVE.FIELD
         LOOP
             CALL EB_WP(LABEL,'AN',CC,RR,63,0)
-        WHILE FG$ACT.CODE DO
+        WHILE FG_ACT.CODE DO
             BEGIN CASE
-            CASE FG$ACT.CODE=FG$ABT.CODE OR FG$ACT.CODE=FG$END.CODE
-                FG$ACT.CODE=FALSE
+            CASE FG_ACT.CODE=FG_ABT.CODE OR FG_ACT.CODE=FG_END.CODE
+                FG_ACT.CODE=FALSE
                 CRT @(0,23):CLEOL:
                 GOTO 10
             CASE 1
                 INCLUDE EB.INCLUDES ON.INP
-                FG$ACT.CODE=FALSE
+                FG_ACT.CODE=FALSE
             END CASE
         REPEAT
         IF LABEL#'' THEN

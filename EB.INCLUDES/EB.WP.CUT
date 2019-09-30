@@ -1,7 +1,7 @@
 * @(#) EB.WP.CUT Ported to jBASE 15:13:19  17 APR 2000
     IF NOT(PASTE) THEN
         PASTE=CPOS
-        CALL EB_ERRMSG(FG$ERROR.MSGS<47>)
+        CALL EB_ERRMSG(FG_ERROR.MSGS<47>)
     END ELSE
         IF PASTE#CPOS THEN
             IF CPOS>PASTE THEN          ;! swap
@@ -12,24 +12,24 @@
             END
             PASTE.LENGTH=PASTE-CPOS
             PASTE.STRING=INP.STRING[CPOS,PASTE.LENGTH]
-            IF  FG$ACT.CODE=FG$DEL.CHAR.CODE THEN
-                FG$DELETE.LIST=PASTE.STRING:AM:FG$DELETE.LIST
+            IF  FG_ACT.CODE=FG_DEL.CHAR.CODE THEN
+                FG_DELETE.LIST=PASTE.STRING:AM:FG_DELETE.LIST
             END ELSE
                 PASTE.NBR=''
-                IF FG$STERM THEN
-                    CALL EB_AT_WINDOWS.INPUT(100,0,5,0,'','|M','Enter paste','',FG$ERROR.MSGS<81>,0,0,PASTE.NBR)
+                IF FG_STERM THEN
+                    CALL EB_AT_WINDOWS.INPUT(100,0,5,0,'','|M','Enter paste','',FG_ERROR.MSGS<81>,0,0,PASTE.NBR)
                 END ELSE
-                    IF FG$POPUP THEN
-                        IF STATUS.LINE<1,1>#'' THEN CRT STATUS.LINE<1,1>:FG$ERROR.MSGS<48>:STATUS.LINE<1,2>:
-                    END ELSE CRT @(0,23):CLEOL:FG$ERROR.MSGS<48>:' ':
-                    CALL EB_WP(PASTE.NBR,'AN',LEN(FG$ERROR.MSGS<48>)+2,23,30,1)
+                    IF FG_POPUP THEN
+                        IF STATUS.LINE<1,1>#'' THEN CRT STATUS.LINE<1,1>:FG_ERROR.MSGS<48>:STATUS.LINE<1,2>:
+                    END ELSE CRT @(0,23):CLEOL:FG_ERROR.MSGS<48>:' ':
+                    CALL EB_WP(PASTE.NBR,'AN',LEN(FG_ERROR.MSGS<48>)+2,23,30,1)
                 END
                 CALL EB_ERRMSG(' ')
-                LOCATE PASTE.NBR IN FG$PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
-                    FG$PASTE.LIST<2,PASTE.POS>=PASTE.STRING
+                LOCATE PASTE.NBR IN FG_PASTE.LIST<1, vm_start> BY "AL" SETTING PASTE.POS THEN
+                    FG_PASTE.LIST<2,PASTE.POS>=PASTE.STRING
                 END ELSE
-                    INS PASTE.NBR BEFORE FG$PASTE.LIST<1,PASTE.POS>
-                    INS PASTE.STRING BEFORE FG$PASTE.LIST<2,PASTE.POS>
+                    INS PASTE.NBR BEFORE FG_PASTE.LIST<1,PASTE.POS>
+                    INS PASTE.STRING BEFORE FG_PASTE.LIST<2,PASTE.POS>
                 END
             END
             INP.STRING=(INP.STRING[1,CPOS-1]:INP.STRING[PASTE,LENTH])

@@ -21,8 +21,8 @@
             STOP 201,'POINTER-FILE'
         END
     END
-    CALL JBASEParseCommandLine1(args, TCL.OPTS, FG$SENTENCE)
-    FG$SENTENCE=' ':CHANGE(FG$SENTENCE, @AM, ' ')
+    CALL JBASEParseCommandLine1(args, TCL.OPTS, FG_SENTENCE)
+    FG_SENTENCE=' ':CHANGE(FG_SENTENCE, @AM, ' ')
     TCL.OPTS=OCONV(TCL.OPTS, 'MCU')
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
@@ -110,7 +110,7 @@
     LAST.EXEC=''
     SEL=SYSTEM(11)
     IF NOT(SEL) THEN
-        ITNM=FIELD(FG$SENTENCE,' ',2)
+        ITNM=FIELD(FG_SENTENCE,' ',2)
         IF ITNM#'' THEN
             AISENT=TRUE
             IF INDEX(ITNM, Bslsh, 1) THEN
@@ -130,7 +130,7 @@
             END
             IDA=ITNM
             IF FLNM#'' THEN FA=FLNM; ASENT=TRUE
-            ITNM=FIELD(FG$SENTENCE,' ',3)
+            ITNM=FIELD(FG_SENTENCE,' ',3)
             IF ITNM#'' THEN
                 IF INDEX(ITNM, Bslsh, 1) THEN
                     gslsh=Bslsh
@@ -153,8 +153,8 @@
             END
         END
     END ELSE
-        FA=FIELD(FG$SENTENCE,' ',2)
-        IF FA='DICT' THEN FA='DICT ':FIELD(FG$SENTENCE,' ',3)
+        FA=FIELD(FG_SENTENCE,' ',2)
+        IF FA='DICT' THEN FA='DICT ':FIELD(FG_SENTENCE,' ',3)
         ASENT=(FA#'')
         id_list = ''
         EOF=0
@@ -188,8 +188,8 @@
     CRT EL:
     IF SEL THEN
         IF FIELD(FA,' ',1)='DICT' THEN POS=4 ELSE POS=3
-        FB=FIELD(FG$SENTENCE,' ',POS)
-        IF FB='DICT' THEN FB='DICT ':FIELD(FG$SENTENCE,' ',POS+1)
+        FB=FIELD(FG_SENTENCE,' ',POS)
+        IF FB='DICT' THEN FB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
         BSENT=(FB#'' OR UPGBACKUP)
     END
     IF NOT(UPGBACKUP) THEN GOSUB OPEN.FILEB
@@ -705,8 +705,8 @@ FILE.ITEM:!
                 AMB=STARTB+(AMA-STARTA)
                 LINEA = RECA<AMA>
                 CONVERT VM:SVM TO AM:VM IN LINEA
-                UPGA='%COMPA%':IDA:'%':AMA:'%':FG$TLINE
-                UPGB='%COMPB%':IDB:'%':AMB:'%':FG$TLINE
+                UPGA='%COMPA%':IDA:'%':AMA:'%':FG_TLINE
+                UPGB='%COMPB%':IDB:'%':AMB:'%':FG_TLINE
                 WRITE LINEA ON F.UPG.WORKFILE,UPGA
                 LINEB = RECB<AMB>
                 CONVERT VM:SVM TO AM:VM IN LINEB

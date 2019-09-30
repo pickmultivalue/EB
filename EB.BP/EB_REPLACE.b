@@ -144,8 +144,8 @@
                 CRT LINE.NO 'R%4 ':REC<LINE.NO>[1,PWIDTH-4]
                 CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
                 CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (<Y>/N/Last) ":
-                CALL EB_UT_INPUT_ZERO(DMY,MAT EB$CHARS,FG$ACT.CODE,35,PDEPTH,FG$INPUT.CODES,'Y':@VM:'N',1,FG$TIMEOUT)
-                IF FG$ACT.CODE THEN GO RTN
+                CALL EB_UT_INPUT_ZERO(DMY,MAT EB_CHARS,FG_ACT.CODE,35,PDEPTH,FG_INPUT.CODES,'Y':@VM:'N',1,FG_TIMEOUT)
+                IF FG_ACT.CODE THEN GO RTN
                 IF INDEX('YL',DMY,1) ELSE GO 3090
             END ELSE DMY=''
             LOOP
@@ -180,8 +180,8 @@
                         CRT HILRESET:
                         CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
                         CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (Y/<N>/Last) ":
-                        CALL EB_UT_INPUT_ZERO(DMY,MAT EB$CHARS,FG$ACT.CODE,35,PDEPTH,FG$INPUT.CODES,'Y':@VM:'N':@VM:'L',1,FG$TIMEOUT)
-                        IF FG$ACT.CODE THEN GO RTN
+                        CALL EB_UT_INPUT_ZERO(DMY,MAT EB_CHARS,FG_ACT.CODE,35,PDEPTH,FG_INPUT.CODES,'Y':@VM:'N':@VM:'L',1,FG_TIMEOUT)
+                        IF FG_ACT.CODE THEN GO RTN
                     END ELSE DMY='Y'
                 END ELSE DMY='N'
                 IF INDEX('N',DMY,1) ELSE
