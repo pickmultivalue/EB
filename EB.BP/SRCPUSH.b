@@ -15,6 +15,14 @@
     io = ''
     BEGIN CASE
         CASE scType = 'GIT'
-            EXECUTE shell:'git push ':shellend CAPTURING io
+            OPEN '.' THEN
+                K.push = 'git_push.':@PID
+                FOR tries = 1 TO 3
+                    EXECUTE shell:'git push >':K.push:' ':shellend
+                    READ io FROM K.push ELSE io = 'Push error'
+                    DELETE K.push
+                    IF NOT(INDEX(io, 'ailed', 1)) THEN BREAK
+                NEXT tries 
+            END 
     END CASE
     RETURN io
