@@ -2632,7 +2632,7 @@ WRAPUP: !
     ECHO ON
     IF COL.80#'' AND COL.132#'' THEN
         IF PWIDTH=131 THEN
-            CRT COL.80:
+!            CRT COL.80:
         END
     END
     INCLUDE EB.OS.INCLUDES TIMEOUT.OFF
