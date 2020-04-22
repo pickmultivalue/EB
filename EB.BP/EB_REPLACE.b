@@ -23,13 +23,18 @@
     EQU ESC TO CHAR(27), TAB TO CHAR(9), TRUE TO 1, FALSE TO 0
     EQU DELIMS TO ' ():;+-*/,&!^#=<>[]@':@VM:@SVM:TAB
     EQU MAX TO 999999
-    MAIN$:!
+MAIN$:!
     DIM RPL.PARMS(3),RPL.PROMPTS(3),RPL.COLS(3)
     EQU WHOLE TO RPL.PARMS(1)
     EQU ALOC TO RPL.PARMS(2)
     EQU CONFIRM TO RPL.PARMS(3)
     IF EMBED.ATTR<1,1> THEN HILON=RVOFF; HILOFF=RVON ELSE HILON=BG; HILOFF=FG
     HILRESET=FG:RVOFF
+    WHOLE=WHOLE.WORDS 
+    CASE.INSENSITIVE=WHOLE[4,1]
+    REGEX.SEARCH=WHOLE[3,1]
+    NOCOMMENTS=WHOLE[2,1]
+    WHOLE=WHOLE[1,1]
 !
     TMP=RSTR; GOSUB CONV.CHARS
     RSTRL=LEN(TMP)
@@ -101,7 +106,11 @@
     LOOP
         STR.POS=REC[LINE.POS,END.POS-LINE.POS+1]
         IF INIT#'' THEN
-            STR.POS=INDEX(STR.POS,INIT,1)
+            IF REGEX.SEARCH THEN
+                STR.POS=EB_REGEX(STR.POS,SSTR, @FALSE)
+            END ELSE
+                STR.POS=INDEX(STR.POS,SSTR,1)
+            END
         END ELSE
             IF TRIM(STR.POS)#'' THEN
                 STR.POS = @AM:STR.POS
@@ -129,7 +138,11 @@
                 NEW.LINE=RSTR<CNT>
                 IF NEW.LINE#'' THEN
                     TMP=NEW.LINE; GOSUB CONV.CHARS; NEW.LINE=TMP
-                    POS=INDEX(SLINE,NEW.LINE,1)
+                    IF REGEX.SEARCH THEN
+                        POS=EB_REGEX(SLINE,NEW.LINE, @FALSE)
+                    END ELSE
+                        POS=INDEX(SLINE,NEW.LINE,1)
+                    END
                     IF POS THEN
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
                     END ELSE OK=FALSE
@@ -155,13 +168,18 @@
                     LOOP WHILE LINE[SPOS,1]=' ' DO SPOS+=1 REPEAT
                 END ELSE
                     SPOS=INDEX(LINE,FIRST,OCC)
+                    IF REGEX.SEARCH THEN
+                        SPOS=EB_REGEX(SLINE,FIRST, @FALSE)
+                    END ELSE
+                        SPOS=INDEX(SLINE,FIRST,OCC)
+                    END
                 END
                 OCCURS<OCC>=SPOS
             WHILE ALOC AND SPOS AND FIRST#'' DO REPEAT
             OCCS=OCC-(SPOS=0)
             FOR I=OCCS TO 1 STEP -1
                 SPOS=OCCURS<I>
-                IF WHOLE THEN
+                IF WHOLE.WORDS THEN
                     LOOP
                         OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND INDEX(DELIMS,LINE[SPOS+RSTRL,1],1))
                     UNTIL OK DO
@@ -268,7 +286,7 @@
             END
             IF DMY='L' THEN GO RTN
         END ELSE STR.POS=STR.POS+LEN(LINE)
-3090      !
+3090    !
         LINE.POS+=(STR.POS-OCCURS<1>+LEN(LINE)+1)
         IF LINE.POS=PREV.LINE.POS THEN
             LINE.POS+=OCCURS<1>
@@ -276,7 +294,7 @@
     REPEAT
 RTN:
     RETURN
-CONV.CHARS:         ! convert ^nnn
+CONV.CHARS: ! convert ^nnn
     IF INDEX(TMP,'^',1) THEN
         L=LEN(TMP)
         FOR P=1 TO L
@@ -291,4 +309,3 @@ CONV.CHARS:         ! convert ^nnn
         NEXT P
     END
     RETURN
-END

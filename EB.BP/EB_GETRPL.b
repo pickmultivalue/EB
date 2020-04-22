@@ -220,6 +220,9 @@ MAIN$:!
             NEXT I
         END ELSE
             WHOLE=(INDEX(ROPTS,'V',1) OR INDEX(ROPTS,'W',1))
+            REGEX.SEARCH = INDEX(ROPTS,'X',1)
+            WHOLE:=REGEX.SEARCH
+            DEBUG 
             ALOC=INDEX(ROPTS,'U',1) OR INDEX(ROPTS,'A',1)
             CONFIRM=INDEX(ROPTS,'C',1)
             SwitchValues=INDEX(ROPTS,'S',1)
