@@ -80,8 +80,14 @@ MAIN$:!
     FOR CNT=1 TO STR.CNT
         LOOP
             STR.POS=INDEX(WSTR,'@':CNT,1)
+            STR.POS+=INDEX(WSTR,'@l':CNT,1)
+            STR.POS+=INDEX(WSTR,'@u':CNT,1)
+            STR.POS+=INDEX(WSTR,'@c':CNT,1)
         WHILE STR.POS DO
-            WSTR=WSTR[1,STR.POS-1]:@AM:CNT:@VM:WSTR[STR.POS+2,MAX]
+            WCNT = CNT
+            op = WSTR[STR.POS+1,1]
+            IF NOT(NUM(op)) THEN WCNT = op:WCNT
+            WSTR=WSTR[1,STR.POS-1]:@AM:WCNT:@VM:WSTR[STR.POS+1+LEN(WCNT),MAX]
         REPEAT
     NEXT CNT
     WSTR.CNT=COUNT(WSTR,@VM)
@@ -247,7 +253,22 @@ MAIN$:!
                                     NEW.LINE:=PWSTR<1>
                                     DEL PWSTR<1>
                                     IF PWSTR#'' THEN
-                                        NEW.LINE:=SLINE<PWSTR<1,1>>
+                                        WCNT=PWSTR<1,1>
+                                        IF NUM(WCNT) THEN 
+                                            op='' 
+                                        END ELSE 
+                                            op = WCNT[1,1]
+                                            WCNT = WCNT[2,MAX]
+                                        END
+                                        WCNT=SLINE<WCNT>
+                                        BEGIN CASE
+                                            CASE op = ''
+                                            CASE op = 'l'; op = 'MCL'
+                                            CASE op = 'u'; op = 'MCU'
+                                            CASE op = 'c'; op = 'MCT'
+                                        END CASE
+                                        IF LEN(op) THEN WCNT = OCONV(WCNT, op)
+                                        NEW.LINE:=WCNT
                                         DEL PWSTR<1,1>
                                     END
                                 NEXT CNT
