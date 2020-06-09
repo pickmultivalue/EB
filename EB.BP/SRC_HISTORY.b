@@ -20,10 +20,14 @@
     DEFFUN GETSRCTYPE()
     DEFFUN GIT_HISTORY()
     DEFFUN SVN_HISTORY()
+    rc = GETCWD(currdir)
+    rc = CHDIR(FilePath)
     scType = GETSRCTYPE()
     BEGIN CASE
         CASE scType = 'GIT'
-            RETURN GIT_HISTORY(FilePath, ItemName, Filters)
+            result = GIT_HISTORY(FilePath, ItemName, Filters)
         CASE scType = 'SVN'
-            RETURN SVN_HISTORY(FilePath, ItemName, Filters)
+            result = SVN_HISTORY(FilePath, ItemName, Filters)
     END CASE
+    rc = CHDIR(currdir)
+    RETURN result
