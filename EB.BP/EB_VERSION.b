@@ -19,7 +19,7 @@
     FullPath = GETFULLPATH(FLNM)
     SourceStatus = SRC_SRC_STATUS(FullPath, ITNM)
     IF LEN(SourceStatus) THEN
-        YNCHRS='D':VM:'H':VM:'R':VM:'S':VM:ESC
+        YNCHRS='D':VM:'H':VM:'P':VM:'R':VM:'S':VM:ESC
         IF NOT(SRC_OPENLOCKS(F.Locks)) THEN STOP 201,'SRC.LOCKS'
         Commit = TRUE
         IF FullPath # SRC_GETHOMEPATH(FullPath) THEN
@@ -30,7 +30,7 @@
             MSG = '(C)ommit, '
             YNCHRS<1, -1> = 'C'
         END ELSE MSG = ''
-        MSG := '(D) to delete, (R)evert, (S)ync, (H)istory'
+        MSG := '(D) to delete, (R)evert, (P)ull, (H)istory, (S)tash'
     END ELSE
         MSG = '(A)dd to source control ?'
         YNCHRS='A':VM:ESC
@@ -45,10 +45,11 @@
         lockvar=TRUE
         SITNM=ITNM
         BEGIN CASE
-            CASE Y='C'; Y=VersCommit
-            CASE Y='A'; Y=VersAdd
-            CASE Y='D'; Y=VersDelete
-            CASE Y='H'
+            CASE Y EQ 'C'; Y=VersCommit
+            CASE Y EQ 'A'; Y=VersAdd
+            CASE Y EQ 'D'; Y=VersDelete
+            CASE Y EQ 'H' OR Y EQ 'S'
+                IF Y EQ 'S' THEN ITNM := @AM:'S'
                 history = SRC_HISTORY(FullPath, ITNM, '')
                 IF LEN(history) THEN
                     IF ORIG.REC#REC THEN
@@ -145,7 +146,7 @@
                     END
                 END
             CASE Y='R'; Y=VersRevert
-            CASE Y='S'; Y=VersSync
+            CASE Y='P'; Y=VersSync
             CASE 1; Y=FALSE
         END CASE
         IF Y THEN

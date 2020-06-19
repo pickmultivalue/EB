@@ -50,7 +50,13 @@
     Repository := '/':FileName
     repo = Repository
 !
-    IO = GIT_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
+    Stash = ItemName<2> EQ 'S'
+    ItemName = ItemName<1> 
+    IF Stash THEN
+        IO = GIT_EXEC('reflog show --format="medium" stash', TRUE)
+    END ELSE
+        IO = GIT_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
+    END
 !
     history = ''
     loc = 0
@@ -60,7 +66,10 @@
     IF FIELD(line, ' ', 1) = 'commit' THEN
         LOOP
             rev = line[COL2()+1, 99]
-            REMOVE user FROM IO AT loc SETTING delim
+            ll = 1
+            LOOP
+                REMOVE user FROM IO AT loc SETTING delim
+            UNTIL FIELD(user, ':', 1) EQ 'Author' OR ll GT 4 DO ll++ REPEAT 
             user = TRIM(FIELD(user, ':', 2))
             REMOVE timestamp FROM IO AT loc SETTING delim
             timestamp = TRIM(timestamp)
