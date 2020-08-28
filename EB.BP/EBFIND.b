@@ -55,20 +55,22 @@
     IF LEN(sent) EQ 0 THEN STOP
     sent = CHANGE(sent, @AM, ' ')
     IF sent[1,1] NE '"' THEN sent = DQUOTE(sent) 
-    find_cmd = 'find ':dir:' -type f'
-    IF NOT(LEN(types)) THEN find_cmd := ' \( ! -iname "*.o*" -a ! -iname "*.so" -a ! -iname "*.dll" \)'
+    find_cmd = 'find ':dir
     IF LEN(ignore) THEN find_cmd := ' -path ':DQUOTE(ignore):' -prune -o' 
+    find_cmd:= ' -type f'
     IF findkey THEN
-        find_cmd :=' -name ':DQUOTE(sent)
+        find_cmd:= ' -name ':DQUOTE(sent)
     END ELSE 
         IF LEN(types) THEN
             matching = ''
             FOR t = 1 TO DCOUNT(types, ',')
                 matching<-1> = '-name "*.':FIELD(types,',',t):'"'
             NEXT t
-            find_cmd := ' \( ':CHANGE(matching, @AM, ' -oE '):' \)' 
+            find_cmd:= ' \( ':CHANGE(matching, @AM, ' -oE '):' \)'
         END 
-        find_cmd :=' -exec fgrep -l':nocase:' -- ':sent:' {} \;':sort
+        find_cmd:= ' -exec fgrep'
+        IF NOT(LEN(types)) THEN find_cmd := ' -I'
+        find_cmd:= ' -l':nocase:' -- ':sent:' {} \;':sort
     END
     IF verbose THEN CRT;CRT find_cmd;CRT 
     EXECUTE @IM:'k':find_cmd CAPTURING list
