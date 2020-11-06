@@ -327,7 +327,7 @@
                             END
                         END
                     NEXT I
-                    POPUP_WIDTH=SYSTEM(2)-30
+                    POPUP_WIDTH=SYSTEM(2)-35 
                     CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#25':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
                     FLNM=''
                 END

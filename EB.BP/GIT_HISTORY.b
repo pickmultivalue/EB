@@ -82,7 +82,7 @@
                 REMOVE line FROM IO AT loc SETTING delim
             UNTIL FIELD(line, ' ', 1) = 'commit' DO
                 IF LEN(line) THEN
-                    desc<1, 1, -1> = line
+                    desc<1, 1, -1> = TRIM(line) 
                 END
             REPEAT
             IF LEN(Filters) THEN
@@ -127,7 +127,7 @@
                         line_id = line_id[1, LEN(Repository)]
                         IF line_id # Repository THEN line_id = ''
                     END
-                    desc<1, 1, -1> = line
+                    desc<1, 1, -1> = TRIM(line)
                 END
             NEXT L
 !

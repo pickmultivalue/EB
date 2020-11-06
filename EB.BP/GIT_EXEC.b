@@ -32,7 +32,7 @@
         IF dir_dc > 1 THEN
             fileName = FIELD(new_Args, DIR_DELIM_CH, dir_dc)
 !            command = 'cd ':CHANGE(new_Args[1, COL1()-1], '/', DIR_DELIM_CH):' && ':command
-            new_Args = fileName
+!            new_Args = fileName
         END
     END
     new_Args = sub_command:' ':pre_Args:new_Args

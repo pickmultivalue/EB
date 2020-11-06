@@ -65,7 +65,7 @@
                     errmsg = 'No previous history found'
                     GOSUB DISPLAY_ERROR
                 END
-                Fmts = 'R#4':SVM:'L#10':SVM:'D':SVM:'MTS':SVM:'L#':PWIDTH-45
+                Fmts = 'L#10':SVM:'L#10':SVM:'D':SVM:'MT':SVM:'L#':PWIDTH-48 
                 ColHdrs = 'Rev':SVM:'User':SVM:'Date':SVM:'time':SVM:'Description'
                 Attrs = 1:SVM:2:SVM:3:SVM:4:SVM:5
                 REV = ''

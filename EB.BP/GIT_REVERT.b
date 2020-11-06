@@ -24,6 +24,8 @@
     shell = @IM:'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES SRC_DEBUG
+    currDir = '.' 
+    rc = GETCWD(currDir) 
 !
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items
@@ -65,6 +67,7 @@
                     FullPaths<i> = OrigPath:DIR_DELIM_CH:ItemName
                 END
             END ELSE
+                itm = CHANGE(itm, currDir:DIR_DELIM_CH, '')
                 IO = GIT_EXEC('revert ':itm, TRUE)
                 IF IO EQ '' THEN IO = 'reverted'
             END
