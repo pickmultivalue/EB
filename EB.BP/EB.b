@@ -529,6 +529,10 @@ ALREADY.LOCKED: !
 !        VersCheckedOut=(lockvar<1)
     END
     TAB.MODE=INDEX(REC,TAB,1)
+    IF REC[1,2] = 'PQ' OR INDEX(REC,@AM:'PQ',1) THEN 
+        EDIT.MODE = 'C'
+        GOSUB SET.MODE
+    END 
     CRLF.MODE=NOT(INDEX(REC,AM,1)) AND INDEX(REC,CR:LF,1)
     IF CRLF.MODE THEN
         REC = CHANGE(REC, CR:LF, AM)
@@ -927,8 +931,8 @@ SCROLL.LINE:    !
                     END ELSE RDSP(LROW)=SPACE(LCOL)
                 END
                 LCOL=LEN(RDSP(LROW))
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-                IF TAB.MODE THEN COL+=1
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
+!                IF TAB.MODE THEN COL+=1
                 IF SCR.UD ELSE
                     CRT @(5,ROW):RDSP(LROW):
 !                COL = 4 + LEN(RDSP(LROW))
