@@ -45,10 +45,11 @@
     FileName = GETFLNM(FilePath)
     GOSUB Parse_Filters
 !
-    subversion = GIT_REPOSITORY(FilePath)
-    Repository = GIT_GET_REPOSITORY(FileName)
-    Repository := '/':FileName
-    repo = Repository
+    Repository = GIT_REPOSITORY(FilePath)
+!    Repository = GIT_GET_REPOSITORY(FileName)
+!    Repository := '/':FileName
+!    repo = Repository
+    repo = FilePath 
 !
     Stash = ItemName<2> EQ 'S'
     ItemName = ItemName<1> 
