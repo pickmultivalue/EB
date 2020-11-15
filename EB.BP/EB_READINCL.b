@@ -36,7 +36,9 @@ MAIN$:!
     PathFlag=COUNT(incid,toslash)
     CodeLine=''
     IF NOT(GETENV('JBCRELEASEDIR',jbcdir)) THEN jbcdir='/usr/jbc'
-    IF NOT(GETENV('INCLUDE',inclib)) THEN inclib='.:':jbcdir:'/include'
+    IF NOT(GETENV('INCLUDE',inclib)) THEN 
+        inclib='.:../include:':jbcdir:'/include'
+    END 
     CONVERT dir_sep TO @AM IN inclib
     inclib<-1>=FLNM
     IncludeString=''
