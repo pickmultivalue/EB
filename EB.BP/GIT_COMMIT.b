@@ -124,7 +124,12 @@
     IF TempDir EQ '' THEN TempDir = '.'
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP
-        cmd = 'ls -l --time-style=full-iso ':K.Message:shellend
+        IF LEN(EBJSHOW('-c ls')) THEN
+            cmd = 'ls -l --time-style=full-iso' 
+        END ELSE
+            cmd = 'jdir'
+        END
+        cmd := ' ':K.Message:shellend
         EXECUTE shell:cmd CAPTURING before
         EXECUTE shell:Editor:' ':K.Message
         EXECUTE shell:cmd CAPTURING after
