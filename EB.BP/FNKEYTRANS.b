@@ -1,4 +1,5 @@
     FUNCTION FNKEYTRANS(chars)
+    COMMON /FNKEYTRANS/ ttTrans, ttTransSub
     DEFFUN EBJSHOW()
     l = LEN(chars)
     newchars = ''
@@ -23,8 +24,11 @@
 !
 ! Check for TType translator
 !
-    ttTrans = 'tt':SYSTEM(7):'_TRANS'
-    io = EBJSHOW('-c ':ttTrans)
-    IF LEN(io) THEN CALL @ttTrans(newchars)
+    IF UNASSIGNED(ttTrans) THEN ttTrans = 0
+    IF NOT(ttTrans) THEN
+        ttTrans = 'tt':SYSTEM(7):'_TRANS'
+        ttTransSub = EBJSHOW('-c ':ttTrans)
+    END
+    IF LEN(ttTransSub) THEN CALL @ttTrans(newchars)
 !
     RETURN (newchars)

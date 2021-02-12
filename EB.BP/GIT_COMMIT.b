@@ -15,6 +15,7 @@
     DEFFUN GETFULLPATH()
     DEFFUN GETYN()
     INCLUDE JBC.h
+    DEFFUN EBJSHOW()
     EQU TRUE TO 1, FALSE TO 0
     shell = @IM:'k'
     shellend = ' 2>&1'
@@ -27,7 +28,13 @@
         TempFile = '.'
 !
     OPEN TempFile TO F.Temp ELSE STOP 201, TempFile
-    IF NOT(GETENV('SRC_EDITOR', Editor)) THEN Editor = 'vi'
+    IF NOT(GETENV('SRC_EDITOR', Editor)) THEN 
+        IF LEN(EBJSHOW('-c vi')) THEN
+            Editor = 'vi'
+        END ELSE
+            Editor = 'EB'
+        END
+    END
 !
     INCLUDE EB.INCLUDES SRC_DEBUG
     INCLUDE EB.INCLUDES GET.HOME
