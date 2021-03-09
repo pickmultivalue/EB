@@ -76,17 +76,17 @@
     WIDE.MODE=COL.132
     NORM.MODE=COL.80
     BEGIN CASE
-        CASE TERM='B'
+        CASE TERM EQ 'B'
 !      WIDE.MODE=ESC:'[=;132Z'
             DEEP.MODE=ESC:'[=33;Z'
 !      NORM.MODE=ESC:'[=;80Z'
             SHALLOW.MODE=ESC:'[=25;Z'
-        CASE TERM[1,1]='W'
+        CASE TERM[1,1] EQ 'W'
             DEEP.MODE=ESC:"e":"*"
 !      WIDE.MODE=ESC:'`;'
 !      NORM.MODE=ESC:'`:'
             SHALLOW.MODE=ESC:'e&'
-        CASE TERM='Q' OR TERM='U'     ;! these were copied from W and are probably wrong
+        CASE TERM EQ 'Q' OR TERM EQ 'U'     ;! these were copied from W and are probably wrong
             DEEP.MODE=ESC:"e":"*"
 !      WIDE.MODE=ESC:'`;'
 !      NORM.MODE=ESC:'`:'
@@ -95,7 +95,7 @@
             DEEP.MODE=''
             SHALLOW.MODE=''
     END CASE
-!  CLEOL=@(-4)
+    CLEOL=@(-4)
     EL=@(0,PDEPTH-1):CLEOL
     HIOFF=BG:RVOFF
     HION= FG:RVON
@@ -156,7 +156,7 @@
         END
     END ELSE
         FA=FIELD(FG_SENTENCE,' ',2)
-        IF FA='DICT' THEN FA='DICT ':FIELD(FG_SENTENCE,' ',3)
+        IF FA EQ 'DICT' THEN FA='DICT ':FIELD(FG_SENTENCE,' ',3)
         ASENT=(FA#'')
         id_list = ''
         EOF=0
@@ -171,14 +171,12 @@
         k = 0
     END
 100 ! Enter First File Name
-    DELSAVEA=FALSE
-    DELSAVEB=FALSE
     IF ASENT THEN ASENT=FALSE ELSE
         CRT @(0,2):'ENTER FILE A: ':
         INPUT FA
     END
-    IF FA='EX' THEN GO 99999
-    IF FIELD(FA,' ',1)='DICT' THEN
+    IF FA EQ 'EX' THEN GO 99999
+    IF FIELD(FA,' ',1) EQ 'DICT' THEN
         DICT='DICT'
         FA=FIELD(FA,' ',2)
     END ELSE
@@ -188,13 +186,12 @@
         CRT EL:'CANNOT OPEN ':FA:
         GO 100
     END
-    DELSAVEA=TRUE
     UPGBACKUP=(FIELD(FA,'.',2)='UPGBACKUP')
     CRT EL:
     IF SEL THEN
-        IF FIELD(FA,' ',1)='DICT' THEN POS=4 ELSE POS=3
+        IF FIELD(FA,' ',1) EQ 'DICT' THEN POS=4 ELSE POS=3
         FB=FIELD(FG_SENTENCE,' ',POS)
-        IF FB='DICT' THEN FB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
+        IF FB EQ 'DICT' THEN FB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
         BSENT=(FB#'' OR UPGBACKUP)
     END
     IF NOT(UPGBACKUP) THEN GOSUB OPEN.FILEB
@@ -214,8 +211,8 @@
             INPUT IDA
         END
     END
-    IF IDA='EXK'[1,LEN(IDA)] THEN GO 99999
-    IF IDA='^' THEN GO 120
+    IF IDA EQ 'EXK'[1,LEN(IDA)] THEN GO 99999
+    IF IDA EQ '^' THEN GO 120
     READ RECA FROM FILEA,IDA ELSE
         CRT EL:IDA:' NOT IN ':FA:
         GO 110
@@ -245,9 +242,9 @@
             INPUT IDB
         END
     END
-    IF IDB='' THEN IDB=IDA
-    IF IDB='^' THEN GO 110
-    IF IDB='EX' THEN GO 99999
+    IF IDB EQ '' THEN IDB=IDA
+    IF IDB EQ '^' THEN GO 110
+    IF IDB EQ 'EX' THEN GO 99999
     READ RECB FROM FILEB,IDB ELSE
         CRT EL:IDB:' NOT IN ':FB:
         STOP
@@ -260,20 +257,20 @@
 150 ! Enter Display Mode
     CRT @(10,8):'HORIZONTAL OR VERTICAL DISPLAY (H/V): ':
     INPUT OPT
-    IF OPT='EX' THEN GO 99999
-    IF OPT='^' THEN GO 130
-    IF OPT='H' THEN VERT.FLAG=FALSE ELSE VERT.FLAG=TRUE
+    IF OPT EQ 'EX' THEN GO 99999
+    IF OPT EQ '^' THEN GO 130
+    IF OPT EQ 'H' THEN VERT.FLAG=FALSE ELSE VERT.FLAG=TRUE
 160 ! Enter Display Type
     CRT @(10,10):'WIDE OR NORMAL SCREEN (W/N): ':
     INPUT OPT
-    IF OPT='EX' THEN GO 99999
-    IF OPT='^' THEN GO 150
+    IF OPT EQ 'EX' THEN GO 99999
+    IF OPT EQ '^' THEN GO 150
     IF INDEX('W',OPT,1) THEN WIDE.FLAG=TRUE ELSE WIDE.FLAG=FALSE
 170 ! Enter Display Level
     CRT @(10,12):'DEEP OR NORMAL SCREEN DEPTH (D/N): ':
     INPUT OPT
-    IF OPT='EX' THEN GO 99999
-    IF OPT='^' THEN GO 160
+    IF OPT EQ 'EX' THEN GO 99999
+    IF OPT EQ '^' THEN GO 160
     IF INDEX('D',OPT,1) THEN DEEP.FLAG=TRUE ELSE DEEP.FLAG=FALSE
 !!!!!!!!!!!!!!!!!!!!!!!!
 200 ! Mainline
@@ -321,7 +318,7 @@
                     LOOP
                         LINEA = RECA<amc>
                         DEL RECA<amc>
-                    UNTIL LINEA[1,7] = '=======' DO
+                    UNTIL LINEA[1,7] EQ '=======' DO
                         DIFFA<AMA> = LINEA
                         AMA++
                     REPEAT
@@ -378,25 +375,25 @@
     LASTA=DCOUNT(RECA,AM)
     LASTB=DCOUNT(RECB,AM)
     BEGIN CASE
-        CASE CMD='RFR'
+        CASE CMD EQ 'RFR'
             GO 200
-        CASE CMD='W'        ;! wide screen
+        CASE CMD EQ 'W'        ;! wide screen
             WIDE.FLAG=TRUE
             GOSUB 1300
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! display both items
-        CASE CMD='N'        ;! Normal Screen
+        CASE CMD EQ 'N'        ;! Normal Screen
             WIDE.FLAG=FALSE
             DEEP.FLAG=FALSE
             GOSUB 1300
             GOSUB 600 ;! format display mode
             GOSUB 900 ;! Display Both Items
-        CASE CMD='D'        ;! deep screen
+        CASE CMD EQ 'D'        ;! deep screen
             DEEP.FLAG=TRUE
             GOSUB 1300
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! display both items
-        CASE CMD[1,1]='G'   ;! Go To Line Number
+        CASE CMD[1,1] EQ 'G'   ;! Go To Line Number
             NBR=FIELD(CMD,' ',2)
             IF NBR # '' AND NUM(NBR) THEN
                 STARTA=NBR
@@ -409,9 +406,10 @@
             CMD = FIELD(CMD, '/', 1)
             FR.RANGE = 3
             SIDES = 1
+            SIDE = 'A'
             BEGIN CASE
                 CASE CMD[2,1] EQ 'A'; DELREC = RECA
-                CASE CMD[2,1] EQ 'B'; DELREC = RECB
+                CASE CMD[2,1] EQ 'B'; DELREC = RECB; SIDE = 'B'
                 CASE 1
                     DELREC = RECA
                     SIDES = 2
@@ -432,44 +430,47 @@
                     IF NOT(FR.FI) THEN FR.FI = 1
                     FR.FI = FR.ST + FR.FI - 1
                 END
-                ROFFSET = AMB - AMA 
-                FOR S = 1 TO SIDES
-                    msg = ''
-                    FOR I = FR.ST TO FR.FI
-                        DELREC<I> = CHANGE(DELREC<I>, oldstr, newstr)
-                    NEXT I
-                    IF CMD[2,1] NE 'B' THEN
-                        RECA = DELREC
-                    END ELSE
-                        RECB = DELREC
-                    END
-                    IF SIDES EQ 2 THEN
-                        DELREC = RECB
-                        CMD = 'RB'
-                        FR.ST += ROFFSET
-                        FR.FI += ROFFSET
-                    END
-                NEXT S
-                GOSUB 900
+                GOSUB CHECKRANGE
+                IF RANGE_OK THEN
+                    ROFFSET = AMB - AMA
+                    FOR S = 1 TO SIDES
+                        msg = ''
+                        FOR I = FR.ST TO FR.FI
+                            DELREC<I> = CHANGE(DELREC<I>, oldstr, newstr)
+                        NEXT I
+                        IF CMD[2,1] NE 'B' THEN
+                            RECA = DELREC
+                        END ELSE
+                            RECB = DELREC
+                        END
+                        IF SIDES EQ 2 THEN
+                            DELREC = RECB
+                            CMD = 'RB'
+                            FR.ST += ROFFSET
+                            FR.FI += ROFFSET
+                        END
+                    NEXT S
+                    GOSUB 900
+                END
             END
             CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,2]='RA' OR CMD[1,2]='R ' OR CMD='R'    ;! Readjust Item A
+        CASE CMD[1,2] EQ 'RA' OR CMD[1,2] EQ 'R ' OR CMD EQ 'R'    ;! Readjust Item A
             OFFSET=FIELD(CMD,' ',2)
             IF NUM(OFFSET) THEN
-                IF OFFSET='' THEN OFFSET=DEFAULT.OFFSET
+                IF OFFSET EQ '' THEN OFFSET=DEFAULT.OFFSET
                 DEFAULT.OFFSET=OFFSET
                 GOSUB 1100          ;! Readjust Item A
                 GOSUB 900 ;! Display Both Items
             END
-        CASE CMD[1,2]='RB'  ;! Readjust B
+        CASE CMD[1,2] EQ 'RB'  ;! Readjust B
             OFFSET=FIELD(CMD,' ',2)
             IF NUM(OFFSET) THEN
-                IF OFFSET='' THEN OFFSET=DEFAULT.OFFSET
+                IF OFFSET EQ '' THEN OFFSET=DEFAULT.OFFSET
                 DEFAULT.OFFSET=OFFSET
                 GOSUB 1200          ;! Readjust B
                 GOSUB 900 ;! Display Both Items
             END
-        CASE CMD='EX' OR CMD='FI' OR CMD='FS'
+        CASE CMD EQ 'EX' OR CMD EQ 'FI' OR CMD EQ 'FS'
 FILE.ITEM:!
             GOSUB UPDATE
             IF CMD#'' THEN
@@ -485,7 +486,7 @@ FILE.ITEM:!
                 CRT @(42,2):'ENTER FILE B: ':FB:
                 GO 110
             END
-        CASE CMD='EXK' OR CMD='FIK'
+        CASE CMD EQ 'EXK' OR CMD EQ 'FIK'
             WIDE.FLAG=FALSE
             DEEP.FLAG=FALSE
             GOSUB UPDATE
@@ -493,19 +494,19 @@ FILE.ITEM:!
                 GOSUB 1300
                 GOTO 99999
             END
-        CASE CMD[1,1]='F'   ;! Find Next Difference
+        CASE CMD[1,1] EQ 'F'   ;! Find Next Difference
             GOSUB 1000          ;! Find Next Difference
             IF CHKA#CHKB THEN
                 GOSUB 900 ;! Display Both Items
             END ELSE
                 CRT @(0,CMD.ROW):CLEOL:'No more differences':
             END
-        CASE CMD[1,2]='CW' OR CMD[1,2]='CF'     ;! Copy Whole item
-            IF CMD[3,1]='B' THEN
+        CASE CMD[1,2] EQ 'CW' OR CMD[1,2] EQ 'CF'     ;! Copy Whole item
+            IF CMD[3,1] EQ 'B' THEN
                 RECA=RECB
             END ELSE RECB=RECA
-            IF CMD[1,2]='CF' THEN
-                CMD='FS'
+            IF CMD[1,2] EQ 'CF' THEN
+                CMD = 'FS'
                 GO FILE.ITEM
             END
             GOSUB 600
@@ -513,52 +514,24 @@ FILE.ITEM:!
             msg = 'Syntax error'
             FR.RANGE = TRIM(CMD[3,-1])
             IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" THEN
+                SIDE = 'A'
+                SIDES = 1
                 BEGIN CASE
                     CASE CMD[2,1] EQ 'A'; DELREC = RECA
-                    CASE CMD[2,1] EQ 'B'; DELREC = RECB
+                    CASE CMD[2,1] EQ 'B'; DELREC = RECB; SIDE = 'B'
                     CASE 1; DELREC = ''
                 END CASE
                 IF LEN(DELREC) THEN
                     FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
                     IF NOT(FR.FI) THEN FR.FI = 1
                     FR.FI = FR.ST + FR.FI - 1
-                    msg = ''
-                    FOR I = FR.ST TO FR.FI
-                        INS '' BEFORE DELREC<FR.ST>
-                    NEXT I
-                    IF CMD[2,1] EQ 'A' THEN
-                        RECA = DELREC
-                    END ELSE
-                        RECB = DELREC
-                    END
-                    GOSUB 900
-                END
-            END
-            CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,2] EQ 'DE' ;! delete lines
-            msg = 'Syntax error'
-            FR.RANGE = TRIM(CMD[4,-1])
-            IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" OR FR.RANGE MATCHES "1N0N'-'1N0N" THEN
-                BEGIN CASE
-                    CASE CMD[3,1] EQ 'A'; DELREC = RECA
-                    CASE CMD[3,1] EQ 'B'; DELREC = RECB
-                    CASE 1; DELREC = ''
-                END CASE
-                IF LEN(DELREC) THEN
-                    IF INDEX(FR.RANGE, '-', 1) THEN
-                        FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
-                        IF NOT(FR.FI) THEN FR.FI = FR.ST
-                    END ELSE
-                        FR.ST=FIELD(FR.RANGE,',',1); FR.FI=FIELD(FR.RANGE,',',2)
-                        IF NOT(FR.FI) THEN FR.FI = 1
-                        FR.FI = FR.ST + FR.FI - 1
-                    END
-                    IF FR.FI GE FR.ST THEN
+                    GOSUB CHECKRANGE
+                    IF RANGE_OK THEN
                         msg = ''
                         FOR I = FR.ST TO FR.FI
-                            DEL DELREC<FR.ST>
+                            INS '' BEFORE DELREC<FR.ST>
                         NEXT I
-                        IF CMD[3,1] EQ 'A' THEN
+                        IF CMD[2,1] EQ 'A' THEN
                             RECA = DELREC
                         END ELSE
                             RECB = DELREC
@@ -568,13 +541,65 @@ FILE.ITEM:!
                 END
             END
             CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,1]='C'   ;! Copy Text
-            IF OCONV(CMD,'MCN')='' THEN
+        CASE CMD[1,2] EQ 'DE' ;! delete lines
+            msg = 'Syntax error'
+            FR.RANGE = 4
+            SIDES = 1
+            SIDE = 'A'
+            BEGIN CASE
+                CASE CMD[3,1] EQ 'A'; DELREC = RECA
+                CASE CMD[3,1] EQ 'B'; DELREC = RECB; SIDE = 'B'
+                CASE 1
+                    DELREC = RECA
+                    SIDES = 2
+                    FR.RANGE = 3
+            END CASE
+            FR.RANGE = TRIM(CMD[FR.RANGE,-1])
+            IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" OR FR.RANGE MATCHES "1N0N'-'1N0N" THEN
+                IF INDEX(FR.RANGE, '-', 1) THEN
+                    FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
+                    IF NOT(FR.FI) THEN FR.FI = FR.ST
+                END ELSE
+                    FR.ST=FIELD(FR.RANGE,',',1); FR.FI=FIELD(FR.RANGE,',',2)
+                    IF NOT(FR.FI) THEN FR.FI = 1
+                    FR.FI = FR.ST + FR.FI - 1
+                END
+                IF FR.FI GE FR.ST THEN
+                    GOSUB CHECKRANGE
+                    IF RANGE_OK THEN
+                        msg = ''
+                        ROFFSET = AMB - AMA
+                        FOR S = 1 TO SIDES
+                            FOR I = FR.ST TO FR.FI
+                                DEL DELREC<FR.ST>
+                            NEXT I
+                            IF CMD[3,1] NE 'B' THEN
+                                RECA = DELREC
+                            END ELSE
+                                RECB = DELREC
+                            END
+                            IF SIDES EQ 2 THEN
+                                DELREC = RECB
+                                CMD = 'DEB'
+                                FR.ST += ROFFSET
+                                FR.FI += ROFFSET
+                            END
+                        NEXT S
+                        GOSUB 900
+                    END
+                END
+            END
+            CRT @(0,CMD.ROW):CLEOL:msg:
+        CASE CMD[1,1] EQ 'C'   ;! Copy Text
+            IF OCONV(CMD,'MCN') EQ '' THEN
                 GOSUB 990
             END ELSE
                 OK=TRUE
                 IF CMD MATCHES "'C'1N0X" THEN CMD = 'CA ':CMD[2,-1]
-                IF FIELD(CMD,' ',1)='C' THEN CMD='CA':CMD[COL2(),99]
+                IF FIELD(CMD,' ',1) EQ 'C' THEN CMD = 'CA':CMD[COL2(),-1]
+                IF CMD MATCHES "2A1N0X" THEN CMD = CMD[1,2]:' ':CMD[3,-1]
+                SIDES = 2
+                SIDE = 'A'
                 BEGIN CASE
                     CASE CMD MATCHES "2A' '1N0N' '1N0N"
                     CASE CMD MATCHES "2A' '1N0N"
@@ -583,59 +608,66 @@ FILE.ITEM:!
                     CASE CMD MATCHES "2A' '1N0N' '1N0N'-'1N0N"
                     CASE CMD MATCHES "2A' '1N0N'-'1N0N' '1N0N'-'1N0N"
                     CASE 1
-                        CRT @(0,NORMAL.DEPTH):'Incomplete Copy command':CLEOL:
+                        CRT @(0,CMD.ROW):'Incomplete Copy command':CLEOL:
                         OK=FALSE
                 END CASE
                 IF OK THEN
                     FR.RANGE=FIELD(CMD,' ',2); TO.RANGE=FIELD(CMD,' ',3)
                     FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
-                    IF FR.FI='' THEN FR.FI=FR.ST
+                    IF FR.FI EQ '' THEN FR.FI=FR.ST
                     IF LEN(TO.RANGE) THEN
                         TO.ST=FIELD(TO.RANGE,'-',1); TO.FI=FIELD(TO.RANGE,'-',2)
-                        IF TO.FI='' THEN TO.FI=TO.ST
+                        IF TO.FI EQ '' THEN TO.FI=TO.ST
                     END ELSE
                         ROFFSET = AMB - AMA
+                        IF CMD[2,1] EQ 'B' THEN ROFFSET = 0-ROFFSET
                         TO.ST = FR.ST + ROFFSET
-                        TO.FI = FR.FI + ROFFSET 
+                        TO.FI = FR.FI + ROFFSET
                     END
-                    IF CMD[2,1]='B' THEN
-                        FOR I=TO.ST TO TO.FI
-                            DEL RECA<TO.ST>
-                        NEXT I
-                        IF TO.ST=1 THEN MERGE.CODE=''; I=1 ELSE MERGE.CODE=RECA<TO.ST-1>; I=2
-                        FOR AMB=FR.ST TO FR.FI
-                            MERGE.CODE<I>=RECB<AMB>; I+=1
-                        NEXT AMB
-                        IF TO.ST=1 THEN INS MERGE.CODE BEFORE RECA<1> ELSE RECA<TO.ST-1>=MERGE.CODE
-                        AMA=TO.ST
-                        STLN=AMA-STARTA+1
-                    END ELSE
-                        FOR I=TO.ST TO TO.FI
-                            DEL RECB<TO.ST>
-                        NEXT I
-                        IF TO.ST=1 THEN MERGE.CODE=''; I=1 ELSE MERGE.CODE=RECB<TO.ST-1>; I=2
-                        FOR AMA=FR.ST TO FR.FI
-                            MERGE.CODE<I>=RECA<AMA>; I+=1
-                        NEXT AMA
-                        IF TO.ST=1 THEN INS MERGE.CODE BEFORE RECB<1> ELSE RECB<TO.ST-1>=MERGE.CODE
-                        AMB=TO.ST
-                        STLN=AMB-STARTB+1
+                    IF CMD[2,1] EQ 'B' THEN SIDE = 'B'
+                    GOSUB CHECKRANGE
+                    IF RANGE_OK THEN
+                        IF CMD[2,1] EQ 'B' THEN
+                            FOR I=TO.ST TO TO.FI
+                                DEL RECA<TO.ST>
+                            NEXT I
+                            IF TO.ST=1 THEN MERGE.CODE=''; I=1 ELSE MERGE.CODE=RECA<TO.ST-1>; I=2
+                            FOR AMB=FR.ST TO FR.FI
+                                MERGE.CODE<I>=RECB<AMB>; I+=1
+                            NEXT AMB
+                            IF TO.ST=1 THEN INS MERGE.CODE BEFORE RECA<1> ELSE RECA<TO.ST-1>=MERGE.CODE
+                            AMA=TO.ST
+                            STLN=AMA-STARTA+1
+                        END ELSE
+                            FOR I=TO.ST TO TO.FI
+                                DEL RECB<TO.ST>
+                            NEXT I
+                            IF TO.ST=1 THEN MERGE.CODE=''; I=1 ELSE MERGE.CODE=RECB<TO.ST-1>; I=2
+                            FOR AMA=FR.ST TO FR.FI
+                                MERGE.CODE<I>=RECA<AMA>; I+=1
+                            NEXT AMA
+                            IF TO.ST=1 THEN INS MERGE.CODE BEFORE RECB<1> ELSE RECB<TO.ST-1>=MERGE.CODE
+                            AMB=TO.ST
+                            STLN=AMB-STARTB+1
+                        END
+                        GOSUB 900
                     END
-                    GOSUB 900
                 END
             END
-        CASE CMD[1,1]='M'   ;! Merge Text
-            IF OCONV(CMD,'MCN')='' THEN
+        CASE CMD[1,1] EQ 'M'   ;! Merge Text
+            IF OCONV(CMD,'MCN') EQ '' THEN
                 GOSUB 995
             END ELSE
                 FR.RANGE=FIELD(CMD,' ',1)
+                SIDES = 2
+                SIDE = 'A'
                 BEGIN CASE
-                    CASE FR.RANGE='MA'
-                    CASE FR.RANGE='MB'
-                    CASE FR.RANGE[1,2]='MA'; CMD=CMD[1,2]:' ':CMD[3,999]
-                    CASE FR.RANGE[1,2]='MB'; CMD=CMD[1,2]:' ':CMD[3,999]
+                    CASE FR.RANGE EQ 'MA'
+                    CASE FR.RANGE EQ 'MB'
+                    CASE FR.RANGE[1,2] EQ 'MA'; CMD=CMD[1,2]:' ':CMD[3,999]
+                    CASE FR.RANGE[1,2] EQ 'MB'; CMD=CMD[1,2]:' ':CMD[3,999]
                     CASE 1
-                        CMD='MA ':TRIM(CMD[2,999])
+                        CMD = 'MA ':TRIM(CMD[2,999])
                 END CASE
                 IF CMD MATCHES "2A' '1N0N" THEN
                     FR.RANGE=FIELD(CMD,' ',2)
@@ -649,36 +681,41 @@ FILE.ITEM:!
                 IF CMD MATCHES "2A' '1N0N'-'1N0N' '1N0N" THEN
                     FR.RANGE=FIELD(CMD,' ',2); TO.RANGE=FIELD(CMD,' ',3)
                     FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
-                    IF CMD[2,1]='B' THEN
-                        MERGE.CODE=RECA<TO.RANGE-1>
-                        I=1
-                        FOR AMB=FR.ST TO FR.FI
-                            I++
-                            MERGE.CODE<I>=RECB<AMB>
-                        NEXT AMB
-                        RECA<TO.RANGE-1>=MERGE.CODE
-                    END ELSE
-                        MERGE.CODE=RECB<TO.RANGE-1>
-                        I=1
-                        FOR AMA=FR.ST TO FR.FI
-                            I++
-                            MERGE.CODE<I>=RECA<AMA>
-                        NEXT AMA
-                        RECB<TO.RANGE-1>=MERGE.CODE
+                    TO.ST=TO.RANGE; TO.FI=TO.RANGE
+                    IF CMD[2,1] EQ 'B' THEN SIDE = 'B'
+                    GOSUB CHECKRANGE
+                    IF RANGE_OK THEN
+                        IF CMD[2,1] EQ 'B' THEN
+                            MERGE.CODE=RECA<TO.RANGE-1>
+                            I=1
+                            FOR AMB=FR.ST TO FR.FI
+                                I++
+                                MERGE.CODE<I>=RECB<AMB>
+                            NEXT AMB
+                            RECA<TO.RANGE-1>=MERGE.CODE
+                        END ELSE
+                            MERGE.CODE=RECB<TO.RANGE-1>
+                            I=1
+                            FOR AMA=FR.ST TO FR.FI
+                                I++
+                                MERGE.CODE<I>=RECA<AMA>
+                            NEXT AMA
+                            RECB<TO.RANGE-1>=MERGE.CODE
+                        END
+                        GOSUB 900
                     END
                 END
-                GOSUB 900
             END
-        CASE CMD[1,1]='S'   ;! Next Locate
+        CASE CMD[1,1] EQ 'S'   ;! Next Locate
             IF PREV.LOC # '' THEN
                 TEXT=PREV.LOC
                 GO 215
             END
-        CASE CMD='UNDO'
+        CASE CMD EQ 'UNDO'
             READ RECA FROM FILEA,SAVA ELSE NULL
             READ RECB FROM FILEB,SAVB ELSE NULL
             GOSUB 900
-        CASE CMD='EA'
+        CASE CMD EQ 'EA'
 !            DATA "?"
             GOSUB WRITEA
             DATA 'ED ':FA
@@ -686,7 +723,7 @@ FILE.ITEM:!
             READ RECA FROM FILEA,NDA ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='EB'
+        CASE CMD EQ 'EB'
 !            DATA "?"
             GOSUB WRITEB
             DATA 'ED ':FB
@@ -694,21 +731,21 @@ FILE.ITEM:!
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='EBA'
+        CASE CMD EQ 'EBA'
             GOSUB WRITEA
             DATA 'EB ':FA
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
             READ RECA FROM FILEA,NDA ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='EBB'
+        CASE CMD EQ 'EBB'
             GOSUB WRITEB
             DATA 'EB ':FB
             EXECUTE 'SELECT ':FB:' "':NDB:'"'
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='I'
+        CASE CMD EQ 'I'
             GOSUB WRITEA
             DATA 'jEDIfmt ':FA
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
@@ -719,38 +756,38 @@ FILE.ITEM:!
             READ   RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='SVN' OR CMD = 'GIT'
+        CASE CMD EQ 'SVN' OR CMD EQ 'GIT'
             OP=FIELD(CMD,' ',2)
             NewCmd=(IF CMD EQ 'SVN' THEN 'svn' ELSE 'git'):' ':OP
             OP=2
             LOOP
                 arg=FIELD(CMD,' ',OP)
-            UNTIL arg='' DO
+            UNTIL arg EQ '' DO
                 BEGIN CASE
-                    CASE OCONV(arg,'MCU')='A'
+                    CASE OCONV(arg,'MCU') EQ 'A'
                         arg=FA:'/':IDA
-                    CASE OCONV(arg,'MCU')='B'
+                    CASE OCONV(arg,'MCU') EQ 'B'
                         arg=FB:'/':IDB
                 END CASE
                 NewCmd:=SPC:arg
                 OP++
             REPEAT
             EXECUTE NewCmd
-        CASE CMD='JA'
+        CASE CMD EQ 'JA'
             GOSUB WRITEA
             DATA 'JED ':FA
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
             READ RECA FROM FILEA,NDA ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD='JB'
+        CASE CMD EQ 'JB'
             GOSUB WRITEB
             DATA 'JED ':FB
             EXECUTE 'SELECT ':FB:' "':NDB:'"'
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
-        CASE CMD[1,3]='LOC'
+        CASE CMD[1,3] EQ 'LOC'
             POS=INDEX(CMD,' ',1)
             TEXT=CMD[POS+1,999]
 215         CRT CL:'Searching for "':TEXT:'", please wait ':CLEOL:
@@ -785,19 +822,19 @@ FILE.ITEM:!
                 STARTB=FIELD(CMD, ' ', 2)
                 GOSUB 900 ;! Display Item A
             END
-        CASE CMD[1,2]='A=' OR CMD[1,3]='A ='
+        CASE CMD[1,2] EQ 'A EQ ' OR CMD[1,3] EQ 'A ='
             CMD=TRIM(FIELD(CMD,'=',2))
             IF CMD#'' AND NUM(CMD) THEN
                 STARTA=CMD
                 GOSUB 900 ;! Display Item A
             END
-        CASE CMD[1,2]='B=' OR CMD[1,3]='B ='
+        CASE CMD[1,2] EQ 'B=' OR CMD[1,3] EQ 'B ='
             CMD=TRIM(FIELD(CMD,'=',2))
             IF CMD#'' AND NUM(CMD) THEN
                 STARTB=CMD
                 GOSUB 900 ;! Display Item B
             END
-        CASE CMD[1,1]='A'
+        CASE CMD[1,1] EQ 'A'
             CMD=TRIM(CMD[2,99])
             IF CMD#'' AND NUM(CMD) THEN
                 STARTA+=CMD
@@ -805,7 +842,7 @@ FILE.ITEM:!
                 STARTA+=MAX.LINES
             END
             GOSUB 900 ;! Display Item A
-        CASE CMD[1,1]='B'
+        CASE CMD[1,1] EQ 'B'
             CMD=TRIM(CMD[2,99])
             IF CMD#'' AND NUM(CMD) THEN
                 STARTB+=CMD
@@ -813,21 +850,21 @@ FILE.ITEM:!
                 STARTB+=MAX.LINES
             END
             GOSUB 900 ;! Display Item B
-        CASE CMD='?'
+        CASE CMD EQ '?'
             GOSUB 700 ;! Display Help Screen
-        CASE CMD[1,2]='PR'
+        CASE CMD[1,2] EQ 'PR'
             GOSUB 800 ;! Print Items
-        CASE CMD[1,1]='V'
+        CASE CMD[1,1] EQ 'V'
             VERT.FLAG=TRUE
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! Display Both Items
-        CASE CMD[1,1]='H'
+        CASE CMD[1,1] EQ 'H'
             VERT.FLAG=FALSE
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! Display Both Items
-        CASE CMD[1,3]='XEQ'
+        CASE CMD[1,3] EQ 'XEQ'
             CMD=TRIM(CMD[4,999])
-            IF CMD='' THEN CMD=LAST.EXEC
+            IF CMD EQ '' THEN CMD=LAST.EXEC
             IF CMD # '' THEN
                 EXECUTE CMD
                 LAST.EXEC=CMD
@@ -836,7 +873,7 @@ FILE.ITEM:!
                 GOSUB 600 ;! Format Display Mode
                 GOSUB 900 ;! Display Both Items
             END
-        CASE CMD='TOP'
+        CASE CMD EQ 'TOP'
             STARTA=1
             STARTB=1
             GOSUB 900 ;! Display Both Items
@@ -844,7 +881,7 @@ FILE.ITEM:!
             STARTA+=CMD
             STARTB+=CMD
             GOSUB 900 ;! Display Both Items
-        CASE CMD[1,1]='Z'   ;! zoom into multi-valued attribute
+        CASE CMD[1,1] EQ 'Z'   ;! zoom into multi-valued attribute
             IF UPG THEN
                 AMA=OCONV(CMD,'MCN')
                 AMB=STARTB+(AMA-STARTA)
@@ -903,12 +940,12 @@ FILE.ITEM:!
         LINEB = CHANGE(TMPB, TAB, '\t')
         LINEA=OCONV(LINEA,'MCP')
         LINEB=OCONV(LINEB,'MCP')
-        IF LINEA='' THEN
+        IF LINEA EQ '' THEN
             LINEA=BLANK.LINE
         END ELSE
             LINEA=NBRA:LINEA:BLANK.LINE
         END
-        IF LINEB='' THEN
+        IF LINEB EQ '' THEN
             LINEB=BLANK.LINE
         END ELSE
             LINEB=NBRB:LINEB:BLANK.LINE
@@ -995,7 +1032,7 @@ FILE.ITEM:!
     CRT @(10,24):'"R{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
     CRT @(10,25):'"EX{K}" exit without save; "FI{K}" file changes':
     CRT @(10,26):'"UNDO restore prior to last changes':
-    CRT @(0,NORMAL.DEPTH):'Press [RETURN] to continue ':CLEOL:
+    CRT @(0,CMD.ROW):'Press [RETURN] to continue ':CLEOL:
     INPUT RET,1:
     IF TOGGLE2#'' THEN
         CRT TOGGLE2:
@@ -1025,7 +1062,7 @@ FILE.ITEM:!
     END
     LINEA=RECA<J>
     LINEB=RECB<J>
-    IF LINEA='' AND LINEB='' THEN GO 820
+    IF LINEA EQ '' AND LINEB EQ '' THEN GO 820
     NBR=STR('0',4-LEN(J)):J:'| '
     LINE=NBR:(LINEA:SPACE(COL.WIDTH))[1,COL.WIDTH]:' | ':LINEB[1,COL.WIDTH]
     PRINT LINE
@@ -1040,16 +1077,18 @@ FILE.ITEM:!
 900 ! Display A Page
 ! Do restore backup
     READ BCKA FROM FILEA,NDA ELSE BCKA = RECA
-    IF RECA NE BCKA THEN 
+    IF RECA NE BCKA THEN
+        DELSAVEA=TRUE
         WRITE BCKA ON FILEA,SAVA
         GOSUB WRITEA
     END
 
     READ BCKB FROM FILEB,NDB ELSE BCKB = RECB
     IF RECB NE BCKB THEN
+        DELSAVEB=TRUE
         WRITE BCKB ON FILEB,SAVB
         GOSUB WRITEB
-    END 
+    END
     IF NOT(VERT.FLAG) THEN
         GOSUB 400 ;! Display Item A
         RETURN
@@ -1091,12 +1130,12 @@ FILE.ITEM:!
             LINEB = CHANGE(TMPB, TAB, '    ')
             LINEA=TRIM(OCONV(LINEA,'MCP'), ' ', 'L')
             LINEB=TRIM(OCONV(LINEB,'MCP'), ' ', 'L')
-!            IF LINEA='' THEN
+!            IF LINEA EQ '' THEN
 !                LINEA=BLANK.LINE
 !            END ELSE
 !                LINEA=NBRA:LINEA:BLANK.LINE
 !            END
-!            IF LINEB='' THEN
+!            IF LINEB EQ '' THEN
 !                LINEB=BLANK.LINE
 !            END ELSE
 !                LINEB=NBRB:LINEB:BLANK.LINE
@@ -1112,8 +1151,8 @@ FILE.ITEM:!
             END
             IF LEN(CMTA) THEN LINEA:=PAD:CMTA:HIOFF
             IF LEN(CMTB) THEN LINEB:=PAD:CMTB:HIOFF
-            CRT @(COLA,ROWA):NBRA:LINEA:CLEOL:
-            CRT @(COLB,ROWB):NBRB:LINEB:CLEOL:
+            CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:
+            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:
         END
     NEXT J
     STLN=1
@@ -1145,7 +1184,7 @@ FILE.ITEM:!
                 TMPB=TRIM(TMPB)
             END
             IF TMPA # TMPB THEN
-                IF CMD[2,1]='B' THEN
+                IF CMD[2,1] EQ 'B' THEN
                     UPDA=TRUE
                     LINEA=LINEB
                 END ELSE
@@ -1202,13 +1241,13 @@ FILE.ITEM:!
             TMPB=TRIM(TMPB)
         END
         IF TMPA # TMPB THEN
-            IF CMD[2,1]='B' THEN
+            IF CMD[2,1] EQ 'B' THEN
                 MERGE.CODE := @AM:LINEB
-                IF MERGE.LINE='' THEN MERGE.LINE=AMA
+                IF MERGE.LINE EQ '' THEN MERGE.LINE=AMA
                 AMB+=1
             END ELSE
                 MERGE.CODE := @AM:LINEA
-                IF MERGE.LINE='' THEN MERGE.LINE=AMB
+                IF MERGE.LINE EQ '' THEN MERGE.LINE=AMB
                 AMA+=1
             END
         END ELSE
@@ -1222,7 +1261,7 @@ FILE.ITEM:!
     NEXT J
     IF MERGE.CODE#'' THEN
         MERGE.CODE = MERGE.CODE[2,-1]
-        IF CMD[2,1]='B' THEN
+        IF CMD[2,1] EQ 'B' THEN
             MERGE.CODE<-1>=RECA<AMA>
             RECA<MERGE.LINE>= MERGE.CODE
             AMA=MERGE.LINE
@@ -1366,26 +1405,26 @@ UPDATE: !
     GOSUB DELETEB
     CRT FG:RVOFF
     IF (ORIGB#RECB OR ORIGA#RECA) THEN
-        IF CMD[1,2]='EX' THEN
+        IF CMD[1,2] EQ 'EX' THEN
             LOOP
                 CRT BELL:@(0,CMD.ROW):CLEOL:'Changes have been made...continue (Y/N) ? ':
                 INPUT ANS,1:
-            UNTIL ANS='Y' OR ANS='N' DO REPEAT
+            UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
         END ELSE ANS='Y'
 !
         IF ANS#'Y' THEN
             CMD=''
         END ELSE
-            IF CMD[1,2]='FI' OR CMD[1,2]='FS' THEN
+            IF CMD[1,2] EQ 'FI' OR CMD[1,2] EQ 'FS' THEN
                 IF ORIGA#RECA AND CMD[3,1] NE 'B' THEN
                     WRITE RECA ON FILEA,IDA
-                    IF CMD[2,1]='I' THEN
+                    IF CMD[2,1] EQ 'I' THEN
                         IF 0*NOT(INDEX(FA,'PATCH',1)) THEN
                             LOOP
                                 CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FA:' ':IDA:' (Y/N) ? ':
                                 INPUT ANS,1:
-                            UNTIL ANS='Y' OR ANS='N' DO REPEAT
-                            IF ANS='Y' THEN
+                            UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
+                            IF ANS EQ 'Y' THEN
                                 EXECUTE 'EB ':FA:' ':IDA
                             END ELSE
                                 LOCATE IDA IN CHANGEDA<am_start> BY 'AL' SETTING POS ELSE
@@ -1397,13 +1436,13 @@ UPDATE: !
                 END
                 IF ORIGB#RECB AND CMD[3,1] NE 'A' THEN
                     WRITE RECB ON FILEB,IDB
-                    IF CMD[2,1]='I' THEN
+                    IF CMD[2,1] EQ 'I' THEN
                         IF 0*NOT(INDEX(FB,'PATCH',1)) THEN
                             LOOP
                                 CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FB:' ':IDB:' (Y/N) ? ':
                                 INPUT ANS,1:
-                            UNTIL ANS='Y' OR ANS='N' DO REPEAT
-                            IF ANS='Y' THEN
+                            UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
+                            IF ANS EQ 'Y' THEN
                                 EXECUTE 'EB ':FB:' ':IDB
                             END ELSE
                                 LOCATE IDB IN CHANGEDB<am_start> BY 'AL' SETTING POS ELSE
@@ -1413,7 +1452,7 @@ UPDATE: !
                         END
                     END
                 END
-                IF CMD[2,1] = 'S' THEN CMD = '' ;! don't exit
+                IF CMD[2,1] EQ 'S' THEN CMD = '' ;! don't exit
             END
         END
     END
@@ -1427,8 +1466,14 @@ UPDATE: !
 !!
 FINISH: !
     GOSUB UPDATE.CHANGE
-    IF DELSAVEA THEN DELETE FILEA,SAVA
-    IF DELSAVEB THEN DELETE FILEB,SAVB 
+    IF DELSAVEA THEN 
+        DELETE FILEA,SAVA
+        DELSAVEA=FALSE 
+    END
+    IF DELSAVEB THEN 
+        DELETE FILEB,SAVB
+        DELSAVEB=FALSE
+    END
     STOP
 WRITEA: !
     WRITE RECA ON FILEA,NDA
@@ -1481,8 +1526,8 @@ DECRYPT: !
         END
     END
     IF ENCRYPTED THEN
-        IF USEMODE='' THEN CALL UPGMODE (USEMODE)
-        IF PASSWD='' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
+        IF USEMODE EQ '' THEN CALL UPGMODE (USEMODE)
+        IF PASSWD EQ '' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
         CALL UPGCONVERT(UPGFNAME,UPGINAME,UPGITEM,'DQ',USEMODE,F.UPG.WORKFILE,PASSWD,CONVOK)
         IF NOT(CONVOK) THEN STOP
     END
@@ -1493,14 +1538,14 @@ OPEN.FILEB: !
         CRT @(42,2):'ENTER FILE B: ':
         INPUT FB
     END
-    IF FB='' THEN FB=FA
-    IF FB='^' THEN RETURN TO 100
-    IF FB='EX' THEN RETURN TO 99999
-    IF SEL AND FB=FA THEN
+    IF FB EQ '' THEN FB=FA
+    IF FB EQ '^' THEN RETURN TO 100
+    IF FB EQ 'EX' THEN RETURN TO 99999
+    IF SEL AND FB EQ FA THEN
         CRT 'Select Active, FILE B must be different'
         GOTO 120
     END
-    IF FIELD(FB,' ',1)='DICT' THEN
+    IF FIELD(FB,' ',1) EQ 'DICT' THEN
         DICT='DICT'
         FB=FIELD(FB,' ',2)
     END ELSE
@@ -1511,7 +1556,6 @@ OPEN.FILEB: !
         CRT EL:'CANNOT OPEN ':FB:
         GO 120
     END
-    DELSAVEB=TRUE
     CRT EL:
     IF CHANGEDA#'' THEN GOSUB UPDATE.CHANGE
     READ CHANGEDA FROM F.PF,FA ELSE CHANGEDA=''
@@ -1566,5 +1610,39 @@ SPLITCOMMENT: !
     END
     IF POSC THEN
         CTMP = CTMP[1, POSC-1]:@AM:CTMP[POSC,-1]
+    END
+    RETURN
+CHECKRANGE: !
+!
+! Don't allow range commands to include lines we can't see
+!
+    RANGE_OK = FALSE
+    IF SIDE EQ 'A' THEN
+        FRST = STARTA
+        TOST = STARTB
+    END ELSE
+        FRST = STARTB
+        TOST = STARTA
+    END
+    FRFI = FRST+MAX.LINES
+    TOFI = TOST+MAX.LINES
+    BEGIN CASE
+        CASE FR.ST LT FRST
+        CASE FR.ST GT FRFI
+        CASE SIDES EQ 1
+            RANGE_OK = TRUE
+        CASE TO.ST LT TOST
+        CASE TO.ST GT TOFI
+        CASE 1
+            RANGE_OK = TRUE
+    END CASE
+    IF NOT(RANGE_OK) THEN
+        CRT @(0,CMD.ROW):CLEOL:'Range (':FR.ST:'-':FR.FI:
+        IF SIDES EQ 2 THEN
+            CRT ' / ':TO.ST:'-':TO.FI:
+        END
+        CRT ") not in current view. Enter 'Y' to override ":BELL:
+        INPUT RANGE_OK,1:_
+        RANGE_OK = UPCASE(RANGE_OK EQ 'Y')
     END
     RETURN
