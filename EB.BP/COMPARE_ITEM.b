@@ -932,9 +932,9 @@ FILE.ITEM:!
         NBRB=AMB PDBJ
         GOSUB GETLINES
         IF TMPA # TMPB THEN
-            PAD=HION
+            PAD=REV.ON
         END ELSE
-            PAD=HIOFF
+            PAD=REV.OFF
         END
         LINEA = CHANGE(TMPA, TAB, '\t')
         LINEB = CHANGE(TMPB, TAB, '\t')
@@ -952,8 +952,15 @@ FILE.ITEM:!
         END
         CMTA = CMTA[1, LINE.LEN-2 - LEN(LINEA)]
         CMTB = CMTB[1, LINE.LEN-2 - LEN(LINEB)]
-        LINEA=PAD:TRIM(LINEA, ' ', 'L')[1,LINE.LEN-2]:HIOFF
-        LINEB=PAD:TRIM(LINEB, ' ', 'L')[1,LINE.LEN-2]:HIOFF
+        L = MAXIMUM(LEN(LINEA):@AM:LEN(LINEB))
+        FOR C = 1 TO L
+            IF LINEA[C,1] NE LINEB[C,1] THEN
+                C--
+                BREAK
+            END
+        NEXT L
+        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,-1], ' ', 'L')[1,LINE.LEN-2]:HIOFF
+        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,-2], ' ', 'L')[1,LINE.LEN-2]:HIOFF
         IF CMTA # CMTB THEN
             PAD=HION
         END ELSE
@@ -1122,35 +1129,39 @@ FILE.ITEM:!
             NBRB=AMB PDBJ
             GOSUB GETLINES
             IF TMPA # TMPB THEN
-                PAD=HION
+                PAD=REV.ON
             END ELSE
-                PAD=HIOFF
+                PAD=REV.OFF
             END
             LINEA = CHANGE(TMPA, TAB, '    ')
             LINEB = CHANGE(TMPB, TAB, '    ')
             LINEA=TRIM(OCONV(LINEA,'MCP'), ' ', 'L')
             LINEB=TRIM(OCONV(LINEB,'MCP'), ' ', 'L')
-!            IF LINEA EQ '' THEN
-!                LINEA=BLANK.LINE
-!            END ELSE
-!                LINEA=NBRA:LINEA:BLANK.LINE
-!            END
-!            IF LINEB EQ '' THEN
-!                LINEB=BLANK.LINE
-!            END ELSE
-!                LINEB=NBRB:LINEB:BLANK.LINE
-!            END
             CMTA = CMTA[1, LINE.LEN - LEN(LINEA)]
             CMTB = CMTB[1, LINE.LEN - LEN(LINEB)]
-            LINEA=PAD:LINEA[1,LINE.LEN-2]:HIOFF
-            LINEB=PAD:LINEB[1,LINE.LEN-2]:HIOFF
+            L = MAXIMUM(LEN(LINEA):@AM:LEN(LINEB))
+            FOR C = 1 TO L
+                IF LINEA[C,1] NE LINEB[C,1] THEN
+                    C--
+                    BREAK
+                END
+            NEXT L
+            LINEA=LINEA[1,C]:PAD:LINEA[C+1,LINE.LEN-2]:HIOFF
+            LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]:HIOFF
             IF CMTA # CMTB THEN
                 PAD=HION
             END ELSE
                 PAD=HIOFF
             END
-            IF LEN(CMTA) THEN LINEA:=PAD:CMTA:HIOFF
-            IF LEN(CMTB) THEN LINEB:=PAD:CMTB:HIOFF
+            L = MAXIMUM(LEN(CMTA):@AM:LEN(CMTB))
+            FOR C = 1 TO L
+                IF CMTA[C,1] NE CMTB[C,1] THEN
+                    C--
+                    BREAK
+                END
+            NEXT L
+            IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,-1]:HIOFF
+            IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,-1]:HIOFF
             CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:
             CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:
         END
