@@ -932,9 +932,9 @@ FILE.ITEM:!
         NBRB=AMB PDBJ
         GOSUB GETLINES
         IF TMPA # TMPB THEN
-            PAD=REV.ON
-        END ELSE
             PAD=REV.OFF
+        END ELSE
+            PAD=REV.ON
         END
         LINEA = CHANGE(TMPA, TAB, '\t')
         LINEB = CHANGE(TMPB, TAB, '\t')
@@ -959,17 +959,21 @@ FILE.ITEM:!
                 BREAK
             END
         NEXT L
-        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,-1], ' ', 'L')[1,LINE.LEN-2]:HIOFF
-        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,-2], ' ', 'L')[1,LINE.LEN-2]:HIOFF
+        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,-1], ' ', 'L')[1,LINE.LEN-2]
+        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,-2], ' ', 'L')[1,LINE.LEN-2]
         IF CMTA # CMTB THEN
             PAD=HION
         END ELSE
             PAD=HIOFF
         END
-        IF LEN(CMTA) THEN LINEA:=PAD:CMTA:HIOFF
-        IF LEN(CMTB) THEN LINEB:=PAD:CMTB:HIOFF
-        CRT @(COL,START.ROWA+J):LINEA:
-        CRT @(COL,START.ROWB+J):LINEB:
+        IF LEN(CMTA) THEN 
+            LINEA:=PAD:CMTA
+        END ELSE LINEA=TRIM(LINEA, ' ', 'T')
+        IF LEN(CMTB) THEN 
+            LINEB:=PAD:CMTB
+        END ELSE LINEB=TRIM(LINEB, ' ', 'T')
+        CRT @(COL,START.ROWA+J):LINEA:RVOFF:CLEOL:
+        CRT @(COL,START.ROWB+J):LINEB:RVOFF:CLEOL: 
     NEXT J
 499 !
     RETURN
@@ -1129,9 +1133,9 @@ FILE.ITEM:!
             NBRB=AMB PDBJ
             GOSUB GETLINES
             IF TMPA # TMPB THEN
-                PAD=REV.ON
-            END ELSE
                 PAD=REV.OFF
+            END ELSE
+                PAD=REV.ON
             END
             LINEA = CHANGE(TMPA, TAB, '    ')
             LINEB = CHANGE(TMPB, TAB, '    ')
@@ -1146,8 +1150,8 @@ FILE.ITEM:!
                     BREAK
                 END
             NEXT L
-            LINEA=LINEA[1,C]:PAD:LINEA[C+1,LINE.LEN-2]:HIOFF
-            LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]:HIOFF
+            LINEA=LINEA[1,C]:PAD:LINEA[C+1,LINE.LEN-2]
+            LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]
             IF CMTA # CMTB THEN
                 PAD=HION
             END ELSE
@@ -1160,10 +1164,10 @@ FILE.ITEM:!
                     BREAK
                 END
             NEXT L
-            IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,-1]:HIOFF
-            IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,-1]:HIOFF
-            CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:
-            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:
+            IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,-1]
+            IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,-1]
+            CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:RVOFF:
+            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:RVOFF: 
         END
     NEXT J
     STLN=1
