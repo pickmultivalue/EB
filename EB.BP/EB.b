@@ -327,7 +327,7 @@
                             END
                         END
                     NEXT I
-                    POPUP_WIDTH=SYSTEM(2)-35 
+                    POPUP_WIDTH=SYSTEM(2)-35
                     CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#25':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
                     FLNM=''
                 END
@@ -529,10 +529,10 @@ ALREADY.LOCKED: !
 !        VersCheckedOut=(lockvar<1)
     END
     TAB.MODE=INDEX(REC,TAB,1)
-    IF REC[1,2] = 'PQ' OR INDEX(REC,@AM:'PQ',1) THEN 
+    IF REC[1,2] = 'PQ' OR INDEX(REC,@AM:'PQ',1) THEN
         EDIT.MODE = 'C'
         GOSUB SET.MODE
-    END 
+    END
     CRLF.MODE=NOT(INDEX(REC,AM,1)) AND INDEX(REC,CR:LF,1)
     IF CRLF.MODE THEN
         REC = CHANGE(REC, CR:LF, AM)
@@ -628,10 +628,10 @@ SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
 UPDATE.REC:!
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
-            IF I NE LROW THEN 
+            IF I NE LROW THEN
                 CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
                 IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
-            END 
+            END
             REC<I+INDROW-1>=RDSP(I)
             CHANGED=TRUE
         END
@@ -1491,8 +1491,9 @@ EB.SUB: !
 999 !
     IF ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN
         IF CHANGED THEN GOSUB SCRN.TO.REC
-        WRITE REC ON JET.PASTE,ITNM
-        DELETE JET.PASTE,ITNM:'.sav'
+        CALL EB_FILE(@FALSE,K.PATCHFILE,MAT PATCH,@FALSE,ENCRYPTED,@FALSE)
+!        WRITE REC ON JET.PASTE,ITNM
+!        DELETE JET.PASTE,ITNM:'.sav'
         GO WRAPUP
     END ELSE
         IF FG_ACT.CODE#FG_ALT.CODE THEN
@@ -1618,23 +1619,24 @@ SAVE.ITEM: !
     IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
     CALL EB_TRIM(REC,REC:'',AM,'T')
     DELETE FIL,ITNM:".BAK"
-    WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
-        IF setvar EQ 24576 THEN
-            YNL='Permission denied: add +w ? (Y/N) '
-            CRT MSG.CLR:YNL:
-            YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
-            CRT MSG.CLR:
-            IF Y='Y' THEN
-                EXECUTE 'chmod +w ':GETFULLPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result 
-                WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
-                    CRT MSG.CLR:' unable to update (':setvar:')'
-                    Y='N' 
-                END
-            END 
-            IF Y#'N' THEN RETURN 
-        END
-    END
-    DELETE JET.PASTE,ITNM:'.sav'
+    CALL EB_FILE(@FALSE,K.PATCHFILE,MAT PATCH,@FALSE,ENCRYPTED,@FALSE)
+!    WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+!        IF setvar EQ 24576 THEN
+!            YNL='Permission denied: add +w ? (Y/N) '
+!            CRT MSG.CLR:YNL:
+!            YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
+!            CRT MSG.CLR:
+!            IF Y='Y' THEN
+!                EXECUTE 'chmod +w ':GETFULLPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result
+!                WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
+!                    CRT MSG.CLR:' unable to update (':setvar:')'
+!                    Y='N'
+!                END
+!            END
+!            IF Y#'N' THEN RETURN
+!        END
+!    END
+!    DELETE JET.PASTE,ITNM:'.sav'
     RETURN
 !==================================================!
 GET.CHAR: !
