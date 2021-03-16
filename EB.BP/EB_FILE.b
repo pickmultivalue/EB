@@ -36,16 +36,22 @@ MAIN$:!
         dc = DCOUNT(REC, @AM)
         FOR l = 1 TO dc
             line = REC<l>
-            FOR c = LEN(line) TO 1 STEP -1
-                ch = line[c,1]
-                IF NOT(INDEX(whitespace, ch, 1)) THEN
-                    IF c LT LEN(line) THEN
-                        REC<l> = line[1,c]
+            tline = line
+            CONVERT whitespace TO '' IN tline
+            IF NOT(LEN(tline)) THEN
+                REC<l> = ''
+            END ELSE
+                FOR c = LEN(line) TO 1 STEP -1
+                    ch = line[c,1]
+                    IF NOT(INDEX(whitespace, ch, 1)) THEN
+                        IF c LT LEN(line) THEN
+                            REC<l> = line[1,c]
+                        END
+                        BREAK
                     END
-                    BREAK
-                END
-            NEXT c
-        NEXT l 
+                NEXT c
+            END
+        NEXT l
     END
     WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
         YNL='Permission denied: add +w ? (Y/N) '
@@ -56,10 +62,10 @@ MAIN$:!
             EXECUTE 'jchmod +w ':SRC_GETORIGPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result
             WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
                 CRT MSG.CLR:' unable to update (':setvar:')'
-                Y='N' 
+                Y='N'
             END
-        END 
-        IF Y#'N' THEN RETURN 
+        END
+        IF Y#'N' THEN RETURN
     END
     Y=FLNM:'*':ITNM
     DELETE JET.PASTE,ITNM:'.sav'
@@ -86,8 +92,8 @@ MAIN$:!
         END
     END
     LAST.WORD=FIELD(FULLFLNM,'.',DCOUNT(FULLFLNM,'.'))
-    SKIP.PATCH=INDEX(ITNM,'%',1) OR INDEX(FULLFLNM,'PATCH',1)
-    IF LAST.WORD='PATCHES' THEN
+    SKIP.PATCH = SKIP.PATCH OR INDEX(ITNM,'%',1) OR INDEX(FULLFLNM,'PATCH',1) OR LAST.WORD='PATCHES'
+    IF SKIP.PATCH THEN
         TYPE='ITEM'
         RETURN
     END

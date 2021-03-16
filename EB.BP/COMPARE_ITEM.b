@@ -708,7 +708,7 @@ FILE.ITEM:!
             END
         CASE CMD[1,1] EQ 'S'   ;! Next Locate
             IF PREV.LOC # '' THEN
-                TEXT=PREV.LOC
+                searchText=PREV.LOC
                 GO 215
             END
         CASE CMD EQ 'UNDO'
@@ -788,32 +788,39 @@ FILE.ITEM:!
             GOSUB 600
             GOSUB 900
         CASE CMD[1,3] EQ 'LOC'
+            side = TRIM(CMD[4,1]) 
+            IF LEN(side) EQ 0 THEN side = 'AB'
             POS=INDEX(CMD,' ',1)
-            TEXT=CMD[POS+1,999]
-215         CRT CL:'Searching for "':TEXT:'", please wait ':CLEOL:
+            searchText=CMD[POS+1,999]
+215         CRT CL:'Searching for "':searchText:'", please wait ':CLEOL:
 ! Find String In Item A
-            J=STARTA
-220         !
-            J+=1
-            IF J>LASTA THEN
-                CRT EL:'"':TEXT:'" NOT FOUND ':
-                GO 210
+            IF INDEX(side, 'A', 1) THEN
+                J=STARTA
+220             !
+                J+=1
+                IF J>LASTA THEN
+                    CRT EL:'"':searchText:'" NOT FOUND ':
+                    GO 210
+                END
+                LINE=RECA<J>
+                IF NOT(INDEX(LINE,searchText,1)) THEN GO 220
+                STARTA=J
             END
-            LINE=RECA<J>
-            IF NOT(INDEX(LINE,TEXT,1)) THEN GO 220
 ! Find String In Item B
-            I=STARTB
-221         !
-            I+=1
-            IF I>LASTB THEN
-                CRT CL:'"':TEXT:'" NOT FOUND ':
-                INPUT RET,1:
-                GO 210
+            IF INDEX(side, 'B', 1) THEN
+                I=STARTB
+221             !
+                I+=1
+                IF I>LASTB THEN
+                    CRT CL:'"':searchText:'" NOT FOUND ':
+                    INPUT RET,1:
+                    GO 210
+                END
+                LINE=RECB<I>
+                IF NOT(INDEX(LINE,searchText,1)) THEN GO 221
+                STARTB=I
             END
-            LINE=RECB<I>
-            IF NOT(INDEX(LINE,TEXT,1)) THEN GO 221
-            STARTA=J
-            STARTB=I
+            PREV.LOC=searchText
             GOSUB 900 ;! Display Both Items
         CASE CMD[1,1] EQ '='
             CMD=TRIM(FIELD(CMD,'=',2))
@@ -966,14 +973,14 @@ FILE.ITEM:!
         END ELSE
             PAD=HIOFF
         END
-        IF LEN(CMTA) THEN 
+        IF LEN(CMTA) THEN
             LINEA:=PAD:CMTA
         END ELSE LINEA=TRIM(LINEA, ' ', 'T')
-        IF LEN(CMTB) THEN 
+        IF LEN(CMTB) THEN
             LINEB:=PAD:CMTB
         END ELSE LINEB=TRIM(LINEB, ' ', 'T')
         CRT @(COL,START.ROWA+J):LINEA:RVOFF:CLEOL:
-        CRT @(COL,START.ROWB+J):LINEB:RVOFF:CLEOL: 
+        CRT @(COL,START.ROWB+J):LINEB:RVOFF:CLEOL:
     NEXT J
 499 !
     RETURN
@@ -1167,7 +1174,7 @@ FILE.ITEM:!
             IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,-1]
             IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,-1]
             CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:RVOFF:
-            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:RVOFF: 
+            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:RVOFF:
         END
     NEXT J
     STLN=1
@@ -1481,11 +1488,11 @@ UPDATE: !
 !!
 FINISH: !
     GOSUB UPDATE.CHANGE
-    IF DELSAVEA THEN 
+    IF DELSAVEA THEN
         DELETE FILEA,SAVA
-        DELSAVEA=FALSE 
+        DELSAVEA=FALSE
     END
-    IF DELSAVEB THEN 
+    IF DELSAVEB THEN
         DELETE FILEB,SAVB
         DELSAVEB=FALSE
     END
