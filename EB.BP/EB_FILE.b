@@ -31,7 +31,22 @@ MAIN$:!
     EQU PATCH.ITEM TO PATCH(11)
 !
     CALL EB_OPEN('','.',F.currdir,1,0)
-    REC = CHANGE(REC, CHAR(9):@AM, @AM)
+    IF INDEX(REC, ';':@AM,1) OR INDEX(REC,'IF ',1) THEN
+        whitespace = ' ':CHAR(9)
+        dc = DCOUNT(REC, @AM)
+        FOR l = 1 TO dc
+            line = REC<l>
+            FOR c = LEN(line) TO 1 STEP -1
+                ch = line[c,1]
+                IF NOT(INDEX(whitespace, ch, 1)) THEN
+                    IF c LT LEN(line) THEN
+                        REC<l> = line[1,c]
+                    END
+                    BREAK
+                END
+            NEXT c
+        NEXT l 
+    END
     WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
         YNL='Permission denied: add +w ? (Y/N) '
         CRT MSG.CLR:YNL:
