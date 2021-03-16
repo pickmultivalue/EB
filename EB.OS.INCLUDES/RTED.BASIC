@@ -45,8 +45,11 @@
                         END ELSE
                             INDROW=TRIM(FIELD(FIELD(DSPLY,',',2),'(',1))
                         END
-                        Z=REC<INDROW>
-                        COL+=(LEN(Z)-LEN(Y))+4
+                        INDROW = OCONV(INDROW, 'MCN')
+                        IF INDROW THEN
+                            Z=REC<INDROW>
+                            COL+=(LEN(Z)-LEN(Y))+4
+                        END 
                     END
                 END
             END

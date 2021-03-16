@@ -24,6 +24,9 @@
     END ELSE ITNM = ''
 !
     FullPath = EBJSHOW('-f ':FLNM)
+    OPEN FLNM TO DSCB THEN
+        rc = IOCTL(DSCB, JBC_COMMAND_GETFILENAME, FullPath)
+    END 
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
@@ -31,7 +34,7 @@
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
-        FullPath='x ':temp    ;! create a path with a dummy arg for FIELD below
+        FullPath=temp    ;! create a path with a dummy arg for FIELD below
     END ELSE
         FINDSTR 'File:' IN FullPath SETTING attr THEN
             FullPath = FullPath<attr>
@@ -48,7 +51,7 @@
 !
 ! Get everything after the first word (i.e. result of jshow -f)
 !
-    FullPath=FIELD(FullPath,' ',2,999)
+!    FullPath=FIELD(FullPath,' ',2,999)
    FullPath = FIELD(FullPath, '(', 1)
 !
 ! If the path starts with ".", replace with pwd

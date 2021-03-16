@@ -8,5 +8,5 @@
     INCLUDE JBC.h
 !
     dc = DCOUNT(filepath, DIR_DELIM_CH)
-    IF filepath[LEN(filepath),1] EQ DIR_DELIM_CH THEN dc--
+    IF INDEX(DIR_DELIM_CH:'.', filepath[LEN(filepath),1], 1) THEN dc--
     RETURN FIELD(filepath, DIR_DELIM_CH, dc)

@@ -15,11 +15,9 @@
         CRT fileName:' already a directory'
         STOP
     END
-    dirName = 'dir_':fileName
     rc = IOCTL(f.orig, JBC_COMMAND_GETFILENAME, fileName)
     fileName = CHANGE(fileName, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
-    pc = DCOUNT(fileName, DIR_DELIM_CH)
-    dirName = FIELD(fileName, DIR_DELIM_CH, 1, pc -1):DIR_DELIM_CH:dirName
+    dirName = 'dir_':OCONV(fileName, 'MCA')
     PCPERFORM 'mkdir ':dirName CAPTURING io
     IF LEN(io) THEN
         CRT io

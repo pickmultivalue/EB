@@ -9,6 +9,7 @@
     EQU TRUE TO 1, FALSE TO 0, ESC TO CHAR(27)
     INCLUDE EB.EQUS EB.EQUS
     INCLUDE JBC.h
+    DEFFUN EBJSHOW()
     DEFFUN FNKEYTRANS()
 MAIN$:!
 !
@@ -159,25 +160,27 @@ MAIN$:!
                 END
             WHILE delim DO REPEAT
             IF NOT(OS.HELP) THEN
-                CRT @(-1):
-                IF DIR_DELIM_CH = '/' THEN
-                    mandir = '-M $JBCRELEASEDIR/man '
-                END ELSE mandir = ''
-                EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
-                notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
-                IF notfound THEN
-                    CRT list
+                IF LEN(EBJSHOW('-c man')) THEN
+                    CRT @(-1):
+                    IF DIR_DELIM_CH = '/' THEN
+                        mandir = '-M $JBCRELEASEDIR/man '
+                    END ELSE mandir = ''
+                    EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
+                    notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
+                    IF notfound THEN
+                        CRT list
+                        CRT
+                    END ELSE
+                        EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
+                        K.HELP = '%EB_HELP*':WORD:'%'
+                        WRITE help ON JET.PASTE,K.HELP
+                        EXECUTE 'EB JET.PASTE ':K.HELP
+                        DELETE JET.PASTE,K.HELP
+                    END
                     CRT
-                END ELSE
-                    EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
-                    K.HELP = '%EB_HELP*':WORD:'%'
-                    WRITE help ON JET.PASTE,K.HELP
-                    EXECUTE 'EB JET.PASTE ':K.HELP
-                    DELETE JET.PASTE,K.HELP
-                END
-                CRT
-                CRT 'Press return or F1 for EB help':
-                CALL EB_GET_INPUT(CHR, CHR.NBR)
+                    CRT 'Press return or F1 for EB help':
+                    CALL EB_GET_INPUT(CHR, CHR.NBR)
+                END ELSE FG_ACT.CODE = FG_HLP.CODE 
                 IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
                 FG_ACT.CODE=FALSE
                 OS.HELP=TRUE

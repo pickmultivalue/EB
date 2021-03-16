@@ -24,6 +24,7 @@
         MAX.SUB=0
         SUB.JUST='R#1'
     END ELSE
+        SUB.CODE1 = 0; SUB.CODE2 = 0 
         IF NOT(MAX.SUB) THEN
             NBR.CODES=DCOUNT(SUB.CODES,VM)
             FOR S=1 TO NBR.CODES
