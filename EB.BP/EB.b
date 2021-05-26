@@ -1418,7 +1418,8 @@ GET.HELP:   !
                     IF C=MOUSECOL AND R=MOUSEROW THEN
                         BEGIN CASE
                             CASE MOUSESTATE='LD'
-                                COL=C; ROW=R
+                                RDIFF = ROW-R
+                                COL=C; ROW=R; LROW -= RDIFF
                                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
                             CASE MOUSESTATE='LR'
                         END CASE
@@ -2426,7 +2427,7 @@ GET.EDIT.MODE: !
         CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
         CASE ITNM 'R#4'='.hpp'; EDIT.MODE='cpp'
         CASE ITNM 'R#4'='.sqc'; EDIT.MODE='c'
-        CASE ITNM 'R#5'='.java'; EDIT.MODE='c'
+        CASE ITNM 'R#5'='.java'; EDIT.MODE='cpp'
         CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
         CASE ITNM 'R#2'='.b'; EDIT.MODE='!'
