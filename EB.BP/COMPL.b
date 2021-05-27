@@ -20,6 +20,7 @@
     M.OPTION=INDEX(OPTIONS,'M',1)
     I.OPTION=INDEX(OPTIONS,'I',1)
     O.OPTION=INDEX(OPTIONS,'O',1)
+    R.OPTION=INDEX(OPTIONS,'R',1)
     COMPARE.ITEM=INDEX(OPTIONS,'C',1)
     IF OPTIONS#'' THEN SENT=SENT[1,COL1()-1]
     FLNM=FIELD(SENT,' ',2)
@@ -43,15 +44,13 @@
         CRT 'I option suppress output'
         CRT 'O option include object code'
         CRT 'M include missing items'
+        CRT 'R recurse each dir'
         STOP
     END
     IF SFLNM='DICT' THEN
         SFLNM='DICT ':FIELD(SENT,' ',N+1)
     END
     IF FLNM=SFLNM THEN CRT 'I think comparing items from the same file is wasting my time'; STOP
-    OPEN FLNM TO FIRST ELSE STOP OPER,FLNM
-    OPEN SFLNM TO SECOND ELSE STOP OPER,SFLNM
-    IF NOT(SYSTEM(11)) THEN SELECT FIRST
     OPEN 'UPG.WORKFILE' TO F.UPG.WORKFILE THEN
         UPG=TRUE
         USEMODE=''; PASSWD=''
@@ -64,6 +63,29 @@
         UNIDATA=0
         OPEN path:'POINTER-FILE' ELSE STOP 201,path:'POINTER-FILE'
     END
+    IF R.OPTION THEN
+        PFLNM = FLNM; PSFLNM = SFLNM
+        OPEN PFLNM TO F.parent ELSE STOP 201,PFLNM
+        SELECT F.parent TO paths
+        LOOP WHILE READNEXT path FROM paths DO
+            FLNM = PFLNM:DIR_DELIM_CH:path
+            SFLNM = PSFLNM:DIR_DELIM_CH:path
+            OPEN FLNM THEN
+                OPEN SFLNM THEN
+                    CRT 'Processing ':FLNM
+                    RQM
+                    GOSUB compare
+                END
+            END
+        REPEAT
+    END ELSE
+        GOSUB compare
+    END
+    STOP
+compare:
+    OPEN FLNM TO FIRST ELSE STOP OPER,FLNM
+    OPEN SFLNM TO SECOND ELSE STOP OPER,SFLNM
+    IF NOT(SYSTEM(11)) THEN SELECT FIRST
     EOF=0
     LOOP
         READNEXT ID ELSE EOF=1
@@ -163,7 +185,7 @@
             CRT FLNM:'v':SFLNM:' list saved'
         END
     END ELSE CRT 'No differences'
-    STOP
+    RETURN
 DECRYPT: !
     IF UPG THEN
         CALL UPGCHKENCRYPT(UPGITEM,ENCRYPTED,CHKSUM,SIZE,VERSION)

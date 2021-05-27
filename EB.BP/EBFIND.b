@@ -38,7 +38,7 @@
             nocase = 'i'
         END
         FINDSTR '-k' IN dashes SETTING pos THEN
-            findkey = @TRUE
+            findkey = dashes<pos>[3,99]
         END
         FINDSTR '-v' IN dashes SETTING pos THEN
             verbose = @TRUE
@@ -53,7 +53,7 @@
             ignore = dashes<pos>[3,99]
         END
     END
-    IF LEN(sent) EQ 0 THEN STOP
+    IF LEN(sent) EQ 0 AND NOT(findkey) THEN STOP
     IF NOT(LEN(EBJSHOW('-c grep'))) THEN
         fname = sent<1>
         find_cmd = 'SEARCH ':fname
@@ -67,7 +67,7 @@
         END
         DATA sent
         DATA ''
-        EXECUTE find_cmd CAPTURING io RTNLIST list 
+        EXECUTE find_cmd CAPTURING io RTNLIST list
     END ELSE
         sent = CHANGE(sent, @AM, ' ')
         IF sent[1,1] NE '"' THEN sent = DQUOTE(sent)
@@ -75,7 +75,7 @@
         IF LEN(ignore) THEN find_cmd := ' -path ':DQUOTE(ignore):' -prune -o'
         find_cmd:= ' -type f'
         IF findkey THEN
-            find_cmd:= ' -name ':DQUOTE(sent)
+            find_cmd:= ' -name ':DQUOTE(findkey)
         END ELSE
             IF LEN(types) THEN
                 matching = ''
