@@ -2562,12 +2562,9 @@ GET.CATL: !
         FLNM.CAT.OPTIONS = EBJSHOW('-c ':LOWCASE(firstProg))
     END
     IF LEN(FLNM.CAT.OPTIONS) THEN
-        SOP = @FALSE
         POS = INDEX(FLNM.CAT.OPTIONS, 'Executable:', 1)
-        IF NOT(POS) THEN
-            POS = INDEX(FLNM.CAT.OPTIONS, 'Subroutine:', 1)
-            SOP = POS
-        END
+        SOP = INDEX(FLNM.CAT.OPTIONS, 'Subroutine:', 1)
+        IF SOP AND SOP LT POS OR NOT(POS) THEN POS = SOP
         IF POS THEN
             POS = DCOUNT(FLNM.CAT.OPTIONS[1,POS], @AM)
             IF SOP THEN
@@ -2677,7 +2674,7 @@ WRAPUP: !
                     INS PROG BEFORE CAT.OPTS<2,POS>
                 END
             NEXT P
-            NBR.CATS = DCOUNT(CAT.OPTS<1>, @VM)
+            NBR.CATS = DCOUNT(CAT.OPTS<2>, @VM)
             FOR C = 1 TO NBR.CATS
                 PROGS = CHANGE(CAT.OPTS<2, C>, @SVM, SPC)
                 CAT.OPTIONS = CAT.OPTS<1, C>
