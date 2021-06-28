@@ -136,6 +136,7 @@ MAIN$:!
                 READV help_url FROM FG_EB.CONTROL,'jbc_':lword,1 ELSE help_url = lword:'/#':lword
                 URL = 'https://docs.zumasys.com/jbase/jbc/':help_url
                 EXECUTE @IM:'kcurl ':URL:' 2>&1' CAPTURING io
+                FG_ACT.CODE=FALSE
                 IF NOT(INDEX(io, 'Phil Collins', 1)) THEN
                     CRT @ESC:CHAR(2):'<':URL:@CR:
                     OS.HELP = @TRUE
