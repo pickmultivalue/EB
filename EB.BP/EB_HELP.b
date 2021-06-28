@@ -131,59 +131,65 @@ MAIN$:!
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)
-            EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
-            IF LEN(list) EQ 0 THEN
-                EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
-            END
-            loc=0
-            manpages=''
-            FWORD=UPCASE(WORD)    ;!:'()'
-            LOOP
-                REMOVE line FROM list AT loc SETTING delim
-                line=SWAP(line,', ',@VM)
-                FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
-                    FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
+            IF accuterm THEN
+                lword = DOWNCASE(WORD)
+                URL = 'https://docs.zumasys.com/jbase/jbc/':lword:'/#':lword
+                CRT ESC:CHAR(2):'<':URL:@CR:
+            END ELSE
+                EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
+                IF LEN(list) EQ 0 THEN
+                    EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
                 END
-                IF POS THEN
-                    vol=OCONV(FIELD(line,'(',2),'MCN')
-                    IF vol#'' THEN
-                        POS=INDEX(line,vol,1)
-                        vol=FIELD(line[POS,9],')',1)
-                        LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
-                            INS vol BEFORE manpages<pos>
+                loc=0
+                manpages=''
+                FWORD=UPCASE(WORD)    ;!:'()'
+                LOOP
+                    REMOVE line FROM list AT loc SETTING delim
+                    line=SWAP(line,', ',@VM)
+                    FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
+                        FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
+                    END
+                    IF POS THEN
+                        vol=OCONV(FIELD(line,'(',2),'MCN')
+                        IF vol#'' THEN
+                            POS=INDEX(line,vol,1)
+                            vol=FIELD(line[POS,9],')',1)
+                            LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
+                                INS vol BEFORE manpages<pos>
+                            END
                         END
+                        CRT @(-1):
+                        EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
+                        OS.HELP=TRUE
+                        delim = @FALSE
                     END
-                    CRT @(-1):
-                    EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
-                    OS.HELP=TRUE
-                    delim = @FALSE
-                END
-            WHILE delim DO REPEAT
-            IF NOT(OS.HELP) THEN
-                IF LEN(EBJSHOW('-c man')) THEN
-                    CRT @(-1):
-                    IF DIR_DELIM_CH = '/' THEN
-                        mandir = '-M $JBCRELEASEDIR/man '
-                    END ELSE mandir = ''
-                    EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
-                    notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
-                    IF notfound THEN
-                        CRT list
+                WHILE delim DO REPEAT
+                IF NOT(OS.HELP) THEN
+                    IF LEN(EBJSHOW('-c man')) THEN
+                        CRT @(-1):
+                        IF DIR_DELIM_CH = '/' THEN
+                            mandir = '-M $JBCRELEASEDIR/man '
+                        END ELSE mandir = ''
+                        EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
+                        notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
+                        IF notfound THEN
+                            CRT list
+                            CRT
+                        END ELSE
+                            EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
+                            K.HELP = '%EB_HELP*':WORD:'%'
+                            WRITE help ON JET.PASTE,K.HELP
+                            EXECUTE 'EB JET.PASTE ':K.HELP
+                            DELETE JET.PASTE,K.HELP
+                        END
                         CRT
-                    END ELSE
-                        EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
-                        K.HELP = '%EB_HELP*':WORD:'%'
-                        WRITE help ON JET.PASTE,K.HELP
-                        EXECUTE 'EB JET.PASTE ':K.HELP
-                        DELETE JET.PASTE,K.HELP
-                    END
-                    CRT
-                    CRT 'Press return or F1 for EB help':
-                    CALL EB_GET_INPUT(CHR, CHR.NBR)
-                END ELSE FG_ACT.CODE = FG_HLP.CODE 
-                IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
-                FG_ACT.CODE=FALSE
-                OS.HELP=TRUE
+                        CRT 'Press return or F1 for EB help':
+                        CALL EB_GET_INPUT(CHR, CHR.NBR)
+                    END ELSE FG_ACT.CODE = FG_HLP.CODE
+                    IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
+                    FG_ACT.CODE=FALSE
+                    OS.HELP=TRUE
+                END
             END
     END CASE
 !    BEGIN CASE
