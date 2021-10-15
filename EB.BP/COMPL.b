@@ -13,6 +13,7 @@
     bad_suffixes<-1> = 'sbr':@AM:'idb':@AM:'pdb':@AM:'plg':@AM:'suo':@AM:'vspscc':@AM:'vssscc':@AM:'dsw':@AM:'dsp':@AM:'opt'
     bad_suffixes<-1> = 'buf':@AM:'ilk':@AM:'j':@AM:'lib'
     OPTIONS=OCONV(FIELD(SENT,'(',2),'MCU')
+    B.OPTION=INDEX(OPTIONS,'B',1)
     T.OPTION=INDEX(OPTIONS,'T',1)
     V.OPTION=INDEX(OPTIONS,'V',1)
     S.OPTION=INDEX(OPTIONS,'S',1)
@@ -99,11 +100,21 @@ compare:
             END
         END
         IF NOT(bpos) THEN
-            READ FITEM FROM FIRST,ID ELSE FITEM=''
+            READ FITEM FROM FIRST,ID THEN
+                IF NOT(B.OPTION) THEN
+                    LINE = FITEM<1>
+                    IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+                END
+            END ELSE FITEM=''
             UPGITEM=FITEM; UPGFNAME=FLNM; UPGINAME=ID
             GOSUB DECRYPT
             FITEM=UPGITEM
-            READ SFITEM FROM SECOND,ID ELSE SFITEM=''
+            READ SFITEM FROM SECOND,ID THEN
+                IF NOT(B.OPTION) THEN
+                    LINE = SFITEM<1>
+                    IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+                END
+            END ELSE SFITEM=''
             UPGITEM=SFITEM; UPGFNAME=SFLNM
             GOSUB DECRYPT
             SFITEM=UPGITEM
@@ -176,6 +187,7 @@ compare:
     IF LIST#'' THEN
         IF UNIDATA THEN SUFFIX='000' ELSE SUFFIX=''
         WRITELIST LIST ON FLNM:'v':SFLNM:SUFFIX
+        LIST = ''
         IF COMPARE.ITEM THEN
             DATA.STACK='COMPARE_ITEM ':FLNM:' ':SFLNM
             IF T.OPTION THEN DATA.STACK := ' (T'

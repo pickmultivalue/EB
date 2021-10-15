@@ -1,4 +1,5 @@
     SUBROUTINE EB_SHOWMEMBERS(WORD)
+    $options jabba
     COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMONS
@@ -20,6 +21,13 @@ MAIN$:!
     VARS=''
     LOCATE WORD IN VARHEADERS<am_start> BY 'AL' SETTING VPOS THEN
         VARS=VARMEMBERS<VPOS>
+    END ELSE
+        methods = $system->getroutines(WORD,0)
+        IF methods->$isobject THEN
+            for m in methods
+                VARS<1,1,-1> = FIELD(m->name,':',3)
+            next
+        END
     END
     IF LEN(VARS) EQ 0 THEN
         READ tags FROM F.currdir,'tags' THEN
@@ -72,9 +80,9 @@ MAIN$:!
                     IF VarType='/*' OR VarType='*' OR VarType[1,1]='#' OR VarType='//' ELSE
                         CONVERT '*' TO '' IN LINE
                         LINE=TRIM(LINE)
-                        Var=FIELD(LINE,' ',fpos)
-                        IF Var#'' THEN
-                            VARS<1,1,-1>=Var
+                        v=FIELD(LINE,' ',fpos)
+                        IF v#'' THEN
+                            VARS<1,1,-1>=v
                             VARS<1,2,-1>=VarType
                         END
                     END
@@ -96,6 +104,8 @@ MAIN$:!
                 Y=RDSP(LROW)[1,LCOL-1] HASH
             END ELSE Y=''
             RDSP(LROW)=Y:IDATA:RDSP(LROW)[LCOL,MAX]
+            LCOL += LEN(IDATA)
+            COL += LEN(IDATA)
         END
         SCR.UD=1
     END

@@ -13,8 +13,16 @@
     EQU m.X TO merge(1)
     EQU m.Y TO merge(2)
     EQU m.Z TO merge(3)
-    m.H = '<<<<<<< HEAD'
+    DIM m.Hs(2)
+    m.Hs(1) = '<<<<<<< HEAD'
+    m.Hs(2) = '<<<<<<< Updated upstream'
     FG_TIMEOUT = 0
+    FOR m = 1 TO 2
+        m.H = m.Hs(m)
+        IF INDEX(REC, m.H, 1) THEN GO RETRY
+    NEXT m
+    m = 4
+    GO MISSING
 RETRY:
     m.X='<<<<<<<'
     m.Y='======='
@@ -26,6 +34,7 @@ RETRY:
     FOR m = 1 TO 3
         IF CHECK.LINE[1, LEN(merge(m))] EQ merge(m) THEN BREAK
     NEXT m
+MISSING:
     IF m GT 3 THEN
         CRT MSG.CLR:'No instance of ':m.H:' found':
         RQM

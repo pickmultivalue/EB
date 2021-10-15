@@ -323,16 +323,16 @@
                                 END ELSE NFLAST=NFLAST[1,2]
 !
                                 IF 1 THEN         ;!NOT(PLSQL) THEN
-                                    LOCATE T.STMT IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
+                                    LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
                                         EPOS = FALSE
                                     END
-                                    LOCATE FLAST IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
+                                    LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
                                         SPOS = FALSE
                                     END
-                                    LOCATE FLAST IN EXACT<am_start> BY 'AL' SETTING FLPOS ELSE
+                                    LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING FLPOS ELSE
                                         FLPOS = FALSE
                                     END
-                                    LOCATE F1 IN PREFIX<am_start> BY 'AL' SETTING FPOS THEN
+                                    LOCATE UPCASE(F1) IN PREFIX<am_start> BY 'AL' SETTING FPOS THEN
                                         IF PLSQL AND FIELD(T.STMT, SPC, 2) = 'UPDATE' THEN FPOS=FALSE
                                     END ELSE
                                         FPOS = FALSE
@@ -345,8 +345,8 @@
                                             FLAST = FIELD(ATTR, ' ', DCOUNT(ATTR, ' '))
                                             GOSUB SPLITSTMT
                                         UNTIL NEXT.ATTR = '' DO REPEAT
-                                        LOCATE F1 IN PREFIX<am_start> BY 'AL' SETTING NFPOS ELSE NFPOS = FALSE
-                                        LOCATE FLAST IN EXACT<am_start> BY 'AL' SETTING NLPOS ELSE NLPOS = FALSE
+                                        LOCATE UPCASE(F1) IN PREFIX<am_start> BY 'AL' SETTING NFPOS ELSE NFPOS = FALSE
+                                        LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING NLPOS ELSE NLPOS = FALSE
                                         T.STMT = SAVE.T.STMT
                                         ATTR = ITEM(LNO)
                                     END ELSE
@@ -371,9 +371,9 @@
 !
                                     MS.INDEX=''
                                     ME.INDEX=FALSE
-                                    LOCATE F1 IN PREFIX<am_start> BY AL SETTING P.INDEX THEN
+                                    LOCATE UPCASE(F1) IN PREFIX<am_start> BY AL SETTING P.INDEX THEN
                                         OFFSET=1
-                                        LOCATE T.STMT IN PREFIX<am_start> BY AL SETTING E.INDEX THEN
+                                        LOCATE UPCASE(T.STMT) IN PREFIX<am_start> BY AL SETTING E.INDEX THEN
                                             IF EXCEPT.IND THEN
                                                 IF EXCEPT.IND=1 THEN OFFSET=2
                                                 EXCEPT.IND-=1
@@ -387,7 +387,7 @@
                                     END ELSE ONEND=FALSE; P.INDEX=FALSE
 !
                                     IF NFLAST=GOW ELSE
-                                        LOCATE FLAST IN SUFFIX<am_start> BY AL SETTING S.INDEX THEN
+                                        LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY AL SETTING S.INDEX THEN
                                             IF STMT=1 THEN CUR.INDEX-=PS(S.INDEX)
                                             NEXT.INDEX-=(PS(S.INDEX)-SS(S.INDEX))
                                             ONEND=FALSE
@@ -404,7 +404,7 @@
                                         TECNT-=1
                                         ONEND=TRUE
                                     END ELSE ONEND=FALSE
-                                    LOCATE T.STMT IN EXACT<am_start> BY AL SETTING E.INDEX THEN
+                                    LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY AL SETTING E.INDEX THEN
                                         IF STMT=1 THEN CUR.INDEX-=PE(E.INDEX)
                                         NEXT.INDEX-=(PE(E.INDEX)-SE(E.INDEX))
                                         IF (F1:SPC)=ENDSW THEN TECNT+=1
@@ -437,7 +437,7 @@
                                         END
                                     END
                                     IF F1#'' THEN
-                                        LOCATE F1 IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
+                                        LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
                                             EXCEPT.IND+=1
                                         END
                                     END

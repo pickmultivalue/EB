@@ -24,7 +24,7 @@
                 IF FLNMPOS THEN
                     FLNM=FIELD(FLNM[FLNMPOS,MAX],' ',3)
                     FLNM=TRIM(OCONV(FLNM,'MCP '))
-                    IF FLNM='unknown' THEN FLNM='.'
+                    IF FLNM='unknown' THEN CONTINUE;!FLNM='.'
                     BREAK
                 END ELSE FLNM=''
             NEXT FLNMI

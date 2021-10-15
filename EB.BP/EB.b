@@ -327,8 +327,8 @@
                             END
                         END
                     NEXT I
-                    POPUP_WIDTH=SYSTEM(2)-35
-                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#25':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
+                    POPUP_WIDTH=SYSTEM(2)-70
+                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#60':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
                     FLNM=''
                 END
                 IF ITNM#ITNM<1,1,1> THEN
@@ -1299,7 +1299,7 @@ GET.HELP:   !
 ! first search for the next non-alpha character
             Y=LCOL+1; LOOP WHILE RDSP(LROW)[Y,1]=SPC DO Y+=1 REPEAT
             FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC)#'' OR RDSP(LROW)[I,1]='.'); NEXT I
-            DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1)
+            DUMMY=UPCASE(FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1))
             IF DUMMY[1,2]='GO' THEN
                 DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
                 DUMMY=FIELD(DUMMY:';',';',1)
@@ -2024,7 +2024,7 @@ TCL: !
                 END
             END
         CASE SCRL[1,ITAB<1>]=SPACE(ITAB<1>)
-            LOCATE FIELD(TRIM(SCRL),SPC,1) IN END.WORDS BY 'AL' SETTING POS THEN SCRL=SCRL[ITAB<1>+1,MAX]
+            LOCATE UPCASE(FIELD(TRIM(SCRL),SPC,1)) IN END.WORDS BY 'AL' SETTING POS THEN SCRL=SCRL[ITAB<1>+1,MAX]
     END CASE
     INS SCRL BEFORE REC<INDROW+ROW>
     CALL EB_MARKADJ(INDROW+ROW,1,1)
@@ -2486,7 +2486,7 @@ SET.MODE: !
             COMMENTLEN=1
             TYPE='BASIC'
             ITABPOS=2
-            PC:=';("_");(".")'
+            PC:=';("_");(".");("$")'
     END CASE
     BEGIN CASE
         CASE COUNT(EDIT.MODE,'c')

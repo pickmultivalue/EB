@@ -28,19 +28,29 @@
 !
 ! READs to WRITEs
 !
-    RPOS=INDEX(STMP,'READ',1)
-    IF RPOS AND INDEX(STMP[RPOS+4,3],' ',1) THEN
-        POS=INDEX(STMP,' FROM ',1)
+    USTMP=UPCASE(STMP)
+    RPOS=INDEX(USTMP,'READ',1)
+    IF RPOS AND INDEX(USTMP[RPOS+4,3],' ',1) THEN
+        POS=INDEX(USTMP,' FROM ',1)
         IF POS THEN
-            POS = INDEX(STMP, ' LOCKED', 1)
-            IF NOT(POS) THEN POS = INDEX(STMP, ' THEN', 1)
-            IF NOT(POS) THEN POS = INDEX(STMP, ' ELSE', 1)
+            POS = INDEX(USTMP, ' LOCKED', 1)
+            IF NOT(POS) THEN POS = INDEX(USTMP, ' THEN', 1)
+            IF NOT(POS) THEN POS = INDEX(USTMP, ' ELSE', 1)
             IF POS THEN
                 STMP=STMP[1,POS-1]
                 RSTMP=STMP[RPOS+4,MAX]:SUFFIX
                 IF RSTMP[1,1]='U' THEN RSTMP=RSTMP[2,MAX]
-                STMP=INDENT:STMP[1,RPOS-1]:'WRITE':RSTMP
-                STMP=SWAP(STMP,' FROM ',' ON ')
+                IF INDEX(STMP,'read',1) THEN
+                    w = 'write'
+                    f = ' from '
+                    o = ' on '
+                END ELSE
+                    w = 'WRITE'
+                    f = ' FROM '
+                    o = ' ON '
+                END
+                STMP=INDENT:STMP[1,RPOS-1]:w:RSTMP
+                STMP=SWAP(STMP,f,o)
                 RETURN
             END
         END
@@ -48,26 +58,35 @@
 !
 ! WRITEs to READs
 !
-    RPOS=INDEX(STMP,'WRITE',1)
-    IF RPOS AND INDEX(STMP[RPOS+5,3],' ',1) THEN
-        POS=INDEX(STMP,' ON ',1)
+    RPOS=INDEX(USTMP,'WRITE',1)
+    IF RPOS AND INDEX(USTMP[RPOS+5,3],' ',1) THEN
+        POS=INDEX(USTMP,' ON ',1)
         IF POS THEN
             SOP=INDEX(STMP[POS+5,MAX],',',1)
             SOP+=INDEX(STMP[SOP+1,MAX],' ',1)+2
             IF SOP THEN
                 STMP=STMP[1,POS+SOP+4]
             END
-            STMP=SWAP(STMP,' ON ',' FROM ')
-            STMP=INDENT:STMP[1,RPOS-1]:'READ':STMP[RPOS+5,MAX]:SUFFIX
+            IF INDEX(STMP,'write',1) THEN
+                r = 'read'
+                f = ' from '
+                o = ' on '
+            END ELSE
+                r = 'READ'
+                f = ' FROM '
+                o = ' ON '
+            END
+            STMP=SWAP(STMP,o,f)
+            STMP=INDENT:STMP[1,RPOS-1]:r:STMP[RPOS+5,MAX]:SUFFIX
             RETURN
         END
     END
 !
 ! LOCATE to INS BEFORE
 !
-    POS=INDEX(STMP,'LOCATE ',1)
+    POS=INDEX(USTMP,'LOCATE ',1)
     IF POS THEN
-        SOP=INDEX(STMP,'SETTING',1)
+        SOP=INDEX(USTMP,'SETTING',1)
         POS.VAR=FIELD(STMP[SOP,MAX],' ',2)
         SOP = 1
         LOOP
@@ -79,50 +98,81 @@
         END ELSE
             INS.VAR:='<':POS.VAR:'>'
         END
-        STMP=INDENT:'    INS ':FIELD(STMP,' ',2):' BEFORE ':INS.VAR:SUFFIX
+        IF INDEX(STMP,'locate',1) THEN
+            i = 'ins'
+            b = 'before'
+        END ELSE
+            i = 'INS'
+            b = 'BEFORE'
+        END
+        STMP=INDENT:'    ':i:' ':FIELD(STMP,' ',2):' ':b:' ':INS.VAR:SUFFIX
         RETURN
     END
 !
 ! FOR xx=1 TO count to FOR xx=count TO 1 STEP -1
 !
-    POS=STMP[1,4]='FOR '
+    POS=USTMP[1,4]='FOR '
     IF POS THEN
         PART1=FIELD(STMP,'=',1)
         PART2=TRIM(STMP[COL2()+1,MAX])
         VAR1=FIELD(PART2,' ',1)
         VAR2=FIELD(PART2,' ',3)
-        STMP=INDENT:PART1:'=':VAR2:' TO ':VAR1:' STEP -1':SUFFIX
+        IF STMP[1,3] EQ 'FOR' THEN
+            t = ' TO '
+            s = 'STEP'
+        END ELSE
+            t = ' to '
+            s = 'step'
+        END
+        STMP=INDENT:PART1:'=':VAR2:t:VAR1:' ':s:' -1':SUFFIX
         RETURN
     END
 !
 ! INS to DEL
 !
-    POS=STMP[1,4]='INS '
+    POS=USTMP[1,4]='INS '
     IF POS THEN
         INS.VAR=FIELD(STMP,' ',4)
-        STMP=INDENT:'DEL ':INS.VAR:SUFFIX
+        IF STMP[1,3] EQ 'INS' THEN
+            d = 'DEL '
+        END ELSE
+            d = 'del '
+        END
+        STMP=INDENT:d:INS.VAR:SUFFIX
         RETURN
     END
 !
 ! END to END CASE
 !
-    POS=STMP[1,3]='END'
+    POS=USTMP[1,3]='END'
     IF POS THEN
-        STMP=INDENT:'END CASE':SUFFIX
+        IF STMP[1,3] EQ 'END' THEN
+            ec = 'END CASE'
+        END ELSE
+            ec = 'end case'
+        END
+        STMP=INDENT:ec:SUFFIX
         RETURN
     END
 !
 ! IF to CASE
 !
-    IF FIELD(STMP,' ',1)='IF' THEN
-        IF FIELD(STMP,' ',NBR.WORDS)='THEN' THEN
-            STMP=INDENT:'CASE ':OCONV(STMP,'G1 ':NBR.WORDS-2):SUFFIX
+    IF FIELD(USTMP,' ',1)='IF' THEN
+        IF STMP[1,2] = 'IF' THEN
+            c = 'CASE '
+            t = ' THEN '
+        END ELSE
+            c = 'case'
+            t = ' then '
+        END
+        IF FIELD(USTMP,' ',NBR.WORDS)='THEN' THEN
+            STMP=INDENT:c:OCONV(STMP,'G1 ':NBR.WORDS-2):SUFFIX
             POS=1
         END ELSE
-            POS=INDEX(STMP,' THEN ',1)
-            IF POS AND NOT(INDEX(STMP,' ELSE ',1)) THEN
-                STMP=SWAP(STMP,' THEN ',' ; ')
-                STMP=INDENT:'CASE ':OCONV(STMP,'G1 ':NBR.WORDS):SUFFIX
+            POS=INDEX(USTMP,' THEN ',1)
+            IF POS AND NOT(INDEX(USTMP,' ELSE ',1)) THEN
+                STMP=SWAP(STMP,t,' ; ')
+                STMP=INDENT:c:OCONV(STMP,'G1 ':NBR.WORDS):SUFFIX
             END
         END
         RETURN
@@ -130,13 +180,20 @@
 !
 ! CASE to IF
 !
-    IF FIELD(STMP,' ',1)='CASE' THEN
+    IF FIELD(USTMP,' ',1)='CASE' THEN
+        IF STMP[1,4] EQ 'CASE' THEN
+            t = ' THEN '
+            i = 'IF'
+        END ELSE
+            t = ' then '
+            i = 'if'
+        END
         STMP = STMP[COL2(), MAX]
         SUFFIX = FIELD(STMP:';', ';', 2)
         STMP = STMP[1, COL1()-1]
-        SUFFIX = TRIM(' THEN ':SUFFIX, ' ', 'L')
+        SUFFIX = TRIM(t:SUFFIX, ' ', 'L')
         SUFFIX = TRIM(SUFFIX, ' ', 'T')
-        STMP=INDENT:'IF':STMP:SUFFIX
+        STMP=INDENT:i:STMP:SUFFIX
         POS = 1
         RETURN
     END
@@ -176,7 +233,14 @@
             VAR2 = VAR2[2, MAX]
             V2S = ' '
         END
-        TORF = 1:@AM:0:@AM:'TRUE':@AM:'FALSE'
+        IF STMP EQ USTMP THEN
+            t = 'TRUE'
+            f = 'FALSE'
+        END ELSE
+            t = 'true'
+            f = 'false'
+        END
+        TORF = 1:@AM:0:@AM:t:@AM:f
         LOCATE VAR2 IN TORF SETTING TORFPOS THEN
             V2 = VAR1
             IF MOD(TORFPOS, 2) THEN TORFPOS++ ELSE TORFPOS--
@@ -271,11 +335,17 @@ GET.DATE: !
 !
 MATSWITCH:
 !
-    RPOS=INDEX(STMP, WORD, 1)
-    IF RPOS AND INDEX(STMP[RPOS+LEN(WORD),3],' ',1) THEN
+    RPOS=INDEX(USTMP, WORD, 1)
+    IF RPOS AND INDEX(USTMP[RPOS+LEN(WORD),3],' ',1) THEN
         RSTMP = STMP[1, RPOS-1]
         STMP=STMP[RPOS+LEN(WORD),MAX]
-        POS=INDEX(STMP,' FROM ',1)
+        POS=INDEX(USTMP,' FROM ',1)
+        IF INDEX(STMP,' FROM ',1) THEN
+            f = ' FROM '
+        END ELSE
+            f = ' from '
+            RWORD = DOWNCASE(RWORD)
+        END
         IF POS THEN
             STMP = CHANGE(STMP, ' FROM ', @AM)
             STMP=INDENT:RSTMP:RWORD:' ':TRIM(STMP<2>):' FROM ':TRIM(STMP<1>):SUFFIX
