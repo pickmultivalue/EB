@@ -23,6 +23,11 @@
         END ELSE
             TCOL=DCOL-4+OFFSET
         END
+        IF TCOL+4 GT PWIDTH THEN
+            OFFSET += PWIDTH
+            TCOL -= PWIDTH
+            DCOL -= PWIDTH
+        END
     END ELSE
         GOSUB SETCOL
     END
@@ -39,10 +44,11 @@ SETCOL:
             END ELSE NCOL++
         NEXT C
         NCOL++
-!        NEWLN=CRTLN[1,TCOL]
-!        CALL EB_TABS(NEWLN,PWIDTH)
-!        NCOL=LEN(NEWLN)
     END ELSE NCOL=TCOL
     DCOL=NCOL-OFFSET+4
-    IF DCOL<0 THEN DCOL+=OFFSET
+    IF DCOL<5 THEN
+        DCOL+=OFFSET
+        OFFSET -= (PWIDTH-5)
+        SCR.LR=1
+    END
     RETURN

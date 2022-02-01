@@ -143,8 +143,8 @@
             CRT STR('*',XX): ; SEC.STRING=INP.STRING
             INP.STRING=STR('*',LEN(INP.STRING))
         CASE 1
-            CRT STMP:
-            IF TRAIL < 80 THEN
+            CRT (IF JUST MATCHES "'L#'1N0N" THEN TRIM(STMP JUST, ' ', 'T') ELSE STMP):
+            IF TRAIL > 0 AND TRAIL < 80 THEN
                 IF UNDERLINE.FLAG THEN
                     CRT BG:DOTS[1,TRAIL]:FG:
                 END ELSE CRT SPACE(TRAIL):
@@ -810,6 +810,7 @@ DEL.LABEL:!
     TRAIL=LEN(TRAIL)
     IF UNDERLINE.FLAG ELSE CRT SPACE(TRAIL):STR(BACK,TRAIL):
     INP.STRING=INP.STRING[1,INP.POS-1]
+    TRAIL=LENTH
     GOSUB CRT.UNDERLINE
     RETURN
 11  !
@@ -985,7 +986,7 @@ STMP.OCONV:
             STMP=OCONV(INP.STRING,JUST)
         CASE TYPE='YN'
             STMP='NY'[INP.STRING+1,1]
-        CASE LEN(JUST)
+        CASE TYPE#'LIT' AND LEN(JUST)
             STMP=INP.STRING JUST
         CASE 1
             STMP=INP.STRING

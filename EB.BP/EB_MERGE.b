@@ -18,7 +18,8 @@ MAIN$:!
 !
     READ.AGAIN=0
     CNT=DCOUNT(REC,AM)
-    CRT MSG.CLR:"Merge after line ":
+    label = "Merge after line "
+    CRT MSG.CLR:label:
     ILEN=6; IDATA=INDROW+ROW-1; INPTYPE='N0'
     GOSUB 1500      ;! input the field
     AFTL=OCONV(IDATA,'MCU')
@@ -26,7 +27,7 @@ MAIN$:!
     IF AFTL=ESC THEN GO 5090
     IF AFTL>CNT THEN AFTL=CNT
 5010 CRT MSG.CLR:"Merge from file ":
-    ILEN=63
+    ILEN=SYSTEM(2)-LEN(label):@AM:200
     IF MFLNM#'' THEN IDATA=MFLNM ELSE IDATA=FLNM
     GOSUB 1500      ;! input the field
     MFLNM=IDATA
@@ -195,7 +196,7 @@ MAIN$:!
     ECHO ON
     CALL EB_UT_WP(IDATA,INPTYPE,ILEN,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
     FG_TIMEDOUT=FALSE
-    INPTYPE='AN'
+    INPTYPE='LIT'
     RETURN
 FCODE: ! find code
     CNT=1

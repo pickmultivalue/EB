@@ -65,16 +65,18 @@ MAIN$:!
     CRT MSG.AKN:
     STR.POS=0
     SSTR=Z
-    L=LEN(SSTR)
-    FOR I=1 TO L
-        IF SSTR[I,1]='\' THEN
-            CHR.NBR=SSTR[I+1,3]
-            IF CHR.NBR MATCHES "3N" THEN
-                SSTR=SSTR[1,I-1]:CHAR(CHR.NBR):SSTR[I+4,MAX]
-                L-=3
+    IF INDEX(SSTR,'\',1) THEN
+        L=LEN(SSTR)
+        FOR I=1 TO L
+            IF SSTR[I,1]='\' THEN
+                CHR.NBR=SSTR[I+1,3]
+                IF CHR.NBR MATCHES "3N" THEN
+                    SSTR=SSTR[1,I-1]:CHAR(CHR.NBR):SSTR[I+4,MAX]
+                    L-=3
+                END
             END
-        END
-    NEXT I
+        NEXT I
+    END
     IF SSTR='//' OR SSTR='\\' THEN
         PSSTR=SSTR
         IF SSTR='//' THEN LNM=1 ELSE LNM=-1
@@ -288,54 +290,58 @@ RETRY:
         SCOL = COL
         CALL EB_TABCOL(RDSP(STR.LINE),COL,LCOL,FALSE)
         IF COL GE (SPWIDTH-3) THEN
-            ADJUST = COL-SCOL
+            ADJUST = COL-SCOL - 5
         END ELSE
             ADJUST = 0-OFFSET
         END
-            OFFSET += ADJUST
-            COL -= ADJUST;!+3 ;! 3?
-            LCOL -= ADJUST;!+3 ;! 3?
-!        END
+        OFFSET += ADJUST
+        COL -= ADJUST
+        LCOL -= ADJUST
+        IF LCOL < 1 THEN
+            ADJUST = 1 - LCOL
+            LCOL += ADJUST
+            COL += ADJUST
+        END
         IF OFFSET AND COL<SPWIDTH OR OFFSET#OLD.OFFSET THEN SCR.LR=1
         IF SCR.LR=1 THEN
             CALL EB_REFRESH
             SCR.LR=0
             IF 0 THEN
-            DUMMY=INDROW+(PDEPTH-2)
-            FOR J=INDROW TO DUMMY
-                Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-4]
-                IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH,0,0)
-                Y=OCONV(Y[1+OFFSET,SPWIDTH-4],'MCP')
-                IF REGEX.SEARCH THEN
-                    LINE.POS=EB_REGEX(Y,SSTR, @FALSE)
-                END ELSE
-                    LINE.POS=INDEX(Y,SSTR,1)
-                END
-                IF LINE.POS THEN
-                    IF WHOLE.WORDS[1,1] THEN
-                        OCC=2
-                        LOOP
-                            CHR1=Y[LINE.POS-1,1]
-                            L=LINE.POS+LEN(SSTR)
-                            CHR2=Y[L,1]
-                            IF INDEX(DELIMS,CHR1,1) AND INDEX(DELIMS,CHR2,1) THEN
-                                Y=Y[1,LINE.POS-1]:BG:SSTR:FG:Y[L,MAX]
-                            END
-                            LINE.POS=INDEX(Y,SSTR,OCC)
-                        WHILE LINE.POS DO
-                            OCC++
-                        REPEAT
+                DUMMY=INDROW+(PDEPTH-2)
+                FOR J=INDROW TO DUMMY
+                    Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-4]
+                    IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH,0,0)
+                    Y=OCONV(Y[1+OFFSET,SPWIDTH-4],'MCP')
+                    IF REGEX.SEARCH THEN
+                        LINE.POS=EB_REGEX(Y,SSTR, @FALSE)
                     END ELSE
-                        Y=SWAP(Y,SSTR,BG:SSTR:FG)
+                        LINE.POS=INDEX(Y,SSTR,1)
                     END
-                END
-                IF J > LAST.AM THEN
-                    DIMON = BG
-                    DIMOFF = FG
-                END ELSE DIMON = ''; DIMOFF = ''
-                CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":;!Y:
-                CRTLN=Y; GOSUB CRT.LN
-            NEXT J
+                    IF LINE.POS THEN
+                        IF WHOLE.WORDS[1,1] THEN
+                            OCC=2
+                            LOOP
+                                CHR1=Y[LINE.POS-1,1]
+                                L=LINE.POS+LEN(SSTR)
+                                CHR2=Y[L,1]
+                                IF INDEX(DELIMS,CHR1,1) AND INDEX(DELIMS,CHR2,1) THEN
+                                    Y=Y[1,LINE.POS-1]:BG:SSTR:FG:Y[L,MAX]
+                                END
+                                LINE.POS=INDEX(Y,SSTR,OCC)
+                            WHILE LINE.POS DO
+                                OCC++
+                            REPEAT
+                        END ELSE
+                            Y=SWAP(Y,SSTR,BG:SSTR:FG)
+                        END
+                    END
+                    IF J > LAST.AM THEN
+                        DIMON = BG
+                        DIMOFF = FG
+                    END ELSE DIMON = ''; DIMOFF = ''
+                    CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":;!Y:
+                    CRTLN=Y; GOSUB CRT.LN
+                NEXT J
             END
         END
         LROW=STR.LINE

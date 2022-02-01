@@ -1,6 +1,7 @@
 ! PROGRAM EBFIND
     DEFFUN EBJSHOW()
     CALL JBASEParseCommandLine1(dashes, parens, sent)
+    fname = ''
     types = ''
     dir = '.'
     ignore = ''
@@ -22,6 +23,7 @@
             CRT 'Options:'
             CRT
             CRT '-d<dir>       starting dir'
+            CRT '-f"file"      search file'
             CRT '-i            ignore case'
             CRT '-k<name>      find file with <name>'
             CRT '-s            sort the result'
@@ -33,6 +35,12 @@
         END
         FINDSTR '-d' IN dashes SETTING pos THEN
             dir = dashes<pos>[3,99]
+        END
+        FINDSTR '-f' IN dashes SETTING pos THEN
+            fname = dashes<pos>[3,99]
+            IF INDEX(\'"\:'\', fname[1,1], 1) THEN
+                fname = FIELD(fname, fname[1,1], 2)
+            END
         END
         FINDSTR '-i' IN dashes SETTING pos THEN
             nocase = 'i'
@@ -54,19 +62,28 @@
         END
     END
     IF LEN(sent) EQ 0 AND NOT(findkey) THEN STOP
-    IF NOT(LEN(EBJSHOW('-c grep'))) THEN
-        fname = sent<1>
+    IF LEN(fname) OR NOT(LEN(EBJSHOW('-c grep'))) THEN
+        IF LEN(fname) EQ 0 THEN fname = sent<1>
         find_cmd = 'SEARCH ':fname
+        filter = ''
         IF LEN(types) THEN
-            DATA find_cmd
-            find_cmd = 'SSELECT ':fname:' = "[.':types:'"'
-        END ELSE find_cmd := ' *'
+            filter = '"[.':types:'"'
+        END
+        IF LEN(findkey) THEN
+            filter = '"':findkey:'"'
+        END
         DEL sent<1>
+        IF LEN(filter) THEN
+            IF LEN(sent) THEN DATA find_cmd
+            find_cmd = 'SSELECT ':fname:' = ':filter
+        END ELSE find_cmd := ' *'
         IF sent[1,1] EQ '"' THEN
             CONVERT @AM:'"' TO ' ' IN sent
         END
-        DATA sent
-        DATA ''
+        IF LEN(sent) THEN
+            DATA sent
+            DATA ''
+        END
         EXECUTE find_cmd CAPTURING io RTNLIST list
     END ELSE
         sent = CHANGE(sent, @AM, ' ')
@@ -92,5 +109,5 @@
         EXECUTE @IM:'k':find_cmd CAPTURING list
     END
     IF LEN(list) THEN
-        EXECUTE @IM:'kEB ':CHANGE(list, @AM, ' ')
+        EXECUTE @IM:'kEB ':TRIM(fname:' ':CHANGE(list, @AM, ' '))
     END ELSE CRT 'No match'

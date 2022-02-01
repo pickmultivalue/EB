@@ -254,9 +254,9 @@ MAIN$:!
                                     DEL PWSTR<1>
                                     IF PWSTR#'' THEN
                                         WCNT=PWSTR<1,1>
-                                        IF NUM(WCNT) THEN 
-                                            op='' 
-                                        END ELSE 
+                                        IF NUM(WCNT) THEN
+                                            op=''
+                                        END ELSE
                                             op = WCNT[1,1]
                                             WCNT = WCNT[2,MAX]
                                         END

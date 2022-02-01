@@ -788,7 +788,7 @@ FILE.ITEM:!
             GOSUB 600
             GOSUB 900
         CASE CMD[1,3] EQ 'LOC'
-            side = TRIM(CMD[4,1]) 
+            side = TRIM(CMD[4,1])
             IF LEN(side) EQ 0 THEN side = 'AB'
             POS=INDEX(CMD,' ',1)
             searchText=CMD[POS+1,999]

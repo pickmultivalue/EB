@@ -31,7 +31,7 @@ MAIN$:!
     EQU PATCH.ITEM TO PATCH(11)
 !
     CALL EB_OPEN('','.',F.currdir,1,0)
-    IF INDEX(REC, ';':@AM,1) OR INDEX(REC,'IF ',1) THEN
+    IF COMMENT NE '# ' THEN ;!OR INDEX(REC, ';':@AM,1) OR INDEX(REC,'IF ',1) THEN
         whitespace = ' ':CHAR(9)
         dc = DCOUNT(REC, @AM)
         FOR l = 1 TO dc

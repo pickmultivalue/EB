@@ -5,6 +5,7 @@
     INCLUDE JBC.h
     INCLUDE EB.INCLUDES PWD
 !
+    ORIG_FLNM = FLNM
     DICT=FIELD(FLNM,' ',1)
     IF DICT='DICT' THEN
         FLNM=FLNM[COL2()+1,-1]
@@ -17,5 +18,8 @@
     END
     IF FullPath[1,2]=('.':DIR_DELIM_CH)[1,LEN(FullPath)] THEN
         FullPath=pwd:FullPath[2,LEN(FullPath)]
+    END
+    IF INDEX(FullPath, 'jshow', 1) THEN
+        RETURN ORIG_FLNM
     END
     RETURN CHANGE(DICT:FullPath, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)

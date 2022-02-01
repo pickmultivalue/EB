@@ -737,10 +737,20 @@ TOP: !
                 END
             END ELSE
                 IF INS.MODE THEN
-                    IF INS.CHAR#'' THEN CRT INS.CHAR: ELSE
-                        TMP=RDSP(LROW)[LCOL,PWIDTH+1-COL]
-                        CRT @(COL-1,ROW):
-                        IF TRIM(TMP)#'' THEN CRT SPC:TMP:@(COL-1,ROW):
+                    specialChar = CHR NE SPC AND CHR NE OCONV(CHR,'MCAN')
+                    IF INS.CHAR#'' AND NOT(specialChar) THEN
+                        CRT INS.CHAR:
+                    END ELSE
+                        IF specialChar THEN
+                            GOSUB displayLine
+                            GO TOP
+                        END ELSE
+                            TMP=RDSP(LROW)[LCOL,PWIDTH+1-COL]
+                            IF TRIM(TMP)#'' THEN
+                                CRT @(COL-1,ROW):SPC:TMP:
+                            END
+                            CRT @(COL-1,ROW):
+                        END
                     END
                 END
                 CRT CHR:
@@ -808,10 +818,8 @@ CHECK.CODES: !
     BEGIN CASE
         CASE FG_ACT.CODE=FG_RIGHT.CODE
             LCOL++
-!            IF COL<PWIDTH+1 THEN
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
             GO TOP
-!            END
         CASE FG_ACT.CODE=FG_LEFT.CODE
             IF COL EQ 5 THEN
                 IF NOT(OFFSET) THEN
@@ -932,11 +940,8 @@ SCROLL.LINE:    !
                 END
                 LCOL=LEN(RDSP(LROW))
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
-!                IF TAB.MODE THEN COL+=1
                 IF SCR.UD ELSE
                     CRT @(5,ROW):RDSP(LROW):
-!                COL = 4 + LEN(RDSP(LROW))
-!                LCOL = COL
                     GO TOP
                 END
             END
@@ -1015,19 +1020,24 @@ SCROLL.LINE:    !
         CASE FG_ACT.CODE=FG_FWORD.CODE
             LLEN1=LLEN+1
 ! first search for the next non-alpha character
-            Y=LCOL;!+1
+            Y=LCOL
             FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC)#''); NEXT I
 ! then search for the next letter
             Y=I+1
             FOR I=Y TO LLEN1 UNTIL ICONV(RDSP(LROW)[I,1],PC)#''; NEXT I
-            LCOL=I
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-!            IF (COL-OFFSET)>PWIDTH THEN COL-=OFFSET; OFFSET+=(PWIDTH-5); SCR.LR=1
-!            IF COL>PWIDTH THEN COL-=OFFSET
-!            LOOP WHILE COL<0 DO COL+=(PWIDTH-5) REPEAT
-!            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+            IF I LE LEN(RDSP(LROW)) THEN
+                LCOL=I
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            END ELSE CRT BELL:
         CASE FG_ACT.CODE=FG_BWORD.CODE
-            IF LCOL>1 THEN GOSUB BACK.WORD
+            IF LCOL EQ 1 AND ROW GT 1 THEN
+                IF LROW>1 THEN
+                    LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+                END
+            END
+            IF LCOL>1 THEN
+                GOSUB BACK.WORD
+            END ELSE CRT BELL:
         CASE FG_ACT.CODE=FG_DEL.LINE.CODE OR FG_ACT.CODE=FG_CUT.CODE OR FG_ACT.CODE=FG_SEL.CODE
             SREC = REC
             CALL EB_CUT(G60)
@@ -1053,15 +1063,10 @@ SCROLL.LINE:    !
             CALL EB_PASTE(G60)
             IF G60 THEN GO TOP
         CASE FG_ACT.CODE=FG_ALT.CODE OR FG_ACT.CODE=FG_MENU.CODE
-!      IF MOD(FG_STERM,3) THEN
             ECHO OFF
             INPUT FTYP
             ECHO ON
             IF NOT(NUM(FTYP)) THEN FTYP=OCONV(FTYP,'MCA')
-!      END ELSE
-!        CALL EB_AMEND.MENU(0,0,'HD','EB.MENU',STMP,FTYP,2)
-!        SCR.LR=1
-!      END
             FG_ACT.CODE=FG_ALT.CODE
             Y=FTYP[1,1]; FTYP=FTYP[2,MAX]
             BEGIN CASE
@@ -1148,9 +1153,8 @@ SCROLL.LINE:    !
             GOSUB SET.MSG.DSP
             CRT @(COL,ROW):
         CASE CHR=OTHER.MARGIN
-!      IF OFFSET THEN OFFSET=0 ELSE OFFSET=PWIDTH-5
             OFFSET+=5
-            SCR.LR=1;! COL=5
+            SCR.LR=1
         CASE FG_ACT.CODE=FG_FUNK.CODE
             GOSUB REV_UNDO
             GO TOP
@@ -1204,14 +1208,12 @@ GEOL:       !
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             REPEAT
             IF I#OFFSET THEN
-!                COL++
                 SCR.LR=1
             END
         CASE FG_ACT.CODE=FG_DEL.WORD.CODE
             GOSUB ADD_TO_UNDO
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             GOSUB GET.WORD
-!            INS WORD BEFORE DEL.LIST<1>
             RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
             CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
@@ -1314,8 +1316,13 @@ GET.HELP:   !
                     INDROW = LAST.AM - PDEPTH + 3
                     IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
                     ROW = PDEPTH-2
-                    REC<LAST.AM+1> = DUMMY:Y:' !'
-                END ELSE ROW=1
+                    LBL = DUMMY
+                    REC<LAST.AM+1> = LBL:Y:(IF NUM(LBL) THEN '' ELSE ' !')
+                END ELSE
+                    ROW=1
+                    LCOL=1
+                    COL=5
+                END
                 SCR.UD=TRUE
             END ELSE
                 BEGIN CASE
@@ -1908,17 +1915,17 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
         CALL EB_TRIM(TMP,RDSP(LROW+J.LINE),SPC,'L')
         IF TAB.MODE THEN CALL EB_TRIM(TMP,TMP,TAB,'L')
     END
-    NWORD = FIELD(TMP,SPC,1)
+    NWORD = UPCASE(FIELD(TMP,SPC,1))
     BEGIN CASE
         CASE NWORD='END' ; TMP=TMP[COL2()+1,MAX]
         CASE (NWORD='CASE' OR NWORD='IF') AND TRIM(RDSP(LROW+J.LINE))#''
             TMP=TMP[COL2(),MAX]
             IF INDEX(TMP,'#',1) THEN TMP='AND':TMP ELSE TMP='OR':TMP
     END CASE
+    CHR = RDSP(LROW)[LCOL-1,1]
     IF J.LINE<0 THEN
-        RDSP(LROW+J.LINE):=" ":TMP
+        RDSP(LROW+J.LINE):=SPC:TMP
     END ELSE
-!        LCOL=LEN(RDSP(LROW+J.LINE))+1
         RDSP(LROW+J.LINE)=RDSP(LROW):SPC:TMP
     END
     IF TAB.MODE THEN
@@ -1927,7 +1934,12 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
         CRT.X=1;CRT.Y=PWIDTH+1-COL
         CRT @(5,ROW):
     END ELSE
-        CRT @(COL-DUMMY,ROW):SPC:CLEOL:
+        CRT @(COL-DUMMY,ROW):CLEOL:
+        IF LEN(TRIM(CHR)) NE 0 THEN
+            CRT SPC:
+            ++COL
+            ++LCOL
+        END
         CRTLN=TMP;CRT.X=1;CRT.Y=PWIDTH+1-COL
     END
     GOSUB CRT.LN
@@ -2220,12 +2232,7 @@ BACK.WORD:!
     LCOL=I-1
     FOR I=LCOL TO 1 STEP -1 UNTIL INDEX(SPC:TAB,RDSP(LROW)[I,1],1) OR NOT(ICONV(RDSP(LROW)[I,1],PC)#''); NEXT I
     LCOL=I+1
-    IF OFFSET AND LCOL-OFFSET<0 THEN
-        OFFSET-=20; SCR.LR=1
-        IF OFFSET<0 THEN OFFSET=0
-    END
     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-!    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
     RETURN
 GET.WORD: !
     LLEN1=LLEN+1
@@ -2439,6 +2446,8 @@ GET.EDIT.MODE: !
             IF POS THEN
                 CLOSE F.OBJECT
                 EDIT.MODE = '!'
+            END ELSE
+                EDIT.MODE = 'S'
             END
     END CASE
     RETURN
@@ -2515,7 +2524,7 @@ LAST.USED:!
         DEL LAST.EB<2,POS>
     END
     INS LUK BEFORE LAST.EB<1,1>
-    INS COL:SVM:ROW:SVM:INDROW:SVM:OFFSET:SVM:LCOL BEFORE LAST.EB<2,1>
+    INS LCOL+4:SVM:ROW:SVM:INDROW:SVM:OFFSET:SVM:LCOL BEFORE LAST.EB<2,1>
     I = DCOUNT(LAST.EB<1>, VM)
     LOOP WHILE I > 500 DO
         DEL LAST.EB<1, I>
@@ -2587,6 +2596,11 @@ GET.CATL: !
         END ELSE FLNM.CAT.OPTIONS = ''
         CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':
     END
+    RETURN
+displayLine: !
+    CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5
+    GOSUB CRT.LN
+    CRT @(COL-1,ROW):
     RETURN
 PARSE.CATL: !
     CAT.OPTIONS = FLNM.CAT.OPTIONS
