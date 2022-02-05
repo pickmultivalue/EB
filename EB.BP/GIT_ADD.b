@@ -13,7 +13,7 @@
     shellend = ' 2>&1'
     EQU TRUE TO 1, FALSE TO 0
     nbr_items = DCOUNT(FullPaths, @AM)
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     IO = ''
     FOR i = 1 TO nbr_items

@@ -5,7 +5,7 @@
 ! Return 0 if any ON ERROR conditions occur
 ! Return 1 otherwise
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     flag = 1
     K.Hist_I = ItemName

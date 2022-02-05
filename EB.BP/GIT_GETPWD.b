@@ -12,7 +12,7 @@
 !
 ! Return the git repository
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     IO = GIT_EXEC('info ':FilePath, TRUE)
 !
     IF LEN(IO) = 0 OR INDEX(IO, 'Not a ', 1) OR INDEX(IO, 'ambiguous', 1) THEN

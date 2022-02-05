@@ -7,7 +7,7 @@
     DEFFUN SRC_EXEC()
     EQU TRUE TO 1, FALSE TO 0
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     IO = SRC_EXEC('info ':GETFULLPATH(FilePath), TRUE)
 !
 ! Using the URL and Repository Root we can derive the current

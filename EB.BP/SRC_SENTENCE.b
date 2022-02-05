@@ -46,7 +46,7 @@
     Syntax<-1> = ''
     Syntax<-1> = '        ':CallProg:' ':Asterisk
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     INCLUDE EB.INCLUDES GET.HOME
 !
     FullPaths = CHANGE(TRIM(FIELD(OCONV(@SENTENCE, 'G1 999'), '(', 1)), ' ', @AM)

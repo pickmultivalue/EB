@@ -11,7 +11,7 @@
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     INCLUDE EB.INCLUDES GET.HOME
 !
     FullPaths = SRC_SENTENCE(TRUE, FALSE)

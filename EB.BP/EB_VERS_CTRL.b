@@ -26,7 +26,7 @@
     EQU spc TO ' '
     shell = @IM:'k'
     shellend = ' 2>&1'
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
 ! FLNM is (typically) the "BP" file
 !

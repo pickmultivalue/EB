@@ -54,8 +54,8 @@ MAIN$:!
                 END
             REPEAT
             IF INDEX(ESC,Z,1) THEN
-                Y=CUT.POS<1,1,2>
-                CUT.POS=CUT.POS<1,1,1>
+                Y=CUT.POS<1,1,2>-OFFSET
+                CUT.POS=CUT.POS<1,1,1>-OFFSET
                 CUT.POS-=INDROW
                 IF CUT.POS>=0 AND CUT.POS<=(PDEPTH-1) THEN
                     CRTLN=REC<CUT.POS+INDROW>[Y,1]
@@ -152,14 +152,21 @@ MAIN$:!
                     INS PASTE.TEXT BEFORE REC<INDROW+ROW>
                     CALL EB_MARKADJ(INDROW+ROW,DCOUNT(PASTE.TEXT,AM),1)
                     LCOL=CUT.POS<1,1,2>
-                    CRTLN=PASTE.TEXT[LCOL,PWIDTH-COL]
-                    COL=LCOL+4
-                    CRT @(COL,ROW):
-                    CHR1=PASTE.TEXT[1,COMMENTLEN]
-                    IF CHR1=COMMENT<1,1,1> THEN CRT BG:
-                    CONVERT VM:SVM TO ']\' IN CRTLN
-                    CRT OCONV(CRTLN,'MCP'):CLEOL:@(COL,ROW):
-                    IF CHR1=COMMENT<1,1,1> THEN CRT FG:
+                    COL=LCOL+4-OFFSET
+                    IF COL GT 0 THEN
+                        CRTLN=PASTE.TEXT[LCOL,PWIDTH-COL]
+                        CRT @(COL,ROW):
+                        CHR1=PASTE.TEXT[1,COMMENTLEN]
+                        IF CHR1=COMMENT<1,1,1> THEN CRT BG:
+                        CONVERT VM:SVM TO ']\' IN CRTLN
+                        CRT OCONV(CRTLN,'MCP'):CLEOL:@(COL,ROW):
+                        IF CHR1=COMMENT<1,1,1> THEN CRT FG:
+                    END ELSE
+                        SCR.LR = 1
+                        ADJUST = (PWIDTH-5)
+                        OFFSET -= ADJUST
+                        COL += ADJUST
+                    END
                     CHANGED=TRUE
                 END
                 IF NO.D.L>1 THEN

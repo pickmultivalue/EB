@@ -81,7 +81,7 @@
         ID=BUFF<3>
         rFname = FIELD(ID, '%', 2)
         IF rFname = '' THEN rFname = FNAME
-    END
+    END ELSE rFname = FNAME
     OPEN 'DICT',rFname TO DFILE THEN
         MATREAD IND FROM DFILE,'EB_INDENT' ELSE
             OPEN path:'EB.PARAMS' THEN
@@ -139,12 +139,12 @@
             PE(4)=0; SE(4)=0      ;! END LOOP
         CASE 1
             COMMENTS='!*#'; COMMENTLEN=1
-            EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END METHOD':AM:'END THEN':AM:'LOOP':AM:'REPEAT'
-            EXACT.IND = 0:AM:-1:AM:-2:AM:-1:AM:-1:AM:-1:AM:0:AM:-1
-            EXACT.NEXT = 2:AM:0:AM:0:AM:1:AM:1:AM:1:AM:1:AM:0
-            PREFIX='CASE':AM:'END':AM:'FOR':AM:'LOOP':AM:'METHOD':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
-            PREFIX.IND = -1:AM:-1:AM:0:AM:0:AM:0:AM:-1:AM:-1:AM:-1
-            PREFIX.NEXT = 1:AM:0:AM:1:AM:1:AM:1:AM:0:AM:1:AM:1
+            EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END METHOD':AM:'END THEN':AM:'END TRY':AM:'LOOP':AM:'REPEAT':AM:'TRY'
+            EXACT.IND = 0:AM:-1:AM:-2:AM:-1:AM:-1:AM:-1:AM:-1:AM:0:AM:-1:AM:0
+            EXACT.NEXT = 2:AM:0:AM:0:AM:1:AM:0:AM:1:AM:0:AM:1:AM:0:AM:1
+            PREFIX='CASE':AM:'CATCH':AM:'END':AM:'FOR':AM:'LOOP':AM:'METHOD':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
+            PREFIX.IND = -1:AM:-1:AM:-1:AM:0:AM:0:AM:0:AM:-1:AM:-1:AM:-1
+            PREFIX.NEXT = 1:AM:1:AM:0:AM:1:AM:1:AM:1:AM:0:AM:1:AM:1
             SUFFIX='ELSE':AM:'ERROR':AM:'LOCKED':AM:'THEN'
             MATCH.S='P3':VM:'P4'
             MATCH.S<2>='P5':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3':VM:'E3':VM:'P6':VM:'S3'

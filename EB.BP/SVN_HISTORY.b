@@ -41,7 +41,7 @@
 !
 ! FileName may be the local one...it only makes sense to use the original
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     FileName = GETFLNM(FilePath)
     GOSUB Parse_Filters
 !

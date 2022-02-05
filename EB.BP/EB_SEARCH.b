@@ -20,10 +20,10 @@ MAIN$:!
     RefreshRequired=FALSE
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
-    MSG='String (A{+-}/for all;V/vars;C/char) '
+    MSG='String (A{+-}\for all;V\vars;C\char) '
     ICOL=LEN(MSG); IROW=(PDEPTH-1)
     Indent=ITAB<ITABPOS>
-    CRT MSG.CLR:MSG:
+    GOSUB DisplayPrompt
     SAVEROW=ROW
     L=PWIDTH-1-ICOL; SSTR=''; SRCH.STR=''
     SPWIDTH = PWIDTH
@@ -39,6 +39,13 @@ MAIN$:!
             IF RPOS AND RPOS<21 THEN Z=SSS<1,RPOS>
             INPTYPE='LIT'; GOSUB INPT
             LOCATE FG_ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
+            IF FG_ACT.CODE=FG_HLP.CODE THEN
+                CALL EB_HELP('EBSEARCH', TRUE)
+                SCR.LR=1
+                CALL EB_REFRESH
+                GOSUB DisplayPrompt
+                POS = TRUE
+            END
         WHILE POS DO
             BEGIN CASE
                 CASE FG_ACT.CODE=FG_OPT.CODE
@@ -51,7 +58,7 @@ MAIN$:!
         REPEAT
         CONVERT VM TO AM IN SSS
     END ELSE
-        IF COUNT(PSSTR,AM) THEN PSSTR = PSSTR<2>:'/':PSSTR<1>
+        IF COUNT(PSSTR,AM) THEN PSSTR = PSSTR<2>:'\':PSSTR<1>
         Z=PSSTR
         IF LEN(Z)=0 THEN Z=SSS<RPOS>
     END
@@ -147,7 +154,7 @@ MAIN$:!
     IF SSTR=ESC THEN GO 4096
     IF SSTR="" AND PSSTR="" THEN GO 4096
     REPEATSEARCH = (SSTR=PSSTR)
-    OPTIONS=FIELD(SSTR,'/',1)
+    OPTIONS=FIELD(SSTR,'\',1)
     SSTR=SSTR[COL2()+1,MAX]
     IF SSTR='' THEN SSTR=OPTIONS; OPTIONS='' ELSE OPTIONS=OCONV(OPTIONS,'MCU')
     WHOLE.WORDS=INDEX(OPTIONS,'V',1) NE 0
@@ -167,7 +174,7 @@ MAIN$:!
             END
         NEXT I
     END
-    IF OPTIONS#'' THEN PSSTR=OPTIONS:'/':SSTR
+    IF OPTIONS#'' THEN PSSTR=OPTIONS:'\':SSTR
     SRCH.STR=SSTR
     IF INDEX(OPTIONS,'A',1) THEN GO 4100          ;! display all occurrences.
     STRT=INDROW+ROW
@@ -461,4 +468,7 @@ CRT.LN: !
         sitokenCounte += tokens<tokenCount,4>
     NEXT tokenCount
     CRT WHITE<1,1>:FG:
+    RETURN
+DisplayPrompt: !
+    CRT MSG.CLR:MSG:
     RETURN

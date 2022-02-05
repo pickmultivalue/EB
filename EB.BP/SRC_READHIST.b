@@ -25,7 +25,7 @@
     INCLUDE JBC.h
     DEFFUN SRC_OPENHIST()
     INCLUDE EB.INCLUDES GET.USER
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     History = ''
     mvpos = 1       ;! used for placement of values into History

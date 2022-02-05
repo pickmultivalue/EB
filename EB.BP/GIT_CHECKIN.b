@@ -31,7 +31,7 @@
 !
     rc = SRC_OPENLOCKS(F.Locks)
     commit_path = ''
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items

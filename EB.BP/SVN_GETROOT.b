@@ -8,7 +8,7 @@
     INCLUDE JBC.h
     EQU TRUE TO 1
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     ChildPath = SVN_GETPWD(FilePath, DIR_DELIM_CH, TRUE)
     FullPath = GETFULLPATH(FilePath)
 !
@@ -27,6 +27,6 @@
     LOOP WHILE SRC_CASE(c_ChildPath<ChildPathCNT>) = SRC_CASE(c_FullPath<FullPathCNT>) AND FullPathCNT > 1 DO
         ChildPathCNT--
         FullPathCNT--
-        REPEAT
+    REPEAT
 !
-        RETURN CONVERT(FIELD(FullPath, @AM, 1, FullPathCNT), @AM, DIR_DELIM_CH)
+    RETURN CONVERT(FIELD(FullPath, @AM, 1, FullPathCNT), @AM, DIR_DELIM_CH)

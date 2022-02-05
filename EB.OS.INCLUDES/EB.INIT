@@ -5,7 +5,7 @@ INCLUDE jCmdKeys.h
 !#else
 CALL JBASECommandInit
 !#endif
-Timeout=300
+time_out=300
   IF UNASSIGNED(EB.FILE.LIST) THEN
     MAT EB.FILES=''; EB.FILE.LIST=''
   END ELSE IF EB.FILE.LIST=0 THEN EB.FILE.LIST=''

@@ -13,7 +13,7 @@
 !#ELSE
         cmdsub='JBASECommandNext'
 !#END
-        CALL @cmdsub(Code,FG_TYPEAHEAD.BUF,Timeout)
+        CALL @cmdsub(Code,FG_TYPEAHEAD.BUF,time_out)
         CALL EB_CONVCODE(Code, FG_TYPEAHEAD.BUF, FG_ACT.CODE)
         IF FG_TYPEAHEAD.BUF#'' AND NOT(FG_ACT.CODE) THEN
             CHR=FG_TYPEAHEAD.BUF 'R#1'

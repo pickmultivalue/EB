@@ -19,7 +19,7 @@
     EQU TRUE TO 1, FALSE TO 0
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
 ! First get user's home dir
 !
@@ -27,8 +27,8 @@
 !
     homedir = SVN_GETHOMEPATH(FilePath)
     OPEN homedir TO F.Target ELSE
-    Record = 'Error: cannot open ':homedir
-    GOTO Read_Error
+        Record = 'Error: cannot open ':homedir
+        GOTO Read_Error
     END
 !
 ! Parse out the revision
@@ -36,70 +36,70 @@
     ItemName = tItemName
     revision = FIELD(ItemName, ',', 2)
     IF revision THEN
-    ItemName = ItemName[1, COL1()-1]
+        ItemName = ItemName[1, COL1()-1]
     END
 !
 ! Backup current record (if any)
 !
     READ Backup FROM F.Target, ItemName THEN
-    Restore = TRUE
-    DELETE F.Target, ItemName
-END ELSE
-Restore = FALSE
-END
+        Restore = TRUE
+        DELETE F.Target, ItemName
+    END ELSE
+        Restore = FALSE
+    END
 !
 ! Check to see what revision we have at the moment
 !
-Status_IO = TRIM(SVN_SRC_STATUS(homedir, ItemName)[2, -1])
-IF LEN(Status_IO) THEN
-current_rev = FIELD(Status_IO, ' ',2)
-END ELSE
-current_rev = ''
-END
+    Status_IO = TRIM(SVN_SRC_STATUS(homedir, ItemName)[2, -1])
+    IF LEN(Status_IO) THEN
+        current_rev = FIELD(Status_IO, ' ',2)
+    END ELSE
+        current_rev = ''
+    END
 !
-Record = SVN_CHECKOUT(FALSE, FilePath, ItemName)
-IF LEN(Record) THEN
-ItemName = tItemName          ;! errmsg purposes
-Record = 'Error: from svn checkout ':@AM:@AM:Record
-GOTO Read_Error
-END
+    Record = SVN_CHECKOUT(FALSE, FilePath, ItemName)
+    IF LEN(Record) THEN
+        ItemName = tItemName          ;! errmsg purposes
+        Record = 'Error: from svn checkout ':@AM:@AM:Record
+        GOTO Read_Error
+    END
 !
 ! Now get the requested item
 !
-READ Record FROM F.Target, ItemName THEN
-ok = TRUE
-END ELSE
-ok = FALSE
-END
+    READ Record FROM F.Target, ItemName THEN
+        ok = TRUE
+    END ELSE
+        ok = FALSE
+    END
 !
 ! Restore the item on disk
 !
-IF Restore THEN
+    IF Restore THEN
 !
 ! First re-issue a correct svn update command
 ! otherwise subsequent updates will cause an
 ! error with subversion
 !
-IF revision # current_rev THEN
-IF NOT(LEN(current_rev)) THEN DEBUG
-ItemName := ',':current_rev
-Record = SVN_CHECKOUT(FALSE, FilePath, ItemName)
-ok = INDEX(Record, 'revision', 1)
-END
+        IF revision # current_rev THEN
+            IF NOT(LEN(current_rev)) THEN DEBUG
+            ItemName := ',':current_rev
+            Record = SVN_CHECKOUT(FALSE, FilePath, ItemName)
+            ok = INDEX(Record, 'revision', 1)
+        END
 !
-WRITE Backup ON F.Target, ItemName
-END ELSE
-IO = SVN_REVERT(homedir:DIR_DELIM_CH:ItemName)
-END
+        WRITE Backup ON F.Target, ItemName
+    END ELSE
+        IO = SVN_REVERT(homedir:DIR_DELIM_CH:ItemName)
+    END
 !
-IF NOT(ok) THEN
-Record = 'Error: failed to read ':ItemName:' after'
-Record<3> = 'SVN_CHECKOUT of ':ItemName
-GOTO Read_Error
-END
+    IF NOT(ok) THEN
+        Record = 'Error: failed to read ':ItemName:' after'
+        Record<3> = 'SVN_CHECKOUT of ':ItemName
+        GOTO Read_Error
+    END
 !
-RETURN TRUE
+    RETURN TRUE
 !
 Read_Error:
 !
-RETURN FALSE
+    RETURN FALSE

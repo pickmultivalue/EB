@@ -76,7 +76,7 @@ MAIN$:!
                 END
             END ELSE IF J=CUT.POS THEN CRT @(4,RR):'[':
             IF J=CUT.POS<1,1,1> THEN
-                CRT @(CUT.POS<1,1,2>+4,RR):BG:'[':FG:
+                CRT @(CUT.POS<1,1,2>+4-OFFSET,RR):BG:'[':FG:
             END
         NEXT J
         J += am_start

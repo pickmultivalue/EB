@@ -16,7 +16,7 @@
     DEFFUN SVN_GETHOMEPATH()
     EQU TRUE TO 1, FALSE TO 0
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     subversion = SVN_REPOSITORY(FullPaths<1>)
 !
 ! First get user's home dir

@@ -12,7 +12,7 @@
                 THIS.SCREEN<RR+1>=LINE LINE.HASH
                 PRFX=ACT.PROMPTS<1,I,K>
                 IF PRFX THEN
-                    IF LABEL[1,1]#PRFX[1,1] THEN  ;! DEBUG
+                    IF LABEL[1,1]#PRFX[1,1] THEN
                         LABEL='   ':PRFX
                     END
                     PRFX=LEN(PRFX)+2

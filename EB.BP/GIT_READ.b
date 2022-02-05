@@ -22,7 +22,7 @@
     EQU MAX TO 999999
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
 ! First get user's home dir
 !

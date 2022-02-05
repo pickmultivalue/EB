@@ -49,6 +49,17 @@ MAIN$:!
         FOR CC = 1 TO DC UNTIL POS
             SSTR = SSTRINGS<CC>
             L=LEN(SSTR)
+            IF CC LT DC AND L EQ 0 THEN
+                CC=2
+                SSTR = @AM:SSTRINGS<CC>
+                L++
+            END ELSE
+                IF CC EQ DC-1 AND LEN(SSTRINGS<DC>) EQ 0 THEN
+                    CC++
+                    SSTR := @AM
+                    L++
+                END
+            END
             IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
                 C1 = COUNT(SRCH.STRING[1,Temp1-2],SSTR)
                 IF C1 THEN

@@ -19,7 +19,7 @@
     EQU TRUE TO 1, FALSE TO 0
 !
     HandleLocks = FALSE
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
 ! First get user's home dir
 !

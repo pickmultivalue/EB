@@ -1,5 +1,6 @@
     FUNCTION EBJSHOW(command)
     INCLUDE JBC.h
+!    DEBUG
     IF command[1,2] = '-c' THEN
         prog = FIELD(command,' ',2)
         IF (prog 'R#2') = '.b' THEN prog = prog[1, LEN(prog)-2]

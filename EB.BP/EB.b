@@ -65,7 +65,7 @@
     NBR.WORDS=DCOUNT(FG_SENTENCE,SPC)
     INCLUDE EB.OS.INCLUDES EB.INIT
     INCLUDE EB.OS.INCLUDES OS.ERRORS
-    OPEN 'MD' TO F.MD THEN MD_flag = @TRUE ELSE MD_flag = @FALSE
+    CALL EB_OPEN('','MD',F.MD,0,MD_flag)
     path = EBGETHOME()
     CALL EB_OPEN('','.',F.currdir,1,0)
     CALL EB_OPEN('',path:'EB.EQUS',FG_EQUS,1,0)
@@ -442,9 +442,10 @@ FIRST.ITEM: !
         GO 10
     END
     BAS.OPTS = ''
-    OPEN 'DICT',FLNM THEN
-        READ ITAB FROM 'EB_INDENT' ELSE NULL
-        READ BAS.OPTS FROM 'EB_BAS_OPTS' ELSE NULL
+    CALL EB_OPEN('DICT',FLNM,f_dummy,0,found)
+    IF found THEN
+        READ ITAB FROM f_dummy,'EB_INDENT' ELSE NULL
+        READ BAS.OPTS FROM f_dummy,'EB_BAS_OPTS' ELSE NULL
     END
 READ.ITEM:!
     UPDATES=TRUE
@@ -594,7 +595,7 @@ ALREADY.LOCKED: !
         INDROW = COL<1,1,3>
         OFFSET = COL<1,1,4>
         LCOL = COL<1,1,5>
-        COL = COL<1,1,1>
+        COL = LCOL+4-OFFSET;!COL<1,1,1>
     END ELSE
         COL=5; ROW=0; INDROW=1; OFFSET=0; LCOL=1
     END
@@ -957,8 +958,8 @@ SCROLL.LINE:    !
                 GOSUB GET.WORD
                 IF TRIM(WORD[1,1])#'' AND WORD[1,1]#TAB THEN
                     WORD=TRIM(WORD)
-                    LOCATE 'V/':WORD IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
-                    INS 'V/':WORD BEFORE SSS<1>
+                    LOCATE 'V\':WORD IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
+                    INS 'V\':WORD BEFORE SSS<1>
                 END
             END
             Z=INDROW
@@ -1922,11 +1923,17 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
             TMP=TMP[COL2(),MAX]
             IF INDEX(TMP,'#',1) THEN TMP='AND':TMP ELSE TMP='OR':TMP
     END CASE
-    CHR = RDSP(LROW)[LCOL-1,1]
+    LOOP
+        CHR = RDSP(LROW)[LCOL-1,1]
+    WHILE LEN(CHR) EQ 0 AND LCOL GT 1 DO
+        --LCOL
+        --COL
+    REPEAT
+    CHR = (IF OCONV(CHR,'MCAN') EQ CHR THEN SPC ELSE '')
     IF J.LINE<0 THEN
-        RDSP(LROW+J.LINE):=SPC:TMP
+        RDSP(LROW+J.LINE):=CHR:TMP
     END ELSE
-        RDSP(LROW+J.LINE)=RDSP(LROW):SPC:TMP
+        RDSP(LROW+J.LINE)=RDSP(LROW):CHR:TMP
     END
     IF TAB.MODE THEN
         CALL EB_TABCOL(RDSP(LROW+J.LINE),0,LCOL,FALSE)
@@ -1940,7 +1947,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
             ++COL
             ++LCOL
         END
-        CRTLN=TMP;CRT.X=1;CRT.Y=PWIDTH+1-COL
+        CRTLN=TMP;CRT.X=1+OFFSET;CRT.Y=PWIDTH+1-COL
     END
     GOSUB CRT.LN
     CHANGES(LROW+J.LINE)=TRUE
@@ -2170,12 +2177,12 @@ TCL: !
     IF ENCRYPTED='Y' OR TYPE='DEBUG' ELSE GOSUB CHKSUM
     IF (TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG') AND INDEX('AC',Y,1) THEN
         IF FG_OSTYPE='JB' THEN
-            LOCATE FLNM IN CATL.LIST<1> SETTING FPOS ELSE
-                INS FLNM BEFORE CATL.LIST<1,FPOS>
-                INS '' BEFORE CATL.LIST<2,FPOS>
+            LOCATE FLNM IN CATL.LIST<1> SETTING CATFPOS ELSE
+                INS FLNM BEFORE CATL.LIST<1,CATFPOS>
+                INS '' BEFORE CATL.LIST<2,CATFPOS>
             END
-            LOCATE ITNM IN CATL.LIST<2, FPOS> SETTING IPOS ELSE
-                INS ITNM BEFORE CATL.LIST<2, FPOS, IPOS>
+            LOCATE ITNM IN CATL.LIST<2, CATFPOS> SETTING IPOS ELSE
+                INS ITNM BEFORE CATL.LIST<2, CATFPOS, IPOS>
             END
         END ELSE
             INCLUDE EB.OS.INCLUDES CATALOG
@@ -2285,9 +2292,8 @@ GET.PREVWORD: !
     IF Y#"DELETE" THEN GO 999
 !
     Z = FALSE
-    OPEN FLNM:',OBJECT' TO F.BP THEN
-        Z = TRUE
-    END ELSE
+    CALL EB_OPEN('','FLNM:',OBJECT'',F.BP,0,Z)
+    IF NOT(Z) THEN
         IF FLNM 'R#2' = 'BP' THEN
             F.BP = FIL
             Z = TRUE
@@ -2598,7 +2604,7 @@ GET.CATL: !
     END
     RETURN
 displayLine: !
-    CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5
+    CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-5
     GOSUB CRT.LN
     CRT @(COL-1,ROW):
     RETURN

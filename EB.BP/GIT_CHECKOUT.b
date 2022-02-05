@@ -36,7 +36,7 @@
 ! First get user's home dir
 !
     INCLUDE EB.INCLUDES GET.HOME
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
 ! Check if a specific revision is required
 !

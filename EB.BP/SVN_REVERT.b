@@ -22,7 +22,7 @@
 !
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items

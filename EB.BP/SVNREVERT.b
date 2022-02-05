@@ -21,7 +21,7 @@
     OPEN TempFile TO F.Temp ELSE STOP 201, TempFile
 !
     IF NOT(GETENV('SVN_EDITOR', Editor)) THEN Editor = 'vi'
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     INCLUDE EB.INCLUDES GET.HOME
 !
     K.Template = '%':user:'_revert%'

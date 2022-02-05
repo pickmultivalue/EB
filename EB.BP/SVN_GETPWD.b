@@ -10,7 +10,7 @@
 !
 ! Return the subversion repository
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     IO = SVN_EXEC('info ':FilePath, TRUE)
 !
     IF INDEX(IO, 'Not a version', 1) THEN

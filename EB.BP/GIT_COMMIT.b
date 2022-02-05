@@ -28,7 +28,7 @@
         TempFile = '.'
 !
     OPEN TempFile TO F.Temp ELSE STOP 201, TempFile
-    IF NOT(GETENV('SRC_EDITOR', Editor)) THEN 
+    IF NOT(GETENV('SRC_EDITOR', Editor)) THEN
         IF LEN(EBJSHOW('-c vi')) THEN
             Editor = 'vi'
         END ELSE
@@ -36,7 +36,7 @@
         END
     END
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     INCLUDE EB.INCLUDES GET.HOME
 !
     CommitTemplate = '--This line, and those below, will be ignored--'
@@ -125,7 +125,7 @@
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP
         IF LEN(EBJSHOW('-c ls')) THEN
-            cmd = 'ls -l --time-style=full-iso' 
+            cmd = 'ls -l --time-style=full-iso'
         END ELSE
             cmd = 'jdir'
         END

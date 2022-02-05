@@ -19,7 +19,7 @@
     shell = CHAR(255):'k'
     shellend = ' 2>&1'
     INCLUDE EB.INCLUDES GET.HOME
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     FileName = SENTENCE(1)
     IF FileName[1,1] = '(' THEN FileName = ''
     Opts = UPCASE(FIELD(@SENTENCE, '(', 2))

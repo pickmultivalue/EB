@@ -6,7 +6,7 @@
     DEFFUN SVN_EXEC()
     EQU TRUE TO 1, FALSE TO 0
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     IO = SVN_EXEC('info ':GETFULLPATH(FilePath), TRUE)
 !
 ! Example of svn info

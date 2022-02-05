@@ -42,7 +42,7 @@
     IF Capturing THEN
         EXECUTE shell:cmd:shellend CAPTURING IO
         IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1) OR INDEX(IO, 'fatal', 1)) THEN
-            INCLUDE EB.INCLUDES SRC_DEBUG
+            INCLUDE EB.INCLUDES SRCDBG
             git_io = 'git_':SYSTEM(18)
             home = GETENV('HOME')
             EXECUTE shell:icmd:' > ':home:DIR_DELIM_CH:git_io:shellend

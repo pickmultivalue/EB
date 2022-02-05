@@ -61,7 +61,7 @@
             ignore = dashes<pos>[3,99]
         END
     END
-    IF LEN(sent) EQ 0 AND NOT(findkey) THEN STOP
+    IF LEN(sent) EQ 0 AND NOT(findkey OR types) THEN STOP
     IF LEN(fname) OR NOT(LEN(EBJSHOW('-c grep'))) THEN
         IF LEN(fname) EQ 0 THEN fname = sent<1>
         find_cmd = 'SEARCH ':fname

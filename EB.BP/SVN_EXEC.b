@@ -7,7 +7,7 @@
     IF Capturing THEN
         EXECUTE cmd CAPTURING IO
         IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1)) THEN
-            INCLUDE EB.INCLUDES SRC_DEBUG
+            INCLUDE EB.INCLUDES SRCDBG
             svn_io = 'svn_':SYSTEM(18)
             EXECUTE icmd:' > ':svn_io:shellend
             OPEN '.' THEN

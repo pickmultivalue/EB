@@ -1,10 +1,10 @@
-    IF GETENV('SRC_DEBUG', src_debug) THEN
+    IF GETENV('SRCDBG', src_debug) THEN
         IF src_debug#1 THEN
             src_debug = CHANGE(src_debug, ',', @AM)
             LOCATE SYSTEM(40) IN src_debug SETTING src_debug ELSE src_debug = 0
         END
         IF src_debug THEN
-            CRT 'SRC_DEBUG: Now in ':SYSTEM(40)
+            CRT 'SRCDBG: Now in ':SYSTEM(40)
             DEBUG
         END
     END

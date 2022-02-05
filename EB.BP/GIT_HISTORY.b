@@ -41,7 +41,7 @@
 !
 ! FileName may be the local one...it only makes sense to use the original
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     FileName = GETFLNM(FilePath)
     GOSUB Parse_Filters
 !
@@ -49,10 +49,10 @@
 !    Repository = GIT_GET_REPOSITORY(FileName)
 !    Repository := '/':FileName
 !    repo = Repository
-    repo = FilePath 
+    repo = FilePath
 !
     Stash = ItemName<2> EQ 'S'
-    ItemName = ItemName<1> 
+    ItemName = ItemName<1>
     IF Stash THEN
         IO = GIT_EXEC('reflog show --format="medium" stash', TRUE)
     END ELSE
@@ -70,7 +70,7 @@
             ll = 1
             LOOP
                 REMOVE user FROM IO AT loc SETTING delim
-            UNTIL FIELD(user, ':', 1) EQ 'Author' OR ll GT 4 DO ll++ REPEAT 
+            UNTIL FIELD(user, ':', 1) EQ 'Author' OR ll GT 4 DO ll++ REPEAT
             user = TRIM(FIELD(user, ':', 2))
             REMOVE timestamp FROM IO AT loc SETTING delim
             timestamp = TRIM(timestamp)
@@ -83,7 +83,7 @@
                 REMOVE line FROM IO AT loc SETTING delim
             UNTIL FIELD(line, ' ', 1) = 'commit' DO
                 IF LEN(line) THEN
-                    desc<1, 1, -1> = TRIM(line) 
+                    desc<1, 1, -1> = TRIM(line)
                 END
             REPEAT
             IF LEN(Filters) THEN

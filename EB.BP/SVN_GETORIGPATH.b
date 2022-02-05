@@ -14,7 +14,10 @@
         IO = '. ':currdir
     END ELSE
         FileName = GETFLNM(FilePath)
-        EXECUTE 'jshow -f ':FileName CAPTURING IO
+        IO = FilePath
+        OPEN FileName TO F.temp THEN
+            rc = IOCTL(F.temp, JBC_COMMAND_GETFILENAME, IO)
+        END
     END
 !
     RETURN FIELD(TRIM(IO<1>), ' ', 2, 99)

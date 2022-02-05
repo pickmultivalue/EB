@@ -8,7 +8,7 @@
     shell = @IM:'k'
     shellend = ' 2>&1'
 !
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
 !
     DEFFUN GETSRCTYPE()
     scType = GETSRCTYPE()
@@ -22,7 +22,7 @@
                     READ io FROM K.push ELSE io = 'Push error'
                     DELETE K.push
                     IF NOT(INDEX(io, 'ailed', 1)) THEN BREAK
-                NEXT tries 
-            END 
+                NEXT tries
+            END
     END CASE
     RETURN io

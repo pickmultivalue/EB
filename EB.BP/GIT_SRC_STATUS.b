@@ -4,7 +4,7 @@
 ! Return the git status of given file/item
 !
     DEFFUN GIT_EXEC()
-    INCLUDE EB.INCLUDES SRC_DEBUG
+    INCLUDE EB.INCLUDES SRCDBG
     root = CHANGE(FileName, DIR_DELIM_CH, @AM)
     dc = DCOUNT(root, @AM)
     fName = root<dc>

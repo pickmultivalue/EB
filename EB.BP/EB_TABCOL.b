@@ -6,6 +6,7 @@
     EQU TABCH TO CHAR(9)
     Indent=ITAB<ITABPOS>
     Nbr.Tabs=COUNT(CRTLN[1,TCOL],TABCH)
+    ADJUST = 0
     IF CHGLCOL THEN
         IF TAB.MODE THEN
             TMPCOL=0
@@ -23,13 +24,16 @@
         END ELSE
             TCOL=DCOL-4+OFFSET
         END
-        IF TCOL+4 GT PWIDTH THEN
-            OFFSET += PWIDTH
-            TCOL -= PWIDTH
-            DCOL -= PWIDTH
+        IF TCOL GT (OFFSET+PWIDTH-5) THEN
+            ADJUST = (PWIDTH-5)
         END
     END ELSE
         GOSUB SETCOL
+    END
+    IF ADJUST THEN
+        OFFSET += ADJUST
+        DCOL -= ADJUST
+        SCR.LR=1
     END
     RETURN
 !
@@ -47,8 +51,10 @@ SETCOL:
     END ELSE NCOL=TCOL
     DCOL=NCOL-OFFSET+4
     IF DCOL<5 THEN
-        DCOL+=OFFSET
-        OFFSET -= (PWIDTH-5)
-        SCR.LR=1
+        ADJUST = 0-(PWIDTH-5)
+    END ELSE
+        IF DCOL>PWIDTH THEN
+            ADJUST = (PWIDTH-5)
+        END
     END
     RETURN

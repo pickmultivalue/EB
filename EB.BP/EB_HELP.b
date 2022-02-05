@@ -59,6 +59,43 @@ MAIN$:!
             IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
             FG_ACT.CODE=FALSE
             OS.HELP=TRUE
+        CASE WORD='EBSEARCH'
+            CRT @(-1):'Search Help'
+            CRT
+            CRT INDENT:'General syntax:'
+            CRT
+            CRT INDENT:'{[A{[+,-]},V,C,X]\}{^}search string{$}'
+            CRT
+            CRT INDENT:'//     - find next logical group delimiter (e.g. END, END ELSE, WHILE, UNTIL, })'
+            CRT INDENT:'\\     - find previous logical group delimiter'
+            CRT
+            CRT INDENT:'opts: (preceded by "\")'
+            CRT
+            CRT INDENT:'A      - all occurrences'
+            CRT INDENT:'V      - find matching variable names only'
+            CRT INDENT:'C      - search string must be a series of 3 digits which will be converter to CHAR(nnn)'
+            CRT INDENT:'X      - search string can be a valid REGEX expression (non Windows)'
+            CRT
+            CRT INDENT:'The + and - are options to use with A to limit forward or backward only results'
+            CRT
+            CRT INDENT:'The search string can optionally start with ^ to denote match from the start of a line'
+            CRT INDENT:'Additionally the search string can optionally end with $ to denote match from the end of a line'
+            CRT INDENT:'NOTE: An alternative use to ^ is ^nnn to convert to CHAR(nnn)'
+            CRT
+            CRT INDENT:'e.g. Find all occurrences of the variable "MY.VAR" starting at the current position'
+            CRT INDENT:'     AV+\MY.VAR'
+            CRT
+            CRT INDENT:'     Find a label starting with MAIN'
+            CRT INDENT:'     ^MAIN'
+            CRT
+            CRT INDENT:'     Find the next line containing COL or ROW'
+            CRT INDENT:'     X\COL|ROW'
+            CRT
+            CRT INDENT:'Press any key...':
+            CALL EB_GET_INPUT(CHR, CHR.NBR)
+            IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
+            FG_ACT.CODE=FALSE
+            OS.HELP=TRUE
         CASE WORD='EBREPLACE'
             CRT @(-1):'Replace Help'
             CRT
