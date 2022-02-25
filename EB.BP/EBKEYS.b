@@ -2,17 +2,17 @@
     DIM EB_CHARS(100)
     INCLUDE EB.EQUS EB.CHARS
     cmd = SYSTEM(1000)
-    
+
     OPEN 'EB.PARAMS' TO f.params ELSE STOP 201, 'EB.PARAMS'
     OPEN 'EB.EQUS' TO f.equs ELSE STOP 201, 'EB.EQUS'
-    
+
     READ equs FROM f.equs, 'EB.CHARS' ELSE STOP 202, 'EB.CHARS'
-    
+
     DEFFUN FNKEYTRANS()
-    
+
     ttype = cmd<2>
     specific_setting = cmd<3>
-    
+
     IF (specific_setting 'R#1') = '*' THEN
         specific_setting = specific_setting[1, LEN(specific_setting)-1]
         wild_card = @TRUE
@@ -61,13 +61,13 @@
 
                 FOR i = 2 TO 100
                     existing = EB_CHARS(i)
-                    IF existing = chars AND i # attr THEN
+                    IF existing = chars AND i NE attr THEN
                         CRT 'Sequence already in use in ':settings<i>:' (':i:')'
                         BREAK
                     END
                 NEXT i
 
-                IF chars # save_chars THEN
+                IF chars NE save_chars THEN
                     IF i > 100 THEN
                         changed = @TRUE
                         EB_CHARS(attr) = chars

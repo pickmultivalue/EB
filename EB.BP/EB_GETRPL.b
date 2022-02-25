@@ -61,7 +61,7 @@ MAIN$:!
         RETURN
     END
     CONVERT VM TO AM IN RSS
-    IF FG_ACT.CODE AND FG_ACT.CODE # FG_AMD.CODE THEN GO 3099
+    IF FG_ACT.CODE AND FG_ACT.CODE NE FG_AMD.CODE THEN GO 3099
     LOCATE Z IN RSS<am_start> SETTING RPOS ELSE
         IF RPOS<50 THEN RPOS=0 ELSE
             RPOS=50
@@ -105,7 +105,7 @@ MAIN$:!
             RANGE=''
         END ELSE
             RANGE=FIELD(ROPTS,'-',2)
-            IF LEN(RANGE)#0 THEN
+            IF LEN(RANGE) NE 0 THEN
                 IF RANGE[1,1]='E' THEN
                     RANGE=CNT
                 END ELSE
@@ -157,7 +157,7 @@ MAIN$:!
         L=6; Z=INDROW+ROW; INPTYPE='N0'
         STRT=Z
         IF NOT(ReplMode) THEN
-            IF LEN(RANGE<2>)#0 THEN STRT=RANGE<2>
+            IF LEN(RANGE<2>) NE 0 THEN STRT=RANGE<2>
             GO 3029
         END
         CRT MSG.CLR:"From line ":
@@ -171,7 +171,7 @@ MAIN$:!
         IF STRT=1 THEN LINE.POS=0 ELSE LINE.POS=INDEX(REC,AM,STRT-1)  ;!+1
 3030    ! Get End Line
         IF NOT(ReplMode) THEN
-            IF LEN(RANGE)#0 THEN
+            IF LEN(RANGE) NE 0 THEN
                 ENDL=RANGE<1>
             END ELSE
                 nlines = OCONV(ROPTS, 'MCN')
@@ -214,7 +214,7 @@ MAIN$:!
                     IF FG_ACT.CODE THEN
                         IF FG_ACT.CODE=FG_BCK.CODE AND I>1 THEN I-=2 ELSE GO 3099
                     END ELSE
-                        RPL.PARMS(I)=(Y#'N')
+                        RPL.PARMS(I)=(Y NE 'N')
                     END
                 END
             NEXT I
@@ -228,7 +228,7 @@ MAIN$:!
         END
         CRT MSG.AKN:
 ! Perform the Replacements
-        IF CONFIRM OR ENDL#STRT THEN CRT ELSE IF ENDL=ORIG.ROW THEN CRT @(5,ROW):
+        IF CONFIRM OR ENDL NE STRT THEN CRT ELSE IF ENDL=ORIG.ROW THEN CRT @(5,ROW):
         IF SwitchValues THEN
             SwitchValues = RSTR
             RSTR = WSTR
@@ -266,7 +266,7 @@ MAIN$:!
             CASE LSTR='A'
                 FG_ACT.CODE = FG_MULTI.CODE
             CASE 1
-                IF ENDL#STRT THEN
+                IF ENDL NE STRT THEN
                     CRT; CRT MSG.CLR:"That's all!  ":PR:" for original page, or line number? ":
                     L=6; Z=""; INPTYPE='N0'
                     GOSUB INPT

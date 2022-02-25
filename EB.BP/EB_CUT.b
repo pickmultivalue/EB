@@ -25,7 +25,7 @@ MAIN$:!
             GOSUB CHG.LROW
             NO.D.L=0
         END ELSE
-            IF CUT.POS#'' THEN
+            IF LEN(CUT.POS) THEN
                 SECOND.CUT=INDROW+ROW
                 IF (SECOND.CUT:SVM:LCOL)=CUT.POS THEN
                     SECOND.CUT+=1
@@ -35,7 +35,7 @@ MAIN$:!
                 END
                 SECOND.CUT<1,1,2>=LCOL
             END
-            CRT @(COL-1+(CUT.POS#''),ROW):BG:
+            CRT @(COL-1+(CUT.POS NE ''),ROW):BG:
             IF CUT.POS='' THEN CRT '[': ELSE CRT ']':
             CRT FG:
             IF CUT.POS='' THEN
@@ -81,11 +81,11 @@ MAIN$:!
     END
     IF NO.D.L THEN
         CUT.TEXT=""
-        SCR.UD=(DEL.LINE#'' AND (ROW+NO.D.L)<=(PDEPTH-1) AND CHR=SDEL AND ROW>=0 AND CUT.POS<1,1,1><=CUT.POS<2,1,1> OR CHR#SDEL)
+        SCR.UD=(DEL.LINE NE '' AND (ROW+NO.D.L)<=(PDEPTH-1) AND CHR=SDEL AND ROW>=0 AND CUT.POS<1,1,1><=CUT.POS<2,1,1> OR CHR NE SDEL)
         Y=INDROW
         IF Z='!' THEN
             FG_ACT.CODE=FG_SEL.CODE
-            ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN]#COMMENT<1,1,1>
+            ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN] NE COMMENT<1,1,1>
         END
         IF Z EQ '^' THEN
             ROTATE = ''
@@ -136,15 +136,15 @@ MAIN$:!
                 INDROW+=1
             END ELSE
                 CUT.TEXT<-1>=REC<INDROW+ROW>
-                IF FG_ACT.CODE#FG_SEL.CODE THEN   ;! Cut
-                    IF SCR.UD AND (NOT(CHR=SDEL) OR J#NO.D.L) THEN CRT @(0,ROW):DEL.LINE:
+                IF FG_ACT.CODE NE FG_SEL.CODE THEN   ;! Cut
+                    IF SCR.UD AND (NOT(CHR=SDEL) OR J NE NO.D.L) THEN CRT @(0,ROW):DEL.LINE:
                     DEL REC<INDROW+ROW>
                     CALL EB_MARKADJ(INDROW+ROW,1,-1)
                     CHANGED=TRUE
                 END ELSE INDROW+=1
             END
         NEXT J
-        IF Z#'!' THEN
+        IF Z NE '!' THEN
             IF CHR=SDEL THEN
                 IF NUM(Z) THEN Z='PASTE*':FG_LOGNAME:'*':Z
                 PASTE.TEXT=CUT.TEXT<1>[1,CUT.POS<1,1,2>-1]:CUT.TEXT<NO.D.L>[CUT.POS<2,1,2>,MAX]
@@ -186,9 +186,9 @@ MAIN$:!
                 INS CUT.TEXT BEFORE DEL.LINES<1>
             END
         END ELSE SCR.UD=TRUE; G60=TRUE
-        IF FG_ACT.CODE#FG_SEL.CODE THEN ;! Copy
+        IF FG_ACT.CODE NE FG_SEL.CODE THEN ;! Copy
             IF SCR.UD THEN
-                SCR.UD=NO.D.L-2*NO.D.L*(DEL.LINE#'')
+                SCR.UD=NO.D.L-2*NO.D.L*(DEL.LINE NE '')
             END ELSE
                 IF ROW<0 THEN ROW=0
                 SCR.UD=TRUE

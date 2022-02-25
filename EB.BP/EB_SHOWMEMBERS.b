@@ -51,6 +51,13 @@ MAIN$:!
             INPTYPE='AN'; ILEN=63; IDATA=''
             GOSUB 1500          ;! input the field
             CRT MSG.AKN:
+            methods = $system->getroutines(IDATA,0)
+            IF methods->$isobject THEN
+                for m in methods
+                    VARS<1,1,-1> = FIELD(m->name,':',3)
+                next
+                GO gotvars
+            END
         END
         C=1
         LOOP
@@ -95,6 +102,7 @@ MAIN$:!
             END
         REPEAT
     END
+gotvars:
     IF VARS#'' THEN
         CONVERT SVM:VM TO VM:AM IN VARS
         CALL EB_CHOICES(50,5,'','','',VARS,IDATA,1,1,1:SVM:2,'L#30':SVM:'L#30',WORD:' members')

@@ -5,7 +5,8 @@
     EQU tab TO CHAR(9), spc TO ' '
 !
     test = TRIM(CHANGE(token, tab, spc))
-    commentchars = test[1,commentlen]
+    hash = 'L#':commentlen
+    commentchars = test hash
     terminatechars = test[LEN(test)-commentlen+1, commentlen]
 !
     result = IS_UNKNOWN

@@ -64,12 +64,12 @@ MAIN$:!
             CRT
             CRT INDENT:'General syntax:'
             CRT
-            CRT INDENT:'{[A{[+,-]},V,C,X]\}{^}search string{$}'
+            CRT INDENT:'{[A{[+,-]},V,C,X];}{^}search string{$}'
             CRT
             CRT INDENT:'//     - find next logical group delimiter (e.g. END, END ELSE, WHILE, UNTIL, })'
             CRT INDENT:'\\     - find previous logical group delimiter'
             CRT
-            CRT INDENT:'opts: (preceded by "\")'
+            CRT INDENT:'opts: (preceded by ";")'
             CRT
             CRT INDENT:'A      - all occurrences'
             CRT INDENT:'V      - find matching variable names only'
@@ -83,13 +83,13 @@ MAIN$:!
             CRT INDENT:'NOTE: An alternative use to ^ is ^nnn to convert to CHAR(nnn)'
             CRT
             CRT INDENT:'e.g. Find all occurrences of the variable "MY.VAR" starting at the current position'
-            CRT INDENT:'     AV+\MY.VAR'
+            CRT INDENT:'     AV+;MY.VAR'
             CRT
             CRT INDENT:'     Find a label starting with MAIN'
             CRT INDENT:'     ^MAIN'
             CRT
             CRT INDENT:'     Find the next line containing COL or ROW'
-            CRT INDENT:'     X\COL|ROW'
+            CRT INDENT:'     X;COL|ROW'
             CRT
             CRT INDENT:'Press any key...':
             CALL EB_GET_INPUT(CHR, CHR.NBR)
@@ -197,7 +197,7 @@ MAIN$:!
                     END
                     IF POS THEN
                         vol=OCONV(FIELD(line,'(',2),'MCN')
-                        IF vol#'' THEN
+                        IF LEN(vol) THEN
                             POS=INDEX(line,vol,1)
                             vol=FIELD(line[POS,9],')',1)
                             LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE

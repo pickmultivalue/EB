@@ -96,7 +96,7 @@
                 history<4, n> = time
                 history<5, n> = CHANGE(desc, @SVM, ' ')
             END
-        WHILE line # 'commit' DO
+        WHILE line NE 'commit' DO
             n++
         REPEAT
     END ELSE
@@ -126,7 +126,7 @@
                     IF LEN(line_id) = 0 AND LEN(desc) = 0 THEN  ;! check if description is for multiple items
                         line_id = CHANGE(line, '\', '/')
                         line_id = line_id[1, LEN(Repository)]
-                        IF line_id # Repository THEN line_id = ''
+                        IF line_id NE Repository THEN line_id = ''
                     END
                     desc<1, 1, -1> = TRIM(line)
                 END
@@ -172,7 +172,7 @@ Match_Filter:
 !
     OK = TRUE
     IF F_Date THEN
-        IF date # F_Date THEN OK=FALSE; RETURN
+        IF date NE F_Date THEN OK=FALSE; RETURN
     END
     IF F_StartDate THEN
         IF date < F_StartDate THEN OK=FALSE; RETURN
@@ -181,7 +181,7 @@ Match_Filter:
         IF date > F_EndDate THEN OK=FALSE; RETURN
     END
     IF F_Time THEN
-        IF time # F_Time THEN OK=FALSE; RETURN
+        IF time NE F_Time THEN OK=FALSE; RETURN
     END
     IF F_StartTime THEN
         IF time < F_StartTime THEN OK=FALSE; RETURN

@@ -23,7 +23,7 @@
     O.OPTION=INDEX(OPTIONS,'O',1)
     R.OPTION=INDEX(OPTIONS,'R',1)
     COMPARE.ITEM=INDEX(OPTIONS,'C',1)
-    IF OPTIONS#'' THEN SENT=SENT[1,COL1()-1]
+    IF LEN(OPTIONS) THEN SENT=SENT[1,COL1()-1]
     FLNM=FIELD(SENT,' ',2)
     IF FLNM='DICT' THEN
         FLNM='DICT ':FIELD(SENT,' ',3)
@@ -129,7 +129,7 @@ compare:
                     FITEM=TRIM(FITEM,' ',"A")
                     SFITEM=TRIM(SFITEM,' ',"A")
                 END
-                IF FITEM#SFITEM THEN
+                IF FITEM NE SFITEM THEN
                     I=1
                     FPOS=0; SPOS=0
                     LOOP
@@ -161,13 +161,13 @@ compare:
                             END
 !        REMOVE LINEF FROM FITEM AT FPOS SETTING FDELIM
 !        REMOVE LINES FROM SFITEM AT SPOS SETTING SDELIM
-                            IF LINEF#'' THEN
+                            IF LEN(LINEF) THEN
                                 IF INDEX(COMMENTS,TRIM(LINEF)[1,1],1) THEN LINEF=COMMENTS
                             END
-                            IF LINES#'' THEN
+                            IF LEN(LINES) THEN
                                 IF INDEX(COMMENTS,TRIM(LINES)[1,1],1) THEN LINES=COMMENTS
                             END
-                            DIFF=((LINEF#LINES))          ;! OR (FDELIM#SDELIM))
+                            DIFF=((LINEF NE LINES))          ;! OR (FDELIM#SDELIM))
                         END
                     UNTIL DIFF OR (I>=SCOUNT AND I>=FCOUNT) DO I+=1 REPEAT
 !      UNTIL DIFF OR NOT(FDELIM) DO REPEAT
@@ -184,7 +184,7 @@ compare:
             END
         END
     REPEAT
-    IF LIST#'' THEN
+    IF LEN(LIST) THEN
         IF UNIDATA THEN SUFFIX='000' ELSE SUFFIX=''
         WRITELIST LIST ON FLNM:'v':SFLNM:SUFFIX
         LIST = ''

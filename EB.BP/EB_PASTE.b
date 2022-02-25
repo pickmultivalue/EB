@@ -116,7 +116,7 @@ MAIN$:!
                 IF FIELD(TRIM(IDENT),' ',1)='}' OR FIELD(TRIM(IDENT),' ',1)='END' OR FIELD(TRIM(IDENT),' ',1)='CASE' THEN I-=TABLEN
                 LCOL=I; SCRL=ROW
                 J=1
-                LOOP WHILE IDENT[J,1]=' ' AND IDENT[J,1]#'' DO J+=1 REPEAT
+                LOOP WHILE IDENT[J,1]=' ' AND IDENT[J,1] NE '' DO J+=1 REPEAT
                 I-=J
                 IDENT=ABS(I)
             END ELSE IDENT=0; I=-1
@@ -128,7 +128,7 @@ MAIN$:!
             IF PASTE THEN
                 CHECK.LINE=STMP<J>
                 IF CHECK.LINE[1,COMMENTLEN]=COMMENT OR INDEX(CHECK.LINE,':!',1) OR CHECK.LINE[1,1]='#' ELSE
-                    IF J#NO.I.L THEN
+                    IF J NE NO.I.L THEN
                         IF I<0 THEN
                             CALL EB_EREPLACE(CHECK.LINE,IDENT,'',1,1)
                         END ELSE

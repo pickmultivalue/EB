@@ -36,7 +36,7 @@
     nbr_items = DCOUNT(FullPaths, @AM)
     FOR i = 1 TO nbr_items
         FullPath = FullPaths<i>
-        IF FullPath[1, LEN(rootpath)] # rootpath THEN
+        IF FullPath[1, LEN(rootpath)] NE rootpath THEN
             FullPath = rootpath:DIR_DELIM_CH:FullPath
         END
         commit_path := ' ':CHANGE(FullPath, '*', '\*')
@@ -80,7 +80,7 @@
             CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
             FileName = GETFLNM(FilePath)
 !
-            IF LastFileName # FileName THEN
+            IF LastFileName NE FileName THEN
                 LastFileName = FileName
                 rootdir = GIT_GETROOT(FilePath)
                 OPEN rootdir TO F.Source ELSE

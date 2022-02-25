@@ -27,7 +27,7 @@
         pre_Args = FIELD(new_Args, ' ', 1, dc - 1):' '
         new_Args = new_Args[COL2()+1, MAX]
     END ELSE pre_Args = ''
-    IF sub_command # 'commit' THEN
+    IF sub_command NE 'commit' THEN
         dir_dc = DCOUNT(new_Args, DIR_DELIM_CH)
         IF dir_dc > 1 THEN
             fileName = FIELD(new_Args, DIR_DELIM_CH, dir_dc)
@@ -41,7 +41,7 @@
 
     IF Capturing THEN
         EXECUTE shell:cmd:shellend CAPTURING IO
-        IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1) OR INDEX(IO, 'fatal', 1)) THEN
+        IF FIELD(Args, ' ', 1) NE 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1) OR INDEX(IO, 'fatal', 1)) THEN
             INCLUDE EB.INCLUDES SRCDBG
             git_io = 'git_':SYSTEM(18)
             home = GETENV('HOME')

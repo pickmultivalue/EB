@@ -33,7 +33,7 @@
     C=EVENT[2,1]
     R=EVENT[3,1]
     EVENT=EVENT[1,1]
-    IF R#'' THEN
+    IF LEN(R) THEN
         C=SEQ(C)-33
         R=SEQ(R)-33
     END

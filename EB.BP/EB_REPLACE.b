@@ -92,7 +92,10 @@ MAIN$:!
     NEXT CNT
     WSTR.CNT=COUNT(WSTR,@VM)
 !
-    IF INDEX(RSTR,@AM,1) THEN RRSTR='' ELSE RRSTR=RSTR
+    IF INDEX(RSTR,@AM,1) THEN
+        RRSTR = ''
+        RSTRL = 0
+    END ELSE RRSTR=RSTR
     IF INDEX(WSTR,@AM,1) THEN WWSTR='' ELSE WWSTR=WSTR
 !
 ! Find first literal to be used for searching through text
@@ -100,8 +103,8 @@ MAIN$:!
     FIRST=RSTR<1>
     TMP=FIRST; GOSUB CONV.CHARS; FIRST=TMP
     INIT=FIRST
-    STR.CNT=STR.CNT+(RSTR<STR.CNT+1>#'')
-    FOR I=1 TO STR.CNT UNTIL INIT#''
+    STR.CNT=STR.CNT+(RSTR<STR.CNT+1> NE '')
+    FOR I=1 TO STR.CNT UNTIL INIT NE ''
         INIT=RSTR<I>
         TMP=INIT; GOSUB CONV.CHARS; INIT=TMP
     NEXT I
@@ -112,14 +115,14 @@ MAIN$:!
     PREV.LINE.NO=0
     LOOP
         STR.POS=REC[LINE.POS+1,END.POS-LINE.POS]
-        IF INIT#'' THEN
+        IF INIT NE '' THEN
             IF REGEX.SEARCH THEN
                 STR.POS=EB_REGEX(STR.POS,INIT, @FALSE)
             END ELSE
                 STR.POS=INDEX(STR.POS,INIT,1)
             END
         END ELSE
-            IF TRIM(STR.POS)#'' THEN
+            IF LEN(TRIM(STR.POS)) THEN
                 STR.POS = @AM:STR.POS
                 LINE.NO=LEN(STR.POS)
                 FOR I=1 TO LINE.NO WHILE(INDEX(@AM,TRIM(STR.POS[I,1]),1)); NEXT I
@@ -128,12 +131,31 @@ MAIN$:!
             END ELSE STR.POS=0
         END
     UNTIL NOT(STR.POS) DO
-        LINE.NO=COUNT(REC[1,LINE.POS+STR.POS],@AM)+(REC[LINE.POS+STR.POS,1]#@AM)
+        LINE.NO=COUNT(REC[1,LINE.POS+STR.POS],@AM)+(REC[LINE.POS+STR.POS,1] NE @AM)
         IF LINE.NO>ENDL THEN GO RTN    ;! finished
         THIS.LINE.CHANGED=FALSE
         IF LINE.NO = PREV.LINE.NO AND NOT(ALOC) THEN CONTINUE
         PREV.LINE.NO = LINE.NO
         LINE=REC<LINE.NO>
+        LEADWS = ''; TRAILWS = ''
+        FOR I = 1 TO LEN(LINE)
+            CH = LINE[I,1]
+            IF INDEX(@TAB,CH,1) THEN
+                LEADWS := CH
+            END ELSE
+                BREAK
+            END
+        NEXT I
+        LINE = LINE[I,LEN(LINE)]
+        FOR I = LEN(LINE) TO 1 STEP -1
+            CH = LINE[I,1]
+            IF INDEX(@TAB,CH,1) THEN
+                TRAILWS := CH
+            END ELSE
+                BREAK
+            END
+        NEXT I
+        LINE = LINE[1,I]
         ORIG.LINE=LINE
 !
 ! Check that all matching strings are there
@@ -143,7 +165,7 @@ MAIN$:!
             OK=TRUE
             FOR CNT=1 TO STR.CNT WHILE OK
                 NEW.LINE=RSTR<CNT>
-                IF NEW.LINE#'' THEN
+                IF NEW.LINE NE '' THEN
                     TMP=NEW.LINE; GOSUB CONV.CHARS; NEW.LINE=TMP
                     IF REGEX.SEARCH THEN
                         POS=EB_REGEX(SLINE,NEW.LINE, @FALSE)
@@ -182,13 +204,13 @@ MAIN$:!
                     END
                 END
                 OCCURS<OCC>=SPOS
-            WHILE ALOC AND SPOS AND FIRST#'' DO REPEAT
+            WHILE ALOC AND SPOS AND FIRST NE '' DO REPEAT
             OCCS=OCC-(SPOS=0)
             FOR I=OCCS TO 1 STEP -1
                 SPOS=OCCURS<I>
                 IF WHOLE.WORDS THEN
                     LOOP
-                        OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND INDEX(DELIMS,LINE[SPOS+RSTRL,1],1))
+                        OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND (NOT(RSTRL) OR INDEX(DELIMS,LINE[SPOS+RSTRL,1],1)))
                     UNTIL OK DO
                         NPOS=INDEX(LINE[SPOS+1,MAX],FIRST,OCC)
                         IF NOT(NPOS) THEN BREAK
@@ -230,7 +252,7 @@ MAIN$:!
                         CNT+=am_start
                         IF POS THEN
                             POS=RSTR<CNT>
-                            IF POS#'' THEN
+                            IF POS NE '' THEN
                                 TMP=POS; GOSUB CONV.CHARS; POS=TMP
                                 POS=INDEX(THE.REST,POS,1)
                                 SLINE<CNT>=THE.REST[1,POS-1]
@@ -242,7 +264,7 @@ MAIN$:!
                         END
                         IF POS THEN
                             LEN.DIFF=LEN(LINE)
-                            IF WWSTR#'' THEN
+                            IF WWSTR NE '' THEN
                                 TMP=WSTR; GOSUB CONV.CHARS
                                 LINE=SLINE<1>:TMP:THE.REST
                             END ELSE
@@ -252,7 +274,7 @@ MAIN$:!
                                     TMP=PWSTR<1>; GOSUB CONV.CHARS; PWSTR<1>=TMP
                                     NEW.LINE:=PWSTR<1>
                                     DEL PWSTR<1>
-                                    IF PWSTR#'' THEN
+                                    IF PWSTR NE '' THEN
                                         WCNT=PWSTR<1,1>
                                         IF NUM(WCNT) THEN
                                             op=''
@@ -287,7 +309,8 @@ MAIN$:!
                     END.POS+=LEN.DIFF
                 END
             NEXT I
-            IF LINE#ORIG.LINE THEN
+            IF LINE NE ORIG.LINE THEN
+                LINE = LEADWS:LINE:TRAILWS
                 CRTLN=LINE
                 CALL EB_TABS(CRTLN,PWIDTH,0,0)
                 IF ENDL=STRT AND NOT(CONFIRM) THEN

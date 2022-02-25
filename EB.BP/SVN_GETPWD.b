@@ -39,7 +39,7 @@
         therest = CHANGE(therest, '/trunk', '')
     END
 !
-    IF LEN(Delim) AND Delim # '/' THEN
+    IF LEN(Delim) AND Delim NE '/' THEN
         therest = CONVERT(therest, '/', Delim)
     END
     RETURN therest:FileName

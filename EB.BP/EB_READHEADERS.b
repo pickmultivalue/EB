@@ -22,7 +22,7 @@
             LINE=TRIM(LINE)
             IF FIELD(LINE,SPC,1)='#include' THEN
                 CALL EB_READINCL(HEADERS, LINE, HeaderId, HeaderCode, TRUE)
-                IF HeaderId#'' THEN
+                IF HeaderId NE '' THEN
                     CALL EB_READHEADERS(HeaderCode, HEADERS)
                     CONVERT CR:LF:TAB TO AM:AM:SPC IN HeaderCode
                     HEADERCODE<-1>=HeaderCode

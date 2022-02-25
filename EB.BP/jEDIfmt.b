@@ -249,7 +249,7 @@
         END
     UNTIL EOL DO
         READU D.ITEM FROM FILE,ID THEN
-            MATPARSE ITEM FROM D.ITEM USING AM SETTING NA; IF NA # DCOUNT(D.ITEM,AM) THEN MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
+            MATPARSE ITEM FROM D.ITEM USING AM SETTING NA; IF NA NE DCOUNT(D.ITEM,AM) THEN MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
             IF L.OPTION THEN OMASK='' ELSE
                 IF NA > 999 THEN OMASK='R%4 ' ELSE OMASK='R%3 '
             END
@@ -417,8 +417,8 @@
                                             LOCATE M.INDEX IN MATCH.S<1,mv_start> BY AL SETTING MATCH.POS THEN MS.INDEX=M.INDEX
                                         END
                                     END
-                                    IF MS.INDEX#'' THEN
-                                        IF (F1:SPC)#ENDSW THEN
+                                    IF LEN(MS.INDEX) THEN
+                                        IF (F1:SPC) NE ENDSW THEN
                                             MS.INDEX<1,-1>=CUR.INDEX
                                             INS MS.INDEX BEFORE MATCH.IND<1>
                                         END
@@ -428,7 +428,7 @@
                                             LOOP
                                                 MS.INDEX=MATCH.E<2,ME.INDEX,POS>:VM:CUR.INDEX
                                             UNTIL MS.INDEX<1,1>='' OR MS.INDEX=MATCH.IND<1> DO POS+=1 REPEAT
-                                            IF MS.INDEX<1,1>#'' THEN
+                                            IF LEN(MS.INDEX<1,1>) THEN
                                                 DEL MATCH.IND<1>
                                             END ELSE
                                                 CRT 'Indent mismatch detected at ':LNO; RQM
@@ -436,7 +436,7 @@
                                             END
                                         END
                                     END
-                                    IF F1#'' THEN
+                                    IF LEN(F1) THEN
                                         LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
                                             EXCEPT.IND+=1
                                         END

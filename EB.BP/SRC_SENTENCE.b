@@ -72,7 +72,7 @@
                     IF FullPaths = '.' THEN
                         FullPaths = ''
                     END ELSE
-                        IF FullPaths[LEN(FullPaths), 1] # '*' THEN
+                        IF FullPaths[LEN(FullPaths), 1] NE '*' THEN
                             READV FullPaths FROM F.Locks, user, 2 THEN
                                 FullPaths = CHANGE(FullPaths, @VM, @AM)
                             END ELSE FullPaths = ''

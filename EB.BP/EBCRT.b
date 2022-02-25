@@ -24,7 +24,7 @@
             GOSUB get_key
             IF LEN(chars) > 0 THEN
                 IF chars = ' ' THEN chars = ''
-                IF chars # save_chars THEN
+                IF chars NE save_chars THEN
                     SCREEN.PARAMS(attr) = chars
                     CRT OCONV(chars, 'MX')
                     CRT OCONV(chars, 'MCP')
@@ -62,7 +62,7 @@ get_key:
                 c = '<ctrl-':CHAR(64+s):'>'
             CASE 1
                 p = OCONV(c, 'MCP')
-                IF c # p THEN
+                IF c NE p THEN
                     c = '<hex ':OCONV(c, 'MX'):'>'
                 END
         END CASE

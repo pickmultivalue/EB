@@ -20,7 +20,7 @@ MAIN$:!
     RefreshRequired=FALSE
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
-    MSG='String (A{+-}\for all;V\vars;C\char) '
+    MSG='String (A{+-};for all, V;vars, C;char) '
     ICOL=LEN(MSG); IROW=(PDEPTH-1)
     Indent=ITAB<ITABPOS>
     GOSUB DisplayPrompt
@@ -58,7 +58,7 @@ MAIN$:!
         REPEAT
         CONVERT VM TO AM IN SSS
     END ELSE
-        IF COUNT(PSSTR,AM) THEN PSSTR = PSSTR<2>:'\':PSSTR<1>
+        IF COUNT(PSSTR,AM) THEN PSSTR = PSSTR<2>:';':PSSTR<1>
         Z=PSSTR
         IF LEN(Z)=0 THEN Z=SSS<RPOS>
     END
@@ -84,15 +84,15 @@ MAIN$:!
             END
         NEXT I
     END
-    IF SSTR='//' OR SSTR='\\' THEN
+    IF SSTR='///' OR SSTR='\\\' THEN
         PSSTR=SSTR
-        IF SSTR='//' THEN LNM=1 ELSE LNM=-1
+        IF SSTR='///' THEN LNM=1 ELSE LNM=-1
         DUMMY=RDSP(LROW); GOSUB FORMAT
         SPOS=INDEX(REC,AM,INDROW+ROW)
         curlies = 0
         IF DUMMY='' THEN GO 4096 ELSE
             STRT=INDROW+ROW+LNM
-            IF DUMMY[1,3]#'!#!' THEN
+            IF DUMMY[1,3] NE '!#!' THEN
                 Y=I-Indent
                 IF Y < 2 THEN Y=3
                 IF DUMMY='{' OR DUMMY='}' THEN
@@ -118,20 +118,20 @@ MAIN$:!
                     curlies += COUNT(LINE,RSTR) - COUNT(LINE, SSTR)
                     done += (curlies < 1)
                 END ELSE
-                    done += (NOT(TRIM(LINE)[1,COMMENTLEN]=COMMENT) AND LINE[1,Y] MATCHES SSTR AND TRIM(LINE[1,Y])#'')
+                    done += (NOT(TRIM(LINE)[1,COMMENTLEN]=COMMENT) AND LINE[1,Y] MATCHES SSTR AND TRIM(LINE[1,Y]) NE '')
                 END
                 done += (LNM>=LAST.AM)
             UNTIL done DO
                 STRT+=LNM
                 INCLUDE EB.OS.INCLUDES REMOVE.LINE
                 CALL EB_TABS(LINE,PWIDTH,0,0)
-                IF DUMMY[1,3]#'!#!' THEN
+                IF DUMMY[1,3] NE '!#!' THEN
                     IF INDEX(COMMENT,TRIM(LINE)[1,COMMENTLEN],1) THEN LINE=COMMENT
                 END
             REPEAT
-            IF LINE#'' THEN
+            IF LINE NE '' THEN
                 IF NOT(INDEX('{}',SSTR,1)) THEN
-                    IF DUMMY[1,3]#'!#!' THEN
+                    IF DUMMY[1,3] NE '!#!' THEN
                         SSTR=FIELD(LINE[Y,9],' ',1); LINE=OCONV(LINE[Y,20],'G 2')
                     END ELSE SSTR=FIELD(LINE,' ',1)
                     LOCATE SSTR IN DUMMY<am_start> SETTING POS ELSE
@@ -154,9 +154,13 @@ MAIN$:!
     IF SSTR=ESC THEN GO 4096
     IF SSTR="" AND PSSTR="" THEN GO 4096
     REPEATSEARCH = (SSTR=PSSTR)
-    OPTIONS=FIELD(SSTR,'\',1)
-    SSTR=SSTR[COL2()+1,MAX]
-    IF SSTR='' THEN SSTR=OPTIONS; OPTIONS='' ELSE OPTIONS=OCONV(OPTIONS,'MCU')
+    OPTIONS=FIELD(SSTR,';',1)
+    IF OPTIONS[-1,1] EQ '\' THEN
+        OPTIONS = ''
+    END ELSE
+        SSTR=SSTR[COL2()+1,MAX]
+        IF SSTR='' THEN SSTR=OPTIONS; OPTIONS='' ELSE OPTIONS=OCONV(OPTIONS,'MCU')
+    END
     WHOLE.WORDS=INDEX(OPTIONS,'V',1) NE 0
     WHOLE.WORDS:=INDEX(OPTIONS,'S',1) NE 0
     REGEX.SEARCH = INDEX(OPTIONS,'X',1)
@@ -174,7 +178,7 @@ MAIN$:!
             END
         NEXT I
     END
-    IF OPTIONS#'' THEN PSSTR=OPTIONS:'\':SSTR
+    IF OPTIONS NE '' THEN PSSTR=OPTIONS:';':SSTR
     SRCH.STR=SSTR
     IF INDEX(OPTIONS,'A',1) THEN GO 4100          ;! display all occurrences.
     STRT=INDROW+ROW
@@ -235,7 +239,7 @@ RETRY:
             END
             STRT=INDROW
         END
-        IF I#INDROW THEN
+        IF I NE INDROW THEN
             LCOL=1
             DUMMY=INDROW+(PDEPTH-1)
             FOR J=INDROW TO DUMMY
@@ -309,7 +313,7 @@ RETRY:
             LCOL += ADJUST
             COL += ADJUST
         END
-        IF OFFSET AND COL<SPWIDTH OR OFFSET#OLD.OFFSET THEN SCR.LR=1
+        IF OFFSET AND COL<SPWIDTH OR OFFSET NE OLD.OFFSET THEN SCR.LR=1
         IF SCR.LR=1 THEN
             CALL EB_REFRESH
             SCR.LR=0
@@ -415,10 +419,10 @@ RETRY:
     GOSUB INPT
     Y=Z
     CRT MSG.DSP:
-    IF Y="" THEN
+    IF Y=ESC THEN GO 4199
+    IF NOT(Y MATCHES "1N0N") THEN
         IF STR.POS THEN PGE+=1; GO 4110 ELSE GO 4199
     END
-    IF Y=ESC THEN GO 4199
     IF Y<1 THEN Y=1
     INDROW=Y; ROW=0; COL=5
 4199 !

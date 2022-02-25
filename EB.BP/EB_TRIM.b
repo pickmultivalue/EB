@@ -16,7 +16,7 @@
             NEW=OLD[1,LENTH]
         CASE TYPE='L'
             I=1
-            LOOP UNTIL OLD[I,SPCLEN]#SPC DO I+=1 REPEAT
+            LOOP UNTIL OLD[I,SPCLEN] NE SPC DO I+=1 REPEAT
             NEW=OLD[I,LENTH]
         CASE TYPE='A'
             NEW=CHANGE(OLD, SPC, '')

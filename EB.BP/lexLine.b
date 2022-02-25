@@ -22,7 +22,8 @@
 
 !-- Flag as whole line is a comment
     temp = TRIM(CHANGE(wholeline, tab, spc))
-    CONVERT spc TO "" IN temp
+!    CONVERT spc TO "" IN temp
+    temp = TRIM(temp)
     IF isComment(temp) THEN
         result<2> = line:@SM:IS_COMMENT:@SM:colors<COL_COMMENT>:@SM:LEN(line)
         RETURN result

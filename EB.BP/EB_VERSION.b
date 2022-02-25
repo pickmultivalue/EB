@@ -22,7 +22,7 @@
         YNCHRS='D':VM:'H':VM:'P':VM:'R':VM:'S':VM:ESC
         IF NOT(SRC_OPENLOCKS(F.Locks)) THEN STOP 201,'SRC.LOCKS'
         Commit = TRUE
-        IF FullPath # SRC_GETHOMEPATH(FullPath) THEN
+        IF FullPath NE SRC_GETHOMEPATH(FullPath) THEN
             K.Locks = SRC_CASE(FullPath:DIR_DELIM_CH:ITNM)
             READV users FROM F.Locks, K.Locks, 1 THEN Commit = FALSE
         END
@@ -41,7 +41,7 @@
     YNL=1; GOSUB GET.CHAR
     CRT MSG.AKN:
     Y=OCONV(Y,'MCU')
-    IF Y#'' THEN
+    IF Y NE '' THEN
         lockvar=TRUE
         SITNM=ITNM
         BEGIN CASE
@@ -52,20 +52,20 @@
                 IF Y EQ 'S' THEN ITNM := @AM:'S'
                 history = SRC_HISTORY(FullPath, ITNM, '')
                 IF LEN(history) THEN
-                    IF ORIG.REC#REC THEN
+                    IF ORIG.REC NE REC THEN
                         Y = 'Warning: any changes will be lost. Continue? (Y)es, (N)o '
                         CRT MSG.CLR:Y
                         YNC=LEN(Y); YNR=(PDEPTH-1)
                         YNCHRS='Y':VM:'N':VM:ESC
                         YNL=1; GOSUB GET.CHAR
-                        IF Y # 'Y' THEN RETURN
+                        IF Y NE 'Y' THEN RETURN
                     END
                 END ELSE
                     SCR.UD=1
                     errmsg = 'No previous history found'
                     GOSUB DISPLAY_ERROR
                 END
-                Fmts = 'L#10':SVM:'L#10':SVM:'D':SVM:'MT':SVM:'L#':PWIDTH-48 
+                Fmts = 'L#10':SVM:'L#10':SVM:'D':SVM:'MT':SVM:'L#':PWIDTH-48
                 ColHdrs = 'Rev':SVM:'User':SVM:'Date':SVM:'time':SVM:'Description'
                 Attrs = 1:SVM:2:SVM:3:SVM:4:SVM:5
                 REV = ''
@@ -89,7 +89,7 @@
                     diff = EBJSHOW('-c diff':shellend)
                     msg = '(C)ompare with current'
                     opts = 'C'
-                    IF diff#'' THEN
+                    IF LEN(diff) THEN
                         msg<1, -1> = '(I)nsert ifdef differences'
                         opts<1, -1>='I'
                     END

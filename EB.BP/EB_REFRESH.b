@@ -14,7 +14,7 @@ MAIN$:!
 !
     LAST.AM = DCOUNT(REC, AM)
 *-- Default set
-    IF LAST.ROW#(INDROW+ROW) THEN
+    IF LAST.ROW NE (INDROW+ROW) THEN
         LAST.ROW-=INDROW
         RR=PDEPTH-LAST.ROW
         IF RR>=0 AND LAST.ROW>=0 THEN
@@ -29,7 +29,7 @@ MAIN$:!
     IF COL>PWIDTH AND LEN(LROW) THEN
         COL-=(PWIDTH-4)
         OFFSET+=(PWIDTH-5); COL+=1; SCR.LR=1
-        IF NEW.CHARS#'' THEN
+        IF LEN(NEW.CHARS) THEN
             CALL EB_ADD(START,LCOL,LLEN,INS.MODE,NEW.CHARS,RDSP(LROW))
             CHANGED=TRUE; CHANGES(LROW)=TRUE
         END
@@ -61,7 +61,7 @@ MAIN$:!
             RR=J-INDROW
             LROW=RR+1
             RDSP(LROW)=REC<J>
-            IF SCR.UD#100 THEN
+            IF SCR.UD NE 100 THEN
                 IF J > LAST.AM THEN
                     DIMON = BG
                     DIMOFF = FG
@@ -97,7 +97,7 @@ MAIN$:!
                 DIMOFF = FG
             END ELSE DIMON = ''; DIMOFF = ''
             CRT @(0,J-1):DIMON:AMPOS "R#4":DIMOFF:
-            IF (J+INDROW-1)#CUT.POS THEN CRT ' ': ELSE CRT '[':
+            IF (J+INDROW-1) NE CUT.POS THEN CRT ' ': ELSE CRT '[':
             IF SCR.LR>0 OR (J-LROW)>0 THEN
                 CRT CLEOL:
                 S=LROW

@@ -24,7 +24,7 @@
         MAX.SUB=0
         SUB.JUST='R#1'
     END ELSE
-        SUB.CODE1 = 0; SUB.CODE2 = 0 
+        SUB.CODE1 = 0; SUB.CODE2 = 0
         IF NOT(MAX.SUB) THEN
             NBR.CODES=DCOUNT(SUB.CODES,VM)
             FOR S=1 TO NBR.CODES
@@ -72,7 +72,7 @@
         IF FG_ACT.CODE THEN
             CHR=CHR1
         END ELSE
-            IF CHR.NBR#13 THEN
+            IF CHR.NBR NE 13 THEN
                 IF MAX.SUB THEN
                     IF CONV THEN CHR=OCONV(CHR,'MCU') SUB.JUST
                     PREV.SUBS=(PREV.SUBS:CHR) SUB.JUST
@@ -94,7 +94,7 @@
                     CHR=CHR1
                     RETURN
                 END ELSE
-                    IF MATCH.SET#'' THEN
+                    IF LEN(MATCH.SET) THEN
                         IF CHR1 MATCHES MATCH.SET THEN CHR=CHR1; GOTO FINISH
                     END
                 END

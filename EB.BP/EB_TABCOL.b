@@ -40,7 +40,7 @@
 SETCOL:
     IF TAB.MODE THEN
         NCOL = 0
-        TC = TCOL-(CRTLN[TCOL,1] # TABCH)
+        TC = TCOL-(CRTLN[TCOL,1] NE TABCH)
         FOR C = 1 TO TC
             IF CRTLN[C,1] EQ TABCH THEN
                 R = MOD(NCOL,Indent)

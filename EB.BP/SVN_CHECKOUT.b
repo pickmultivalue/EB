@@ -66,7 +66,7 @@
         END
         OrigPath = CONVERT(homedir, DIR_DELIM_CH, '/')
         Status_IO = SVN_EXEC('add --depth=empty ':OrigPath, TRUE)
-        IF Status_IO[1,1] # 'A' THEN        ;! bailing out at this point
+        IF Status_IO[1,1] NE 'A' THEN        ;! bailing out at this point
             Result = OrigPath:' svn status error:'
             Result<3> = Status_IO
             RETURN Result
@@ -79,7 +79,7 @@
 !
     OrigPath := '/':tItemName
     Status_IO = SVN_EXEC('status -v ':OrigPath, TRUE)
-    IF TRIM(Status_IO[1,1]) # '' THEN
+    IF TRIM(Status_IO[1,1]) NE '' THEN
         Result = tItemName:' error'
         Result<3> = 'svn status output:'
         Result<5> = Status_IO

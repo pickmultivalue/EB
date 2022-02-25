@@ -91,7 +91,7 @@
                 Z = TRUE; L = 1; INPTYPE='YN'; GOSUB INPT
                 IF Z THEN
                     FLNM = SRC_GETHOMEPATH(BP_FILE)
-                    IF ANS # user THEN
+                    IF ANS NE user THEN
                         EXECUTE shell:'echo ~':ANS CAPTURING userhome
                         IF userhome = '~':ANS THEN userhome = CHANGE(homepath, DIR_DELIM_CH:user, DIR_DELIM_CH:ANS)
                         FLNM = CHANGE(FLNM, homepath, userhome)
@@ -150,7 +150,7 @@
             lockvar=TRUE
             IF NOT(Z) THEN RETURN
             errmsg = SRC_DELETE(TRUE, FilePath, ITNM)
-            IF FIELD(TRIM(errmsg), ' ', 1) # 'D' THEN
+            IF FIELD(TRIM(errmsg), ' ', 1) NE 'D' THEN
                 CALL EB_ERRMSG(errmsg, 1)
                 CALL EB_REFRESH
                 RETURN
@@ -168,7 +168,7 @@
             FullPath = FilePath:DIR_DELIM_CH:ITNM
             errmsg = SRC_REVERT(FullPath)
             IF NOT(LEN(errmsg)) THEN errmsg = 'No revert took place'
-            IF FIELD(TRIM(errmsg), ' ', 1) # 'Reverted' THEN
+            IF FIELD(TRIM(errmsg), ' ', 1) NE 'Reverted' THEN
                 CALL EB_ERRMSG(errmsg, 1)
                 SCR.UD=1
                 CALL EB_REFRESH

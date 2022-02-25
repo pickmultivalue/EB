@@ -15,7 +15,7 @@
                 c = '<ctrl-':CHAR(64+s):'>'
             CASE 1
                 p = OCONV(c, 'MCP')
-                IF c # p THEN
+                IF c NE p THEN
                     c = '<hex ':OCONV(c, 'MX'):'>'
                 END
         END CASE

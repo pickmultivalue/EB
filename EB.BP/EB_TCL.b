@@ -87,7 +87,7 @@ MAIN$:!
     POST.PROMPT=FALSE
     EB.PROMPT=@(0,PROW):BG:EB.PROMPT:FG
     SAVE.COLOURS=FG_CURR.COLOURS:AM:FG_PREV.COLOURS
-    IF WHITE<1,1>#'' THEN CALL EB_CH_COLOUR(FG_COLOURS<1,4,1>,FG_COLOURS<1,4,2>)
+    IF WHITE<1,1> NE '' THEN CALL EB_CH_COLOUR(FG_COLOURS<1,4,1>,FG_COLOURS<1,4,2>)
     FG_CURR.COLOURS=SAVE.COLOURS<1>; FG_PREV.COLOURS=SAVE.COLOURS<2>
     IF GUI THEN
         CALL EB_ERRMSG(FG_ERROR.MSGS<83>, 0)
@@ -99,7 +99,7 @@ MAIN$:!
         OPTIONS<6>=1
     END
     LOOP
-        IF SYSTEM(11) OR TCL.LIST#'' THEN PROMPT.CHR='>' ELSE PROMPT.CHR=' '
+        IF SYSTEM(11) OR TCL.LIST NE '' THEN PROMPT.CHR='>' ELSE PROMPT.CHR=' '
         CRT EB.PROMPT:PROMPT.CHR:CLEOL:
         COMMAND=''
         IF GUI THEN
@@ -136,7 +136,7 @@ MAIN$:!
                 GOSUB DISPLAY.STACK
             CASE UCOMMAND[1,2]='.X' OR COMMAND MATCHES "'.'1N0X"
                 ORIG.COMMAND=UCOMMAND
-                IF UCOMMAND[2,1]#'X' THEN COMMAND='.X':COMMAND[2,MAX]
+                IF UCOMMAND[2,1] NE 'X' THEN COMMAND='.X':COMMAND[2,MAX]
                 STMP=COMMAND[3,MAX]
                 IF STMP='' THEN STMP=1
                 DELIMS='.,'; DELIM=''
@@ -152,11 +152,11 @@ MAIN$:!
                     NBR=STMP[1,I-1]
                     EXEC.CMD=''
                     IF NUM(NBR) THEN
-                        IF NBR#'' AND NBR<=MAX.STACK THEN EXEC.CMD=STACK<NBR>
+                        IF LEN(NBR) AND NBR<=MAX.STACK THEN EXEC.CMD=STACK<NBR>
                     END ELSE
                         EXEC.CMD=NBR
                     END
-                    IF EXEC.CMD#'' THEN
+                    IF LEN(EXEC.CMD) THEN
                         IF FIELD(EXEC.CMD,' ',1)[1,1]='"' THEN
                             CALL EB_DEBUG(EXEC.CMD)
                         END ELSE
@@ -168,12 +168,12 @@ MAIN$:!
                                     END
                                 END
                             END
-                            IF EXEC.CMD#'' THEN
+                            IF LEN(EXEC.CMD) THEN
                                 IF EXEC.CMD='{0S"3' THEN EXEC.CMD='IL.HELPER'
                                 CRT @(0):EXEC.CMD:CLEOL
                                 CMDOK=TRUE
                                 READ CHECK FROM FG_PROCESSES,EXEC.CMD THEN
-                                    IF CHECK<2>#'T' THEN CMDOK=FALSE
+                                    IF CHECK<2> NE 'T' THEN CMDOK=FALSE
                                 END
                                 IF CMDOK THEN
                                     INCLUDE EB.OS.INCLUDES TCL.EXEC.CMD
@@ -190,7 +190,7 @@ MAIN$:!
                     I=1
                 REPEAT
                 IF ORIG.COMMAND MATCH '".X"1N0N' THEN
-                    IF NBR # 1 THEN
+                    IF NBR NE 1 THEN
                         INS STACK<NBR> BEFORE STACK<1>
                         WRITE STACK ON STACK.FILE,STACK.ID
                     END
@@ -209,8 +209,8 @@ MAIN$:!
                     START=0
                 END ELSE GOSUB PROCESS.RANGE
                 LOOP
-                    IF (FG_ACT.CODE=FG_BCK.CODE AND UCOMMAND#'' AND START=0) OR FG_ACT.CODE=FG_SEARCH.CODE THEN
-                        IF START=0 AND SEARCH.STRING#'' THEN
+                    IF LEN((FG_ACT.CODE=FG_BCK.CODE AND UCOMMAND) AND START=0) OR FG_ACT.CODE=FG_SEARCH.CODE THEN
+                        IF LEN(START=0 AND SEARCH.STRING) THEN
                             FG_ACT.CODE=FG_SEARCH.CODE
                         END ELSE
                             CRT @(0,23):FG_ERROR.MSGS<99>:' ':CLEOL:
@@ -422,13 +422,13 @@ REPLACE.LINES: !
 !    loop to replace one or all commands
     FOR CMDNO=F.COMM TO S.COMM STEP -1
         COMMAND=STACK<CMDNO>
-        IF OCCNO # '*' THEN
+        IF OCCNO NE '*' THEN
 !          replace specific occurence
             BPOS=INDEX(COMMAND[START.RANGE,END.RANGE],S.STR,OCCNO)
-            IF BPOS # 0 THEN
+            IF BPOS NE 0 THEN
                 COMMAND=COMMAND[1,BPOS-1]:R.STR:COMMAND[BPOS+LEN(S.STR),MAX]
             END ELSE
-                IF T.LEN # 0 THEN
+                IF T.LEN NE 0 THEN
 !                check is it was append type command
                     IF COMMAND[LEN(COMMAND)+1-T.LEN,T.LEN]=T.STR THEN
                         COMMAND=COMMAND[1,LEN(COMMAND)-T.LEN]:R.STR
@@ -462,7 +462,7 @@ REPLACE.LINES: !
 UPDATE.STACK: !
 !
     IF NOT(ORIG.COMMAND MATCHES "'.'1N0X" OR ORIG.COMMAND MATCHES "'.X'1N0X") THEN
-        IF STACK<1> # COMMAND THEN
+        IF STACK<1> NE COMMAND THEN
             LOCATE COMMAND IN STACK<am_start> SETTING START THEN DEL STACK<START>
             INS COMMAND BEFORE STACK<1>
             WRITE STACK ON STACK.FILE,STACK.ID
@@ -487,7 +487,7 @@ PROCESS.RANGE: !
     I=1
     LOOP
         INV.CHAR=COMMAND[I,1]
-    WHILE NUM(INV.CHAR) AND INV.CHAR#'' AND INV.CHAR#'.' DO
+    WHILE NUM(INV.CHAR) AND INV.CHAR NE '' AND INV.CHAR NE '.' DO
         I+=1
     REPEAT
     FINISH=COMMAND[1,I-1]
@@ -507,13 +507,13 @@ DISPLAY.STACK: !
     NBR=OCONV(UCOMMAND,'MCN')
     IF NBR='' THEN NBR=20
     STMP=''
-    LOOP UNTIL STACK<NBR>#'' OR NBR=1 DO NBR-=1 REPEAT
+    LOOP UNTIL STACK<NBR> NE '' OR NBR=1 DO NBR-=1 REPEAT
     FOR I=NBR TO 1 STEP -1 UNTIL STMP=CTRL.X
         PRINT I 'R#3 ':STACK<I>
-        IF UCOMMAND[3,1]#'P' THEN
+        IF UCOMMAND[3,1] NE 'P' THEN
             IF MOD(I,21) ELSE
                 INCLUDE EB.OS.INCLUDES INPUT.TIMEOUT
-                IF CHR#CTRL.X THEN CRT @(0,1):CLEOP:
+                IF CHR NE CTRL.X THEN CRT @(0,1):CLEOP:
             END
         END
     NEXT I
@@ -532,7 +532,7 @@ PERFORM.COMMAND: !
         RETURN
     END
 !
-    IF COMMAND # UCOMMAND THEN
+    IF COMMAND NE UCOMMAND THEN
         VERBNAME=FIELD(COMMAND,' ',1)
         UVERBNAME=FIELD(UCOMMAND,' ',1)
         IF MD_flag THEN
@@ -571,12 +571,12 @@ PERFORM.COMMAND: !
         CHECK=TITLE<2>; TITLE=TITLE<1>
         CRT @(0):EXEC.CMD:CLEOL
         IF FG_OSTYPE='JB' OR INDEX('BT',CHECK,1) THEN
-            IF CHECK#'' AND INDEX('BT',CHECK,1) THEN
+            IF CHECK NE '' AND INDEX('BT',CHECK,1) THEN
                 CALL EB_CHK_SEC(PROCESS.ID,FALSE,OK)
             END ELSE OK=TRUE
             IF OK THEN
                 INCLUDE EB.OS.INCLUDES TCL.EXEC.CMD
-                IF CHECK#'' THEN GOSUB RESET.SESSION
+                IF LEN(CHECK) THEN GOSUB RESET.SESSION
                 CRT
             END
         END ELSE

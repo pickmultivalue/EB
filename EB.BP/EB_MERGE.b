@@ -28,7 +28,7 @@ MAIN$:!
     IF AFTL>CNT THEN AFTL=CNT
 5010 CRT MSG.CLR:"Merge from file ":
     ILEN=SYSTEM(2)-LEN(label):@AM:200
-    IF MFLNM#'' THEN IDATA=MFLNM ELSE IDATA=FLNM
+    IF MFLNM NE '' THEN IDATA=MFLNM ELSE IDATA=FLNM
     GOSUB 1500      ;! input the field
     MFLNM=IDATA
     CRT MSG.AKN:
@@ -47,7 +47,7 @@ MAIN$:!
     END
 5020 CRT MSG.CLR:"Item name ":
     ILEN=69
-    IF MITNM#'' THEN IDATA=MITNM ELSE IDATA=ITNM
+    IF MITNM NE '' THEN IDATA=MITNM ELSE IDATA=ITNM
     GOSUB 1500      ;! input the field
     IF FG_ACT.CODE=FG_OPT.CODE THEN
         VALIDATE=''; VALIDATE<5>=1
@@ -138,7 +138,7 @@ MAIN$:!
     IDATA='Y'; ILEN=1; GOSUB 1500; DMY=OCONV(IDATA,'MCU')
     CRT MSG.AKN:
     IF INDEX(ESC:'N',TRIM(DMY),1) THEN GO 5080    ;! abort the merge
-    IF DMY#"Y" THEN GO 5070
+    IF DMY NE "Y" THEN GO 5070
     MREC=""
     M=1
     FOR J=FRLN TO TOLN
@@ -162,7 +162,7 @@ MAIN$:!
             IF FIELD(TRIM(DUMMY),' ',1)='END' THEN I-=2
             LCOL=I; SCRL=1
             J=1
-            LOOP WHILE DUMMY[J,1]=' ' AND DUMMY[J,1]#'' DO J+=1 REPEAT
+            LOOP WHILE DUMMY[J,1]=' ' AND DUMMY[J,1] NE '' DO J+=1 REPEAT
             I-=J
             DUMMY=SPACE(ABS(I))
         END ELSE DUMMY=''; I=-1

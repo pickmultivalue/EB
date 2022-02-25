@@ -6,7 +6,7 @@
     icmd = shell:command:' ':Args
     IF Capturing THEN
         EXECUTE cmd CAPTURING IO
-        IF FIELD(Args, ' ', 1) # 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1)) THEN
+        IF FIELD(Args, ' ', 1) NE 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1)) THEN
             INCLUDE EB.INCLUDES SRCDBG
             svn_io = 'svn_':SYSTEM(18)
             EXECUTE icmd:' > ':svn_io:shellend

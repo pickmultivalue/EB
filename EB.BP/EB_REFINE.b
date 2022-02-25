@@ -44,7 +44,7 @@
             LINE:=STMP:' '
         NEXT J
     UNTIL TRIM(LINE)='' DO
-        POS=(INDEX(LINE,SEARCH.LIST,1)#0)
+        POS=(INDEX(LINE,SEARCH.LIST,1) NE 0)
         IF POS-Reverse THEN MV+=1 ELSE
             FOR J=1 TO NBR.ATTS
                 DEL DISPLAY.LIST<J,MV>
