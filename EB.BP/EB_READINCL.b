@@ -1,7 +1,7 @@
     SUBROUTINE EB_READINCL(HEADERS, CodeLine, IncludeString, Header, Recursive)
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
-    COM EB.FILES(100),EB.FILE.LIST
+    COM EB.FILES(500),EB.FILE.LIST
     COM RDSP(100),CHANGES(100)
     GO MAIN$
     INCLUDE EB.EQUS EB.EQUS
@@ -36,9 +36,9 @@ MAIN$:!
     PathFlag=COUNT(incid,toslash)
     CodeLine=''
     IF NOT(GETENV('JBCRELEASEDIR',jbcdir)) THEN jbcdir='/usr/jbc'
-    IF NOT(GETENV('INCLUDE',inclib)) THEN 
+    IF NOT(GETENV('INCLUDE',inclib)) THEN
         inclib='.:../include:':jbcdir:'/include'
-    END 
+    END
     CONVERT dir_sep TO @AM IN inclib
     inclib<-1>=FLNM
     IncludeString=''

@@ -2,7 +2,7 @@
 ! ==============
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
-    COM EB.FILES(100),EB.FILE.LIST
+    COM EB.FILES(500),EB.FILE.LIST
     COM RDSP(100), CHANGES(100)
     COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
     INCLUDE EB.INCLUDES lex.h
@@ -63,7 +63,6 @@
         UNTIL EOF DO REPEAT
     END
     FG_SENTENCE=TRIM(FG_SENTENCE)
-    NBR.WORDS=DCOUNT(FG_SENTENCE,SPC)
     INCLUDE EB.OS.INCLUDES EB.INIT
     INCLUDE EB.OS.INCLUDES OS.ERRORS
     CALL EB_OPEN('','MD',F.MD,0,MD_flag)
@@ -103,6 +102,7 @@
     ITNM=FG_SENTENCE
     CALL EB_UT_INIT
     FG_SENTENCE=ITNM
+    NBR.WORDS=DCOUNT(FG_SENTENCE,SPC)
     READ FG_ERROR.MSGS FROM FG_EB.PARAMS,'ERROR.MSGS*ENG' ELSE NULL
     INCLUDE EB.EQUS SCREEN.PARAMS
     MATREAD SCREEN.PARAMS FROM FG_EB.PARAMS,'CRT@':FG_TERM.TYPE ELSE
@@ -436,6 +436,7 @@ FIRST.ITEM: !
         END
     END
     FLNM = EB_EXPANDFLNM(FLNM)
+    NBR.WORDS=DCOUNT(FG_SENTENCE,SPC)
     IF FIELD(FLNM,SPC,1)='DICT' THEN DCT=FLNM[6,MAX]; DCT<2>='DICT' ELSE DCT=FLNM
     CALL EB_OPEN(DCT<2>,DCT<1>,FIL,0,POS)
     IF POS THEN
@@ -2282,7 +2283,7 @@ GET.PREVWORD: !
     IF Y NE "DELETE" THEN GO 999
 !
     Z = FALSE
-    CALL EB_OPEN('','FLNM:',OBJECT'',F.BP,0,Z)
+    CALL EB_OPEN('',FLNM:',OBJECT',F.BP,0,Z)
     IF NOT(Z) THEN
         IF FLNM 'R#2' = 'BP' THEN
             F.BP = FIL
@@ -2473,7 +2474,7 @@ SET.MODE: !
             reservedWords = cReserved ;! hack
             COMMENT='# '
             TYPE='PYTHON'
-            ITABPOS=4
+            ITABPOS=3
             PC:=';("_")'
         CASE COUNT(EDIT.MODE,'*')
             COMMENT='*'
@@ -2517,10 +2518,11 @@ SET.MODE: !
     commentlen = 0
     loc = 0
     LOOP
-        REMOVE COMMENT FROM comments AT loc SETTING delim
-        Y = LEN(COMMENT)
+        REMOVE Z FROM comments AT loc SETTING delim
+        Y = LEN(Z)
         IF Y GT commentlen THEN commentlen = Y
     WHILE delim DO REPEAT
+    COMMENTLEN = commentlen
     RETURN
 LAST.USED:!
     IF ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN RETURN
