@@ -1,11 +1,13 @@
     FUNCTION GETFULLPATH(INFLNM)
+    INCLUDE EB.EQUS EB.COMMONS
 !
 ! Return full path for a given file
 !
     DEFFUN GETFLNM()
     DEFFUN EBJSHOW()
     INCLUDE JBC.h
-    OPEN INFLNM TO DSCB THEN
+    CALL EB_OPEN('',INFLNM, DSCB,0,POS)
+    IF POS THEN
         IF IOCTL(DSCB,JBC_COMMAND_GETFILENAME,FullPath) THEN
             RETURN(FullPath)
         END
@@ -24,9 +26,10 @@
     END ELSE ITNM = ''
 !
     FullPath = EBJSHOW('-f ':FLNM)
-    OPEN FLNM TO DSCB THEN
+    CALL EB_OPEN('',FLNM, DSCB,0,POS)
+    IF POS THEN
         rc = IOCTL(DSCB, JBC_COMMAND_GETFILENAME, FullPath)
-    END 
+    END
 !
     IF FullPath='' THEN       ;! assume directory at current position
         temp = pwd:DIR_DELIM_CH:FLNM
@@ -34,7 +37,7 @@
         IF NOT(LEN(FullPath)) AND GETFLNM(pwd) = FLNM THEN
             temp = pwd
         END ELSE temp = FIELD(TRIM(FullPath), ' ', 2)
-        FullPath=temp    ;! create a path with a dummy arg for FIELD below
+        FullPath=temp         ;! create a path with a dummy arg for FIELD below
     END ELSE
         FINDSTR 'File:' IN FullPath SETTING attr THEN
             FullPath = FullPath<attr>
@@ -52,7 +55,7 @@
 ! Get everything after the first word (i.e. result of jshow -f)
 !
 !    FullPath=FIELD(FullPath,' ',2,999)
-   FullPath = FIELD(FullPath, '(', 1)
+    FullPath = FIELD(FullPath, '(', 1)
 !
 ! If the path starts with ".", replace with pwd
 !

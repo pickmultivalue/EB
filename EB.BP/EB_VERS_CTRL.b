@@ -199,7 +199,7 @@
                 CLOSE HFIL
             END ELSE
                 errmsg = 'Warning: failed to find ':FilePath:' in EB file array'
-                errmsg<-1> = @AM:FOLD(CHANGE(EB.FILE.LIST, @AM, ', '), LEN(errmsg))
+                errmsg<-1> = @AM:FOLD(CHANGE(EB.FILE.LIST<1>, @VM, ', '), LEN(errmsg))
                 CALL EB_ERRMSG(errmsg, 1)
                 CRT MSG.CLR:
             END

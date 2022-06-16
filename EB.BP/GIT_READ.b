@@ -29,6 +29,7 @@
     INCLUDE EB.INCLUDES GET.HOME
 !
     rc = GETCWD(homedir);! GIT_GETHOMEPATH(FilePath)
+DEBUG
     OPEN homedir TO F.Target ELSE
         Record = 'Error: cannot open ':homedir
         GOTO Read_Error

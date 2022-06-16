@@ -39,6 +39,7 @@
     cmd = command:noprompt:new_Args
     icmd = command:' ':new_Args
 
+!DEBUG
     IF Capturing THEN
         EXECUTE shell:cmd:shellend CAPTURING IO
         IF FIELD(Args, ' ', 1) NE 'info' AND (INDEX(IO, 'rror', 1) OR INDEX(IO, 'failed', 1) OR INDEX(IO, 'fatal', 1)) THEN

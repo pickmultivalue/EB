@@ -1,8 +1,5 @@
     SUBROUTINE EB_READINCL(HEADERS, CodeLine, IncludeString, Header, Recursive)
-    INCLUDE EB.EQUS EB.COMMONS
-    COM GEX(50),EXTRAS(50)
-    COM EB.FILES(500),EB.FILE.LIST
-    COM RDSP(100),CHANGES(100)
+    INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
     INCLUDE EB.EQUS EB.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
@@ -23,7 +20,7 @@ MAIN$:!
         Header=''
         IF LEN(incid) THEN
             IncludeString=FIELD(CodeLine,SPC,2,2)
-            CALL EB_OPEN('',FIELD(IncludeString,SPC,1),F.temp,1,ok)
+            CALL EB_OPEN('',FIELD(IncludeString,SPC,1),F.temp,0,ok)
             IF ok THEN
                 READ Header FROM F.temp, incid ELSE NULL
             END
@@ -36,8 +33,10 @@ MAIN$:!
     PathFlag=COUNT(incid,toslash)
     CodeLine=''
     IF NOT(GETENV('JBCRELEASEDIR',jbcdir)) THEN jbcdir='/usr/jbc'
+    IF NOT(GETENV('JBASEHOME',jbchome)) THEN jbchome='.'
     IF NOT(GETENV('INCLUDE',inclib)) THEN
-        inclib='.:../include:':jbcdir:'/include'
+        inclib='.:':jbchome:'/include:':jbcdir:'/include'
+        rc = PUTENV('INCLUDE=':inclib)
     END
     CONVERT dir_sep TO @AM IN inclib
     inclib<-1>=FLNM
@@ -67,7 +66,7 @@ MAIN$:!
     END ELSE
         LOOP
             REMOVE incdir FROM inclib AT LOC SETTING DELIM
-            CALL EB_OPEN('',incdir,F.temp,1,ok)
+            CALL EB_OPEN('',incdir,F.temp,0,ok)
             IF ok THEN
                 READ Header FROM F.temp,incid THEN
                     CONVERT SPC TO BS IN incdir

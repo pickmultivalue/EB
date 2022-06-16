@@ -64,6 +64,7 @@
     Status_IO = GIT_EXEC('status -v --depth=empty ':OrigPath, TRUE)
     IF LEN(Status_IO) = 0 OR Status_IO[1,1] = 'I' THEN          ;! need to add this directory
         homedir = GIT_GETHOMEPATH('.'):DIR_DELIM_CH:FileName
+DEBUG
         OPEN homedir ELSE
             EXECUTE shell:'mkdir ':homedir:shellend CAPTURING IO
         END
@@ -100,6 +101,7 @@
 !
     K.Locks = SRC_CASE(GETFULLPATH(FileName):DIR_DELIM_CH:tItemName)
 !
+DEBUG
     OPEN homedir ELSE
 !
 ! Get the Branch/Repository info
@@ -126,6 +128,7 @@
 !
 ! Make sure the above worked...we should be able to open homedir
 !
+DEBUG
         OPEN homedir ELSE
             IO = homedir:' checked out from ':repo:' but cannot be opened'
             RETURN IO
@@ -138,6 +141,7 @@
 !
 ! Create OBJECT file for BASIC
 !
+DEBUG
     OPEN FileName:',OBJECT' THEN
         EXECUTE 'CREATE-FILE DATA ':homedir:',OBJECT TYPE=UD' CAPTURING IO
     END
@@ -195,6 +199,7 @@ Ask_Checkout:
 ! original file.
 !
         Exists = FALSE
+DEBUG
         OPEN FilePath THEN
             READV rec FROM tItemName,1 THEN Exists = TRUE
         END

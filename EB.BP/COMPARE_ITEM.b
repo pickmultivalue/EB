@@ -2,10 +2,7 @@
 !
     DEFFUN EBJSHOW()
     DEFFUN EBGETHOME()
-    INCLUDE EB.EQUS EB.COMMONS
-    COM GEX(50),EXTRAS(50)
-    COM EB.FILES(500),EB.FILE.LIST
-    COM RDSP(100), CHANGES(100)
+    INCLUDE EB.EQUS EB.COMMON
     INCLUDE JBC.h
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
@@ -45,7 +42,6 @@
     INCLUDE EB.OS.INCLUDES WHO
     CALL EB_UT_INIT
     EQU ESC TO CHAR(27)
-    TOF=CHAR(12)
     STLN=1
     CNTA=0
     CNTB=0
@@ -106,7 +102,7 @@
     CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
     PROMPT ''
     FA=''; IDA=''
-    FB=''; IDB=''
+    FVB=''; IDB=''
     CHANGEDA=''; CHANGEDB=''
     ORIG.CHANGEDA=''; ORIG.CHANGEDB=''
     LAST.EXEC=''
@@ -151,7 +147,7 @@
                     INCLUDE EB.OS.INCLUDES GET.FLNM
                 END
                 IDB=ITNM
-                IF FLNM#'' THEN FB=FLNM; BSENT=TRUE
+                IF FLNM#'' THEN FVB=FLNM; BSENT=TRUE
             END
         END
     END ELSE
@@ -190,9 +186,9 @@
     CRT EL:
     IF SEL THEN
         IF FIELD(FA,' ',1) EQ 'DICT' THEN POS=4 ELSE POS=3
-        FB=FIELD(FG_SENTENCE,' ',POS)
-        IF FB EQ 'DICT' THEN FB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
-        BSENT=(FB#'' OR UPGBACKUP)
+        FVB=FIELD(FG_SENTENCE,' ',POS)
+        IF FVB EQ 'DICT' THEN FVB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
+        BSENT=(FVB#'' OR UPGBACKUP)
     END
     IF NOT(UPGBACKUP) THEN GOSUB OPEN.FILEB
 110 ! Enter First Id
@@ -222,7 +218,7 @@
 130 ! Enter Second Id
     IF SEL THEN
         IF UPGBACKUP THEN
-            FB=FIELD(IDA,'\',2)
+            FVB=FIELD(IDA,'\',2)
             GOSUB OPEN.FILEB
             IDB=FIELD(IDA,'\',3)
         END ELSE
@@ -246,7 +242,7 @@
     IF IDB EQ '^' THEN GO 110
     IF IDB EQ 'EX' THEN GO 99999
     READ RECB FROM FILEB,IDB ELSE
-        CRT EL:IDB:' NOT IN ':FB:
+        CRT EL:IDB:' NOT IN ':FVB:
         STOP
         GO 131
     END
@@ -301,7 +297,7 @@
     SAVB='%':IDB:'.sav%'
     BCKB='%':IDB:'.bck%'
     integrate = @FALSE
-    IF FA:IDA EQ FB:IDB THEN ;! integrate?
+    IF FA:IDA EQ FVB:IDB THEN ;! integrate?
         IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, '<<<<', 1) THEN
             integrate = @TRUE
             occ = 1
@@ -350,7 +346,7 @@
         TMP=FIELD(TMP,'*',1) 'D2/':'@':FIELD(TMP,'*',2) 'MTS'
     END ELSE TMP=IDA
     DIS.IDA=FA:' - ':TMP
-    DIS.IDB=FB:' - ':IDB
+    DIS.IDB=FVB:' - ':IDB
     PREV.LOC=''
     STARTA=1
     STARTB=1
@@ -483,7 +479,7 @@ FILE.ITEM:!
                 CRT @(-1)
                 CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
                 CRT @(0,2):'ENTER FILE A: ':FA
-                CRT @(42,2):'ENTER FILE B: ':FB:
+                CRT @(42,2):'ENTER FILE B: ':FVB:
                 GO 110
             END
         CASE CMD EQ 'EXK' OR CMD EQ 'FIK'
@@ -726,8 +722,8 @@ FILE.ITEM:!
         CASE CMD EQ 'EB'
 !            DATA "?"
             GOSUB WRITEB
-            DATA 'ED ':FB
-            EXECUTE 'SELECT ':FB:' "':NDB:'"'
+            DATA 'ED ':FVB
+            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
@@ -740,8 +736,8 @@ FILE.ITEM:!
             GOSUB 900
         CASE CMD EQ 'EBB'
             GOSUB WRITEB
-            DATA 'EB ':FB
-            EXECUTE 'SELECT ':FB:' "':NDB:'"'
+            DATA 'EB ':FVB
+            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
@@ -751,8 +747,8 @@ FILE.ITEM:!
             EXECUTE 'SELECT ':FA:' "':NDA:'"'
             READ RECA FROM FILEA,NDA ELSE NULL
             GOSUB WRITEB
-            DATA 'jEDIfmt ':FB
-            EXECUTE 'SELECT ':FB:' "':NDB:'"'
+            DATA 'jEDIfmt ':FVB
+            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
             READ   RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
@@ -767,7 +763,7 @@ FILE.ITEM:!
                     CASE OCONV(arg,'MCU') EQ 'A'
                         arg=FA:'/':IDA
                     CASE OCONV(arg,'MCU') EQ 'B'
-                        arg=FB:'/':IDB
+                        arg=FVB:'/':IDB
                 END CASE
                 NewCmd:=SPC:arg
                 OP++
@@ -782,8 +778,8 @@ FILE.ITEM:!
             GOSUB 900
         CASE CMD EQ 'JB'
             GOSUB WRITEB
-            DATA 'JED ':FB
-            EXECUTE 'SELECT ':FB:' "':NDB:'"'
+            DATA 'JED ':FVB
+            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
             READ RECB FROM FILEB,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
@@ -1064,7 +1060,7 @@ FILE.ITEM:!
     MAX.PAGE=55
     HD='COMPARE.ITEMS':TIMEDATE() 'R#119'
     HA=FA:' - ':IDA
-    HB=FB:' - ':IDB
+    HB=FVB:' - ':IDB
     PRINTER ON
     HL=SPACE(6):(HA:SPACE(COL.WIDTH))[1,COL.WIDTH]:' | ':HB[1,COL.WIDTH]
     J=0
@@ -1459,13 +1455,13 @@ UPDATE: !
                 IF ORIGB#RECB AND CMD[3,1] NE 'A' THEN
                     WRITE RECB ON FILEB,IDB
                     IF CMD[2,1] EQ 'I' THEN
-                        IF 0*NOT(INDEX(FB,'PATCH',1)) THEN
+                        IF 0*NOT(INDEX(FVB,'PATCH',1)) THEN
                             LOOP
-                                CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FB:' ':IDB:' (Y/N) ? ':
+                                CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FVB:' ':IDB:' (Y/N) ? ':
                                 INPUT ANS,1:
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
-                                EXECUTE 'EB ':FB:' ':IDB
+                                EXECUTE 'EB ':FVB:' ':IDB
                             END ELSE
                                 LOCATE IDB IN CHANGEDB<am_start> BY 'AL' SETTING POS ELSE
                                     INS IDB BEFORE CHANGEDB<POS>
@@ -1523,7 +1519,7 @@ DECRYPTLA:!
     LINEA=UPGITEM
     RETURN
 DECRYPTLB:!
-    UPGITEM=LINEB; UPGFNAME=FB; UPGINAME=IDB
+    UPGITEM=LINEB; UPGFNAME=FVB; UPGINAME=IDB
     GOSUB DECRYPT
     LINEB=UPGITEM
     RETURN
@@ -1533,7 +1529,7 @@ DECRYPTA: !
     RECA=UPGITEM
     RETURN
 DECRYPTB: !
-    UPGITEM=RECB; UPGFNAME=FB; UPGINAME=IDB
+    UPGITEM=RECB; UPGFNAME=FVB; UPGINAME=IDB
     GOSUB DECRYPT
     RECB=UPGITEM
     RETURN
@@ -1558,37 +1554,37 @@ OPEN.FILEB: !
 120 ! Enter Second File Name
     IF BSENT OR UPGBACKUP THEN BSENT=FALSE ELSE
         CRT @(42,2):'ENTER FILE B: ':
-        INPUT FB
+        INPUT FVB
     END
-    IF FB EQ '' THEN FB=FA
-    IF FB EQ '^' THEN RETURN TO 100
-    IF FB EQ 'EX' THEN RETURN TO 99999
-    IF SEL AND FB EQ FA THEN
+    IF FVB EQ '' THEN FVB=FA
+    IF FVB EQ '^' THEN RETURN TO 100
+    IF FVB EQ 'EX' THEN RETURN TO 99999
+    IF SEL AND FVB EQ FA THEN
         CRT 'Select Active, FILE B must be different'
         GOTO 120
     END
-    IF FIELD(FB,' ',1) EQ 'DICT' THEN
+    IF FIELD(FVB,' ',1) EQ 'DICT' THEN
         DICT='DICT'
-        FB=FIELD(FB,' ',2)
+        FVB=FIELD(FVB,' ',2)
     END ELSE
         DICT=''
     END
-    CRT @(42,2):'ENTER FILE B: ':FB:
-    OPEN DICT,FB TO FILEB ELSE
-        CRT EL:'CANNOT OPEN ':FB:
+    CRT @(42,2):'ENTER FILE B: ':FVB:
+    OPEN DICT,FVB TO FILEB ELSE
+        CRT EL:'CANNOT OPEN ':FVB:
         GO 120
     END
     CRT EL:
     IF CHANGEDA#'' THEN GOSUB UPDATE.CHANGE
     READ CHANGEDA FROM F.PF,FA ELSE CHANGEDA=''
-    READ CHANGEDB FROM F.PF,FB ELSE CHANGEDB=''
+    READ CHANGEDB FROM F.PF,FVB ELSE CHANGEDB=''
     ORIG.CHANGEDA=CHANGEDA
     ORIG.CHANGEDB=CHANGEDB
-    PATCHFILE=INDEX(FB:FA,'PATCH',1)
+    PATCHFILE=INDEX(FVB:FA,'PATCH',1)
     RETURN
 UPDATE.CHANGE: !
     IF CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FA; CRT FA:' written to POINTER-FILE'
-    IF CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FB; CRT FB:' written to POINTER-FILE'
+    IF CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FVB; CRT FVB:' written to POINTER-FILE'
     RETURN
 GETLINES: !
     LINEA=RECA<AMA>

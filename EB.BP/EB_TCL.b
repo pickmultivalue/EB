@@ -21,11 +21,7 @@
 ! .E{n}                  Edit stack starting from nth entry
 !
 !=============================================
-    INCLUDE EB.EQUS EB.COMMONS
-    COM GEX(50),EXTRAS(50)
-    COM EB.FILES(500),EB.FILE.LIST
-    COM RDSP(100), CHANGES(100)
-!
+    INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
 !
     INCLUDE EB.EQUS SCREEN.PARAMS

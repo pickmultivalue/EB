@@ -1,4 +1,5 @@
     FUNCTION SRC_OPENLOCKS(F.Locks)
+    INCLUDE EB.EQUS EB.COMMON
 !
 ! OPEN 'SRC.LOCKS' and pass back the file variable
 !
@@ -8,12 +9,12 @@
     DEFFUN EBGETHOME()
     fname = 'SRC.LOCKS'
 !
-    OPEN EBGETHOME():fname TO F.Locks ELSE
+    fname = EBGETHOME():fname
+    CALL EB_OPEN('',fname,F.Locks,0,POS)
+    IF NOT(POS) THEN
         rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
         fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:fname
-        OPEN fname TO F.Locks ELSE
-            RETURN 0
-        END
+        CALL EB_OPEN('',fname,F.Locks,0,POS)
     END
 !
-    RETURN 1
+    RETURN POS
