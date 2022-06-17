@@ -9,8 +9,7 @@
     DEFFUN EBGETHOME()
     fname = 'SRC.LOCKS'
 !
-    fname = EBGETHOME():fname
-    CALL EB_OPEN('',fname,F.Locks,0,POS)
+    CALL EB_OPEN('',EBGETHOME():fname,F.Locks,0,POS)
     IF NOT(POS) THEN
         rc = GETENV('JBCRELEASEDIR', jbcreleasedir)
         fname = jbcreleasedir:DIR_DELIM_CH:'config':DIR_DELIM_CH:fname

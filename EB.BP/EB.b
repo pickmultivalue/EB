@@ -271,19 +271,6 @@
         ITNM=FIELD(FG_SENTENCE," ",WCNT)
         ITNM=CHANGE(ITNM, '{sp}', SPC)
     END
-    IF INDEX(FLNM,DIR_DELIM_CH,1) THEN
-        SITNM = FIELD(FLNM, DIR_DELIM_CH, DCOUNT(FLNM, DIR_DELIM_CH))
-        Y = COL1()-1
-        Z = FIELD(SITNM, '.', DCOUNT(SITNM, '.'))
-        IF Z NE SITNM THEN
-            FLNM = FLNM[1,Y]
-            CALL EB_OPEN('',FLNM,FIL,0,FPOS)
-            IF FPOS THEN
-                FG_SENTENCE = 'EB ':FLNM:CHANGE(' ':FIELD(FG_SENTENCE, ' ', 2, WCNT), ' ':FLNM:DIR_DELIM_CH, ' ')
-                ITNM = SITNM
-            END
-        END
-    END
     ORIG_WCNT = WCNT
     END.WORDS='END':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
     USEMODE=''; PASSWD=''
