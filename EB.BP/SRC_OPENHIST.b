@@ -21,7 +21,6 @@
     histfile = 'SRC.HISTORY'
     fname := histfile
 !
-DEBUG
     OPEN fname TO F.Hist ELSE
 !
 ! If it can't be opened via JEDIFILEPATH or MD then

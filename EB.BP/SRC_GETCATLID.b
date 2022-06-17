@@ -13,7 +13,6 @@
     FileName = GET_CATALOG_FILE(ItemName)
     FileName = GETFULLPATH(FileName)
 !
-DEBUG
     OPEN FileName TO F.Source ELSE
         RETURN ''       ;! error
     END

@@ -17,7 +17,7 @@ MAIN$:!
     RefreshRequired=FALSE
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
-    MSG='String (A{+-};for all, V;vars, C;char) '
+    MSG='String (A{+-}{;./}for all, V{;,/}vars, C{;,/}char) '
     ICOL=LEN(MSG); IROW=(PDEPTH-1)
     Indent=ITAB<ITABPOS>
     GOSUB DisplayPrompt
@@ -152,6 +152,9 @@ MAIN$:!
     IF SSTR="" AND PSSTR="" THEN GO 4096
     REPEATSEARCH = (SSTR=PSSTR)
     OPTIONS=FIELD(SSTR,';',1)
+    IF SSTR[1,1] NE ';' AND (LEN(OPTIONS) EQ 0 OR OPTIONS EQ SSTR) THEN
+        OPTIONS=FIELD(SSTR,'/',1)
+    END
     IF OPTIONS[-1,1] EQ '\' THEN
         OPTIONS = ''
     END ELSE

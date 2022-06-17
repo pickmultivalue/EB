@@ -7,6 +7,7 @@
     INCLUDE EB.EQUS ACT.CODES
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
+    DEFFUN EBGETHOME()
     EQU SDEL TO CHAR(250)     ;* Delete cut item
     EQU MAX TO 999999
 MAIN$:!
@@ -45,11 +46,12 @@ MAIN$:!
                 CRT MSG.CLR:"Enter Paste Name or Number ":
                 L=20; Z=''
                 GOSUB INPT
-            WHILE INDEX(0,Z,1) DO
+            WHILE FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO
                 IF FG_ACT.CODE = FG_HLP.CODE THEN
                     CALL EB_HELP('EBCUT', @FALSE)
                 END
             REPEAT
+            IF FG_ACT.CODE EQ FG_JMP.CODE THEN Z = '^^'
             IF INDEX(ESC,Z,1) THEN
                 Y=CUT.POS<1,1,2>-OFFSET
                 CUT.POS=CUT.POS<1,1,1>-OFFSET
@@ -84,14 +86,32 @@ MAIN$:!
             FG_ACT.CODE=FG_SEL.CODE
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN] NE COMMENT<1,1,1>
         END
-        IF Z EQ '^' THEN
+        IF Z [1,1] EQ '^' THEN
             ROTATE = ''
             INDROW--
             FOR J=1 TO NO.D.L
-                ROTATE<-1> = REC<INDROW+ROW+J>
+                ROTATE<J> = REC<INDROW+ROW+J>
             NEXT J
+            IF Z EQ '^' THEN
+                CALL EB_ROTATE(ROTATE)
+            END ELSE
+                path = EBGETHOME()
+                Y ='.PASTE*':FG_LOGNAME:'*'
+                WRITE ROTATE ON JET.PASTE,Y
+                EXECUTE 'EB ':path:'JET.PASTE ':Y
+                READ ROTATE FROM JET.PASTE,Y
+                FOR J=1 TO NO.D.L
+                    REC<INDROW+ROW+J> = ROTATE<J>
+                NEXT J
+                DELETE JET.PASTE,Y
+            END
             INDROW++
-            CALL EB_ROTATE(ROTATE)
+            IF Z EQ '^^' THEN
+                SCR.UD = TRUE
+                CHANGED = TRUE
+                CUT.POS = ''
+                RETURN
+            END
         END
         TABLEN=ITAB<1,1>
         MODIFY=INDEX('!<>^',Z,1) AND LEN(Z)

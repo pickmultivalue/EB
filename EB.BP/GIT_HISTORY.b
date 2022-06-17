@@ -53,10 +53,32 @@
 !
     Stash = ItemName<2> EQ 'S'
     ItemName = ItemName<1>
+    matchKey = CHANGE(repo:DIR_DELIM_CH:ItemName,DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
     IF Stash THEN
         IO = GIT_EXEC('reflog show --format="medium" stash', TRUE)
+        stashstr = 'stash@{'
+        IF 1 THEN
+        matchKey = CHANGE(matchKey, Repository:DIR_DELIM_CH, '')
+        occ = 1
+        dc = DCOUNT(IO, @AM)
+        LOOP
+            FINDSTR stashstr IN IO,occ SETTING lnbr ELSE BREAK
+            stashid = FIELD(IO<lnbr>,' ',2)
+            stash = GIT_EXEC('show --name-only --oneline ':stashid, TRUE)
+            IF INDEX(stash, matchKey, 1) THEN
+                occ++
+            END ELSE
+                --lnbr
+                LOOP
+                    DEL IO<lnbr>
+                    --dc
+                    stash = FIELD(IO<lnbr>, ' ', 1)
+                UNTIL lnbr GT dc OR stash EQ 'commit' DO REPEAT
+            END
+        REPEAT
+        END
     END ELSE
-        IO = GIT_EXEC('log ':repo:DIR_DELIM_CH:ItemName, TRUE)
+        IO = GIT_EXEC('log ':matchKey, TRUE)
     END
 !
     history = ''
@@ -70,6 +92,9 @@
             ll = 1
             LOOP
                 REMOVE user FROM IO AT loc SETTING delim
+                IF Stash AND INDEX(user, stashstr, 1) THEN
+                    rev = FIELD(user, ' ', 2)
+                END
             UNTIL FIELD(user, ':', 1) EQ 'Author' OR ll GT 4 DO ll++ REPEAT
             user = TRIM(FIELD(user, ':', 2))
             REMOVE timestamp FROM IO AT loc SETTING delim

@@ -1,4 +1,5 @@
     FUNCTION GIT_READ(FilePath, tItemName, Record)
+    INCLUDE EB.EQUS EB.COMMON
 ! * COPIED from SVN program
 !
 ! Function that works like a READ but designed to
@@ -29,8 +30,8 @@
     INCLUDE EB.INCLUDES GET.HOME
 !
     rc = GETCWD(homedir);! GIT_GETHOMEPATH(FilePath)
-DEBUG
-    OPEN homedir TO F.Target ELSE
+    CALL EB_OPEN('',homedir,F.Target,0,ok)
+    IF NOT(ok) THEN
         Record = 'Error: cannot open ':homedir
         GOTO Read_Error
     END

@@ -723,6 +723,8 @@ TOP:      !
                 IF CHECK.LINE='' THEN
                     CHECK.LINE=RDSP(LROW)[1,LEN(RDSP(LROW))-1]
                     DUMMY=CHECK.LINE:'x'          ;! build a dummy line
+                    LNM=1
+                    TABLEN=ITAB<1>
                     GOSUB FORMAT
                     IF LCOL=I AND I>TABLEN THEN I-=TABLEN
                     RDSP(LROW)=STR(TAB,INT(I/TABLEN))       ;! CHECK.LINE
@@ -1517,12 +1519,10 @@ EB.SUB:   !
     END ELSE SCR.LR=1
     GOSUB LAST.USED
     RETURN
-999       !
-    IF ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN
+999 !
+    IF ITNM[1,1] EQ '.' OR ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN
         IF CHANGED THEN GOSUB SCRN.TO.REC
         CALL EB_FILE(@TRUE,K.PATCHFILE,MAT PATCH,@FALSE,ENCRYPTED,@FALSE)
-!        WRITE REC ON JET.PASTE,ITNM
-!        DELETE JET.PASTE,ITNM:'.sav'
         GO WRAPUP
     END ELSE
         IF FG_ACT.CODE NE FG_ALT.CODE THEN
@@ -2537,7 +2537,7 @@ SET.MODE: !
     COMMENTLEN = commentlen
     RETURN
 LAST.USED:!
-    IF ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN RETURN
+    IF ITNM[1,1] EQ '.' OR  ITNM[LEN(ITNM)-1,2] MATCHES "1N'%'" THEN RETURN
     IF (ITNM 'R#4')='.tmp' THEN RETURN
     IF tempItem THEN RETURN
     READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' ELSE LAST.EB=''

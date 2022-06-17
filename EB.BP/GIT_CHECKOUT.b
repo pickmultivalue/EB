@@ -1,4 +1,5 @@
     FUNCTION GIT_CHECKOUT(Ask, FilePath, ItemName)
+    INCLUDE EB.EQUS EB.COMMON
 !
 ! Function to make a copy of a program to a user's home directory.
 ! Originally copied from SVN_CHECKOUT so may need work.
@@ -64,8 +65,8 @@
     Status_IO = GIT_EXEC('status -v --depth=empty ':OrigPath, TRUE)
     IF LEN(Status_IO) = 0 OR Status_IO[1,1] = 'I' THEN          ;! need to add this directory
         homedir = GIT_GETHOMEPATH('.'):DIR_DELIM_CH:FileName
-DEBUG
-        OPEN homedir ELSE
+        CALL EB_OPEN('',homedir,F.homedir,0,ok)
+        IF ok THEN
             EXECUTE shell:'mkdir ':homedir:shellend CAPTURING IO
         END
         OrigPath = CHANGE(homedir, DIR_DELIM_CH, '/')
@@ -101,8 +102,8 @@ DEBUG
 !
     K.Locks = SRC_CASE(GETFULLPATH(FileName):DIR_DELIM_CH:tItemName)
 !
-DEBUG
-    OPEN homedir ELSE
+    CALL EB_OPEN('',homedir,F.homedir,0,ok)
+    IF NOT(ok) THEN
 !
 ! Get the Branch/Repository info
 !
@@ -128,8 +129,8 @@ DEBUG
 !
 ! Make sure the above worked...we should be able to open homedir
 !
-DEBUG
-        OPEN homedir ELSE
+        CALL EB_OPEN('',homedir,F.homedir,0,ok)
+        IF NOT(ok) THEN
             IO = homedir:' checked out from ':repo:' but cannot be opened'
             RETURN IO
         END
@@ -141,8 +142,8 @@ DEBUG
 !
 ! Create OBJECT file for BASIC
 !
-DEBUG
-    OPEN FileName:',OBJECT' THEN
+    CALL EB_OPEN('',FileName:',OBJECT',F.homedir,0,ok)
+    IF NOT(ok) THEN
         EXECUTE 'CREATE-FILE DATA ':homedir:',OBJECT TYPE=UD' CAPTURING IO
     END
 !
@@ -199,8 +200,8 @@ Ask_Checkout:
 ! original file.
 !
         Exists = FALSE
-DEBUG
-        OPEN FilePath THEN
+        CALL EB_OPEN('',FilePath,F.homedir,0,ok)
+        IF ok THEN
             READV rec FROM tItemName,1 THEN Exists = TRUE
         END
 !

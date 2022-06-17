@@ -159,18 +159,15 @@ compare:
                                 LINEF=TRIM(LINEF,VM,"T")
                                 LINES=TRIM(LINES,VM,"T")
                             END
-!        REMOVE LINEF FROM FITEM AT FPOS SETTING FDELIM
-!        REMOVE LINES FROM SFITEM AT SPOS SETTING SDELIM
                             IF LEN(LINEF) THEN
                                 IF INDEX(COMMENTS,TRIM(LINEF)[1,1],1) THEN LINEF=COMMENTS
                             END
                             IF LEN(LINES) THEN
                                 IF INDEX(COMMENTS,TRIM(LINES)[1,1],1) THEN LINES=COMMENTS
                             END
-                            DIFF=((LINEF NE LINES))          ;! OR (FDELIM#SDELIM))
+                            DIFF=((LINEF NE LINES))
                         END
                     UNTIL DIFF OR (I>=SCOUNT AND I>=FCOUNT) DO I+=1 REPEAT
-!      UNTIL DIFF OR NOT(FDELIM) DO REPEAT
                     IF DIFF THEN
                         LOCATE ID IN LIST<am_start> BY 'AL' SETTING POS ELSE
                             IF NOT(I.OPTION) THEN
@@ -180,7 +177,7 @@ compare:
                             INS ID BEFORE LIST<POS>
                         END
                     END
-                END       ;! ELSE CRT ID:' identical'
+                END
             END
         END
     REPEAT

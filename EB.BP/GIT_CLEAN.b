@@ -93,7 +93,6 @@
         END
     NEXT i
     IF LEN(IO) = 0 THEN
-DEBUG
         CLOSE F.Source
         EXECUTE 'CREATE-FILE DICT ':HomeDir:' 1' CAPTURING IO
         OPEN 'DICT',HomeDir TO F.Source THEN

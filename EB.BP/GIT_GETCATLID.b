@@ -1,4 +1,5 @@
     FUNCTION GIT_GETCATLID(ItemName)
+    INCLUDE EB.EQUS EB.COMMON
 !
 ! Function to return full source path of a catalogged program
 !
@@ -13,8 +14,8 @@
     FileName = GET_CATALOG_FILE(ItemName)
     FileName = GETFULLPATH(FileName)
 !
-DEBUG
-    OPEN FileName TO F.Source ELSE
+    CALL EB_OPEN('',FileName,F.Source,0,ok)
+    IF NOT(ok) THEN
         RETURN ''       ;! error
     END
 !
