@@ -4,8 +4,8 @@ IF Y='P' THEN
 END ELSE
   IF GETENV('JBASEHOME',jbhome) THEN
       jbhome := DIR_DELIM_CH:'include'
-DEBUG
-      OPEN jbhome THEN
+      CALL EB_OPEN('',jbhome,f.temp,0,tmp)
+      IF tmp THEN
           BAS.ARGS=' -I':jbhome
       END
   END
