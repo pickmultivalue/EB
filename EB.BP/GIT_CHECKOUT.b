@@ -202,7 +202,7 @@ Ask_Checkout:
         Exists = FALSE
         CALL EB_OPEN('',FilePath,F.homedir,0,ok)
         IF ok THEN
-            READV rec FROM tItemName,1 THEN Exists = TRUE
+            READV rec FROM F.homedir,tItemName,1 THEN Exists = TRUE
         END
 !
 ! Now see if it's a new item

@@ -1,7 +1,7 @@
 ! Initialisation
 ! ==============
     INCLUDE EB.EQUS EB.COMMON
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.INCLUDES jbcReserved.h
     INCLUDE EB.INCLUDES cReserved.h
@@ -647,6 +647,9 @@ UPDATE.REC:         !
     RETURN
 !==========
 STRT:     ! top of main loop
+    IF NOT(case_insensitive) AND INDEX(REC,'$options jabba', 1) THEN
+        case_insensitive = @TRUE
+    END
     Z = FG_ACT.CODE
     IF CHANGED THEN GOSUB SCRN.TO.REC
     CALL EB_REFRESH
@@ -1109,7 +1112,7 @@ SCROLL.LINE:        !
         SCR.UD=TRUE
     CASE FG_ACT.CODE=FG_GOTO.CODE
         CRT MSG.CLR:"Line Number ":
-        L=20; Z=DFLT.LINE; INPTYPE='U'
+        L=40; Z=DFLT.LINE; INPTYPE='U'
         GOSUB INPT
         LNM=Z
         CRT MSG.AKN:
@@ -1660,10 +1663,10 @@ CHG.LROW:
     IF FG_ACT.CODE=FG_ALT.CODE THEN
         FG_ACT.CODE=FALSE
     END ELSE
-        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e ?"
+        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e, <L>ower ?"
         CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):
         YNC=PWIDTH; YNR=PDEPTH;
-        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
+        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'L':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
         CRT MSG.DSP:
         IF FG_ACT.CODE=FG_OPT.CODE THEN Y='.'; FG_ACT.CODE=FALSE
@@ -1732,6 +1735,9 @@ CHG.LROW:
         SCR.LR=1
     CASE FTYP='K'
         Z=ITNM; I=TRUE; GOSUB INS.TXT
+    CASE FTYP='L'
+        CALL EB_LOWER(REC, SCR.UD)
+        IF SCR.UD THEN CALL EB_REFRESH
     CASE FTYP='O'
         CALL EB_MOVE(FIL,REC,MSG.CLR,MSG.AKN,PR,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
         FG_ACT.CODE=FG_NXT.KEY.CODE
@@ -2436,7 +2442,7 @@ GET.EDIT.MODE:      !
     CASE ITNM 'R#3'='.py'; EDIT.MODE='py'
     CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
     CASE ITNM 'R#2'='.b'; EDIT.MODE='!'
-    CASE ITNM 'R#6'='.jabba'; EDIT.MODE='!'
+    CASE ITNM 'R#6'='.jabba'; EDIT.MODE='!'; case_insensitive = @TRUE
     CASE FLNM 'R#2'='BP'; EDIT.MODE='!'
     CASE FLNM='MD' OR FLNM='VOC'; EDIT.MODE='C'
     CASE 1

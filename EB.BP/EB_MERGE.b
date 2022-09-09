@@ -1,5 +1,5 @@
     SUBROUTINE EB_MERGE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
     INCLUDE EB.INCLUDES lex.h
 !
     INCLUDE EB.EQUS EB.COMMONS

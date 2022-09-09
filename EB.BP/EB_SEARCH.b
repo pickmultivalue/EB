@@ -1,5 +1,5 @@
     SUBROUTINE EB_SEARCH
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
@@ -24,7 +24,7 @@ MAIN$:!
     SAVEROW=ROW
     L=PWIDTH-1-ICOL; SSTR=''; SRCH.STR=''
     SPWIDTH = PWIDTH
-    PWIDTH = 999
+!    PWIDTH = 999
     OPTIONS=''
     RPOS=1
     IF FG_ACT.CODE=FG_MULTI.CODE THEN FG_ACT.CODE=FALSE ELSE FG_LAST.ACT.CODE=FG_ACT.CODE
@@ -150,7 +150,7 @@ MAIN$:!
     END
     IF SSTR=ESC THEN GO 4096
     IF SSTR="" AND PSSTR="" THEN GO 4096
-    REPEATSEARCH = (SSTR=PSSTR)
+    REPEATSEARCH = (SSTR EQ PSSTR)
     OPTIONS=FIELD(SSTR,';',1)
     IF SSTR[1,1] NE ';' AND (LEN(OPTIONS) EQ 0 OR OPTIONS EQ SSTR) THEN
         OPTIONS=FIELD(SSTR,'/',1)

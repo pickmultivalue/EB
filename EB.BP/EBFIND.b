@@ -109,5 +109,6 @@
         EXECUTE @IM:'k':find_cmd CAPTURING list
     END
     IF LEN(list) THEN
+        list = SORT(list)
         EXECUTE @IM:'kEB ':TRIM(fname:' ':CHANGE(list, @AM, ' '))
     END ELSE CRT 'No match'

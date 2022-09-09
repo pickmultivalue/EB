@@ -1,6 +1,6 @@
     SUBROUTINE EB_SHOWMEMBERS(WORD)
     $options jabba
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
@@ -22,7 +22,10 @@ MAIN$:!
         methods = $system->getroutines(WORD,0)
         IF methods->$isobject THEN
             for m in methods
-                VARS<1,1,-1> = FIELD(m->name,':',3)
+                m = FIELD(m->name,':',3)
+                LOCATE m IN VARS<1,1> BY 'AL' SETTING pos ELSE
+                    INS m BEFORE VARS<1,1,pos>
+                END
             next
         END
     END
@@ -51,7 +54,10 @@ MAIN$:!
             methods = $system->getroutines(IDATA,0)
             IF methods->$isobject THEN
                 for m in methods
-                    VARS<1,1,-1> = FIELD(m->name,':',3)
+                    m = FIELD(m->name,':',3)
+                    LOCATE m IN VARS<1,1> BY 'AL' SETTING pos ELSE
+                        INS m BEFORE VARS<1,1,pos>
+                    END
                 next
                 GO gotvars
             END

@@ -135,24 +135,26 @@ MAIN$:!
         PREV.LINE.NO = LINE.NO
         LINE=REC<LINE.NO>
         LEADWS = ''; TRAILWS = ''
-        FOR I = 1 TO LEN(LINE)
-            CH = LINE[I,1]
-            IF INDEX(@TAB,CH,1) THEN
-                LEADWS := CH
-            END ELSE
-                BREAK
-            END
-        NEXT I
-        LINE = LINE[I,LEN(LINE)]
-        FOR I = LEN(LINE) TO 1 STEP -1
-            CH = LINE[I,1]
-            IF INDEX(@TAB,CH,1) THEN
-                TRAILWS := CH
-            END ELSE
-                BREAK
-            END
-        NEXT I
-        LINE = LINE[1,I]
+        IF NOT(INDEX(RSTR, TAB, 1)) THEN
+            FOR I = 1 TO LEN(LINE)
+                CH = LINE[I,1]
+                IF INDEX(TAB,CH,1) THEN
+                    LEADWS := CH
+                END ELSE
+                    BREAK
+                END
+            NEXT I
+            LINE = LINE[I,LEN(LINE)]
+            FOR I = LEN(LINE) TO 1 STEP -1
+                CH = LINE[I,1]
+                IF INDEX(TAB,CH,1) THEN
+                    TRAILWS := CH
+                END ELSE
+                    BREAK
+                END
+            NEXT I
+            LINE = LINE[1,I]
+        END
         ORIG.LINE=LINE
 !
 ! Check that all matching strings are there
