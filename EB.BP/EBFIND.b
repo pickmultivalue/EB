@@ -102,7 +102,9 @@
                 find_cmd:= ' \( ':CHANGE(matching, @AM, ' -oE '):' \)'
             END
             find_cmd:= ' -exec fgrep'
-            IF NOT(LEN(types)) THEN find_cmd := ' -I'
+            IF NOT(LEN(types)) THEN
+                find_cmd := ' -I'
+            END
             find_cmd:= ' -l':nocase:' -- ':sent:' {} \;':sort
         END
         IF verbose THEN CRT;CRT find_cmd;CRT
