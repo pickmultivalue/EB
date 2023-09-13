@@ -13,6 +13,9 @@
         DFNAME = parsed<pos>
     END ELSE
         DFNAME = CHANGE(FNAME, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
+        IF UNASSIGNED(MD_flag) THEN
+            CALL EB_OPEN('','MD',F.MD,0,MD_flag)
+        END
         IF MD_flag THEN
             READ FACC FROM F.MD,FNAME THEN
                 FACC=FACC<2>:DIR_DELIM_CH:FACC<3>
