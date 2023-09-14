@@ -1,4 +1,5 @@
     PROGRAM GITCOMMIT
+    INCLUDE EB.EQUS EB.COMMON
 !
 ! Utility to check in one or more items to GIT
 !
@@ -13,6 +14,8 @@
     shell = @IM:'k'
     shellend = ' 2>&1'
     OPTIONS = UPCASE(SYSTEM(15))
+    INCLUDE EB.EQUS EB.EQUS
+    MAT EXTRAS=''
 !
     INCLUDE EB.INCLUDES SRCDBG
     INCLUDE EB.INCLUDES GET.HOME

@@ -17,17 +17,22 @@
             FLNMS = EBJSHOW('-c ':ITNM)
         END
         IF FLNMS#'' THEN
-            FLNMDC = DCOUNT(FLNMS,@AM)
-            FOR FLNMI = 1 TO FLNMDC
-                FLNM = FLNMS<FLNMI>
-                FLNMPOS=INDEX(FLNM,'source file',1)
-                IF FLNMPOS THEN
-                    FLNM=FIELD(FLNM[FLNMPOS,MAX],' ',3)
-                    FLNM=TRIM(OCONV(FLNM,'MCP '))
-                    IF FLNM='unknown' THEN CONTINUE;!FLNM='.'
-                    BREAK
-                END ELSE FLNM=''
-            NEXT FLNMI
+            FINDSTR 'JELF: Source' IN FLNMS SETTING FLNM THEN
+                FLNM = TRIM(FLNMS<FLNM>)
+                FLNM = FIELD(FLNM, ' ', DCOUNT(FLNM,' '))
+            END ELSE
+                FLNMDC = DCOUNT(FLNMS,@AM)
+                FOR FLNMI = 1 TO FLNMDC
+                    FLNM = FLNMS<FLNMI>
+                    FLNMPOS=INDEX(FLNM,'source file',1)
+                    IF FLNMPOS THEN
+                        FLNM=FIELD(FLNM[FLNMPOS,MAX],' ',3)
+                        FLNM=TRIM(OCONV(FLNM,'MCP '))
+                        IF FLNM='unknown' THEN CONTINUE;!FLNM='.'
+                        BREAK
+                    END ELSE FLNM=''
+                NEXT FLNMI
+            END
         END ELSE
             IF NOT(INDEX(ITNM, DIR_DELIM_CH, 1)) THEN ITNM='.':DIR_DELIM_CH:ITNM
             FLNM=FIELD(ITNM,DIR_DELIM_CH,1,COUNT(ITNM,DIR_DELIM_CH))
