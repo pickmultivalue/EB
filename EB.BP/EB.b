@@ -87,7 +87,7 @@
 !    CALL EB_OPEN('',path:'EB.PROCESSES',FG_PROCESSES,0,POS)
 
 !    IF POS ELSE
-        FG_PROCESSES=JET.PASTE
+    FG_PROCESSES=JET.PASTE
     CALL EB_OPEN('',path:'EB.HELP.DOC,ENG',FG_HELP.DOC,0,POS)
     IF POS THEN
         OPEN.HELP=TRUE
@@ -186,12 +186,12 @@
             LINE=BASE.ITEM<A>
         WHILE LINE[1,1]='*' DO
             BEGIN CASE
-            CASE INDEX(LINE,'Author',1)
-                LINE:=SPC:FG_USER.NAME
-            CASE INDEX(LINE,'Date Written',1)
-                LINE:=SPC:TIMEDATE()
-            CASE INDEX(LINE,'Standard program banner',1)
-                LINE='* <enter program function here>'
+                CASE INDEX(LINE,'Author',1)
+                    LINE:=SPC:FG_USER.NAME
+                CASE INDEX(LINE,'Date Written',1)
+                    LINE:=SPC:TIMEDATE()
+                CASE INDEX(LINE,'Standard program banner',1)
+                    LINE='* <enter program function here>'
             END CASE
             BASE.ITEM<A>=LINE
             A+=1
@@ -295,63 +295,63 @@
     READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' ELSE LAST.EB=''
     IF ITNM='' THEN
         BEGIN CASE
-        CASE FLNM='.'
-            POS=1
-        CASE FLNM='..'
-            POS=2
-        CASE 1
-            wdepth = (PDEPTH * .75) "0"
-            SPOS = DCOUNT(EB.FILE.LIST<1>,VM) + 1
-            IF LEN(FLNM) THEN
-                CALL EB_CHOICES(20,3,'',wdepth,FLNM,'',ITNM,1,1,0,'L#50','Records in file ':FLNM:SVM:'Item')
-            END ELSE
-                WCNT = DCOUNT(LAST.EB<1>, VM)
-                FOR I = WCNT TO 1 STEP -1
-                    LUK = LAST.EB<1, I>
-                    Y = FIELD(LUK, '*', 1)
-                    Z = FIELD(LUK, '*', 3)
-                    CALL EB_OPEN('', Y, FIL, FALSE, POS)
-                    IF POS THEN
-                        READV LOC FROM FIL,Z,1 ELSE POS = FALSE
-                        CLOSE FIL
-                    END
-                    IF NOT(POS) THEN
-                        IF I< WCNT THEN
-                            FIL = LAST.EB<2, I>
-                            DEL LAST.EB<1, I>
-                            DEL LAST.EB<2, I>
-                            LAST.EB<1, -1> = LUK
-                            LAST.EB<2, -1> = FIL
+            CASE FLNM='.'
+                POS=1
+            CASE FLNM='..'
+                POS=2
+            CASE 1
+                wdepth = (PDEPTH * .75) "0"
+                SPOS = DCOUNT(EB.FILE.LIST<1>,VM) + 1
+                IF LEN(FLNM) THEN
+                    CALL EB_CHOICES(20,3,'',wdepth,FLNM,'',ITNM,1,1,0,'L#50','Records in file ':FLNM:SVM:'Item')
+                END ELSE
+                    WCNT = DCOUNT(LAST.EB<1>, VM)
+                    FOR I = WCNT TO 1 STEP -1
+                        LUK = LAST.EB<1, I>
+                        Y = FIELD(LUK, '*', 1)
+                        Z = FIELD(LUK, '*', 3)
+                        CALL EB_OPEN('', Y, FIL, FALSE, POS)
+                        IF POS THEN
+                            READV LOC FROM FIL,Z,1 ELSE POS = FALSE
+                            CLOSE FIL
                         END
-                    END
-                NEXT I
-                POPUP_WIDTH=SYSTEM(2)-70
-                CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#60':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
-                FLNM=''
-            END
-            NPOS = DCOUNT(EB.FILE.LIST<1>,VM)
-            FOR POS = NPOS TO SPOS STEP -1
-                Y = EB.FILE.LIST<1,POS>
-                I = EB.FILE.LIST<2,POS>
-                IF I EQ Y THEN Z = EB_CLOSE('', Y)
-                DEL EB.FILE.LIST<1,POS>
-                DEL EB.FILE.LIST<2,POS>
-            NEXT POS
-            IF ITNM NE ITNM<1,1,1> THEN
-                LIST=ITNM
-                LOC=0
-                LOOP
-                    REMOVE ITNM FROM LIST AT LOC SETTING DELIM
-                    FG_SENTENCE:=SPC:ITNM
-                    NBR.WORDS++
-                WHILE DELIM DO REPEAT
-                ITNM=LIST<1,1,1>
-                WCNT = 2
-                ORIG_WCNT = WCNT
-            END ELSE
-                IF ITNM#'' AND FLNM#'' THEN ITNM=FLNM:'**':ITNM
-            END
-            POS=0
+                        IF NOT(POS) THEN
+                            IF I< WCNT THEN
+                                FIL = LAST.EB<2, I>
+                                DEL LAST.EB<1, I>
+                                DEL LAST.EB<2, I>
+                                LAST.EB<1, -1> = LUK
+                                LAST.EB<2, -1> = FIL
+                            END
+                        END
+                    NEXT I
+                    POPUP_WIDTH=SYSTEM(2)-70
+                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#60':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
+                    FLNM=''
+                END
+                NPOS = DCOUNT(EB.FILE.LIST<1>,VM)
+                FOR POS = NPOS TO SPOS STEP -1
+                    Y = EB.FILE.LIST<1,POS>
+                    I = EB.FILE.LIST<2,POS>
+                    IF I EQ Y THEN Z = EB_CLOSE('', Y)
+                    DEL EB.FILE.LIST<1,POS>
+                    DEL EB.FILE.LIST<2,POS>
+                NEXT POS
+                IF ITNM NE ITNM<1,1,1> THEN
+                    LIST=ITNM
+                    LOC=0
+                    LOOP
+                        REMOVE ITNM FROM LIST AT LOC SETTING DELIM
+                        FG_SENTENCE:=SPC:ITNM
+                        NBR.WORDS++
+                    WHILE DELIM DO REPEAT
+                    ITNM=LIST<1,1,1>
+                    WCNT = 2
+                    ORIG_WCNT = WCNT
+                END ELSE
+                    IF ITNM#'' AND FLNM#'' THEN ITNM=FLNM:'**':ITNM
+                END
+                POS=0
         END CASE
         IF POS THEN ITNM = LAST.EB<1,POS>
         IF LEN(ITNM) THEN
@@ -376,7 +376,7 @@
     GO FIRST.ITEM
 NEXT.ITEM:!
     GOSUB LAST.USED
-FIRST.ITEM:         !
+FIRST.ITEM: !
     WCNT+=1
     ITNM=FIELD(FG_SENTENCE,SPC,WCNT)
     ITNM=CHANGE(ITNM, '{sp}', SPC)
@@ -396,7 +396,7 @@ FIRST.ITEM:         !
 ! Prompt for File
 !
 5   CRT @(-1):
-10        !
+10  !
     CRT @(0,0):"File Name? ":CLEOP:
     L=46; Z=FLNM; INPTYPE='U'
     GOSUB INPT
@@ -408,21 +408,21 @@ FIRST.ITEM:         !
 !
 ! Prompt for next item
 !
-20        !
+20  !
     IF FG_ACT.CODE=FG_NXT.KEY.CODE OR FG_ACT.CODE = FG_AMD.CODE ELSE
         CRT @(0,1):"Item Name? ":CLEOP:
         L=46; Z=ITNM
         GOSUB INPT
         ITNM=TRIM(ITNM)
         BEGIN CASE
-        CASE FG_ACT.CODE=FG_ABT.CODE; GO WRAPUP
-        CASE ITNM="^" OR FG_ACT.CODE=FG_BCK.CODE OR ITNM='<'; GO 10
-        CASE ITNM=ESC; GO WRAPUP
-        CASE FG_ACT.CODE=FG_SKP.CODE; GO NEXT.ITEM
+            CASE FG_ACT.CODE=FG_ABT.CODE; GO WRAPUP
+            CASE ITNM="^" OR FG_ACT.CODE=FG_BCK.CODE OR ITNM='<'; GO 10
+            CASE ITNM=ESC; GO WRAPUP
+            CASE FG_ACT.CODE=FG_SKP.CODE; GO NEXT.ITEM
         END CASE
         CRT
     END
-25        !
+25  !
     IF FLNM='.' THEN
         FLNM=currdir
     END
@@ -460,7 +460,7 @@ READ.ITEM:!
     VersCheckedOut=tempItem
     lockvar=TRUE
     FIRST.READ=(SFLNM NE HFLNM)
-REREAD.ITEM:        !
+REREAD.ITEM: !
     IF BINARY.MODE THEN
         rc = IOCTL(FIL, JIOCTL_COMMAND_CONVERT, "RB,WB")
     END
@@ -476,7 +476,7 @@ REREAD.ITEM:        !
         YNC=65; YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
         CRT MSG.CLR:
         IF Y NE 'Y' THEN GO 20
-ALREADY.LOCKED:     !
+ALREADY.LOCKED: !
         UPDATES=FALSE
         READ REC FROM FIL,ITNM ELSE REC=''
         IF READ.ONLY.MODE THEN
@@ -486,18 +486,18 @@ ALREADY.LOCKED:     !
 ! dodgy way of checking for updates
         CALL EB_VERS_CTRL(VersStat,lockvar, tempItem)
         BEGIN CASE
-        CASE NOT(lockvar)
-        CASE lockvar = 24576
-            UPDATES=FALSE
-            lockvar=0
+            CASE NOT(lockvar)
+            CASE lockvar = 24576
+                UPDATES=FALSE
+                lockvar=0
         END CASE
         BEGIN CASE
-        CASE lockvar<0
-            CALL EB_OPEN(DCT<2>, FLNM, FIL, TRUE, POS)
-            GOSUB SET.MSG
-            GO READ.ITEM
-        CASE lockvar
-            GO ALREADY.LOCKED
+            CASE lockvar<0
+                CALL EB_OPEN(DCT<2>, FLNM, FIL, TRUE, POS)
+                GOSUB SET.MSG
+                GO READ.ITEM
+            CASE lockvar
+                GO ALREADY.LOCKED
         END CASE
     END ELSE
         SITNM = ITNM
@@ -623,7 +623,7 @@ AUTO.SAVE:! time check
     CALL EB_AUTOSAVE
     RETURN
 !==========
-SCRN.TO.REC:        ! Incorporate changed lines into dynamic array, REC.
+SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
     IF LEN(NEW.CHARS) THEN GOSUB ADD.CHARS
     GOSUB UPDATE.REC
     LAST.AM = DCOUNT(REC, AM)
@@ -633,7 +633,7 @@ SCRN.TO.REC:        ! Incorporate changed lines into dynamic array, REC.
     FG_ACT.CODE=FALSE
     FG_TIMEOUT=FG_MONITOR.SECS*10
     RETURN
-UPDATE.REC:         !
+UPDATE.REC: !
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
             IF I NE LROW THEN
@@ -646,7 +646,7 @@ UPDATE.REC:         !
     NEXT I
     RETURN
 !==========
-STRT:     ! top of main loop
+STRT: ! top of main loop
     IF NOT(case_insensitive) AND INDEX(REC,'$options jabba', 1) THEN
         case_insensitive = @TRUE
     END
@@ -655,7 +655,7 @@ STRT:     ! top of main loop
     CALL EB_REFRESH
     LAST.NBR=FIRST.ALPHA
     IF Z = FG_MULTI.CODE THEN FG_ACT.CODE = Z
-TOP:      !
+TOP: !
     INCLUDE EB.INCLUDES VERS_CTRL
     IF COL<5 THEN GO STRT
     THIS.ROW=INDROW+ROW
@@ -772,23 +772,23 @@ TOP:      !
         END
     END
     BEGIN CASE
-    CASE FG_ACT.CODE=FG_RIGHT.CODE
-    CASE FG_ACT.CODE=FG_LEFT.CODE
-    CASE FG_ACT.CODE=FG_BCK.CODE
-    CASE FG_ACT.CODE=FG_SKP.CODE
-    CASE FG_ACT.CODE=FG_FWORD.CODE
-    CASE FG_ACT.CODE=FG_BWORD.CODE
-    CASE FG_ACT.CODE=FG_TAB.CODE
-    CASE FG_ACT.CODE=FG_ADD.CODE
-    CASE FG_ACT.CODE=FG_LST.CODE
-    CASE 1
-        POS=DCOUNT(MARKERS<1>,VM)
-        Z=INDROW+ROW:SVM:LCOL+4
-        IF Z NE MARKERS<2,POS> THEN
-            POS+=1
-            INS '<' BEFORE MARKERS<1,POS>
-            INS Z BEFORE MARKERS<2,POS>
-        END
+        CASE FG_ACT.CODE=FG_RIGHT.CODE
+        CASE FG_ACT.CODE=FG_LEFT.CODE
+        CASE FG_ACT.CODE=FG_BCK.CODE
+        CASE FG_ACT.CODE=FG_SKP.CODE
+        CASE FG_ACT.CODE=FG_FWORD.CODE
+        CASE FG_ACT.CODE=FG_BWORD.CODE
+        CASE FG_ACT.CODE=FG_TAB.CODE
+        CASE FG_ACT.CODE=FG_ADD.CODE
+        CASE FG_ACT.CODE=FG_LST.CODE
+        CASE 1
+            POS=DCOUNT(MARKERS<1>,VM)
+            Z=INDROW+ROW:SVM:LCOL+4
+            IF Z NE MARKERS<2,POS> THEN
+                POS+=1
+                INS '<' BEFORE MARKERS<1,POS>
+                INS Z BEFORE MARKERS<2,POS>
+            END
     END CASE
 !! new chars prev pos
 !    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
@@ -827,638 +827,657 @@ TOP:      !
             END
         END
     END
-CHECK.CODES:        !
+CHECK.CODES: !
     BEGIN CASE
-    CASE FG_ACT.CODE=FG_RIGHT.CODE
-        LCOL++
-        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-        GO TOP
-    CASE FG_ACT.CODE=FG_LEFT.CODE
-        IF COL EQ 5 THEN
-            IF NOT(OFFSET) THEN
+        CASE FG_ACT.CODE=FG_RIGHT.CODE
+            LCOL++
+            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            GO TOP
+        CASE FG_ACT.CODE=FG_LEFT.CODE
+            IF COL EQ 5 THEN
+                IF NOT(OFFSET) THEN
+                    IF LROW>1 THEN
+                        LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+                    END
+                END
+            END ELSE
+                LCOL--
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CRT BACK:
+                GO TOP
+            END
+        CASE FG_ACT.CODE=FG_BCK.CODE
+            IF INDROW=1 AND LROW=1 THEN
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                CALL EB_TRIM(REC,REC:'',AM,'T')
+                CNT=DCOUNT(REC,AM)
+                Y=INDROW
+                INDROW=CNT-(PDEPTH-2)
+                IF INDROW<0 THEN INDROW=1
+                COL=5; ROW=CNT-INDROW
+                SCR.UD=Y NE INDROW
+            END ELSE
+                ROW-=1
+                IF LROW > 1 THEN LLEN=LEN(RDSP(LROW-1))         ;! else it's done in SCR.UD block
+                LROW-=1
+                IF LROW<1 THEN
+                    IF INDROW>1 THEN
+                        IF CHANGED THEN GOSUB SCRN.TO.REC
+                        FOR I=(PDEPTH-1) TO 1 STEP -1
+                            RDSP(I+1)=RDSP(I)
+                        NEXT I
+                        INDROW-=1
+                        RDSP(1)=REC<INDROW>
+                        IF LEN(DEL.LINE) THEN
+                            CRT @(0,(PDEPTH-2)):DEL.LINE:@(0,0):INS.LINE:
+                            IF INDROW > LAST.AM THEN
+                                DIMON = BG
+                                DIMOFF = FG
+                            END ELSE DIMON = ''; DIMOFF = ''
+                            CRT DIMON:INDROW 'R#4 ':DIMOFF:
+                            CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
+                            S=LROW; LROW=1; GOSUB CRT.LN; LROW=S
+                            CRT MSG.DSP:
+                        END ELSE SCR.UD=TRUE; SCR.LR=TRUE
+                        ROW+=1; LROW+=1
+                        IF SCR.UD THEN GO STRT
+                    END
+                    GO TOP
+                END ELSE CRT UP:
+            END
+        CASE FG_ACT.CODE=FG_SKP.CODE
+            IF LROW < (PDEPTH-1) THEN LLEN=LEN(RDSP(LROW+1))    ;! else its done in SCR.UD block
+            IF LROW>(PDEPTH-2) THEN
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+SCROLL.LINE:    !
+                GOSUB SCROLL.DOWN
+                ON Y GO STRT,TOP
+            END ELSE
+                ROW+=1
+                LROW+=1
+                CRT LF:
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                GO TOP
+            END
+        CASE CHR=CR
+            GOSUB ADD_TO_UNDO
+            TABLEN=ITAB<ITABPOS>
+            IF LROW=(PDEPTH-1) THEN
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                GOSUB SCROLL.DOWN; LROW-=1; ROW-=1
+            END
+            CHECK.LINE=RDSP(LROW)
+            DUMMY=LROW+1
+            TMP=RDSP(DUMMY)
+            IF LEN(INS.MODE AND (TRIM(CHECK.LINE[LCOL,MAX])) OR TRIM(TMP) NE '') THEN
+                GOSUB SPLIT.LINE
+                CHECK.LINE=RDSP(LROW+1)
+            END ELSE
+! breaks basic formatting - CALL EB_TRIM(CHECK.LINE, RDSP(LROW), ' ', 'L')
+                DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
+            END
+            Y=RDSP(LROW)[1,COMMENTLEN]; IF Y=TRIM(RDSP(LROW)) THEN Y=''
+            IF CHECK.LINE='' AND INDEX('*!/',Y[1,1],1) AND Y NE '' THEN
+                CHECK.LINE=RDSP(LROW)[1,COMMENTLEN]; RDSP(LROW+1)=CHECK.LINE; I=TABLEN-1
+            END ELSE Y=''
+            LCOL=I
+            IF TRIM(CHECK.LINE)='' OR INS.MODE THEN   ;! next line is blank
+                IF OFFSET THEN
+                    OFFSET=0
+                    SCR.UD=TRUE
+                    SCR.LR=1
+                    SCRL=0
+                    COL=5
+                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                END ELSE SCR.LR=1-2*(INS.LINE NE '')
+            END ELSE
+                NLEN=LEN(CHECK.LINE)
+                IF NLEN<LCOL THEN ;! next line is shorter
+                    IF NLEN<PWIDTH-5 AND OFFSET THEN SCR.LR=1-2*(INS.LINE NE ''); OFFSET=0; SCRL=0
+                    LCOL=NLEN+1
+                    IF RDSP(LROW)='' AND TAB.MODE THEN RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
+                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                END
+            END
+            ROW+=1
+            IF CHECK.LINE='' THEN
+                LLEN=0; LCOL=I
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            END ELSE LLEN=LEN(CHECK.LINE)
+            IF LEN(TMP='' AND (TRIM(CHECK.LINE)) OR TAB.MODE) THEN
+                LROW=ROW+1
+                IF TRIM(RDSP(LROW))='' THEN
+                    IF TAB.MODE THEN
+                        RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
+                    END ELSE RDSP(LROW)=SPACE(LCOL)
+                END
+!                LCOL=LEN(RDSP(LROW))
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
+                IF SCR.UD ELSE
+                    CRT @(5,ROW):RDSP(LROW):
+                    GO TOP
+                END
+            END
+        CASE FG_ACT.CODE=FG_SEARCH.CODE OR FG_ACT.CODE=FG_BSEARCH.CODE OR FG_ACT.CODE=FG_MULTI.CODE OR FG_ACT.CODE=FG_CASE.CODE
+            IF FG_ACT.CODE=FG_CASE.CODE THEN
+                FG_ACT.CODE=FG_BSEARCH.CODE
+                FG_LAST.ACT.CODE=FG_ACT.CODE
+            END
+            SAVE.CODE=FG_ACT.CODE
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            FG_ACT.CODE=SAVE.CODE
+            IF FG_ACT.CODE=FG_SEARCH.CODE OR FG_ACT.CODE=FG_BSEARCH.CODE THEN
+                GOSUB GET.WORD
+                IF LEN(TRIM(WORD[1,1])) AND WORD[1,1] NE TAB THEN
+                    WORD=TRIM(WORD)
+                    LOCATE 'V;':WORD IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
+                    INS 'V;':WORD BEFORE SSS<1>
+                END
+            END
+            Z=INDROW
+            CALL EB_SEARCH
+            GOTO TOP
+        CASE FG_ACT.CODE=FG_DEL.CHAR.CODE
+            GOSUB ADD_TO_UNDO
+            IF TRIM(RDSP(LROW)[LCOL,MAX])='' THEN
+                IF TRIM(RDSP(LROW)) NE '' THEN
+                    CALL EB_TRIM(RDSP(LROW),RDSP(LROW):'',SPC,'T')
+                    DUMMY=0
+                END ELSE RDSP(LROW)=SPACE(LCOL-2); DUMMY=1
+                CRT @(0,ROW+1):DEL.LINE
+                J.LINE=1; GO 2210
+            END ELSE
+                RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
+!                IF LEN(NOT(TAB.MODE) AND DEL.CHAR) THEN
+                IF LEN(DEL.CHAR) THEN
+                    CRT @(COL,ROW):DEL.CHAR:
+                    CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
+                    IF LEN(CRTLN[CRT.X+1,1]) THEN
+                        CRT @(PWIDTH,ROW):
+                        GOSUB CRT.LN
+                    END
+                END ELSE
+                    CRT @(COL,ROW):CLEOL:
+                    CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+                END
+                GOSUB CHG.LROW; LLEN-=1; GO TOP
+            END
+        CASE FG_ACT.CODE=FG_INS.CODE
+            GOSUB ADD_TO_UNDO
+            IF LEN(INS.CHAR) THEN CRT @(COL,ROW):INS.CHAR: ELSE
+                CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+            END
+            RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:SPC:RDSP(LROW)[LCOL,MAX])
+            GOSUB CHG.LROW; LLEN+=1; GO TOP
+        CASE FG_ACT.CODE=FG_TAG.CODE
+            GOSUB ADD_TO_UNDO
+            IF RDSP(LROW)[1,COMMENTLEN] NE COMMENT<1,1,1> THEN
+                RDSP(LROW)=COMMENT<1,1,1>:RDSP(LROW)[1,MAX]:COMMENT<1,1,2>
+                Y=1
+            END ELSE
+                Y=-1
+                RDSP(LROW)=RDSP(LROW)[1+COMMENTLEN,MAX]
+                IF RDSP(LROW)[LEN(RDSP(LROW))-1,COMMENTLEN]=COMMENT<1,1,2> THEN
+                    RDSP(LROW)=RDSP(LROW)[1,LEN(RDSP(LROW))-2]
+                END
+            END
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
+            IF COL>5 THEN
+                COL+=Y
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+            END
+            GOSUB CHG.LROW; LLEN+=Y; GO TOP
+        CASE FG_ACT.CODE=FG_END.CODE
+            CRT MSG.DSP:
+            GO 999
+        CASE FG_ACT.CODE=FG_FWORD.CODE
+            LLEN1=LLEN+1
+! first search for the next non-alpha character
+            Y=LCOL
+            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE ''); NEXT I
+! then search for the next letter
+            Y=I+1
+            FOR I=Y TO LLEN1 UNTIL ICONV(RDSP(LROW)[I,1],PC) NE ''; NEXT I
+            IF I LE LEN(RDSP(LROW)) THEN
+                LCOL=I
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            END ELSE CRT BELL:
+        CASE FG_ACT.CODE=FG_BWORD.CODE
+            IF LCOL EQ 1 AND ROW GT 1 THEN
                 IF LROW>1 THEN
                     LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
                 END
             END
-        END ELSE
-            LCOL--
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-            CRT BACK:
-            GO TOP
-        END
-    CASE FG_ACT.CODE=FG_BCK.CODE
-        IF INDROW=1 AND LROW=1 THEN
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-            CALL EB_TRIM(REC,REC:'',AM,'T')
-            CNT=DCOUNT(REC,AM)
-            Y=INDROW
-            INDROW=CNT-(PDEPTH-2)
-            IF INDROW<0 THEN INDROW=1
-            COL=5; ROW=CNT-INDROW
-            SCR.UD=Y NE INDROW
-        END ELSE
-            ROW-=1
-            IF LROW > 1 THEN LLEN=LEN(RDSP(LROW-1))         ;! else it's done in SCR.UD block
-            LROW-=1
-            IF LROW<1 THEN
-                IF INDROW>1 THEN
-                    IF CHANGED THEN GOSUB SCRN.TO.REC
-                    FOR I=(PDEPTH-1) TO 1 STEP -1
-                        RDSP(I+1)=RDSP(I)
-                    NEXT I
-                    INDROW-=1
-                    RDSP(1)=REC<INDROW>
-                    IF LEN(DEL.LINE) THEN
-                        CRT @(0,(PDEPTH-2)):DEL.LINE:@(0,0):INS.LINE:
-                        IF INDROW > LAST.AM THEN
-                            DIMON = BG
-                            DIMOFF = FG
-                        END ELSE DIMON = ''; DIMOFF = ''
-                        CRT DIMON:INDROW 'R#4 ':DIMOFF:
-                        CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
-                        S=LROW; LROW=1; GOSUB CRT.LN; LROW=S
-                        CRT MSG.DSP:
-                    END ELSE SCR.UD=TRUE; SCR.LR=TRUE
-                    ROW+=1; LROW+=1
-                    IF SCR.UD THEN GO STRT
-                END
-                GO TOP
-            END ELSE CRT UP:
-        END
-    CASE FG_ACT.CODE=FG_SKP.CODE
-        IF LROW < (PDEPTH-1) THEN LLEN=LEN(RDSP(LROW+1))    ;! else its done in SCR.UD block
-        IF LROW>(PDEPTH-2) THEN
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-SCROLL.LINE:        !
-            GOSUB SCROLL.DOWN
-            ON Y GO STRT,TOP
-        END ELSE
-            ROW+=1
-            LROW+=1
-            CRT LF:
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-            GO TOP
-        END
-    CASE CHR=CR
-        GOSUB ADD_TO_UNDO
-        TABLEN=ITAB<ITABPOS>
-        IF LROW=(PDEPTH-1) THEN
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-            GOSUB SCROLL.DOWN; LROW-=1; ROW-=1
-        END
-        CHECK.LINE=RDSP(LROW)
-        DUMMY=LROW+1
-        TMP=RDSP(DUMMY)
-        IF LEN(INS.MODE AND (TRIM(CHECK.LINE[LCOL,MAX])) OR TRIM(TMP) NE '') THEN
-            GOSUB SPLIT.LINE
-            CHECK.LINE=RDSP(LROW+1)
-        END ELSE
-! breaks basic formatting - CALL EB_TRIM(CHECK.LINE, RDSP(LROW), ' ', 'L')
-            DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
-        END
-        Y=RDSP(LROW)[1,COMMENTLEN]; IF Y=TRIM(RDSP(LROW)) THEN Y=''
-        IF CHECK.LINE='' AND INDEX('*!/',Y[1,1],1) AND Y NE '' THEN
-            CHECK.LINE=RDSP(LROW)[1,COMMENTLEN]; RDSP(LROW+1)=CHECK.LINE; I=TABLEN-1
-        END ELSE Y=''
-        LCOL=I
-        IF TRIM(CHECK.LINE)='' OR INS.MODE THEN   ;! next line is blank
-            IF OFFSET THEN
-                OFFSET=0
-                SCR.UD=TRUE
-                SCR.LR=1
-                SCRL=0
-                COL=5
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-            END ELSE SCR.LR=1-2*(INS.LINE NE '')
-        END ELSE
-            NLEN=LEN(CHECK.LINE)
-            IF NLEN<LCOL THEN ;! next line is shorter
-                IF NLEN<PWIDTH-5 AND OFFSET THEN SCR.LR=1-2*(INS.LINE NE ''); OFFSET=0; SCRL=0
-                LCOL=NLEN+1
-                IF RDSP(LROW)='' AND TAB.MODE THEN RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-            END
-        END
-        ROW+=1
-        IF CHECK.LINE='' THEN
-            LLEN=0; LCOL=I
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-        END ELSE LLEN=LEN(CHECK.LINE)
-        IF LEN(TMP='' AND (TRIM(CHECK.LINE)) OR TAB.MODE) THEN
-            LROW=ROW+1
-            IF TRIM(RDSP(LROW))='' THEN
-                IF TAB.MODE THEN
-                    RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
-                END ELSE RDSP(LROW)=SPACE(LCOL)
-            END
-!                LCOL=LEN(RDSP(LROW))
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
-            IF SCR.UD ELSE
-                CRT @(5,ROW):RDSP(LROW):
-                GO TOP
-            END
-        END
-    CASE FG_ACT.CODE=FG_SEARCH.CODE OR FG_ACT.CODE=FG_BSEARCH.CODE OR FG_ACT.CODE=FG_MULTI.CODE OR FG_ACT.CODE=FG_CASE.CODE
-        IF FG_ACT.CODE=FG_CASE.CODE THEN
-            FG_ACT.CODE=FG_BSEARCH.CODE
-            FG_LAST.ACT.CODE=FG_ACT.CODE
-        END
-        SAVE.CODE=FG_ACT.CODE
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        FG_ACT.CODE=SAVE.CODE
-        IF FG_ACT.CODE=FG_SEARCH.CODE OR FG_ACT.CODE=FG_BSEARCH.CODE THEN
-            GOSUB GET.WORD
-            IF LEN(TRIM(WORD[1,1])) AND WORD[1,1] NE TAB THEN
-                WORD=TRIM(WORD)
-                LOCATE 'V;':WORD IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
-                INS 'V;':WORD BEFORE SSS<1>
-            END
-        END
-        Z=INDROW
-        CALL EB_SEARCH
-        GOTO TOP
-    CASE FG_ACT.CODE=FG_DEL.CHAR.CODE
-        GOSUB ADD_TO_UNDO
-        IF TRIM(RDSP(LROW)[LCOL,MAX])='' THEN
-            IF TRIM(RDSP(LROW)) NE '' THEN
-                CALL EB_TRIM(RDSP(LROW),RDSP(LROW):'',SPC,'T')
-                DUMMY=0
-            END ELSE RDSP(LROW)=SPACE(LCOL-2); DUMMY=1
-            CRT @(0,ROW+1):DEL.LINE
-            J.LINE=1; GO 2210
-        END ELSE
-            RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
-!                IF LEN(NOT(TAB.MODE) AND DEL.CHAR) THEN
-            IF LEN(DEL.CHAR) THEN
-                CRT @(COL,ROW):DEL.CHAR:
-                CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
-                IF LEN(CRTLN[CRT.X+1,1]) THEN
-                    CRT @(PWIDTH,ROW):
-                    GOSUB CRT.LN
-                END
+            IF LCOL>1 THEN
+                GOSUB BACK.WORD
+            END ELSE CRT BELL:
+        CASE FG_ACT.CODE=FG_DEL.LINE.CODE OR FG_ACT.CODE=FG_CUT.CODE OR FG_ACT.CODE=FG_SEL.CODE
+            SREC = REC
+            CALL EB_CUT(G60)
+            IF CHANGED THEN
+                GOSUB PRE_ADD_TO_UNDO
             END ELSE
-                CRT @(COL,ROW):CLEOL:
-                CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+                SAVE.CODE = REC
+                REC = SREC
+                GOSUB ADD_TO_UNDO
+                REC = SAVE.CODE
+                SCR.UD = TRUE
             END
-            GOSUB CHG.LROW; LLEN-=1; GO TOP
-        END
-    CASE FG_ACT.CODE=FG_INS.CODE
-        GOSUB ADD_TO_UNDO
-        IF LEN(INS.CHAR) THEN CRT @(COL,ROW):INS.CHAR: ELSE
-            CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
-        END
-        RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:SPC:RDSP(LROW)[LCOL,MAX])
-        GOSUB CHG.LROW; LLEN+=1; GO TOP
-    CASE FG_ACT.CODE=FG_TAG.CODE
-        GOSUB ADD_TO_UNDO
-        IF RDSP(LROW)[1,COMMENTLEN] NE COMMENT<1,1,1> THEN
-            RDSP(LROW)=COMMENT<1,1,1>:RDSP(LROW)[1,MAX]:COMMENT<1,1,2>
-            Y=1
-        END ELSE
-            Y=-1
-            RDSP(LROW)=RDSP(LROW)[1+COMMENTLEN,MAX]
-            IF RDSP(LROW)[LEN(RDSP(LROW))-1,COMMENTLEN]=COMMENT<1,1,2> THEN
-                RDSP(LROW)=RDSP(LROW)[1,LEN(RDSP(LROW))-2]
-            END
-        END
-        CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
-        IF COL>5 THEN
-            COL+=Y
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-        END
-        GOSUB CHG.LROW; LLEN+=Y; GO TOP
-    CASE FG_ACT.CODE=FG_END.CODE
-        CRT MSG.DSP:
-        GO 999
-    CASE FG_ACT.CODE=FG_FWORD.CODE
-        LLEN1=LLEN+1
-! first search for the next non-alpha character
-        Y=LCOL
-        FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE ''); NEXT I
-! then search for the next letter
-        Y=I+1
-        FOR I=Y TO LLEN1 UNTIL ICONV(RDSP(LROW)[I,1],PC) NE ''; NEXT I
-        IF I LE LEN(RDSP(LROW)) THEN
-            LCOL=I
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-        END ELSE CRT BELL:
-    CASE FG_ACT.CODE=FG_BWORD.CODE
-        IF LCOL EQ 1 AND ROW GT 1 THEN
-            IF LROW>1 THEN
-                LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
-            END
-        END
-        IF LCOL>1 THEN
-            GOSUB BACK.WORD
-        END ELSE CRT BELL:
-    CASE FG_ACT.CODE=FG_DEL.LINE.CODE OR FG_ACT.CODE=FG_CUT.CODE OR FG_ACT.CODE=FG_SEL.CODE
-        SREC = REC
-        CALL EB_CUT(G60)
-        IF CHANGED THEN
-            GOSUB PRE_ADD_TO_UNDO
-        END ELSE
-            SAVE.CODE = REC
-            REC = SREC
+            IF SCR.UD THEN GO STRT
+            IF G60 THEN GO TOP
+        CASE FG_ACT.CODE=FG_INS.LINE.CODE OR FG_ACT.CODE=FG_PASTE.CODE OR FG_ACT.CODE=FG_ADD.CODE
             GOSUB ADD_TO_UNDO
-            REC = SAVE.CODE
-            SCR.UD = TRUE
-        END
-        IF SCR.UD THEN GO STRT
-        IF G60 THEN GO TOP
-    CASE FG_ACT.CODE=FG_INS.LINE.CODE OR FG_ACT.CODE=FG_PASTE.CODE OR FG_ACT.CODE=FG_ADD.CODE
-        GOSUB ADD_TO_UNDO
-        IF FG_ACT.CODE=FG_ADD.CODE THEN
-            IF LROW>(PDEPTH-2) THEN
-                IF CHANGED THEN GOSUB SCRN.TO.REC
-                GOSUB SCROLL.DOWN
-            END ELSE ROW+=1; LROW+=1
-        END
-        CALL EB_PASTE(G60)
-        IF G60 THEN GO TOP
-    CASE FG_ACT.CODE=FG_ALT.CODE OR FG_ACT.CODE=FG_MENU.CODE
-        ECHO OFF
-        INPUT FTYP
-        ECHO ON
-        IF NOT(NUM(FTYP)) THEN FTYP=OCONV(FTYP,'MCA')
-        FG_ACT.CODE=FG_ALT.CODE
-        Y=FTYP[1,1]; FTYP=FTYP[2,MAX]
-        BEGIN CASE
-        CASE FTYP MATCHES "1N0N"
-            FG_ACT.CODE=FTYP; GO CHECK.CODES
-        CASE FTYP='R'
-            CHR=REP.STR; FG_ACT.CODE=FALSE; GO CHECK.CODES
-        CASE Y='O'
-            GO 1000
-        CASE Y='S'
-            Y=FTYP[1,1]
-            GO 999
-        CASE Y='H'
-            GO GET.HELP
-        END CASE
-    CASE FG_ACT.CODE=FG_OPT.CODE; GO 1000
-    CASE FG_ACT.CODE=FG_NXTS.CODE
-        SCRL=0
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        INDROW+=(PDEPTH-2)
-        COL=5; ROW=1
-        SCR.UD=TRUE
-    CASE FG_ACT.CODE=FG_PRVS.CODE
-        SCRL=0
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        INDROW-=(PDEPTH-2)
-        IF INDROW<1 THEN INDROW=1
-!            CRT @(0,0):CLEOP:
-        COL=5; ROW=0
-        SCR.UD=TRUE
-    CASE FG_ACT.CODE=FG_GOTO.CODE
-        CRT MSG.CLR:"Line Number ":
-        L=40; Z=DFLT.LINE; INPTYPE='U'
-        GOSUB INPT
-        LNM=Z
-        CRT MSG.AKN:
-        IF FG_ACT.CODE=FG_BCK.CODE THEN LNM='<'
-        IF LNM=ESC OR LNM='' THEN CRT MSG.DSP:
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        CRT MSG.DSP:
-        Y=DCOUNT(MARKERS<1>,VM)
-        IF NOT(NUM(LNM)) THEN
-            IF LNM='<' THEN
-                Z=INDROW+ROW:SVM:LCOL+4
-                POS=Y
-                LOOP UNTIL MARKERS<1,POS>='<' AND MARKERS<2,POS>=Z OR POS=0 DO POS-=1 REPEAT
-                IF POS THEN
-                    FOR I=POS TO Y
-                        DEL MARKERS<1,POS>
-                        DEL MARKERS<2,POS>
-                    NEXT I
-                    LOOP UNTIL MARKERS<1,POS>='<' OR POS=0 DO POS-=1 REPEAT
-                    IF POS THEN
-                        Y=MARKERS<2,POS,1>; COL=MARKERS<2,POS,2>
-                        DEL MARKERS<1,POS>
-                        DEL MARKERS<2,POS>
-                    END
-                END
-            END ELSE
-                LOCATE LNM IN MARKERS<1,vm_start> BY 'AL' SETTING POS THEN
-                    Y=MARKERS<2,POS,1>; COL=MARKERS<2,POS,2>
-                    IF LNM MATCHES "'R'1X0X" THEN
-                        DEL MARKERS<1,POS>
-                        DEL MARKERS<2,POS>
-                        DFLT.LINE=MARKERS<1,1>
-                    END
-                END ELSE POS=FALSE
+            IF FG_ACT.CODE=FG_ADD.CODE THEN
+                IF LROW>(PDEPTH-2) THEN
+                    IF CHANGED THEN GOSUB SCRN.TO.REC
+                    GOSUB SCROLL.DOWN
+                END ELSE ROW+=1; LROW+=1
             END
-            IF POS THEN
-                SCR.UD=TRUE; OFFSET=0
-                ROW=Y-INDROW
-                IF ROW<0 OR ROW>PDEPTH THEN
-                    INDROW=Y
-                    ROW=0
-                END
-                GO STRT
-            END ELSE LNM=INDROW
-        END
-        CNT=DCOUNT(REC,AM); IF LNM>CNT THEN LNM=CNT-(PDEPTH-2)
-        IF LNM<1 THEN LNM=INDROW
-        IF LNM>0 THEN INDROW=LNM; SCR.UD=TRUE; OFFSET=0; COL=5; ROW=0
-    CASE FG_ACT.CODE=FG_INSERT.CODE
-        INS.MODE=NOT(INS.MODE); CHR=''
-        GOSUB SET.MSG.DSP
-        CRT @(COL,ROW):
-    CASE CHR=OTHER.MARGIN
-        OFFSET+=5
-        SCR.LR=1
-    CASE FG_ACT.CODE=FG_FUNK.CODE
-        GOSUB REV_UNDO
-        GO TOP
-    CASE FG_ACT.CODE=FG_IND.CODE
-        GOSUB CHG.LROW
-        GOSUB SCRN.TO.REC
-        GOSUB INDENT
-    CASE FG_ACT.CODE=FG_SUS.CODE
-        RDSP(LROW)=REC<INDROW+ROW>
-        CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
-        CHANGES(LROW)=FALSE
-    CASE FG_ACT.CODE=FG_TOP.CODE
-        IF ROW NE 0 THEN
-            ROW=0
-        END ELSE
+            CALL EB_PASTE(G60)
+            IF G60 THEN GO TOP
+        CASE FG_ACT.CODE=FG_ALT.CODE OR FG_ACT.CODE=FG_MENU.CODE
+            ECHO OFF
+            INPUT FTYP
+            ECHO ON
+            IF NOT(NUM(FTYP)) THEN FTYP=OCONV(FTYP,'MCA')
+            FG_ACT.CODE=FG_ALT.CODE
+            Y=FTYP[1,1]; FTYP=FTYP[2,MAX]
+            BEGIN CASE
+                CASE FTYP MATCHES "1N0N"
+                    FG_ACT.CODE=FTYP; GO CHECK.CODES
+                CASE FTYP='R'
+                    CHR=REP.STR; FG_ACT.CODE=FALSE; GO CHECK.CODES
+                CASE Y='O'
+                    GO 1000
+                CASE Y='S'
+                    Y=FTYP[1,1]
+                    GO 999
+                CASE Y='H'
+                    GO GET.HELP
+            END CASE
+        CASE FG_ACT.CODE=FG_OPT.CODE; GO 1000
+        CASE FG_ACT.CODE=FG_NXTS.CODE
+            SCRL=0
             IF CHANGED THEN GOSUB SCRN.TO.REC
-            INDROW=1; OFFSET=0
+            INDROW+=(PDEPTH-2)
+            COL=5; ROW=1
+            SCR.UD=TRUE
+        CASE FG_ACT.CODE=FG_PRVS.CODE
+            SCRL=0
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            INDROW-=(PDEPTH-2)
+            IF INDROW<1 THEN INDROW=1
+!            CRT @(0,0):CLEOP:
             COL=5; ROW=0
             SCR.UD=TRUE
-        END
-    CASE FG_ACT.CODE=FG_BOT.CODE OR FG_ACT.CODE=FG_APP.CODE
-        IF FG_ACT.CODE=FG_BOT.CODE AND ROW NE (PDEPTH-2) THEN
-            ROW=(PDEPTH-2)
-        END ELSE
-            SAVE.CODE=FG_ACT.CODE
+        CASE FG_ACT.CODE=FG_GOTO.CODE
+            CRT MSG.CLR:"Line Number ":
+            L=40; Z=DFLT.LINE; INPTYPE='U'
+            GOSUB INPT
+            LNM=Z
+            CRT MSG.AKN:
+            IF FG_ACT.CODE=FG_BCK.CODE THEN LNM='<'
+            IF LNM=ESC OR LNM='' THEN CRT MSG.DSP:
             IF CHANGED THEN GOSUB SCRN.TO.REC
-            FG_ACT.CODE=SAVE.CODE
-            CALL EB_TRIM(REC,REC:'',AM,'T')
-            CNT=DCOUNT(REC,AM)
-            Y=INDROW
-            INDROW=CNT-(PDEPTH-2)+(FG_ACT.CODE=FG_APP.CODE)
-            IF INDROW<0 THEN INDROW=1
-            COL=5
-            ROW=(FG_ACT.CODE=FG_APP.CODE)*(PDEPTH-2)
-            IF ROW>CNT THEN ROW=CNT
-            SCR.UD=Y NE INDROW
-        END
-    CASE FG_ACT.CODE=FG_SOL.CODE
-        IF OFFSET THEN OFFSET=0; SCR.LR=1
-        LCOL=1
-        COL=5
-    CASE FG_ACT.CODE=FG_EOL.CODE
-GEOL:     !
-        LCOL=LLEN+1
-        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-        I=OFFSET
-        IF OFFSET AND (COL>PWIDTH) THEN COL-=(PWIDTH-5)
-        LOOP WHILE (COL>PWIDTH) DO
-            COL-=(PWIDTH-5)
-            OFFSET+=(PWIDTH-5)
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-        REPEAT
-        IF I NE OFFSET THEN
-            SCR.LR=1
-        END
-    CASE FG_ACT.CODE=FG_DEL.WORD.CODE
-        GOSUB ADD_TO_UNDO
-        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-        GOSUB GET.WORD
-        RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
-        CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN; CRT @(COL,ROW):
-        GOSUB CHG.LROW
-    CASE FG_ACT.CODE=FG_HLP.CODE
-GET.HELP: !
-        GOSUB GET.WORD
-        CALL EB_HELP(WORD,Z)
-        IF Z THEN
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-            SCR.LR=1
-            CALL EB_REFRESH
-        END
-        IF OPEN.HELP THEN
-            CALL EB_HELP('EB',0,0,0,0)
-            INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
-            IF MOD(FG_STERM,3) ELSE SCR.UD=TRUE
-        END
-    CASE FG_ACT.CODE=FG_L.CASE.CODE
-        GOSUB ADD_TO_UNDO
-        INCLUDE EB.INCLUDES EB.CASE
-    CASE FG_ACT.CODE=FG_ABT.CODE
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        GOSUB Abort
-    CASE FG_ACT.CODE=FG_UNDEL.CODE
-        GOSUB POP_UNDO
-!            I=FALSE; Z=DEL.LIST<1>; GOSUB INS.TXT; DEL DEL.LIST<1>
-        GO TOP
-    CASE FG_ACT.CODE=FG_TAB.CODE
-        TABLEN=ITAB<ITABPOS>
-        IF LEN(TRIM(RDSP(LROW))) THEN
-            GOSUB ADD_TO_UNDO
-            TABSPC=SPACE(TABLEN)
-            IF TAB.MODE THEN
-                TMP=TAB
-            END ELSE
-                TMP=TABSPC
-            END
-            IF LCOL>LEN(RDSP(LROW)) THEN
-                RDSP(LROW):=TAB
-                LCOL+=1
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-            END ELSE
-                IF LEN(INS.CHAR) THEN CRT @(COL,ROW):STR(INS.CHAR,TABLEN): ELSE
-                    CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+OFFSET;CRT.Y=PWIDTH-1-COL; GOSUB CRT.LN
+            CRT MSG.DSP:
+            Y=DCOUNT(MARKERS<1>,VM)
+            IF NOT(NUM(LNM)) THEN
+                IF LNM='<' THEN
+                    Z=INDROW+ROW:SVM:LCOL+4
+                    POS=Y
+                    LOOP UNTIL MARKERS<1,POS>='<' AND MARKERS<2,POS>=Z OR POS=0 DO POS-=1 REPEAT
+                    IF POS THEN
+                        FOR I=POS TO Y
+                            DEL MARKERS<1,POS>
+                            DEL MARKERS<2,POS>
+                        NEXT I
+                        LOOP UNTIL MARKERS<1,POS>='<' OR POS=0 DO POS-=1 REPEAT
+                        IF POS THEN
+                            Y=MARKERS<2,POS,1>; COL=MARKERS<2,POS,2>
+                            DEL MARKERS<1,POS>
+                            DEL MARKERS<2,POS>
+                        END
+                    END
+                END ELSE
+                    LOCATE LNM IN MARKERS<1,vm_start> BY 'AL' SETTING POS THEN
+                        Y=MARKERS<2,POS,1>; COL=MARKERS<2,POS,2>
+                        IF LNM MATCHES "'R'1X0X" THEN
+                            DEL MARKERS<1,POS>
+                            DEL MARKERS<2,POS>
+                            DFLT.LINE=MARKERS<1,1>
+                        END
+                    END ELSE POS=FALSE
                 END
-                RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:TMP:RDSP(LROW)[LCOL,MAX])
+                IF POS THEN
+                    SCR.UD=TRUE; OFFSET=0
+                    ROW=Y-INDROW
+                    IF ROW<0 OR ROW>PDEPTH THEN
+                        INDROW=Y
+                        ROW=0
+                    END
+                    GO STRT
+                END ELSE LNM=INDROW
             END
-            LLEN+=LEN(TMP)
-        END ELSE
-            Y=LROW+(LROW<3)
-            LOOP WHILE Y>2 AND RDSP(Y-1)[1,COMMENTLEN]=COMMENT DO Y-=1 REPEAT
-            IF Y>1 THEN CHECK.LINE=RDSP(Y-1) ELSE CHECK.LINE=REC<INDROW-Y>
-            IF TAB.MODE THEN CALL EB_TABS(CHECK.LINE,PWIDTH,0,0)
-            LLEN=LEN(CHECK.LINE)
-            DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
-            IF LCOL EQ I AND I>TABLEN THEN I-=TABLEN
-            IF TAB.MODE THEN
-                RDSP(LROW)=STR(TAB,INT(I/TABLEN))
-            END ELSE RDSP(LROW)=SPACE(I)
-            LCOL=I
+            CNT=DCOUNT(REC,AM); IF LNM>CNT THEN LNM=CNT-(PDEPTH-2)
+            IF LNM<1 THEN LNM=INDROW
+            IF LNM>0 THEN INDROW=LNM; SCR.UD=TRUE; OFFSET=0; COL=5; ROW=0
+        CASE FG_ACT.CODE=FG_INSERT.CODE
+            INS.MODE=NOT(INS.MODE); CHR=''
+            GOSUB SET.MSG.DSP
+            CRT @(COL,ROW):
+        CASE CHR=OTHER.MARGIN
+            OFFSET+=5
+            SCR.LR=1
+        CASE FG_ACT.CODE=FG_FUNK.CODE
+            GOSUB REV_UNDO
+            GO TOP
+        CASE FG_ACT.CODE=FG_IND.CODE
+            GOSUB CHG.LROW
+            GOSUB SCRN.TO.REC
+            GOSUB INDENT
+        CASE FG_ACT.CODE=FG_SUS.CODE
+            RDSP(LROW)=REC<INDROW+ROW>
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+            CHANGES(LROW)=FALSE
+        CASE FG_ACT.CODE=FG_TOP.CODE
+            IF ROW NE 0 THEN
+                ROW=0
+            END ELSE
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                INDROW=1; OFFSET=0
+                COL=5; ROW=0
+                SCR.UD=TRUE
+            END
+        CASE FG_ACT.CODE=FG_BOT.CODE OR FG_ACT.CODE=FG_APP.CODE
+            IF FG_ACT.CODE=FG_BOT.CODE AND ROW NE (PDEPTH-2) THEN
+                ROW=(PDEPTH-2)
+            END ELSE
+                SAVE.CODE=FG_ACT.CODE
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                FG_ACT.CODE=SAVE.CODE
+                CALL EB_TRIM(REC,REC:'',AM,'T')
+                CNT=DCOUNT(REC,AM)
+                Y=INDROW
+                INDROW=CNT-(PDEPTH-2)+(FG_ACT.CODE=FG_APP.CODE)
+                IF INDROW<0 THEN INDROW=1
+                COL=5
+                ROW=(FG_ACT.CODE=FG_APP.CODE)*(PDEPTH-2)
+                IF ROW>CNT THEN ROW=CNT
+                SCR.UD=Y NE INDROW
+            END
+        CASE FG_ACT.CODE=FG_SOL.CODE
+            IF OFFSET THEN OFFSET=0; SCR.LR=1
+            LCOL=1
+            COL=5
+        CASE FG_ACT.CODE=FG_EOL.CODE
+GEOL:       !
+            LCOL=LLEN+1
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
-        END
-        GOSUB CHG.LROW
-        GO TOP
-    CASE FG_ACT.CODE=FG_RFR.CODE
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        SCR.LR=1
-    CASE FG_ACT.CODE=FG_TCL.CODE
-        GOSUB TCL
-    CASE CHR=REP.STR
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        SREC = REC
-        GOSUB ADD_TO_UNDO
-        CALL EB_GETRPL(MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
-        IF FG_ACT.CODE = FG_AMD.CODE THEN
-            GOSUB SAVE.ITEM
-            FG_ACT.CODE = FG_AMD.CODE
-            GO NEXT.ITEM
-        END
-        IF REC = SREC THEN GOSUB POP_UNDO
-        SREC = ''
-    CASE FG_ACT.CODE=FG_JMP.CODE
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        LLEN1=LLEN+1
+            I=OFFSET
+            IF OFFSET AND (COL>PWIDTH) THEN COL-=(PWIDTH-5)
+            LOOP WHILE (COL>PWIDTH) DO
+                COL-=(PWIDTH-5)
+                OFFSET+=(PWIDTH-5)
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+            REPEAT
+            IF I NE OFFSET THEN
+                SCR.LR=1
+            END
+        CASE FG_ACT.CODE=FG_DEL.WORD.CODE
+            GOSUB ADD_TO_UNDO
+            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+            GOSUB GET.WORD
+            RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
+            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN; CRT @(COL,ROW):
+            GOSUB CHG.LROW
+        CASE FG_ACT.CODE=FG_HLP.CODE
+GET.HELP:   !
+            GOSUB GET.WORD
+            CALL EB_HELP(WORD,Z)
+            IF Z THEN
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                SCR.LR=1
+                CALL EB_REFRESH
+            END
+            IF OPEN.HELP THEN
+                CALL EB_HELP('EB',0,0,0,0)
+                INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
+                IF MOD(FG_STERM,3) ELSE SCR.UD=TRUE
+            END
+        CASE FG_ACT.CODE=FG_L.CASE.CODE
+            GOSUB ADD_TO_UNDO
+            INCLUDE EB.INCLUDES EB.CASE
+        CASE FG_ACT.CODE=FG_ABT.CODE
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            GOSUB Abort
+        CASE FG_ACT.CODE=FG_UNDEL.CODE
+            GOSUB POP_UNDO
+!            I=FALSE; Z=DEL.LIST<1>; GOSUB INS.TXT; DEL DEL.LIST<1>
+            GO TOP
+        CASE FG_ACT.CODE=FG_TAB.CODE
+            TABLEN=ITAB<ITABPOS>
+            IF LEN(TRIM(RDSP(LROW))) THEN
+                GOSUB ADD_TO_UNDO
+                TABSPC=SPACE(TABLEN)
+                IF TAB.MODE THEN
+                    TMP=TAB
+                END ELSE
+                    TMP=TABSPC
+                END
+                IF LCOL>LEN(RDSP(LROW)) THEN
+                    RDSP(LROW):=TAB
+                    LCOL+=1
+                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                END ELSE
+                    IF LEN(INS.CHAR) THEN CRT @(COL,ROW):STR(INS.CHAR,TABLEN): ELSE
+                        CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+OFFSET;CRT.Y=PWIDTH-1-COL; GOSUB CRT.LN
+                    END
+                    RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:TMP:RDSP(LROW)[LCOL,MAX])
+                END
+                LLEN+=LEN(TMP)
+            END ELSE
+                Y=LROW+(LROW<3)
+                LOOP WHILE Y>2 AND RDSP(Y-1)[1,COMMENTLEN]=COMMENT DO Y-=1 REPEAT
+                IF Y>1 THEN CHECK.LINE=RDSP(Y-1) ELSE CHECK.LINE=REC<INDROW-Y>
+                IF TAB.MODE THEN CALL EB_TABS(CHECK.LINE,PWIDTH,0,0)
+                LLEN=LEN(CHECK.LINE)
+                DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
+                IF LCOL EQ I AND I>TABLEN THEN I-=TABLEN
+                IF TAB.MODE THEN
+                    RDSP(LROW)=STR(TAB,INT(I/TABLEN))
+                END ELSE RDSP(LROW)=SPACE(I)
+                LCOL=I
+                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            END
+            GOSUB CHG.LROW
+            GO TOP
+        CASE FG_ACT.CODE=FG_RFR.CODE
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            SCR.LR=1
+        CASE FG_ACT.CODE=FG_TCL.CODE
+            GOSUB TCL
+        CASE CHR=REP.STR
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            SREC = REC
+            GOSUB ADD_TO_UNDO
+            CALL EB_GETRPL(MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
+            IF FG_ACT.CODE = FG_AMD.CODE THEN
+                GOSUB SAVE.ITEM
+                FG_ACT.CODE = FG_AMD.CODE
+                GO NEXT.ITEM
+            END
+            IF REC = SREC THEN GOSUB POP_UNDO
+            SREC = ''
+        CASE FG_ACT.CODE=FG_JMP.CODE
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            LLEN1=LLEN+1
 ! first search for the next non-alpha character
-        Y=LCOL+1; LOOP WHILE RDSP(LROW)[Y,1]=SPC DO Y+=1 REPEAT
-        FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE '' OR RDSP(LROW)[I,1]='.'); NEXT I
-        DUMMY=UPCASE(FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1))
-        IF DUMMY[1,2]='GO' THEN
-            DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
-            DUMMY=FIELD(DUMMY:';',';',1)
-            DFLT.LINE='R':OCONV(DUMMY,'MCU')
-            LOCATE DFLT.LINE IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
-                INS DFLT.LINE BEFORE MARKERS<1,POS>
+            Y=LCOL+1; LOOP WHILE RDSP(LROW)[Y,1]=SPC DO Y+=1 REPEAT
+            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE '' OR RDSP(LROW)[I,1]='.'); NEXT I
+            word=FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1)
+            DUMMY=UPCASE(word)
+            IF DUMMY[1,2]='GO' THEN
+                DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
+                DUMMY=FIELD(DUMMY:';',';',1)
+                DFLT.LINE='R':OCONV(DUMMY,'MCU')
+                LOCATE DFLT.LINE IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
+                    INS DFLT.LINE BEFORE MARKERS<1,POS>
+                    INS '' BEFORE MARKERS<2,POS>
+                END
+                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
+                INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
+                IF NOT(INDROW) THEN
+                    INDROW = LAST.AM - PDEPTH + 3
+                    IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
+                    ROW = PDEPTH-2
+                    LBL = DUMMY
+                    REC<LAST.AM+1> = LBL:Y:(IF NUM(LBL) THEN '' ELSE ' !')
+                END ELSE
+                    ROW=1
+                    LCOL=1
+                    COL=5
+                END
+                SCR.UD=TRUE
+            END ELSE
+                BEGIN CASE
+                    CASE RDSP(LROW)[LCOL-6,6] EQ 'this->'
+                        SSS='::':word:'('
+                        FG_ACT.CODE=FG_MULTI.CODE
+                        CALL EB_SEARCH
+                        DUMMY=''
+                    CASE DUMMY='CALL' OR DUMMY='EXECUTE' OR DUMMY='PERFORM'
+                        callopt = DUMMY EQ 'CALL'
+                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2,99)
+                        DUMMY=FIELD(DUMMY:'(','(',1)
+                        DUMMY=FIELD(DUMMY:';',';',1)
+                        IF NOT(callopt) THEN
+                            DUMMY = FIELD(DUMMY, DUMMY[1,1], 2)
+                        END
+                        DUMMY := ' (!'
+                    CASE INDEX(OCONV(DUMMY,'MCU'),'INCLUDE',1)
+                        DUMMY=RDSP(LROW)[I+1,MAX]
+                        CONVERT TAB TO SPC IN DUMMY
+                        DUMMY=FIELD(DUMMY,SPC,1)
+                        IF LEN(DUMMY) THEN
+                            DUMMY=RDSP(LROW)[LCOL,MAX]
+                            CONVERT TAB TO SPC IN DUMMY
+                            CALL EB_READINCL(HEADERS, DUMMY:'', DUMMY, HEADER, FALSE)
+                        END
+                    CASE DUMMY EQ 'OBJECT' OR RDSP(LROW)[LCOL-4,4] EQ 'new '
+                        IF DUMMY EQ 'OBJECT' THEN
+                            DUMMY=FIELD(RDSP(LROW)[LCOL,MAX],'(',2)
+                            DUMMY=FIELD(CONVERT(DUMMY,'"',"'"),"'", 2)
+                        END ELSE
+                            DUMMY=FIELD(RDSP(LROW)[LCOL,MAX],'(',1)
+                        END
+                        DUMMY := '.jabba'
+                    CASE 1
+                        READ tags FROM F.currdir,'tags' THEN
+                            POS=INDEX(tags,DUMMY:TAB,1)
+                        END ELSE POS = FALSE
+                        IF POS THEN
+                            DUMMY=tags[POS,99]
+                            DUMMY=FIELD(DUMMY,TAB,3,99)
+                            DUMMY=FIELD(DUMMY,DIR_DELIM_CH,2)
+                            WRITE FG_MULTI.CODE:AM:DUMMY ON F.currdir,'eb_auto'
+                            DUMMY=FIELD(tags[POS,99],TAB,2)
+! Assume that the item names are all that matters
+                            IF FIELD(DUMMY, DIR_DELIM_CH, DCOUNT(DUMMY, DIR_DELIM_CH))=FIELD(ITNM, DIR_DELIM_CH, DCOUNT(ITNM, DIR_DELIM_CH)) THEN
+                                DUMMY=FIELD(DUMMY:';',';',1)
+                                DFLT.LINE='R':OCONV(DUMMY,'MCU')
+                                LOCATE DFLT.LINE IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
+                                    INS DFLT.LINE BEFORE MARKERS<1,POS>
+                                    INS '' BEFORE MARKERS<2,POS>
+                                END
+                                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
+                                DUMMY=''
+                            END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
+                        END ELSE
+                            DUMMY=FIELD(DUMMY:'(','(',1)
+                            IO = EBJSHOW('-c ':DUMMY)
+                            IF LEN(IO) = 0 THEN DUMMY = ''
+                        END
+                END CASE
+                IF LEN(DUMMY) THEN
+                    prog=FIELD(DUMMY,' ',1)
+                    IF prog = 'RUN' THEN
+                        prog=FIELD(DUMMY,' ',2)
+                        DUMMY=DUMMY[COL2()+1, 99]
+                    END ELSE
+                        IF DCOUNT(DUMMY, ' ') = 1 THEN
+                            prog=GET_CATALOG_FILE(prog)
+                            IF LEN(prog<2>) THEN
+                                WRITE FG_MULTI.CODE:AM:'::':word:'(' ON F.currdir,'eb_auto'
+                                DUMMY = prog<2>
+                                prog = prog<1>
+                            END
+                        END ELSE prog = ''
+                    END
+                    DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
+                END
+            END
+        CASE FG_ACT.CODE=FG_LST.CODE
+            CRT MSG.CLR:"Type a letter from A-Z":
+            YNC=26; YNR=(PDEPTH-1); YNCHRS=SUB.CODES; YNL=1; GOSUB GET.CHAR
+            IF FG_ACT.CODE THEN GO TOP
+            Y=OCONV(Y,'MCU')
+            LOCATE Y IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
+                INS Y BEFORE MARKERS<1,POS>
                 INS '' BEFORE MARKERS<2,POS>
             END
             MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
-            INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
-            IF NOT(INDROW) THEN
-                INDROW = LAST.AM - PDEPTH + 3
-                IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
-                ROW = PDEPTH-2
-                LBL = DUMMY
-                REC<LAST.AM+1> = LBL:Y:(IF NUM(LBL) THEN '' ELSE ' !')
+        CASE FG_ACT.CODE=FG_PRV.KEY.CODE AND WCNT=ORIG_WCNT; CRT BELL:
+        CASE FG_ACT.CODE=FG_NXT.KEY.CODE AND WCNT=NBR.WORDS; CRT BELL:
+        CASE FG_ACT.CODE=FG_PRV.KEY.CODE OR FG_ACT.CODE=FG_NXT.KEY.CODE
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            IF FG_ACT.CODE=FG_PRV.KEY.CODE THEN
+                WCNT-=2
+                FG_ACT.CODE=FG_NXT.KEY.CODE
+            END
+            IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
+            IF ORIG.REC NE REC THEN
+                GOSUB FILE.ITEM
+                FG_ACT.CODE=FG_NXT.KEY.CODE
+                IF LEN(Y) THEN GO 10000
+                IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
             END ELSE
-                ROW=1
-                LCOL=1
-                COL=5
+                RELEASE
+                DELETE JET.PASTE,ITNM:'.sav'
             END
-            SCR.UD=TRUE
-        END ELSE
-            BEGIN CASE
-            CASE DUMMY='CALL' OR DUMMY='EXECUTE' OR DUMMY='PERFORM'
-                callopt = DUMMY EQ 'CALL'
-                DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2,99)
-                DUMMY=FIELD(DUMMY:'(','(',1)
-                DUMMY=FIELD(DUMMY:';',';',1)
-                IF NOT(callopt) THEN
-                    DUMMY = FIELD(DUMMY, DUMMY[1,1], 2)
-                END
-                DUMMY := ' (!'
-            CASE INDEX(OCONV(DUMMY,'MCU'),'INCLUDE',1)
-                DUMMY=RDSP(LROW)[I+1,MAX]
-                CONVERT TAB TO SPC IN DUMMY
-                DUMMY=FIELD(DUMMY,SPC,1)
-                IF LEN(DUMMY) THEN
-                    DUMMY=RDSP(LROW)[LCOL,MAX]
-                    CONVERT TAB TO SPC IN DUMMY
-                    CALL EB_READINCL(HEADERS, DUMMY:'', DUMMY, HEADER, FALSE)
-                END
-            CASE 1
-                READ tags FROM F.currdir,'tags' THEN
-                    POS=INDEX(tags,DUMMY:TAB,1)
-                END ELSE POS = FALSE
-                IF POS THEN
-                    DUMMY=tags[POS,99]
-                    DUMMY=FIELD(DUMMY,TAB,3,99)
-                    DUMMY=FIELD(DUMMY,DIR_DELIM_CH,2)
-                    WRITE FG_MULTI.CODE:AM:DUMMY ON F.currdir,'eb_auto'
-                    DUMMY=FIELD(tags[POS,99],TAB,2)
-! Assume that the item names are all that matters
-                    IF FIELD(DUMMY, DIR_DELIM_CH, DCOUNT(DUMMY, DIR_DELIM_CH))=FIELD(ITNM, DIR_DELIM_CH, DCOUNT(ITNM, DIR_DELIM_CH)) THEN
-                        DUMMY=FIELD(DUMMY:';',';',1)
-                        DFLT.LINE='R':OCONV(DUMMY,'MCU')
-                        LOCATE DFLT.LINE IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
-                            INS DFLT.LINE BEFORE MARKERS<1,POS>
-                            INS '' BEFORE MARKERS<2,POS>
-                        END
-                        MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
-                        DUMMY=''
-                    END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
+            GO NEXT.ITEM
+        CASE FG_ACT.CODE=FG_MOUSE.CODE
+            CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
+            IF LEN(R) THEN
+                IF EVENT=SPC THEN ;! down
+                    IF MOUSESTATE='' THEN
+                        MOUSECOL=C
+                        MOUSEROW=R
+                        MOUSESTATE='LD'
+                    END
+                    IF C=MOUSECOL AND R=MOUSEROW THEN
+                        BEGIN CASE
+                            CASE MOUSESTATE='LD'
+                                RDIFF = ROW-R
+                                COL=C; ROW=R; LROW -= RDIFF
+                                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                            CASE MOUSESTATE='LR'
+                        END CASE
+                    END
+                    MOUSESTATE=''
                 END ELSE
-                    DUMMY=FIELD(DUMMY:'(','(',1)
-                    IO = EBJSHOW('-c ':DUMMY)
-                    IF LEN(IO) = 0 THEN DUMMY = ''
-                END
-            END CASE
-            IF LEN(DUMMY) THEN
-                prog=FIELD(DUMMY,' ',1)
-                IF prog = 'RUN' THEN
-                    prog=FIELD(DUMMY,' ',2)
-                    DUMMY=DUMMY[COL2()+1, 99]
-                END ELSE
-                    IF DCOUNT(DUMMY, ' ') = 1 THEN
-                        prog=GET_CATALOG_FILE(prog)
-                    END ELSE prog = ''
-                END
-                DUMMY='EB ':TRIM(prog:' ':DUMMY); GOSUB EB.SUB
-            END
-        END
-    CASE FG_ACT.CODE=FG_LST.CODE
-        CRT MSG.CLR:"Type a letter from A-Z":
-        YNC=26; YNR=(PDEPTH-1); YNCHRS=SUB.CODES; YNL=1; GOSUB GET.CHAR
-        IF FG_ACT.CODE THEN GO TOP
-        Y=OCONV(Y,'MCU')
-        LOCATE Y IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
-            INS Y BEFORE MARKERS<1,POS>
-            INS '' BEFORE MARKERS<2,POS>
-        END
-        MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
-    CASE FG_ACT.CODE=FG_PRV.KEY.CODE AND WCNT=ORIG_WCNT; CRT BELL:
-    CASE FG_ACT.CODE=FG_NXT.KEY.CODE AND WCNT=NBR.WORDS; CRT BELL:
-    CASE FG_ACT.CODE=FG_PRV.KEY.CODE OR FG_ACT.CODE=FG_NXT.KEY.CODE
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        IF FG_ACT.CODE=FG_PRV.KEY.CODE THEN
-            WCNT-=2
-            FG_ACT.CODE=FG_NXT.KEY.CODE
-        END
-        IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
-        IF ORIG.REC NE REC THEN
-            GOSUB FILE.ITEM
-            FG_ACT.CODE=FG_NXT.KEY.CODE
-            IF LEN(Y) THEN GO 10000
-            IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
-        END ELSE
-            RELEASE
-            DELETE JET.PASTE,ITNM:'.sav'
-        END
-        GO NEXT.ITEM
-    CASE FG_ACT.CODE=FG_MOUSE.CODE
-        CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
-        IF LEN(R) THEN
-            IF EVENT=SPC THEN ;! down
-                IF MOUSESTATE='' THEN
                     MOUSECOL=C
                     MOUSEROW=R
-                    MOUSESTATE='LD'
-                END
-                IF C=MOUSECOL AND R=MOUSEROW THEN
                     BEGIN CASE
-                    CASE MOUSESTATE='LD'
-                        RDIFF = ROW-R
-                        COL=C; ROW=R; LROW -= RDIFF
-                        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-                    CASE MOUSESTATE='LR'
+                        CASE EVENT='#'          ;! left up
+                            MOUSESTATE='LD'
+                        CASE EVENT='"'          ;! rightt down
+                            MOUSESTATE='RD'
                     END CASE
                 END
-                MOUSESTATE=''
-            END ELSE
-                MOUSECOL=C
-                MOUSEROW=R
-                BEGIN CASE
-                CASE EVENT='#'          ;! left up
-                    MOUSESTATE='LD'
-                CASE EVENT='"'          ;! rightt down
-                    MOUSESTATE='RD'
-                END CASE
             END
-        END
-    CASE 1
-        IF FG_ACT.CODE THEN CRT @(10,(PDEPTH-1)):FG_ACT.CODE:
-        GO TOP
+        CASE 1
+            IF FG_ACT.CODE THEN CRT @(10,(PDEPTH-1)):FG_ACT.CODE:
+            GO TOP
     END CASE
     GO STRT
     INCLUDE EB.INCLUDES CRT.LN
@@ -1475,7 +1494,7 @@ ADD.CHARS:!
     STRT=0; NEW.CHARS='';
     GOSUB ADD_TO_UNDO
     GO CHG.LROW
-SCROLL.DOWN:        !
+SCROLL.DOWN: !
     Y=PDEPTH-1
     FOR I=1 TO Y
         RDSP(I)=RDSP(I+1)
@@ -1495,7 +1514,7 @@ SCROLL.DOWN:        !
     Y=2
     RETURN
 !==========
-EB.SUB:   !
+EB.SUB: !
     CALL EB_RSS(1)
     WRITE HEADERS ON F.currdir,'eb_headers'
     IF accuterm THEN CRT ESC:CHAR(2):0:
@@ -1543,91 +1562,91 @@ EB.SUB:   !
         END
         IF Y='E' THEN Y='F'; ENCRYPTED='Y' ELSE ENCRYPTED=''
         BEGIN CASE
-        CASE Y=ESC OR FG_ACT.CODE=FG_ABT.CODE
-            CRT MSG.DSP:
-            GO STRT
-        CASE Y='U'
-            YNL='Restore original ':ITNM:' ? (Y/N) '
-            CRT MSG.CLR:YNL:
-            YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
-            CRT MSG.CLR:
-            IF Y='Y' THEN
-                REC=ORIG.REC
-                SCR.UD=TRUE
-            END
-        CASE Y='V'
-            LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
-            CALL EB_VERSION(Y)
-            IF Y THEN
-                READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' THEN
-                    LOOP
-                        LOCATE LUK IN LAST.EB<1> SETTING POS THEN
-                            DEL LAST.EB<1, POS>
-                            DEL LAST.EB<2, POS>
-                        END ELSE POS = FALSE
-                    WHILE POS DO REPEAT
-                    WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
-                END
-                GOSUB SETUP.SWITCH
-                GOSUB SET.MSG
+            CASE Y=ESC OR FG_ACT.CODE=FG_ABT.CODE
                 CRT MSG.DSP:
-                GO REREAD.ITEM
-            END
-            GO TOP
-        CASE Y='C'
-            Y='Y'
-            GO 10000
-        CASE Y='X'
-            GO NEXT.ITEM
-        CASE Y="F" OR Y='R' OR Y='A'
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-            IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
-            IF CRLF.MODE THEN
-                REC = CHANGE(REC, AM, CR:LF)
-            END
-            CALL EB_TRIM(REC,REC:'',AM,'T')
-            IF Y='R' OR Y='A' THEN
-                LOOP
-                    CRT MSG.CLR:"Item Name? ":CLEOP:
-                    L=40; Z=ITNM
-                    GOSUB EDIT.INP
-                WHILE TRIM(Z)='' DO REPEAT
-                IF NOT(FG_ACT.CODE) AND Z NE ESC AND Z NE ITNM THEN
-                    WRITE REC ON FIL,Z
-                    IF Y='R' THEN
-                        DELETE FIL,ITNM
-                        YNC=FLNM:'*':OEDIT.MODE:'*':Z
-                        GOSUB LAST.USED
-                        LAST.EB<1,1>=YNC
-                        WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
-                        Z=YNC
-                    END
-                END ELSE Z = ITNM
-            END ELSE
-                IF ORIG.REC=REC THEN
-                    CRT MSG.CLR:"Make patch? ":CLEOP:
-                    YNC=15; YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
-                    CRT MSG.CLR:
-                END ELSE Y='Y'
-                IF Y='Y' THEN Z=ITNM ELSE Z=''
-            END
-            DELETE FIL,ITNM:".BAK"
-            ITNM=Z
-            IF LEN(ITNM) THEN
-                GOSUB FILE.ITEM
-                READ REC FROM FIL,ITNM ELSE REC=''
-                IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' OR TYPE='MAKE' THEN GO 10000 ELSE
-                    IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
-                    CRT; GO NEXT.ITEM
+                GO STRT
+            CASE Y='U'
+                YNL='Restore original ':ITNM:' ? (Y/N) '
+                CRT MSG.CLR:YNL:
+                YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
+                CRT MSG.CLR:
+                IF Y='Y' THEN
+                    REC=ORIG.REC
+                    SCR.UD=TRUE
                 END
-            END ELSE CRT; GO NEXT.ITEM
-        CASE Y="D"; GO 11000
-        CASE Y='S'
-            GOSUB SAVE.ITEM
-            CRT
-            GO NEXT.ITEM
-        CASE Y='N'
-            CRT MSG.CLR:'Not yet implemented':; RQM
+            CASE Y='V'
+                LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
+                CALL EB_VERSION(Y)
+                IF Y THEN
+                    READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' THEN
+                        LOOP
+                            LOCATE LUK IN LAST.EB<1> SETTING POS THEN
+                                DEL LAST.EB<1, POS>
+                                DEL LAST.EB<2, POS>
+                            END ELSE POS = FALSE
+                        WHILE POS DO REPEAT
+                        WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
+                    END
+                    GOSUB SETUP.SWITCH
+                    GOSUB SET.MSG
+                    CRT MSG.DSP:
+                    GO REREAD.ITEM
+                END
+                GO TOP
+            CASE Y='C'
+                Y='Y'
+                GO 10000
+            CASE Y='X'
+                GO NEXT.ITEM
+            CASE Y="F" OR Y='R' OR Y='A'
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                IF HEX.MODE THEN HEX.MODE=FALSE; GOSUB CONV.HEX
+                IF CRLF.MODE THEN
+                    REC = CHANGE(REC, AM, CR:LF)
+                END
+                CALL EB_TRIM(REC,REC:'',AM,'T')
+                IF Y='R' OR Y='A' THEN
+                    LOOP
+                        CRT MSG.CLR:"Item Name? ":CLEOP:
+                        L=40; Z=ITNM
+                        GOSUB EDIT.INP
+                    WHILE TRIM(Z)='' DO REPEAT
+                    IF NOT(FG_ACT.CODE) AND Z NE ESC AND Z NE ITNM THEN
+                        WRITE REC ON FIL,Z
+                        IF Y='R' THEN
+                            DELETE FIL,ITNM
+                            YNC=FLNM:'*':OEDIT.MODE:'*':Z
+                            GOSUB LAST.USED
+                            LAST.EB<1,1>=YNC
+                            WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
+                            Z=YNC
+                        END
+                    END ELSE Z = ITNM
+                END ELSE
+                    IF ORIG.REC=REC THEN
+                        CRT MSG.CLR:"Make patch? ":CLEOP:
+                        YNC=15; YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
+                        CRT MSG.CLR:
+                    END ELSE Y='Y'
+                    IF Y='Y' THEN Z=ITNM ELSE Z=''
+                END
+                DELETE FIL,ITNM:".BAK"
+                ITNM=Z
+                IF LEN(ITNM) THEN
+                    GOSUB FILE.ITEM
+                    READ REC FROM FIL,ITNM ELSE REC=''
+                    IF TYPE='BASIC' OR TYPE='RECOMPILE' OR TYPE='DEBUG' OR TYPE='SCRN' OR TYPE='SQL' OR TYPE='MAKE' THEN GO 10000 ELSE
+                        IF ENCRYPTED='Y' THEN GOSUB ENCRYPT.IT ELSE GOSUB CHKSUM
+                        CRT; GO NEXT.ITEM
+                    END
+                END ELSE CRT; GO NEXT.ITEM
+            CASE Y="D"; GO 11000
+            CASE Y='S'
+                GOSUB SAVE.ITEM
+                CRT
+                GO NEXT.ITEM
+            CASE Y='N'
+                CRT MSG.CLR:'Not yet implemented':; RQM
         END CASE
         FG_ACT.CODE=FALSE
     END
@@ -1645,7 +1664,7 @@ GET.CHAR: !
     CALL EB_UT_INPUT_ZERO(Y,MAT EB_CHARS,FG_ACT.CODE,YNC,YNR,FG_INPUT.CODES,YNCHRS,YNL,FG_TIMEOUT:AM:FG_MONITOR.SECS)
     RETURN
 !==================================================!
-INPT:     ! Field entry and/or editing subroutine.
+INPT: ! Field entry and/or editing subroutine.
     POS=1
     EDITED=FALSE
 !
@@ -1659,7 +1678,7 @@ CHG.LROW:
     INCLUDE EB.INCLUDES VERS_CTRL
     CHANGED=TRUE; CHANGES(LROW)=TRUE; RETURN
 !==================================================!
-1000      !
+1000 !
     IF FG_ACT.CODE=FG_ALT.CODE THEN
         FG_ACT.CODE=FALSE
     END ELSE
@@ -1685,180 +1704,180 @@ CHG.LROW:
     END
     IF CHANGED THEN GOSUB SCRN.TO.REC
     BEGIN CASE
-    CASE FTYP='.'
-        GOSUB GET.PREVWORD
-        CALL EB_SHOWMEMBERS(WORD)
-        GOSUB CHG.LROW
-        CRT MSG.DSP:; GO STRT
-    CASE FTYP='A'   ;! Insert date/time
-        Z=OCONV(DATE(),'D4'):SPC:OCONV(TIME(),'MTS'):SPC:UserName; I=TRUE; GOSUB INS.TXT
-    CASE FTYP='B'
-        IF DSPLY NE '' AND ERR.NOS NE COMPER THEN GO 2700 ELSE CRT MSG.CLR:'No errors ':PR:; INPUT FTYP:
-    CASE FTYP='C'
-        CALL EB_COMPARE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
-        SCR.UD=TRUE ;!SCRL=0
-        MREC=''
-        CRT MSG.DSP:
-        GO STRT
-    CASE FTYP='D'; GO 7000    ;! duplicate line-replace
-    CASE FTYP='E'
-        Y='%':ITNM:'%'
-        WRITE REC ON JET.PASTE,Y
-        IF accuterm THEN CRT ESC:CHAR(2):0:
-        ECHO ON
-        DATA INDROW+LROW-1
-        DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED ':path:'JET.PASTE ':Y; GOSUB EB.SUB
-        ECHO OFF
-        READ NEW.REC FROM JET.PASTE,Y THEN
-            DELETE JET.PASTE,Y
-            IF NEW.REC NE REC THEN REC=NEW.REC; SCR.UD=TRUE
-            NEW.REC=''
-        END
-        IF accuterm THEN CRT ESC:CHAR(2):1:
-    CASE FTYP='F'
-        GOSUB INDENT
-    CASE FTYP='G'
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        TAB.MODE=NOT(TAB.MODE)
-        SCR.UD=TRUE; CALL EB_REFRESH
-    CASE FTYP='H'
-        IF CHANGED THEN GOSUB SCRN.TO.REC
-        CNT=DCOUNT(REC,AM)
-        HEX.MODE=NOT(HEX.MODE)
-        GOSUB CONV.HEX
-        SCR.UD=TRUE; CALL EB_REFRESH
-    CASE FTYP='I'
-        CALL EB_INTEGRATE
-        GO STRT
-    CASE FTYP='T'
-        tab_display = NOT(tab_display)
-        SCR.LR=1
-    CASE FTYP='K'
-        Z=ITNM; I=TRUE; GOSUB INS.TXT
-    CASE FTYP='L'
-        CALL EB_LOWER(REC, SCR.UD)
-        IF SCR.UD THEN CALL EB_REFRESH
-    CASE FTYP='O'
-        CALL EB_MOVE(FIL,REC,MSG.CLR,MSG.AKN,PR,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
-        FG_ACT.CODE=FG_NXT.KEY.CODE
-        GO NEXT.ITEM
-    CASE FTYP='P'; CALL EB_PRINT
-    CASE FTYP='M'; GO 5000    ;! merge
-    CASE FTYP='W'
-        CRT MSG.CLR:'Changed item being filed. ':MSG.AKN:
-        IF HEX.MODE THEN
-            STMP=REC
-            HEX.MODE=FALSE
-            GOSUB CONV.HEX
-            HEX.MODE=TRUE
-        END
-        WRITEU REC ON FIL,ITNM
-        IF HEX.MODE THEN REC=STMP
-        PREV.TIME=TIME()
-    CASE FTYP='Q'   ;! grab the code under IF or END ELSE and remove the remainder IF/END
-        STMP = TRIM(RDSP(LROW))
-        Z=INDROW+LROW-1
-        STL = 0; MIDL = 0 ; ENDL = 0
-        FTYP = ''
-        BEGIN CASE
-        CASE FIELD(STMP,' ',1) EQ 'IF'
-            STL = Z+1
-            FTYP = 'I'
-        CASE FIELD(STMP,' ',1,2) EQ 'END ELSE'
-            MIDL = Z
-            FTYP = 'E'
-        END CASE
-        IF LEN(FTYP) THEN
-            LOCATE '///' IN SSS SETTING Z THEN DEL SSS<Z>
-            INS '///' BEFORE SSS<1>
-            FG_ACT.CODE=FG_MULTI.CODE
-            CALL EB_SEARCH
-            Z=INDROW+LROW-1
-            IF STL THEN
-                MIDL = Z
-            END ELSE
-                ENDL = Z-1
-                PSSTR = '\\\'
+        CASE FTYP='.'
+            GOSUB GET.PREVWORD
+            CALL EB_SHOWMEMBERS(WORD)
+            GOSUB CHG.LROW
+            CRT MSG.DSP:; GO STRT
+        CASE FTYP='A'   ;! Insert date/time
+            Z=OCONV(DATE(),'D4'):SPC:OCONV(TIME(),'MTS'):SPC:UserName; I=TRUE; GOSUB INS.TXT
+        CASE FTYP='B'
+            IF DSPLY NE '' AND ERR.NOS NE COMPER THEN GO 2700 ELSE CRT MSG.CLR:'No errors ':PR:; INPUT FTYP:
+        CASE FTYP='C'
+            CALL EB_COMPARE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
+            SCR.UD=TRUE ;!SCRL=0
+            MREC=''
+            CRT MSG.DSP:
+            GO STRT
+        CASE FTYP='D'; GO 7000    ;! duplicate line-replace
+        CASE FTYP='E'
+            Y='%':ITNM:'%'
+            WRITE REC ON JET.PASTE,Y
+            IF accuterm THEN CRT ESC:CHAR(2):0:
+            ECHO ON
+            DATA INDROW+LROW-1
+            DUMMY=jbcreleasedir:DIR_DELIM_CH:'bin':DIR_DELIM_CH:'ED ':path:'JET.PASTE ':Y; GOSUB EB.SUB
+            ECHO OFF
+            READ NEW.REC FROM JET.PASTE,Y THEN
+                DELETE JET.PASTE,Y
+                IF NEW.REC NE REC THEN REC=NEW.REC; SCR.UD=TRUE
+                NEW.REC=''
             END
-            FG_ACT.CODE=FG_MULTI.CODE
-            CALL EB_SEARCH
-            IF NOT(STL) THEN
+            IF accuterm THEN CRT ESC:CHAR(2):1:
+        CASE FTYP='F'
+            GOSUB INDENT
+        CASE FTYP='G'
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            TAB.MODE=NOT(TAB.MODE)
+            SCR.UD=TRUE; CALL EB_REFRESH
+        CASE FTYP='H'
+            IF CHANGED THEN GOSUB SCRN.TO.REC
+            CNT=DCOUNT(REC,AM)
+            HEX.MODE=NOT(HEX.MODE)
+            GOSUB CONV.HEX
+            SCR.UD=TRUE; CALL EB_REFRESH
+        CASE FTYP='I'
+            CALL EB_INTEGRATE
+            GO STRT
+        CASE FTYP='T'
+            tab_display = NOT(tab_display)
+            SCR.LR=1
+        CASE FTYP='K'
+            Z=ITNM; I=TRUE; GOSUB INS.TXT
+        CASE FTYP='L'
+            CALL EB_LOWER(REC, SCR.UD)
+            IF SCR.UD THEN CALL EB_REFRESH
+        CASE FTYP='O'
+            CALL EB_MOVE(FIL,REC,MSG.CLR,MSG.AKN,PR,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
+            FG_ACT.CODE=FG_NXT.KEY.CODE
+            GO NEXT.ITEM
+        CASE FTYP='P'; CALL EB_PRINT
+        CASE FTYP='M'; GO 5000    ;! merge
+        CASE FTYP='W'
+            CRT MSG.CLR:'Changed item being filed. ':MSG.AKN:
+            IF HEX.MODE THEN
+                STMP=REC
+                HEX.MODE=FALSE
+                GOSUB CONV.HEX
+                HEX.MODE=TRUE
+            END
+            WRITEU REC ON FIL,ITNM
+            IF HEX.MODE THEN REC=STMP
+            PREV.TIME=TIME()
+        CASE FTYP='Q'   ;! grab the code under IF or END ELSE and remove the remainder IF/END
+            STMP = TRIM(RDSP(LROW))
+            Z=INDROW+LROW-1
+            STL = 0; MIDL = 0 ; ENDL = 0
+            FTYP = ''
+            BEGIN CASE
+                CASE FIELD(STMP,' ',1) EQ 'IF'
+                    STL = Z+1
+                    FTYP = 'I'
+                CASE FIELD(STMP,' ',1,2) EQ 'END ELSE'
+                    MIDL = Z
+                    FTYP = 'E'
+            END CASE
+            IF LEN(FTYP) THEN
+                LOCATE '///' IN SSS SETTING Z THEN DEL SSS<Z>
+                INS '///' BEFORE SSS<1>
                 FG_ACT.CODE=FG_MULTI.CODE
                 CALL EB_SEARCH
-            END
-            Z=INDROW+LROW-1
-            IF ENDL THEN
-                STL = Z+1
-            END ELSE
-                ENDL = Z-1
-            END
-            DUMMY = ''
-            Z = 1
-            IF FTYP = 'I' THEN
-                MIDL--
-                FOR L = STL TO MIDL
-                    DUMMY<Z++> = REC<L>
+                Z=INDROW+LROW-1
+                IF STL THEN
+                    MIDL = Z
+                END ELSE
+                    ENDL = Z-1
+                    PSSTR = '\\\'
+                END
+                FG_ACT.CODE=FG_MULTI.CODE
+                CALL EB_SEARCH
+                IF NOT(STL) THEN
+                    FG_ACT.CODE=FG_MULTI.CODE
+                    CALL EB_SEARCH
+                END
+                Z=INDROW+LROW-1
+                IF ENDL THEN
+                    STL = Z+1
+                END ELSE
+                    ENDL = Z-1
+                END
+                DUMMY = ''
+                Z = 1
+                IF FTYP = 'I' THEN
+                    MIDL--
+                    FOR L = STL TO MIDL
+                        DUMMY<Z++> = REC<L>
+                    NEXT L
+                END ELSE
+                    MIDL++
+                    FOR L = MIDL TO ENDL
+                        DUMMY<Z++> = REC<L>
+                    NEXT L
+                END
+                STL--
+                ENDL++
+                FOR L = STL TO ENDL
+                    DEL REC<STL>
                 NEXT L
-            END ELSE
-                MIDL++
-                FOR L = MIDL TO ENDL
-                    DUMMY<Z++> = REC<L>
-                NEXT L
+                INS DUMMY BEFORE REC<STL>
             END
-            STL--
-            ENDL++
-            FOR L = STL TO ENDL
-                DEL REC<STL>
-            NEXT L
-            INS DUMMY BEFORE REC<STL>
-        END
-    CASE FTYP='R'
-        CALL EB_ROTATE(REC)
-        SCR.UD=TRUE
-    CASE FTYP='U'
-        GOSUB UNINDENT
-    CASE FTYP='V'
-        STMP=RDSP(LROW)
-        CONVERT VM:SVM TO AM:VM IN STMP
-        Y='%':ITNM:'.':INDROW+LROW-1:'%'
-        WRITE STMP ON JET.PASTE,Y
-        DUMMY='EB ':path:'JET.PASTE ':Y
-        GOSUB EB.SUB
-        READ STMP FROM JET.PASTE,Y ELSE NULL
-        DELETE JET.PASTE,Y
-        CONVERT VM:AM TO SVM:VM IN STMP
-        IF STMP NE RDSP(LROW) THEN RDSP(LROW)=STMP; GOSUB CHG.LROW
-        IF MOD(FG_STERM,3) THEN
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
-        END ELSE SCR.UD=1
-    CASE FTYP='S'
-        STMP=RDSP(LROW)
-        CALL EB_SWAP(STMP,POS)
-        IF POS THEN
-            RDSP(LROW)=STMP
-            GOSUB CHG.LROW
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
-        END
-    CASE FTYP='X'
+        CASE FTYP='R'
+            CALL EB_ROTATE(REC)
+            SCR.UD=TRUE
+        CASE FTYP='U'
+            GOSUB UNINDENT
+        CASE FTYP='V'
+            STMP=RDSP(LROW)
+            CONVERT VM:SVM TO AM:VM IN STMP
+            Y='%':ITNM:'.':INDROW+LROW-1:'%'
+            WRITE STMP ON JET.PASTE,Y
+            DUMMY='EB ':path:'JET.PASTE ':Y
+            GOSUB EB.SUB
+            READ STMP FROM JET.PASTE,Y ELSE NULL
+            DELETE JET.PASTE,Y
+            CONVERT VM:AM TO SVM:VM IN STMP
+            IF STMP NE RDSP(LROW) THEN RDSP(LROW)=STMP; GOSUB CHG.LROW
+            IF MOD(FG_STERM,3) THEN
+                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+            END ELSE SCR.UD=1
+        CASE FTYP='S'
+            STMP=RDSP(LROW)
+            CALL EB_SWAP(STMP,POS)
+            IF POS THEN
+                RDSP(LROW)=STMP
+                GOSUB CHG.LROW
+                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+            END
+        CASE FTYP='X'
 !      GOSUB ABORT
-        IF LEN(LEN(COL.80) AND COL.132) THEN
-            IF PWIDTH=79 THEN
-                CRT COL.132:
-                PWIDTH=131
-            END ELSE
-                CRT COL.80:
-                PWIDTH=79
+            IF LEN(LEN(COL.80) AND COL.132) THEN
+                IF PWIDTH=79 THEN
+                    CRT COL.132:
+                    PWIDTH=131
+                END ELSE
+                    CRT COL.80:
+                    PWIDTH=79
+                END
+                IF CHANGED THEN GOSUB SCRN.TO.REC
+                SCR.LR=1
             END
-            IF CHANGED THEN GOSUB SCRN.TO.REC
-            SCR.LR=1
-        END
-    CASE FTYP='Z'; GO 2500    ;! size
-    CASE FTYP=ESC; NULL
+        CASE FTYP='Z'; GO 2500    ;! size
+        CASE FTYP=ESC; NULL
     END CASE
     CRT MSG.DSP:
     GO STRT
 !============
-SPLIT.LINE:         ! Break a line in two, at the cursor position.
+SPLIT.LINE: ! Break a line in two, at the cursor position.
 ! First move all subsequent lines down 1 to allow for the new line.
     IF CHANGED THEN GOSUB SCRN.TO.REC
     FOR I=(PDEPTH-1) TO LROW STEP -1
@@ -1890,22 +1909,22 @@ SPLIT.LINE:         ! Break a line in two, at the cursor position.
     CRT MSG.DSP:
     RETURN
 !============
-2200      ! Join a line onto the end of preceeding or following line.
+2200 ! Join a line onto the end of preceeding or following line.
     CRT MSG.CLR:"Attach line ":INDROW+ROW:" to end of <P>receeding or <F>ollowing line? ":
     INPUT J.LINE,1:
     CRT MSG.AKN:
     J.LINE=OCONV(J.LINE,"MCU")
     BEGIN CASE
-    CASE J.LINE="P"; J.LINE=-1
-    CASE J.LINE="F"; J.LINE=1
-    CASE J.LINE=ESC
-        CRT MSG.DSP:
-        GO STRT     ;! Abort function
-    CASE 1; GO 2200
+        CASE J.LINE="P"; J.LINE=-1
+        CASE J.LINE="F"; J.LINE=1
+        CASE J.LINE=ESC
+            CRT MSG.DSP:
+            GO STRT     ;! Abort function
+        CASE 1; GO 2200
     END CASE
     CRT @(0,ROW+1):DEL.LINE:
 ! Now add current line onto end of selected line, with one space between.
-2210      ! del char at end of line
+2210 ! del char at end of line
     IF J.LINE<0 THEN
         CALL EB_TRIM(TMP,RDSP(LROW),SPC,'L')
     END ELSE
@@ -1914,10 +1933,10 @@ SPLIT.LINE:         ! Break a line in two, at the cursor position.
     END
     NWORD = UPCASE(FIELD(TMP,SPC,1))
     BEGIN CASE
-    CASE NWORD='END' ; TMP=TMP[COL2()+1,MAX]
-    CASE (NWORD='CASE' OR NWORD='IF') AND TRIM(RDSP(LROW+J.LINE)) NE ''
-        TMP=TMP[COL2(),MAX]
-        IF INDEX(TMP,'#',1) THEN TMP='AND':TMP ELSE TMP='OR':TMP
+        CASE NWORD='END' ; TMP=TMP[COL2()+1,MAX]
+        CASE (NWORD='CASE' OR NWORD='IF') AND TRIM(RDSP(LROW+J.LINE)) NE ''
+            TMP=TMP[COL2(),MAX]
+            IF INDEX(TMP,'#',1) THEN TMP='AND':TMP ELSE TMP='OR':TMP
     END CASE
     LOOP
         CHR = RDSP(LROW)[LCOL-1,1]
@@ -1960,13 +1979,13 @@ SPLIT.LINE:         ! Break a line in two, at the cursor position.
     CRT MSG.DSP:
     GO STRT
 !==========! 4
-2500      ! Size of record
+2500 ! Size of record
     RLEN=LEN(REC)+LEN(ITNM)+6
     CRT MSG.CLR:"Record length is ":RLEN:" bytes, ":DCOUNT(REC,AM):' attributes'          ;!There are ":32267-RLEN:" bytes available.":
     GO STRT
 !==========!
-2600      ! Compare against another version
-2700      ! Display errors from last compile
+2600 ! Compare against another version
+2700 ! Display errors from last compile
     CRT @(0,0):CLEOP:
     FOR I=1 TO NBR.DSPLY
         CRT DSPLY<I>
@@ -1980,7 +1999,7 @@ SPLIT.LINE:         ! Break a line in two, at the cursor position.
     SCR.UD=TRUE; SSTR=''
     GO STRT
 !============
-TCL:      !
+TCL: !
     IF MOD(FG_STERM,3) ELSE SCR.LR=1; CRT @(-1)
     IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
@@ -2005,7 +2024,7 @@ TCL:      !
     CRT CURS.ON:
     RETURN
 !================
-5000      ! Merge lines from an item
+5000 ! Merge lines from an item
     CALL EB_MERGE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
     SCR.UD=TRUE; OFFSET=0; SCRL=0
     COL=5
@@ -2013,33 +2032,33 @@ TCL:      !
     CRT MSG.DSP:
     GO STRT
 !====================
-7000      ! Duplicate Line (insert)
+7000 ! Duplicate Line (insert)
     CRT MSG.DSP:
     IF CHANGED THEN GOSUB SCRN.TO.REC
     SCRL=REC<INDROW+ROW-1>
     BEGIN CASE
-    CASE TRIM(SCRL) MATCHES "'EQU '0X" AND INDEX(SCRL,'(',1)
-        Z=FIELD(SCRL,'(',1):'('; Y=SCRL[COL2()+1,MAX]
-        SCRL=FIELD(Y,')',1); Y=Y[COL2(),MAX]
-        IF NUM(SCRL) THEN SCRL+=1
-        SCRL=Z:SCRL:Y
-    CASE SCRL MATCHES "0X'<'1N0N','0X"
-        Z=FIELD(TRIM(SCRL),SPC,1)
-        IF INDEX(Z,'=',1) OR Z='INS' OR Z='DEL' THEN
-            YNC="Increment attribute (Y/N) "
-            CRT MSG.CLR:YNC:
-            YNC=LEN(YNC); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
-            CRT MSG.CLR:
-            IF Y='Y' THEN
-                Z=FIELD(SCRL,'<',1):'<'; Y=SCRL[COL2()+1,MAX]
-                STMP=FIELD(Y,'>',1); Y=Y[COL2(),MAX]
-                SCRL=FIELD(STMP,',',1); Y=STMP[COL2(),MAX]:Y
-                IF NUM(SCRL) THEN SCRL+=1
-                SCRL=Z:SCRL:Y
+        CASE TRIM(SCRL) MATCHES "'EQU '0X" AND INDEX(SCRL,'(',1)
+            Z=FIELD(SCRL,'(',1):'('; Y=SCRL[COL2()+1,MAX]
+            SCRL=FIELD(Y,')',1); Y=Y[COL2(),MAX]
+            IF NUM(SCRL) THEN SCRL+=1
+            SCRL=Z:SCRL:Y
+        CASE SCRL MATCHES "0X'<'1N0N','0X"
+            Z=FIELD(TRIM(SCRL),SPC,1)
+            IF INDEX(Z,'=',1) OR Z='INS' OR Z='DEL' THEN
+                YNC="Increment attribute (Y/N) "
+                CRT MSG.CLR:YNC:
+                YNC=LEN(YNC); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N'; YNL=1; GOSUB GET.CHAR
+                CRT MSG.CLR:
+                IF Y='Y' THEN
+                    Z=FIELD(SCRL,'<',1):'<'; Y=SCRL[COL2()+1,MAX]
+                    STMP=FIELD(Y,'>',1); Y=Y[COL2(),MAX]
+                    SCRL=FIELD(STMP,',',1); Y=STMP[COL2(),MAX]:Y
+                    IF NUM(SCRL) THEN SCRL+=1
+                    SCRL=Z:SCRL:Y
+                END
             END
-        END
-    CASE SCRL[1,ITAB<1>]=SPACE(ITAB<1>)
-        LOCATE UPCASE(FIELD(TRIM(SCRL),SPC,1)) IN END.WORDS BY 'AL' SETTING POS THEN SCRL=SCRL[ITAB<1>+1,MAX]
+        CASE SCRL[1,ITAB<1>]=SPACE(ITAB<1>)
+            LOCATE UPCASE(FIELD(TRIM(SCRL),SPC,1)) IN END.WORDS BY 'AL' SETTING POS THEN SCRL=SCRL[ITAB<1>+1,MAX]
     END CASE
     INS SCRL BEFORE REC<INDROW+ROW>
     CALL EB_MARKADJ(INDROW+ROW,1,1)
@@ -2059,106 +2078,106 @@ TCL:      !
         IF FG_ACT.CODE THEN GO NEXT.ITEM
         CRT MSG.AKN:
         BEGIN CASE
-        CASE Y='P'
-            rc = PUTENV('JBCEMULATE=prime')
-        CASE Y='J'
-            rc = PUTENV('JBCEMULATE=jbase')
+            CASE Y='P'
+                rc = PUTENV('JBCEMULATE=prime')
+            CASE Y='J'
+                rc = PUTENV('JBCEMULATE=jbase')
         END CASE
         Y=Z
     END
-10010     !
+10010 !
     IF UPDATES THEN WRITE REC ON FIL,ITNM
     INCLUDE EB.OS.INCLUDES BASIC.OPTS
     BEGIN CASE
-    CASE ITNM[-4, 4] = '.src'
-        TYPE='DL4'
-        IF FLNM=currdir THEN
-            DL4FNAME = '.'
-        END ELSE
-            DL4FNAME = FIELD(FLNM, DIR_DELIM_CH, DCOUNT(FLNM, DIR_DELIM_CH))
-        END
-        PCPERFORM 'jsh -s sh -c "loadsave -o temp.dl4 ':DL4FNAME:'/':ITNM:' 2>dl4.errs"' SETTING ERR.NOS
-!            INCLUDE EB.OS.INCLUDES DL4.BASIC
-        READ DSPLY FROM F.currdir,'dl4.errs' THEN
-            DELETE F.currdir,'dl4.errs'
-        END ELSE DSPLY = ''
-        CONVERT CR TO '' IN DSPLY
-        DSPLY = TRIM(DSPLY)
-        NBR.DSPLY=DCOUNT(DSPLY,AM)
-        FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
-            CRT DSPLY<I>
-        NEXT I
-        CRT
-        IF Y NE 'B' AND Y NE 'P' AND LEN(DSPLY) THEN
-            TXT="re-edit"
-            basloc=0
-            LOOP
-                REMOVE basline FROM DSPLY AT basloc SETTING basdelim
-                INDROW=TRIM(FIELD(basline, ' ', 1))
-            UNTIL INDROW MATCHES "1N0N" OR NOT(basdelim) REPEAT
-            IF NOT(NUM(INDROW)) OR INDROW < 1 THEN INDROW = 1
-            INDROW-=11
-            COL=5
-            ROW=11
-            IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
-            CRT MSG.CLR:
-            SCR.UD=1
-        END
-!            INCLUDE EB.OS.INCLUDES DL4.BASIC
-    CASE TYPE='SQL' OR (TYPE='DEBUG' AND COMMENT='--')
-        TYPE='SQL'
-        LAST.AM=COUNT(REC,AM)
-        Y=OCONV(REC<LAST.AM>,'MCU')
-        MREC=REC
-        IF Y NE 'SHOW ERRORS' THEN
-            IF OCONV(REC<LAST.AM+1>,'MCU')='EXIT' THEN
-                INS 'SHOW ERRORS' BEFORE REC<LAST.AM+1>
+        CASE ITNM[-4, 4] = '.src'
+            TYPE='DL4'
+            IF FLNM=currdir THEN
+                DL4FNAME = '.'
             END ELSE
-                REC<-1>='SHOW ERRORS':AM:'EXIT'
+                DL4FNAME = FIELD(FLNM, DIR_DELIM_CH, DCOUNT(FLNM, DIR_DELIM_CH))
             END
-            WRITE REC ON FIL,ITNM
-        END
-        EXECUTE 'jSQL ':FLNM:SPC:ITNM CAPTURING DSPLY
-        WRITE MREC ON FIL,ITNM
-        INCLUDE EB.OS.INCLUDES EB.SQL
-    CASE 1
-        BP.FILE=FLNM; SCR.VALIDATE=ITNM
-        INCLUDE EB.OS.INCLUDES DECATALOG
-        IF Y[2,1]='F' THEN BAS.ARGS:='OF'
-        Y=Y[1,1]
-        IF Y='P' THEN
-            BAS.ARGS:='C'
-            IF ENCRYPTED='Y' THEN BAS.ARGS:='X' ELSE BAS.ARGS:='K'
-            EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.ARGS CAPTURING DSPLY RETURNING ERR.NOS
-        END ELSE
-            IF INDEX('BAM',Y,1) THEN
-                CRT 'Compiling...'
-                IF Y='M' THEN
-                    EXECUTE shell:'make':shellend CAPTURING DSPLY RETURNING ERR.NOS
+            PCPERFORM 'jsh -s sh -c "loadsave -o temp.dl4 ':DL4FNAME:'/':ITNM:' 2>dl4.errs"' SETTING ERR.NOS
+!            INCLUDE EB.OS.INCLUDES DL4.BASIC
+            READ DSPLY FROM F.currdir,'dl4.errs' THEN
+                DELETE F.currdir,'dl4.errs'
+            END ELSE DSPLY = ''
+            CONVERT CR TO '' IN DSPLY
+            DSPLY = TRIM(DSPLY)
+            NBR.DSPLY=DCOUNT(DSPLY,AM)
+            FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
+                CRT DSPLY<I>
+            NEXT I
+            CRT
+            IF Y NE 'B' AND Y NE 'P' AND LEN(DSPLY) THEN
+                TXT="re-edit"
+                basloc=0
+                LOOP
+                    REMOVE basline FROM DSPLY AT basloc SETTING basdelim
+                    INDROW=TRIM(FIELD(basline, ' ', 1))
+                UNTIL INDROW MATCHES "1N0N" OR NOT(basdelim) REPEAT
+                IF NOT(NUM(INDROW)) OR INDROW < 1 THEN INDROW = 1
+                INDROW-=11
+                COL=5
+                ROW=11
+                IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
+                CRT MSG.CLR:
+                SCR.UD=1
+            END
+!            INCLUDE EB.OS.INCLUDES DL4.BASIC
+        CASE TYPE='SQL' OR (TYPE='DEBUG' AND COMMENT='--')
+            TYPE='SQL'
+            LAST.AM=COUNT(REC,AM)
+            Y=OCONV(REC<LAST.AM>,'MCU')
+            MREC=REC
+            IF Y NE 'SHOW ERRORS' THEN
+                IF OCONV(REC<LAST.AM+1>,'MCU')='EXIT' THEN
+                    INS 'SHOW ERRORS' BEFORE REC<LAST.AM+1>
                 END ELSE
-                    IF NOT(GETENV('JEDIFILEPATH',jedifilepath)) THEN
-                        jedifilepath = '.'
-                    END
-                    IF INDEX(jedifilepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
-                    CONVERT dirsep TO @AM IN jedifilepath
-                    IF GETENV('INCLUDE',includepath) ELSE includepath='.'
-                    IF INDEX(includepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
-                    incpath=includepath
-                    CONVERT dirsep TO @AM IN incpath
-                    jedifilepath<-1>=incpath
-                    loc=0
-                    LOOP
-                        REMOVE inc FROM jedifilepath AT loc SETTING delim
-                        IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
-                    WHILE delim DO REPEAT
-                    IF DIR_DELIM_CH = '\' THEN
-                        FULLPATH = CHANGE(FLNM, '\', '\\')
-                    END ELSE FULLPATH=FLNM
-                    EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    REC<-1>='SHOW ERRORS':AM:'EXIT'
                 END
-                INCLUDE EB.OS.INCLUDES RTED.BASIC
+                WRITE REC ON FIL,ITNM
             END
-        END
+            EXECUTE 'jSQL ':FLNM:SPC:ITNM CAPTURING DSPLY
+            WRITE MREC ON FIL,ITNM
+            INCLUDE EB.OS.INCLUDES EB.SQL
+        CASE 1
+            BP.FILE=FLNM; SCR.VALIDATE=ITNM
+            INCLUDE EB.OS.INCLUDES DECATALOG
+            IF Y[2,1]='F' THEN BAS.ARGS:='OF'
+            Y=Y[1,1]
+            IF Y='P' THEN
+                BAS.ARGS:='C'
+                IF ENCRYPTED='Y' THEN BAS.ARGS:='X' ELSE BAS.ARGS:='K'
+                EXECUTE BACKGROUND.VERB:SPC:COMPILE.VERB:SPC:FLNM:SPC:ITNM:BAS.ARGS CAPTURING DSPLY RETURNING ERR.NOS
+            END ELSE
+                IF INDEX('BAM',Y,1) THEN
+                    CRT 'Compiling...'
+                    IF Y='M' THEN
+                        EXECUTE shell:'make':shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    END ELSE
+                        IF NOT(GETENV('JEDIFILEPATH',jedifilepath)) THEN
+                            jedifilepath = '.'
+                        END
+                        IF INDEX(jedifilepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
+                        CONVERT dirsep TO @AM IN jedifilepath
+                        IF GETENV('INCLUDE',includepath) ELSE includepath='.'
+                        IF INDEX(includepath,'/',1) THEN dirsep=':' ELSE dirsep=';'
+                        incpath=includepath
+                        CONVERT dirsep TO @AM IN incpath
+                        jedifilepath<-1>=incpath
+                        loc=0
+                        LOOP
+                            REMOVE inc FROM jedifilepath AT loc SETTING delim
+                            IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
+                        WHILE delim DO REPEAT
+                        IF DIR_DELIM_CH = '\' THEN
+                            FULLPATH = CHANGE(FLNM, '\', '\\')
+                        END ELSE FULLPATH=FLNM
+                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
+                    END
+                    INCLUDE EB.OS.INCLUDES RTED.BASIC
+                END
+            END
     END CASE
     IF UPDATES THEN
         IF NOT(SCR.UD) AND ENCRYPTED='Y' THEN
@@ -2187,7 +2206,7 @@ TCL:      !
     END
     GO NEXT.ITEM
 !==============================================
-INS.TXT:  !
+INS.TXT: !
     IF LCOL>1 THEN
         HASH='L#':LCOL-1
         Y=RDSP(LROW)[1,LCOL-1] HASH
@@ -2201,10 +2220,10 @@ INS.TXT:  !
         CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
     END
     RETURN
-FORMAT:   !
+FORMAT: !
     CALL EB_FORMAT(DUMMY,I,LNM)
     RETURN
-INDENT:   !
+INDENT: !
     Y='%':FLNM:'%':ITNM:'%'
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Formatting program...':
@@ -2256,7 +2275,7 @@ GET.WORD: !
     END
     WORD=RDSP(LROW)[LCOL,I-LCOL]
     RETURN
-GET.PREVWORD:       !
+GET.PREVWORD: !
     SLCOL=LCOL
     SCOL=COL
     GOSUB BACK.WORD
@@ -2282,7 +2301,7 @@ GET.PREVWORD:       !
     END
     WORD=RDSP(LROW)[I, LCOL-I]
     RETURN
-11000     !
+11000 !
     CRT MSG.CLR:"To delete the item, type in the word DELETE, else press <RETURN> ":
     Z=''; L=7; GOSUB INPT; Y=Z
     IF Y NE "DELETE" THEN GO 999
@@ -2323,7 +2342,7 @@ GET.PREVWORD:       !
     CRT MSG.CLR:Z:
     Z = ''; L=1; GOSUB INPT
     GO NEXT.ITEM
-Abort:    !
+Abort: !
     FG_ACT.CODE = FALSE
     changed = (ORIG.REC NE REC)
     IF changed THEN
@@ -2345,34 +2364,34 @@ Abort:    !
         END
     END
     BEGIN CASE
-    CASE Y='F'
-        Z='F'; INPTYPE='U':AM:AM:2; L=4; GOSUB INPT
-        BEGIN CASE
-        CASE Z='FI' ; FG_TYPEAHEAD.BUFF='N'
-        CASE Z='FIB' ; FG_TYPEAHEAD.BUFF='B'
-        CASE Z='FIBC' ; FG_TYPEAHEAD.BUFF='A'
-        CASE Z='FIC' ; FG_TYPEAHEAD.BUFF='C'
-        END CASE
-        FG_TYPEAHEAD.BUFF:=CR
-        FG_ACT.CODE=FG_END.CODE
-        X = OPEN.PATCH
-        IF NOT(changed) THEN
-            OPEN.PATCH = FALSE
-        END
-        IF INDEX(Z, 'C', 1) THEN
-            CALL EB_FILE(X,K.PATCHFILE,MAT PATCH,Y,ENCRYPTED,UPG)
-            GOSUB 10010
-        END ELSE
-            GOSUB FILE.ITEM
-        END
-        OPEN.PATCH = X
-        RETURN TO NEXT.ITEM
-    CASE Y='Y' OR (Y=ESC AND NOT(changed))
-        RELEASE     ;! shh don't tell Dan
-        DELETE JET.PASTE,ITNM:'.sav'
-        RETURN TO NEXT.ITEM
-    CASE Y='N' OR FG_ACT.CODE
-        CRT MSG.DSP:
+        CASE Y='F'
+            Z='F'; INPTYPE='U':AM:AM:2; L=4; GOSUB INPT
+            BEGIN CASE
+                CASE Z='FI' ; FG_TYPEAHEAD.BUFF='N'
+                CASE Z='FIB' ; FG_TYPEAHEAD.BUFF='B'
+                CASE Z='FIBC' ; FG_TYPEAHEAD.BUFF='A'
+                CASE Z='FIC' ; FG_TYPEAHEAD.BUFF='C'
+            END CASE
+            FG_TYPEAHEAD.BUFF:=CR
+            FG_ACT.CODE=FG_END.CODE
+            X = OPEN.PATCH
+            IF NOT(changed) THEN
+                OPEN.PATCH = FALSE
+            END
+            IF INDEX(Z, 'C', 1) THEN
+                CALL EB_FILE(X,K.PATCHFILE,MAT PATCH,Y,ENCRYPTED,UPG)
+                GOSUB 10010
+            END ELSE
+                GOSUB FILE.ITEM
+            END
+            OPEN.PATCH = X
+            RETURN TO NEXT.ITEM
+        CASE Y='Y' OR (Y=ESC AND NOT(changed))
+            RELEASE     ;! shh don't tell Dan
+            DELETE JET.PASTE,ITNM:'.sav'
+            RETURN TO NEXT.ITEM
+        CASE Y='N' OR FG_ACT.CODE
+            CRT MSG.DSP:
     END CASE
     RETURN
 FILE.ITEM:!
@@ -2383,7 +2402,7 @@ FILE.ITEM:!
         RETURN TO STRT
     END
     RETURN
-ENCRYPT.IT:         !
+ENCRYPT.IT: !
     IF PASSWD='' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
     CALL UPGCONVERT(FLNM,ITNM,REC,'E',USEMODE,F.UPG.WORKFILE,PASSWD,CONVOK)
     IF NOT(CONVOK) THEN
@@ -2392,7 +2411,7 @@ ENCRYPT.IT:         !
         WRITE REC ON FIL,ITNM
     END
     RETURN
-CHKSUM:   !
+CHKSUM: !
     RETURN
     IF UPG ELSE RETURN
     CALL UPGFILETYPE(FLNM,FILETYPE)
@@ -2430,29 +2449,29 @@ CONV.HEX: !
         NEXT I
     END
     RETURN
-GET.EDIT.MODE:      !
+GET.EDIT.MODE: !
     BEGIN CASE
-    CASE ITNM 'R#4'='.sql'; EDIT.MODE='Q'
-    CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
-    CASE ITNM 'R#4'='.hpp'; EDIT.MODE='cpp'
-    CASE ITNM 'R#2'='.h'; EDIT.MODE='c'
-    CASE ITNM 'R#4'='.sqc'; EDIT.MODE='c'
-    CASE ITNM 'R#5'='.java'; EDIT.MODE='cpp'
-    CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
-    CASE ITNM 'R#3'='.py'; EDIT.MODE='py'
-    CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
-    CASE ITNM 'R#2'='.b'; EDIT.MODE='!'
-    CASE ITNM 'R#6'='.jabba'; EDIT.MODE='!'; case_insensitive = @TRUE
-    CASE FLNM 'R#2'='BP'; EDIT.MODE='!'
-    CASE FLNM='MD' OR FLNM='VOC'; EDIT.MODE='C'
-    CASE 1
-        CALL EB_OPEN('',FLNM:',OBJECT', F.OBJECT, FALSE, POS)
-        IF POS THEN
-            CLOSE F.OBJECT
-            EDIT.MODE = '!'
-        END ELSE
-            EDIT.MODE = 'S'
-        END
+        CASE ITNM 'R#4'='.sql'; EDIT.MODE='Q'
+        CASE ITNM 'R#4'='.cpp'; EDIT.MODE='cpp'
+        CASE ITNM 'R#4'='.hpp'; EDIT.MODE='cpp'
+        CASE ITNM 'R#2'='.h'; EDIT.MODE='c'
+        CASE ITNM 'R#4'='.sqc'; EDIT.MODE='c'
+        CASE ITNM 'R#5'='.java'; EDIT.MODE='cpp'
+        CASE ITNM 'R#3'='.pc'; EDIT.MODE='c'
+        CASE ITNM 'R#3'='.py'; EDIT.MODE='py'
+        CASE ITNM 'R#2'='.c'; EDIT.MODE='c'
+        CASE ITNM 'R#2'='.b'; EDIT.MODE='!'
+        CASE ITNM 'R#6'='.jabba'; EDIT.MODE='!'; case_insensitive = @TRUE
+        CASE FLNM 'R#2'='BP'; EDIT.MODE='!'
+        CASE FLNM='MD' OR FLNM='VOC'; EDIT.MODE='C'
+        CASE 1
+            CALL EB_OPEN('',FLNM:',OBJECT', F.OBJECT, FALSE, POS)
+            IF POS THEN
+                CLOSE F.OBJECT
+                EDIT.MODE = '!'
+            END ELSE
+                EDIT.MODE = 'S'
+            END
     END CASE
     RETURN
 SET.MODE: !
@@ -2460,65 +2479,65 @@ SET.MODE: !
     COMMENT='!':@VM:'*'
     reservedWords = jbcReserved
     BEGIN CASE
-    CASE COUNT(EDIT.MODE,'C')
-        COMMENT='C '
-        TYPE='PROC'
-        ITABPOS=1
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'Q')
-        COMMENT='--'
-        TYPE='SQL'
-        ITABPOS=3
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'S')
-        COMMENT='# '
-        TYPE='SCRIPT'
-        ITABPOS=2
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'py')
-        reservedWords = cReserved       ;! hack
-        COMMENT='# '
-        TYPE='PYTHON'
-        ITABPOS=3
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'*')
-        COMMENT='*'
-        TYPE='BASIC'
-        ITABPOS=1
-        PC:=';("_");(".")'
-    CASE COUNT(EDIT.MODE,'cpp')
-        COMMENT='//'
-        TYPE='C++'
-        ITABPOS=2
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'c')
-        COMMENT='//'          ;!*':@SVM:'*/'
-        TYPE='C'
-        ITABPOS=2
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'h')
-        COMMENT='//'
-        TYPE='H'
-        ITABPOS=2
-        PC:=';("_")'
-    CASE COUNT(EDIT.MODE,'hpp')
-        COMMENT='//'
-        TYPE='HPP'
-        ITABPOS=2
-        PC:=';("_")'
-    CASE 1
-        COMMENT='!'
-        TYPE='BASIC'
-        ITABPOS=2
-        PC:=';("_");(".");("$")'
+        CASE COUNT(EDIT.MODE,'C')
+            COMMENT='C '
+            TYPE='PROC'
+            ITABPOS=1
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'Q')
+            COMMENT='--'
+            TYPE='SQL'
+            ITABPOS=3
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'S')
+            COMMENT='# '
+            TYPE='SCRIPT'
+            ITABPOS=2
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'py')
+            reservedWords = cReserved       ;! hack
+            COMMENT='# '
+            TYPE='PYTHON'
+            ITABPOS=3
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'*')
+            COMMENT='*'
+            TYPE='BASIC'
+            ITABPOS=1
+            PC:=';("_");(".")'
+        CASE COUNT(EDIT.MODE,'cpp')
+            COMMENT='//'
+            TYPE='C++'
+            ITABPOS=2
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'c')
+            COMMENT='//'          ;!*':@SVM:'*/'
+            TYPE='C'
+            ITABPOS=2
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'h')
+            COMMENT='//'
+            TYPE='H'
+            ITABPOS=2
+            PC:=';("_")'
+        CASE COUNT(EDIT.MODE,'hpp')
+            COMMENT='//'
+            TYPE='HPP'
+            ITABPOS=2
+            PC:=';("_")'
+        CASE 1
+            COMMENT='!'
+            TYPE='BASIC'
+            ITABPOS=2
+            PC:=';("_");(".");("$")'
     END CASE
     BEGIN CASE
-    CASE COUNT(EDIT.MODE,'c')
-        reservedWords = cReserved
-        comments='//':@VM:'/*'          ;! crude for now
-        comments<-1>=@VM:'*/' ;! end of comment
-    CASE 1
-        comments=COMMENT
+        CASE COUNT(EDIT.MODE,'c')
+            reservedWords = cReserved
+            comments='//':@VM:'/*'          ;! crude for now
+            comments<-1>=@VM:'*/' ;! end of comment
+        CASE 1
+            comments=COMMENT
     END CASE
     commentlen = 0
     loc = 0
@@ -2554,7 +2573,7 @@ LAST.USED:!
     REPEAT
     WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
     RETURN
-SET.MSG:  !
+SET.MSG: !
     MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(PSTIME,'MTS')
 SET.MSG.DSP:
     MSG.DSP=MSG.DFLT:' (Col=   )'
@@ -2572,10 +2591,10 @@ SET.MSG.DSP:
         CRT CURS.RPL:
     END
     RETURN
-SETUP.SWITCH:       !
+SETUP.SWITCH: !
     CALL EB_SETUPSWITCH(HFLNM, SFLNM)
     RETURN
-SWITCH.FILE:        !
+SWITCH.FILE: !
     IF FLNM = HFLNM THEN
         FIL = SFIL
         FLNM = SFLNM
@@ -2618,12 +2637,12 @@ GET.CATL: !
         CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':
     END
     RETURN
-displayLine:        !
+displayLine: !
     CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-5
     GOSUB CRT.LN
     CRT @(COL-1,ROW):
     RETURN
-PARSE.CATL:         !
+PARSE.CATL: !
     CAT.OPTIONS = FLNM.CAT.OPTIONS
 !    IF LEN(CAT.OPTIONS) THEN
 !        READ CAT.OPTIONS FROM FG_EB.PARAMS,FLNM:'_':PROG:'_lib' ELSE CAT.OPTIONS = FLNM.CAT.OPTIONS
@@ -2664,7 +2683,7 @@ DO_UNDO:
     SCR.UD = 1
     CALL EB_REFRESH
     RETURN
-WRAPUP:   !
+WRAPUP: !
     IF MOD(FG_STERM,3) THEN
         CALL EB_STERM.MENU('EB.MENU','','',-1,'')
         CALL EB_AT.WINDOW.CLOSE(1)
