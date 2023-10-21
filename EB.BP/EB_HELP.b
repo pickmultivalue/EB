@@ -25,30 +25,30 @@ MAIN$:!
 !            CRT 'You are at ':WCNT:' of ':dc:' items'
 !            CRT
 !        END
-            CRT INDENT:'. - prompt for members of a variable structure (non-basic code)'
-            CRT INDENT:'A - insert date/time stamp'
-            CRT INDENT:'B - Show errors from last compile'
-            CRT INDENT:'C - Compare current source with another program'
-            CRT INDENT:'D - Duplicate line above'
-            CRT INDENT:'E - EDit record (using ED)'
-            CRT INDENT:'F - Format (indent)'
-            CRT INDENT:'G - Toggle whether TABs are used or SPACEs'
-            CRT INDENT:'H - Hex mode toggle'
-            CRT INDENT:'I - (Perforce Integration specific)'
-            CRT INDENT:'K - Insert key of current record'
-            CRT INDENT:'M - Merge'
-            CRT INDENT:'N - Not Used'
-            CRT INDENT:'O - Move to file (warning drops you out)'
-            CRT INDENT:'P - Print'
-            CRT INDENT:'R - Reset record to initial edit state'
-            CRT INDENT:'S - Swap/Convert current line'
-            CRT INDENT:'T - Rotate AM/VM layout'
-            CRT INDENT:'U - Unindent'
-            CRT INDENT:'V - Edit Values'
-            CRT INDENT:'W - Save and keep editing'
-            CRT INDENT:'    (e.g. LOCATE->INS; READ<->WRITE; FOR...->FOR...STEP-1;...and many more)'
-            CRT INDENT:'X - Toggle 80/132 view'
-            CRT INDENT:'Z - Record size'
+            CRT INDENT:'[F2] - prompt for members of a variable structure (non-basic code)'
+            CRT INDENT:'A    - insert date/time stamp'
+            CRT INDENT:'B    - Show errors from last compile'
+            CRT INDENT:'C    - Compare current source with another program'
+            CRT INDENT:'D    - Duplicate line above'
+            CRT INDENT:'E    - EDit record (using ED)'
+            CRT INDENT:'F    - Format (indent)'
+            CRT INDENT:'G    - Toggle whether TABs are used or SPACEs'
+            CRT INDENT:'H    - Hex mode toggle'
+            CRT INDENT:'I    - (Perforce Integration specific)'
+            CRT INDENT:'K    - Insert key of current record'
+            CRT INDENT:'M    - Merge'
+            CRT INDENT:'N    - Not Used'
+            CRT INDENT:'O    - Move to file (warning drops you out)'
+            CRT INDENT:'P    - Print'
+            CRT INDENT:'R    - Reset record to initial edit state'
+            CRT INDENT:'S    - Swap/Convert current line'
+            CRT INDENT:'       (e.g. LOCATE   ->INS; READ<->WRITE; FOR...->FOR...STEP-1;...and many more)'
+            CRT INDENT:'T    - Rotate AM/VM layout'
+            CRT INDENT:'U    - Unindent'
+            CRT INDENT:'V    - Edit Values'
+            CRT INDENT:'W    - Save and keep editing'
+            CRT INDENT:'X    - Toggle 80/132 view'
+            CRT INDENT:'Z    - Record size'
             CRT
             CRT
             CRT INDENT:'Press any key...':
@@ -61,7 +61,7 @@ MAIN$:!
             CRT
             CRT INDENT:'General syntax:'
             CRT
-            CRT INDENT:'{[A{[+,-]},V,C,X];}{^}search string{$}'
+            CRT INDENT:'{[A{[+,-]},I,V,C,X];}{^}search string{$}'
             CRT
             CRT INDENT:'//     - find next logical group delimiter (e.g. END, END ELSE, WHILE, UNTIL, })'
             CRT INDENT:'\\     - find previous logical group delimiter'
@@ -69,6 +69,7 @@ MAIN$:!
             CRT INDENT:'opts: (preceded by ";")'
             CRT
             CRT INDENT:'A      - all occurrences'
+            CRT INDENT:'I      - case insensitive search'
             CRT INDENT:'V      - find matching variable names only'
             CRT INDENT:'C      - search string must be a series of 3 digits which will be converter to CHAR(nnn)'
             CRT INDENT:'X      - search string can be a valid REGEX expression (non Windows)'
@@ -165,70 +166,69 @@ MAIN$:!
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)
-            IF accuterm THEN
-                lword = DOWNCASE(WORD)
-                READV help_url FROM FG_EB.CONTROL,'jbasedoc_url',1 ELSE
-                    help_url = 'https://docs.zumasys.com/jbase/jbc'
-                END
-                READV word_url FROM FG_EB.CONTROL,'jbc_':lword,1 ELSE word_url = lword:'/#':lword
-                URL = help_url:'/':word_url
-                EXECUTE @IM:'kcurl ':URL:' 2>&1' CAPTURING io
-                FG_ACT.CODE=FALSE
-                IF NOT(INDEX(io, 'Phil Collins', 1)) THEN
-                    CRT @ESC:CHAR(2):'<':URL:@CR:
-                    OS.HELP = @TRUE
-                END
-            END ELSE
-                EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
-                IF LEN(list) EQ 0 THEN
-                    EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
-                END
-                loc=0
-                manpages=''
-                FWORD=UPCASE(WORD)    ;!:'()'
-                LOOP
-                    REMOVE line FROM list AT loc SETTING delim
-                    line=SWAP(line,', ',@VM)
-                    FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
-                        FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
+            IF @FALSE THEN
+                IF accuterm THEN
+                    lword = DOWNCASE(WORD)
+                    READV help_url FROM FG_EB.CONTROL,'jbasedoc_url',1 ELSE
+                        help_url = 'https://docs.zumasys.com/jbase/jbc'
                     END
-                    IF POS THEN
-                        vol=OCONV(FIELD(line,'(',2),'MCN')
-                        IF LEN(vol) THEN
-                            POS=INDEX(line,vol,1)
-                            vol=FIELD(line[POS,9],')',1)
-                            LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
-                                INS vol BEFORE manpages<pos>
-                            END
+                    READV word_url FROM FG_EB.CONTROL,'jbc_':lword,1 ELSE word_url = lword:'/#':lword
+                    URL = help_url:'/':word_url
+                    EXECUTE @IM:'kcurl ':URL:' 2>&1' CAPTURING io
+                    FG_ACT.CODE=FALSE
+                    IF NOT(INDEX(io, 'Phil Collins', 1)) THEN
+                        CRT @ESC:CHAR(2):'<':URL:@CR:
+                        OS.HELP = @TRUE
+                    END
+                END ELSE
+                    EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
+                    IF LEN(list) EQ 0 THEN
+                        EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
+                    END
+                    loc=0
+                    manpages=''
+                    FWORD=UPCASE(WORD)    ;!:'()'
+                    LOOP
+                        REMOVE line FROM list AT loc SETTING delim
+                        line=SWAP(line,', ',@VM)
+                        FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
+                            FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
                         END
-                        CRT @(-1):
-                        EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
-                        OS.HELP=TRUE
-                        delim = @FALSE
-                    END
-                WHILE delim DO REPEAT
+                        IF POS THEN
+                            vol=OCONV(FIELD(line,'(',2),'MCN')
+                            IF LEN(vol) THEN
+                                POS=INDEX(line,vol,1)
+                                vol=FIELD(line[POS,9],')',1)
+                                LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
+                                    INS vol BEFORE manpages<pos>
+                                END
+                            END
+                            CRT @(-1):
+                            EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
+                            OS.HELP=TRUE
+                            delim = @FALSE
+                        END
+                    WHILE delim DO REPEAT
+                END
             END
             IF NOT(OS.HELP) THEN
-                IF LEN(EBJSHOW('-c man')) THEN
+                IF LEN(EBJSHOW('-c man')) AND LEN(WORD) THEN
                     CRT @(-1):
                     IF DIR_DELIM_CH = '/' THEN
                         mandir = '-M $JBCRELEASEDIR/man '
                     END ELSE mandir = ''
                     EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
                     notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
-                    IF notfound THEN
-                        CRT list
-                        CRT
-                    END ELSE
+                    IF NOT(notfound) THEN
                         EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
                         K.HELP = '%EB_HELP*':WORD:'%'
                         WRITE help ON JET.PASTE,K.HELP
                         EXECUTE 'EB JET.PASTE ':K.HELP
                         DELETE JET.PASTE,K.HELP
+                        CRT
+                        CRT 'Press return or F1 for EB help':
+                        CALL EB_GET_INPUT(CHR, CHR.NBR)
                     END
-                    CRT
-                    CRT 'Press return or F1 for EB help':
-                    CALL EB_GET_INPUT(CHR, CHR.NBR)
                 END ELSE FG_ACT.CODE = FG_HLP.CODE
                 IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
                 FG_ACT.CODE=FALSE
@@ -246,21 +246,37 @@ MAIN$:!
     IF accuterm THEN CRT ESC:CHAR(2):1:
     RETURN
 DisplayEBcmds:
-    CRT @(-1):'EB commands...'
+    CRT @(-1):'EB Help'
     CRT
-    hash = 'L#30 ':
+    hash = 'L#20 ':
+    minihash = 'L#6 ':
+    mainhelp = 'Editing programs items with EB can be initiated as follows:'
+    mainhelp<-1> = \\
+    mainhelp<-1> = \EB\ hash:\Popup-list of previous sessions will display\
+    mainhelp<-1> = \\ hash:\ - The [F8] key can be used to filter\
+    mainhelp<-1> = \EB\ hash:\Edit last file/program\
+    mainhelp<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
+    mainhelp<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
+    mainhelp<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \
+    mainhelp<-1> = \EBFIND\ hash:\Search for items with matching text and invoke EB\
+    mainhelp<-1> = \\
+    mainhelp<-1> = \Editing tips:\
+    mainhelp<-1> = \- pressing <enter> in the middle of a line will split the line\
+    mainhelp<-1> = \- pressing <del> at the end of a line will joine the line below\
+
     keyboard = ''
+    keyboard<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11)) minihash:\(available for [F2], [F6], [F8] and ctrl-R)\
     keyboard<-1> = 'Save/accept' hash:FNKEYTRANS(EB_CHARS(2))
-    keyboard<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3))
+    keyboard<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3)) minihash:\(press twice to exit)\
+    keyboard<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
     keyboard<-1> = 'Refresh' hash:FNKEYTRANS(EB_CHARS(6))
     keyboard<-1> = 'Search' hash:FNKEYTRANS(EB_CHARS(5))
-    keyboard<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
-    keyboard<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11))
-    keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
-    keyboard<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
-    keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
     keyboard<-1> = 'Reverse search' hash:FNKEYTRANS(EB_CHARS(99))
-    general = SORT(keyboard)
+    keyboard<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
+    keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
+    keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
+
+    general = keyboard
     keyboard = ''
     keyboard<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB_CHARS(75))
     keyboard<-1> = 'Zoom' hash:FNKEYTRANS(EB_CHARS(55))
@@ -281,9 +297,9 @@ DisplayEBcmds:
     keyboard<-1> = 'Start of line' hash:FNKEYTRANS(EB_CHARS(41))
     keyboard<-1> = 'Back tab' hash:FNKEYTRANS(EB_CHARS(45))
     keyboard<-1> = 'Goto line/label' hash:FNKEYTRANS(EB_CHARS(70))
-    navigation = SORT(keyboard)
+    navigation = keyboard
     keyboard = ''
-    keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10))
+    keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10)) minihash:\(press twice to select current line)\
     keyboard<-1> = 'Lower case' hash:FNKEYTRANS(EB_CHARS(26))
     keyboard<-1> = 'Toggle case' hash:FNKEYTRANS(EB_CHARS(27))
     keyboard<-1> = 'Tab' hash:FNKEYTRANS(EB_CHARS(32))
@@ -318,11 +334,16 @@ DisplayEBcmds:
 !    keyboard<-1> = 'FUNC.CHARS' hash:FNKEYTRANS(EB_CHARS(97))
 !    keyboard<-1> = 'FUNC.VALS' hash:FNKEYTRANS(EB_CHARS(98))
 !    keyboard<-1> = 'MNENOMICS' hash:FNKEYTRANS(EB_CHARS(100))
-    editing = SORT(keyboard)
-    uline = STR('=',50)
+    editing = keyboard
+    uline = STR('=',70)
     keyboard = ''
+    keyboard<-1> = ''
+    keyboard<-1> = uline:@AM:'Main':@AM:uline:@AM:mainhelp
+    keyboard<-1> = ''
     keyboard<-1> = uline:@AM:'General':@AM:uline:@AM:general
+    keyboard<-1> = ''
     keyboard<-1> = uline:@AM:'Navigation':@AM:uline:@AM:navigation
+    keyboard<-1> = ''
     keyboard<-1> = uline:@AM:'Editing':@AM:uline:@AM:editing
     nbr_keys = DCOUNT(keyboard, @AM)
     FOR i = 1 TO nbr_keys
