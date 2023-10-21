@@ -86,6 +86,7 @@ MAIN$:!
             FG_ACT.CODE=FG_SEL.CODE
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN] NE COMMENT<1,1,1>
         END
+        NEW.D.L = NO.D.L
         IF Z [1,1] EQ '^' THEN
             ROTATE = ''
             INDROW--
@@ -93,7 +94,7 @@ MAIN$:!
                 ROTATE<J> = REC<INDROW+ROW+J>
             NEXT J
             IF Z EQ '^' THEN
-                CALL EB_ROTATE(ROTATE)
+                CALL EB_ROTATE(ROTATE, NEW.D.L)
             END ELSE
                 path = EBGETHOME()
                 Y ='.PASTE*':FG_LOGNAME:'*'
@@ -115,6 +116,20 @@ MAIN$:!
         END
         TABLEN=ITAB<1,1>
         MODIFY=INDEX('!<>^',Z,1) AND LEN(Z)
+        IF MODIFY AND NEW.D.L NE NO.D.L THEN
+            IF NEW.D.L GT NO.D.L THEN
+                NL = NEW.D.L - 1
+                FOR J = NO.D.L TO NL
+                    INS '' BEFORE REC<INDROW+ROW>
+                NEXT J
+            END ELSE
+                NL = NO.D.L - 1
+                FOR J = NEW.D.L TO NL
+                    DEL REC<INDROW+ROW>
+                NEXT J
+            END
+            NO.D.L = NEW.D.L
+        END
         FOR J=1 TO NO.D.L
             IF MODIFY THEN
                 LINE=REC<INDROW+ROW>

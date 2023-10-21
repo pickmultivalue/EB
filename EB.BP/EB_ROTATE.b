@@ -1,4 +1,4 @@
-    SUBROUTINE EB_ROTATE(DYNARRAY)
+    SUBROUTINE EB_ROTATE(DYNARRAY, NO.D.L)
 ! Subroutine to rotate dynamic array on an x-y axis
     EQU AM TO CHAR(254),VM TO CHAR(253)
     ACNT=DCOUNT(DYNARRAY,AM)
@@ -15,4 +15,5 @@
         NEXT V
     NEXT A
     DYNARRAY=NARRAY
+    NO.D.L = VCNT
     RETURN
