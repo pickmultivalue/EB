@@ -1,0 +1,9 @@
+Enter a number for quick reusable paste items
+Enter a name for more permanent paste items
+
+Special commands:
+
+!ıcomment out block
+>ıindent block
+<ıunindent block
+^ırotate block

@@ -1,0 +1,30 @@
+General syntax:
+
+{[A{[+,-]},I,V,C,X];}{^}search string{$}
+
+///ýfind next logical group delimiter (e.g. END, END ELSE, WHILE, UNTIL, })
+\\\ýfind previous logical group delimiter
+
+opts: (preceded by ";")
+
+Aýall occurrences
+Iýcase insensitive search
+Výfind matching variable names only
+Cýsearch string must be a series of 3 digits which will be converter to CHAR(nnn)
+Xýsearch string can be a valid REGEX expression (non Windows)
+
+The + and - are options to use with A to limit forward or backward only results
+
+The search string can optionally start with ^ to denote match from the start of a line
+Additionally the search string can optionally end with $ to denote match from the end of a line
+NOTE: An alternative use to ^ is ^nnn to convert to CHAR(nnn)
+
+Examples	u
+* Find all occurrences of the variable "MY.VAR" starting at the current position
+> AV+;MY.VAR
+
+* Find a label starting with MAIN
+> ^MAIN
+
+* Find the next line containing COL or ROW
+> X;COL|ROW

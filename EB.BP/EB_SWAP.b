@@ -9,6 +9,7 @@
     ALPHA.MATCH="0X2N' '3A' '4N0X"
     LONG.MATCH="0X2N'/'2N'/'4N0X"
     SHORT.MATCH="0X2N'/'2N'/'2N0X"
+    WHOLENUM.MATCH="1N0N":@VM:"1N0N' '0X"
 !
 ! Get indentation
 !
@@ -274,11 +275,19 @@
         POS=1
         RETURN
     END
-    IF STMP MATCHES SHORT.MATCH THEN        ;! convert to ALPHA.DATE
+    IF STMP MATCHES SHORT.MATCH THEN        ;! convert to internal
         MTCH=SWAP(SHORT.MATCH,'0X','')
         L=LEN(OCONV(DATE(),'D2/'))
         GOSUB GET.DATE
-        STMP=SWAP(STMP,SHORT.DATE,ALPHA.DATE)
+        STMP=SWAP(STMP,SHORT.DATE,DTE)
+        STMP=INDENT:STMP:SUFFIX
+        POS=1
+        RETURN
+    END
+    IF TRIM(STMP) MATCHES WHOLENUM.MATCH THEN        ;! convert to ALPHA.DATE
+        SUFFIX = ' ':FIELD(STMP,' ', 2, 999)
+        STMP = STMP[1, COL1()-1]
+        STMP = OCONV(STMP, 'D')
         STMP=INDENT:STMP:SUFFIX
         POS=1
         RETURN

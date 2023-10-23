@@ -1,0 +1,45 @@
+General syntax:
+
+R{opts}/<old>/<new>{/FI}
+S{opts}/<new>/<old>{/FI}
+
+The / delimiter can be any non alphanumeric character
+
+opts:
+
+U or Aýall occurrences
+Výreplace matching variable names only
+Cýconfirm each replacement
+
+Eýend of record
+ý(this is typically used in a range e.g. R5-E/old/new replaces from line 5 to the end)
+
+The optional /FI at the end will file away the record then replay the
+search and replace for the next record (if running from an item list).
+
+A single number "n" means replace n lines from the current line
+Alternatively you can enter line number ranges (e.g. R10-20/old/new)
+
+A complex example	u
+
+R1-EVU/I/ILOOP wil replace all occurrences of I with ILOOP only if I is a variable
+
+Wildcards	u
+
+^nnn can be used to represent CHAR(nnn) (must be 3 numerics)
+
+You can use @n (i.e. @1, @2, etc) to mask any number of characters in both the search and replace
+
+e.g. R/READ @1 FROM @2,@3 @4/CALL READSUB(@2, @3, @1)
+
+A special @ replace is  which will replace a with a sequential number
+e.g. R99/@1/EQU A.@1 TO A.ARRAY(1) is an easy way to generate equates
+
+The R is optional for readability but is useful for reversing the last replace thus:
+
+ýas each search/replace is held in a history file, by default the next time
+ýyou do a search/replace it defaults to the one just executed.
+ýIf you press <backspace> at the first character position this will prevent
+ýthe input routine from clearing the entry (as is normal when entering a value)
+ýYou can then overtype the R with an S (think of it as (S)witch) which then
+ýtreats the 2 strings in reverse

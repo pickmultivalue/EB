@@ -11,6 +11,9 @@
 MAIN$:!
 !
     accuterm = @FALSE
+    hash = 'L#25 ':
+    minihash = 'L#6 ':
+    uline = STR('=',78)
     IF NOT(GETENV('EBACCUTERM',accuterm)) THEN accuterm = @TRUE
     IF accuterm THEN CRT ESC:CHAR(2):0:
     ksh = @IM:'k'
@@ -21,148 +24,43 @@ MAIN$:!
             dc = COUNT(FG_SENTENCE, ' ') - 1
             CRT @(-1):'Options Help'
             CRT
-!        IF WCNT GT dc THEN
-!            CRT 'You are at ':WCNT:' of ':dc:' items'
-!            CRT
-!        END
-            CRT INDENT:'[F2] - prompt for members of a variable structure (non-basic code)'
-            CRT INDENT:'A    - insert date/time stamp'
-            CRT INDENT:'B    - Show errors from last compile'
-            CRT INDENT:'C    - Compare current source with another program'
-            CRT INDENT:'D    - Duplicate line above'
-            CRT INDENT:'E    - EDit record (using ED)'
-            CRT INDENT:'F    - Format (indent)'
-            CRT INDENT:'G    - Toggle whether TABs are used or SPACEs'
-            CRT INDENT:'H    - Hex mode toggle'
-            CRT INDENT:'I    - (Perforce Integration specific)'
-            CRT INDENT:'K    - Insert key of current record'
-            CRT INDENT:'M    - Merge'
-            CRT INDENT:'N    - Not Used'
-            CRT INDENT:'O    - Move to file (warning drops you out)'
-            CRT INDENT:'P    - Print'
-            CRT INDENT:'R    - Reset record to initial edit state'
-            CRT INDENT:'S    - Swap/Convert current line'
-            CRT INDENT:'       (e.g. LOCATE   ->INS; READ<->WRITE; FOR...->FOR...STEP-1;...and many more)'
-            CRT INDENT:'T    - Rotate AM/VM layout'
-            CRT INDENT:'U    - Unindent'
-            CRT INDENT:'V    - Edit Values'
-            CRT INDENT:'W    - Save and keep editing'
-            CRT INDENT:'X    - Toggle 80/132 view'
-            CRT INDENT:'Z    - Record size'
-            CRT
-            CRT
-            CRT INDENT:'Press any key...':
-            CALL EB_GET_INPUT(CHR, CHR.NBR)
-            IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
-            FG_ACT.CODE=FALSE
-            OS.HELP=TRUE
+            hkey = 'EB_opts.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE WORD='EBSEARCH'
             CRT @(-1):'Search Help'
             CRT
-            CRT INDENT:'General syntax:'
-            CRT
-            CRT INDENT:'{[A{[+,-]},I,V,C,X];}{^}search string{$}'
-            CRT
-            CRT INDENT:'//     - find next logical group delimiter (e.g. END, END ELSE, WHILE, UNTIL, })'
-            CRT INDENT:'\\     - find previous logical group delimiter'
-            CRT
-            CRT INDENT:'opts: (preceded by ";")'
-            CRT
-            CRT INDENT:'A      - all occurrences'
-            CRT INDENT:'I      - case insensitive search'
-            CRT INDENT:'V      - find matching variable names only'
-            CRT INDENT:'C      - search string must be a series of 3 digits which will be converter to CHAR(nnn)'
-            CRT INDENT:'X      - search string can be a valid REGEX expression (non Windows)'
-            CRT
-            CRT INDENT:'The + and - are options to use with A to limit forward or backward only results'
-            CRT
-            CRT INDENT:'The search string can optionally start with ^ to denote match from the start of a line'
-            CRT INDENT:'Additionally the search string can optionally end with $ to denote match from the end of a line'
-            CRT INDENT:'NOTE: An alternative use to ^ is ^nnn to convert to CHAR(nnn)'
-            CRT
-            CRT INDENT:'e.g. Find all occurrences of the variable "MY.VAR" starting at the current position'
-            CRT INDENT:'     AV+;MY.VAR'
-            CRT
-            CRT INDENT:'     Find a label starting with MAIN'
-            CRT INDENT:'     ^MAIN'
-            CRT
-            CRT INDENT:'     Find the next line containing COL or ROW'
-            CRT INDENT:'     X;COL|ROW'
-            CRT
-            CRT INDENT:'Press any key...':
-            CALL EB_GET_INPUT(CHR, CHR.NBR)
-            IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
-            FG_ACT.CODE=FALSE
-            OS.HELP=TRUE
+            hkey = 'EB_search.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE WORD='EBREPLACE'
             CRT @(-1):'Replace Help'
             CRT
-            CRT INDENT:'General syntax:'
-            CRT INDENT:'R{opts}/<old>/<new>'
-            CRT INDENT:'S{opts}/<new>/<old>'
-            CRT
-            CRT INDENT:'The / delimiter can be any non alphanumeric character'
-            CRT
-            CRT INDENT:'opts:'
-            CRT
-            CRT INDENT:'U or A - all occurrences'
-            CRT INDENT:'V      - replace matching variable names only'
-            CRT INDENT:'C      - confirm each replacement'
-            CRT
-            CRT INDENT:'E      - end of record'
-            CRT INDENT:'         (this is typically used in a range e.g. R5-E/old/new replaces from line 5 to the end)'
-            CRT
-            CRT INDENT:'A single number "n" means replace n lines from the current line'
-            CRT INDENT:'Alternatively you can enter line number ranges (e.g. R10-20/old/new)'
-            CRT
-            CRT INDENT:'A complex example:'
-            CRT
-            CRT INDENT:'R1-EVU/I/ILOOP wil replace all occurrences of I with ILOOP only if I is a variable'
-            CRT
-            CRT INDENT:'Wildcards'
-            CRT
-            CRT INDENT:'^nnn can be used to represent CHAR(nnn) (must be 3 numerics)'
-            CRT
-            CRT INDENT:'You can use @n (i.e. @1, @2, etc) to mask any number of characters in both the search and replace'
-            CRT
-            CRT INDENT:'e.g. R/READ @1 FROM @2,@3 @4/CALL READSUB(@2, @3, @1)'
-            CRT
-            CRT INDENT:'A special @ replace is  which will replace a with a sequential number'
-            CRT INDENT:'e.g. R99/@1/EQU A.@1 TO A.ARRAY(1) is an easy way to generate equates'
-            CRT
-            CRT INDENT:'The R is optional for readability but is useful for reversing the last replace thus:'
-            CRT
-            CRT INDENT:'- as each search/replace is held in a history file, by default the next time'
-            CRT INDENT:'  you do a search/replace it defaults to the one just executed.'
-            CRT INDENT:'  If you press <backspace> at the first character position this will prevent'
-            CRT INDENT:'  the input routine from clearing the entry (as is normal when entering a value)'
-            CRT INDENT:'  You can then overtype the R with an S (think of it as (S)witch) which then'
-            CRT INDENT:'  treats the 2 strings in reverse'
-            CRT
-            CRT
-            CRT
-            CRT INDENT:'Press any key...':
-            CALL EB_GET_INPUT(CHR, CHR.NBR)
-            IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
-            FG_ACT.CODE=FALSE
-            OS.HELP=TRUE
+            hkey = 'EB_replace.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE WORD='EBCUT'
             CRT @(-1):'Cut/Paste Help'
             CRT
-            CRT INDENT:'Enter a number for quick reusable paste items'
-            CRT INDENT:'Enter a name for more permanent paste items'
-            CRT INDENT:'Special commands:'
-            CRT
-            CRT INDENT:'! - comment out block'
-            CRT INDENT:'> - indent block'
-            CRT INDENT:'< - unindent block'
-            CRT INDENT:'^ - rotate block'
-            CRT
-            CRT INDENT:'Press any key...':
-            CALL EB_GET_INPUT(CHR, CHR.NBR)
-            IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
-            FG_ACT.CODE=FALSE
-            OS.HELP=TRUE
+            hkey = 'EB_cut.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)
@@ -248,121 +146,147 @@ MAIN$:!
 DisplayEBcmds:
     CRT @(-1):'EB Help'
     CRT
-    hash = 'L#25 ':
-    minihash = 'L#6 ':
-    READ keyboard FROM FG_EB.PARAMS, 'EB_help.txt' THEN
+    READ helptext FROM FG_EB.PARAMS, 'EB_help.txt' THEN
         GOSUB parse_help
     END ELSE
-        keyboard = 'Editing programs items with EB can be initiated as follows:'
-        keyboard<-1> = \\
-        keyboard<-1> = \EB\ hash:\Popup-list of previous sessions will display\
-        keyboard<-1> = \\ hash:\ - The [F8] key can be used to filter\
-        keyboard<-1> = \EB\ hash:\Edit last file/program\
-        keyboard<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
-        keyboard<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
-        keyboard<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \
-        keyboard<-1> = \EBFIND\ hash:\Search for items with matching text and invoke EB\
-        keyboard<-1> = \\
-        keyboard<-1> = \Editing tips:\
-        keyboard<-1> = \- pressing <enter> in the middle of a line will split the line\
-        keyboard<-1> = \- pressing <del> at the end of a line will joine the line below\
+        helptext = 'Editing programs items with EB can be initiated as follows:'
+        helptext<-1> = \\
+        helptext<-1> = \EB\ hash:\Popup-list of previous sessions will display\
+        helptext<-1> = \\ hash:\ - The [F8] key can be used to filter\
+        helptext<-1> = \EB\ hash:\Edit last file/program\
+        helptext<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
+        helptext<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
+        helptext<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \
+        helptext<-1> = \EBFIND\ hash:\Search for items with matching text and invoke EB\
+        helptext<-1> = \\
+        helptext<-1> = \Editing tips:\
+        helptext<-1> = \- pressing <enter> in the middle of a line will split the line\
+        helptext<-1> = \- pressing <del> at the end of a line will joine the line below\
     END
-    mainhelp = keyboard
+    mainhelp = helptext
 
-    READ keyboard FROM FG_EB.PARAMS,'EB_common.txt' THEN
+    READ helptext FROM FG_EB.PARAMS,'EB_common.txt' THEN
         GOSUB parse_help
     END ELSE
-        keyboard = ''
-        keyboard<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11)) minihash:\(available for [F2], [F6], [F8] and ctrl-R)\
-        keyboard<-1> = 'Save/accept' hash:FNKEYTRANS(EB_CHARS(2))
-        keyboard<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3)) minihash:\(press twice to exit)\
-        keyboard<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
-        keyboard<-1> = 'Refresh' hash:FNKEYTRANS(EB_CHARS(6))
-        keyboard<-1> = 'Search' hash:FNKEYTRANS(EB_CHARS(5))
-        keyboard<-1> = 'Reverse search' hash:FNKEYTRANS(EB_CHARS(99))
-        keyboard<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
-        keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
-        keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
+        helptext = ''
+        helptext<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11)) minihash:\(available for [F2], [F6], [F8] and ctrl-R)\
+        helptext<-1> = 'Save/accept' hash:FNKEYTRANS(EB_CHARS(2))
+        helptext<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3)) minihash:\(press twice to exit)\
+        helptext<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
+        helptext<-1> = 'Refresh' hash:FNKEYTRANS(EB_CHARS(6))
+        helptext<-1> = 'Search' hash:FNKEYTRANS(EB_CHARS(5))
+        helptext<-1> = 'Reverse search' hash:FNKEYTRANS(EB_CHARS(99))
+        helptext<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
+        helptext<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
+        helptext<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
     END
-    general = keyboard
-    READ keyboard FROM FG_EB.PARAMS,'EB_navigation.txt' THEN
+    general = helptext
+    READ helptext FROM FG_EB.PARAMS,'EB_navigation.txt' THEN
         GOSUB parse_help
     END ELSE
-        keyboard = ''
-        keyboard<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB_CHARS(75))
-        keyboard<-1> = 'Zoom' hash:FNKEYTRANS(EB_CHARS(55))
-        keyboard<-1> = 'Previous field' hash:FNKEYTRANS(EB_CHARS(4))
-        keyboard<-1> = 'Page Up' hash:FNKEYTRANS(EB_CHARS(51))
-        keyboard<-1> = 'Page Down' hash:FNKEYTRANS(EB_CHARS(52))
-        keyboard<-1> = 'Bookmark' hash:FNKEYTRANS(EB_CHARS(7))
-!    keyboard<-1> = 'Next field' hash:FNKEYTRANS(EB_CHARS(9))
-        keyboard<-1> = 'Prev word' hash:FNKEYTRANS(EB_CHARS(28))
-        keyboard<-1> = 'End of line' hash:FNKEYTRANS(EB_CHARS(29))
-        keyboard<-1> = 'Next word' hash:FNKEYTRANS(EB_CHARS(30))
-        keyboard<-1> = 'Leftarrow' hash:FNKEYTRANS(EB_CHARS(31))
-        keyboard<-1> = 'Downarrow' hash:FNKEYTRANS(EB_CHARS(33))
-        keyboard<-1> = 'Uparrow' hash:FNKEYTRANS(EB_CHARS(34))
-        keyboard<-1> = 'Rightarrow' hash:FNKEYTRANS(EB_CHARS(35))
-        keyboard<-1> = 'Next occurrence' hash:FNKEYTRANS(EB_CHARS(36))
-        keyboard<-1> = 'Top of screen/record' hash:FNKEYTRANS(EB_CHARS(38))
-        keyboard<-1> = 'Start of line' hash:FNKEYTRANS(EB_CHARS(41))
-        keyboard<-1> = 'Back tab' hash:FNKEYTRANS(EB_CHARS(45))
-        keyboard<-1> = 'Goto line/label' hash:FNKEYTRANS(EB_CHARS(70))
+        helptext = ''
+        helptext<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB_CHARS(75))
+        helptext<-1> = 'Zoom' hash:FNKEYTRANS(EB_CHARS(55))
+        helptext<-1> = 'Previous field' hash:FNKEYTRANS(EB_CHARS(4))
+        helptext<-1> = 'Page Up' hash:FNKEYTRANS(EB_CHARS(51))
+        helptext<-1> = 'Page Down' hash:FNKEYTRANS(EB_CHARS(52))
+        helptext<-1> = 'Bookmark' hash:FNKEYTRANS(EB_CHARS(7))
+        helptext<-1> = 'Prev word' hash:FNKEYTRANS(EB_CHARS(28))
+        helptext<-1> = 'End of line' hash:FNKEYTRANS(EB_CHARS(29))
+        helptext<-1> = 'Next word' hash:FNKEYTRANS(EB_CHARS(30))
+        helptext<-1> = 'Leftarrow' hash:FNKEYTRANS(EB_CHARS(31))
+        helptext<-1> = 'Downarrow' hash:FNKEYTRANS(EB_CHARS(33))
+        helptext<-1> = 'Uparrow' hash:FNKEYTRANS(EB_CHARS(34))
+        helptext<-1> = 'Rightarrow' hash:FNKEYTRANS(EB_CHARS(35))
+        helptext<-1> = 'Next occurrence' hash:FNKEYTRANS(EB_CHARS(36))
+        helptext<-1> = 'Top of screen/record' hash:FNKEYTRANS(EB_CHARS(38))
+        helptext<-1> = 'Start of line' hash:FNKEYTRANS(EB_CHARS(41))
+        helptext<-1> = 'Back tab' hash:FNKEYTRANS(EB_CHARS(45))
+        helptext<-1> = 'Goto line/label' hash:FNKEYTRANS(EB_CHARS(70))
     END
-    navigation = keyboard
-    READ keyboard FROM FG_EB.PARAMS,'EB_editing.txt' THEN
+    navigation = helptext
+    READ helptext FROM FG_EB.PARAMS,'EB_editing.txt' THEN
         GOSUB parse_help
     END ELSE
-        keyboard = ''
-        keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10)) minihash:\(press twice to select current line)\
-        keyboard<-1> = 'Lower case' hash:FNKEYTRANS(EB_CHARS(26))
-        keyboard<-1> = 'Toggle case' hash:FNKEYTRANS(EB_CHARS(27))
-        keyboard<-1> = 'Tab' hash:FNKEYTRANS(EB_CHARS(32))
-        keyboard<-1> = 'Paste' hash:FNKEYTRANS(EB_CHARS(37))
-        keyboard<-1> = 'Toggle INS/OVR' hash:FNKEYTRANS(EB_CHARS(39))
-        keyboard<-1> = 'Truncate/cut' hash:FNKEYTRANS(EB_CHARS(42))
-        keyboard<-1> = 'Undo' hash:FNKEYTRANS(EB_CHARS(43))
-        keyboard<-1> = 'Redo' hash:FNKEYTRANS(EB_CHARS(12))
-        keyboard<-1> = 'Insert line' hash:FNKEYTRANS(EB_CHARS(44))
-        keyboard<-1> = 'Insert space' hash:FNKEYTRANS(EB_CHARS(46))
-        keyboard<-1> = 'Delete line' hash:FNKEYTRANS(EB_CHARS(47))
-        keyboard<-1> = 'Delete char' hash:FNKEYTRANS(EB_CHARS(48))
-        keyboard<-1> = 'Delete word' hash:FNKEYTRANS(EB_CHARS(49))
-        keyboard<-1> = 'Comment/select toggle' hash:FNKEYTRANS(EB_CHARS(58))
-        keyboard<-1> = 'Backspace' hash:FNKEYTRANS(EB_CHARS(66))
+        helptext = ''
+        helptext<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10)) minihash:\(press twice to select current line)\
+        helptext<-1> = 'Lower case' hash:FNKEYTRANS(EB_CHARS(26))
+        helptext<-1> = 'Toggle case' hash:FNKEYTRANS(EB_CHARS(27))
+        helptext<-1> = 'Tab' hash:FNKEYTRANS(EB_CHARS(32))
+        helptext<-1> = 'Paste' hash:FNKEYTRANS(EB_CHARS(37))
+        helptext<-1> = 'Toggle INS/OVR' hash:FNKEYTRANS(EB_CHARS(39))
+        helptext<-1> = 'Truncate/cut' hash:FNKEYTRANS(EB_CHARS(42))
+        helptext<-1> = 'Undo' hash:FNKEYTRANS(EB_CHARS(43))
+        helptext<-1> = 'Redo' hash:FNKEYTRANS(EB_CHARS(12))
+        helptext<-1> = 'Insert line' hash:FNKEYTRANS(EB_CHARS(44))
+        helptext<-1> = 'Insert space' hash:FNKEYTRANS(EB_CHARS(46))
+        helptext<-1> = 'Delete line' hash:FNKEYTRANS(EB_CHARS(47))
+        helptext<-1> = 'Delete char' hash:FNKEYTRANS(EB_CHARS(48))
+        helptext<-1> = 'Delete word' hash:FNKEYTRANS(EB_CHARS(49))
+        helptext<-1> = 'Comment/select toggle' hash:FNKEYTRANS(EB_CHARS(58))
+        helptext<-1> = 'Backspace' hash:FNKEYTRANS(EB_CHARS(66))
     END
-    editing = keyboard
-    uline = STR('=',78)
-    keyboard = ''
-    keyboard<-1> = ''
-    keyboard<-1> = uline:@AM:'Main':@AM:uline:@AM:mainhelp
-    keyboard<-1> = ''
-    keyboard<-1> = uline:@AM:'General':@AM:uline:@AM:general
-    keyboard<-1> = ''
-    keyboard<-1> = uline:@AM:'Navigation':@AM:uline:@AM:navigation
-    keyboard<-1> = ''
-    keyboard<-1> = uline:@AM:'Editing':@AM:uline:@AM:editing
-    nbr_keys = DCOUNT(keyboard, @AM)
-    FOR i = 1 TO nbr_keys
-        CRT INDENT:keyboard<i>
-        IF i = nbr_keys OR (MOD(i, PDEPTH-3) = 0) THEN
+    editing = helptext
+    helptext = ''
+    helptext<-1> = ''
+    helptext<-1> = uline:@AM:'Main':@AM:uline:@AM:mainhelp
+    helptext<-1> = ''
+    helptext<-1> = uline:@AM:'General':@AM:uline:@AM:general
+    helptext<-1> = ''
+    helptext<-1> = uline:@AM:'Navigation':@AM:uline:@AM:navigation
+    helptext<-1> = ''
+    helptext<-1> = uline:@AM:'Editing':@AM:uline:@AM:editing
+    GOSUB showhelp
+showhelp:
+    nbr_lines = DCOUNT(helptext, @AM)
+    FOR i = 1 TO nbr_lines
+        CRT INDENT:helptext<i>
+        IF i = nbr_lines OR (MOD(i, PDEPTH-3) = 0) THEN
             CRT
             CALL EB_GET_INPUT(CHR, CHR.NBR)
             IF FG_ACT.CODE = FG_ABT.CODE THEN RETURN
         END
     NEXT i
+    CRT
+    CRT INDENT:'Press any key...':
+    CALL EB_GET_INPUT(CHR, CHR.NBR)
+    IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
+    FG_ACT.CODE=FALSE
+    OS.HELP=TRUE
     RETURN
 parse_help:
-    dc = DCOUNT(keyboard, @AM)
+    dc = DCOUNT(helptext, @AM)
     ebcmatch = "'ebc_'1N0N"
-    FOR L = 1 TO dc
-        line = keyboard<L>
+    FOR L = dc TO 1 STEP -1
+        line = helptext<L>
         fkey = line<1,2,1>
         IF fkey MATCHES ebcmatch THEN
             line<1,2,1> = FNKEYTRANS(EB_CHARS(OCONV(line<1,2,1>, 'MCN')))
         END
-        IF LEN(line<1,2,2>) THEN line<1,2,1> = line<1,2,1> minihash
+        IF LEN(line<1,2,2>) THEN
+            hlen = FIELD(line<1,2,1>, TAB, 2)
+            IF hlen THEN
+                hlen = 'L#':hlen
+                line<1,2,1> = line<1,2,1>[1,COL1()-1]
+            END ELSE
+                hlen = minihash
+            END
+
+            line<1,2,1> = line<1,2,1> hlen
+        END
         IF LEN(line<1,2,1>) THEN line<1,1> = line<1,1> hash
-        keyboard<L> = line<1,1>:line<1,2,1>:line<1,2,2>
+        tabopt = FIELD(line<1,1>, TAB, 2)
+        underline = @FALSE
+        IF tabopt THEN
+            line<1,1> = line<1,1>[1, COL1()-1]
+            BEGIN CASE
+                CASE tabopt EQ 'u'
+                    underline = @TRUE
+            END CASE
+        END
+        helptext<L> = line<1,1>:line<1,2,1>:line<1,2,2>
+        IF underline THEN
+            INS STR('-', LEN(line<1,1>)) BEFORE helptext<L+1>
+        END
     NEXT L
     RETURN

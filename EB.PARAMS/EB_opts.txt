@@ -1,0 +1,36 @@
+[F2]ıprompt for members of a variable structure (non-basic code)
+ıor dynamic objects (jabba) class (if cursor is after the "->"
+
+Aıinsert date/time stamp
+BıShow errors from last compile
+CıCompare current source with another program
+DıDuplicate line above
+EıEDit record (using ED)
+FıFormat (indent)
+GıToggle whether TABs are used or SPACEs
+HıHex mode toggle
+Iı(Perforce Integration specific)
+KıInsert key of current record
+MıMerge
+NıNot Used
+OıMove to file (warning drops you out)
+PıPrint
+RıReset record to initial edit state
+SıSwap/Convert current line
+
+e.g.ıX=Y	15ü=> Y=X
+ıLOCATE	15ü=> INS BEFORE
+ıINS ..	15ü=> DEL
+ıREAD	15ü=> WRITE
+ıFOR...	15ü=> Reverse FOR...STEP-1
+ıIF	15ü=> CASE
+ıPROGRAM	15ü=> SUBROUTINE
+ıSUBROUTINE	15ü=> FUNCTION
+ıExternal Date toggle
+
+TıRotate AM/VM layout
+UıUnindent
+VıEdit Values
+WıSave and keep editing
+XıToggle 80/132 view
+ZıRecord size
