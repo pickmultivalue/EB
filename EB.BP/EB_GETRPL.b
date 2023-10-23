@@ -309,7 +309,7 @@ DisplayPrompt:
         IF ReplMode THEN
             ReplPrompt='Replace string'
         END ELSE
-            ReplPrompt='Search/Replace'
+            ReplPrompt='Search/Replace ([F1])'
         END
         CRT MSG.CLR:ReplPrompt:' ':
         ICOL=LEN(ReplPrompt)+1

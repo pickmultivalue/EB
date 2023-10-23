@@ -3,7 +3,7 @@ Enter a name for more permanent paste items
 
 Special commands:
 
-!ıcomment out block
+!ı{un}comment out block
 >ıindent block
 <ıunindent block
-^ırotate block
+^ırotate block (on an AM/VM perspective)

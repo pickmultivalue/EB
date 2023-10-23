@@ -43,7 +43,7 @@ MAIN$:!
             END
             SAVE.ACT=FG_ACT.CODE
             LOOP
-                CRT MSG.CLR:"Enter Paste Name or Number ":
+                CRT MSG.CLR:"Enter Paste Name or Number (F1) ":
                 L=20; Z=''
                 GOSUB INPT
             WHILE FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO

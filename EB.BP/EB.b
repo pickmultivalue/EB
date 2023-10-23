@@ -1683,7 +1683,7 @@ CHG.LROW:
         FG_ACT.CODE=FALSE
     END ELSE
         cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e, <L>ower ?"
-        CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):
+        CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):' ([F1])':
         YNC=PWIDTH; YNR=PDEPTH;
         YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'L':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
