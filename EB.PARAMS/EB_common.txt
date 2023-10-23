@@ -1,0 +1,10 @@
+Helpýebc_11ü(available for [F2], [F6], [F8] and ctrl-R)
+Save/acceptýebc_2
+Exit/cancelýebc_3ü(press twice to exit)
+Optionsýebc_54
+Refreshýebc_6
+Searchýebc_5
+Reverse searchýebc_99
+Shellýebc_8
+Next recordýebc_56
+Prev recordýebc_69

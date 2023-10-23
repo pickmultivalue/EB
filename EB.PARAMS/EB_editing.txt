@@ -1,0 +1,16 @@
+Start/end blockýebc_10ü(press twice to select current line)
+Lower caseýebc_26
+Toggle caseýebc_27
+Tabýebc_32
+Pasteýebc_37
+Toggle INS/OVRýebc_39
+Truncate/cutýebc_42
+Undoýebc_43
+Redoýebc_12
+Insert lineýebc_44
+Insert spaceýebc_46
+Delete lineýebc_47
+Delete charýebc_48
+Delete wordýebc_49
+Comment/select toggleýebc_58
+Backspaceýebc_66

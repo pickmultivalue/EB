@@ -248,94 +248,91 @@ MAIN$:!
 DisplayEBcmds:
     CRT @(-1):'EB Help'
     CRT
-    hash = 'L#20 ':
+    hash = 'L#25 ':
     minihash = 'L#6 ':
-    mainhelp = 'Editing programs items with EB can be initiated as follows:'
-    mainhelp<-1> = \\
-    mainhelp<-1> = \EB\ hash:\Popup-list of previous sessions will display\
-    mainhelp<-1> = \\ hash:\ - The [F8] key can be used to filter\
-    mainhelp<-1> = \EB\ hash:\Edit last file/program\
-    mainhelp<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
-    mainhelp<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
-    mainhelp<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \
-    mainhelp<-1> = \EBFIND\ hash:\Search for items with matching text and invoke EB\
-    mainhelp<-1> = \\
-    mainhelp<-1> = \Editing tips:\
-    mainhelp<-1> = \- pressing <enter> in the middle of a line will split the line\
-    mainhelp<-1> = \- pressing <del> at the end of a line will joine the line below\
+    READ keyboard FROM FG_EB.PARAMS, 'EB_help.txt' THEN
+        GOSUB parse_help
+    END ELSE
+        keyboard = 'Editing programs items with EB can be initiated as follows:'
+        keyboard<-1> = \\
+        keyboard<-1> = \EB\ hash:\Popup-list of previous sessions will display\
+        keyboard<-1> = \\ hash:\ - The [F8] key can be used to filter\
+        keyboard<-1> = \EB\ hash:\Edit last file/program\
+        keyboard<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
+        keyboard<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
+        keyboard<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \
+        keyboard<-1> = \EBFIND\ hash:\Search for items with matching text and invoke EB\
+        keyboard<-1> = \\
+        keyboard<-1> = \Editing tips:\
+        keyboard<-1> = \- pressing <enter> in the middle of a line will split the line\
+        keyboard<-1> = \- pressing <del> at the end of a line will joine the line below\
+    END
+    mainhelp = keyboard
 
-    keyboard = ''
-    keyboard<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11)) minihash:\(available for [F2], [F6], [F8] and ctrl-R)\
-    keyboard<-1> = 'Save/accept' hash:FNKEYTRANS(EB_CHARS(2))
-    keyboard<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3)) minihash:\(press twice to exit)\
-    keyboard<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
-    keyboard<-1> = 'Refresh' hash:FNKEYTRANS(EB_CHARS(6))
-    keyboard<-1> = 'Search' hash:FNKEYTRANS(EB_CHARS(5))
-    keyboard<-1> = 'Reverse search' hash:FNKEYTRANS(EB_CHARS(99))
-    keyboard<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
-    keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
-    keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
-
+    READ keyboard FROM FG_EB.PARAMS,'EB_common.txt' THEN
+        GOSUB parse_help
+    END ELSE
+        keyboard = ''
+        keyboard<-1> = 'Help' hash:FNKEYTRANS(EB_CHARS(11)) minihash:\(available for [F2], [F6], [F8] and ctrl-R)\
+        keyboard<-1> = 'Save/accept' hash:FNKEYTRANS(EB_CHARS(2))
+        keyboard<-1> = 'Exit/cancel' hash:FNKEYTRANS(EB_CHARS(3)) minihash:\(press twice to exit)\
+        keyboard<-1> = 'Options' hash:FNKEYTRANS(EB_CHARS(54))
+        keyboard<-1> = 'Refresh' hash:FNKEYTRANS(EB_CHARS(6))
+        keyboard<-1> = 'Search' hash:FNKEYTRANS(EB_CHARS(5))
+        keyboard<-1> = 'Reverse search' hash:FNKEYTRANS(EB_CHARS(99))
+        keyboard<-1> = 'Shell' hash:FNKEYTRANS(EB_CHARS(8))
+        keyboard<-1> = 'Next record' hash:FNKEYTRANS(EB_CHARS(56))
+        keyboard<-1> = 'Prev record' hash:FNKEYTRANS(EB_CHARS(69))
+    END
     general = keyboard
-    keyboard = ''
-    keyboard<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB_CHARS(75))
-    keyboard<-1> = 'Zoom' hash:FNKEYTRANS(EB_CHARS(55))
-    keyboard<-1> = 'Previous field' hash:FNKEYTRANS(EB_CHARS(4))
-    keyboard<-1> = 'Page Up' hash:FNKEYTRANS(EB_CHARS(51))
-    keyboard<-1> = 'Page Down' hash:FNKEYTRANS(EB_CHARS(52))
-    keyboard<-1> = 'Bookmark' hash:FNKEYTRANS(EB_CHARS(7))
+    READ keyboard FROM FG_EB.PARAMS,'EB_navigation.txt' THEN
+        GOSUB parse_help
+    END ELSE
+        keyboard = ''
+        keyboard<-1> = 'Bottom of screen/record' hash:FNKEYTRANS(EB_CHARS(75))
+        keyboard<-1> = 'Zoom' hash:FNKEYTRANS(EB_CHARS(55))
+        keyboard<-1> = 'Previous field' hash:FNKEYTRANS(EB_CHARS(4))
+        keyboard<-1> = 'Page Up' hash:FNKEYTRANS(EB_CHARS(51))
+        keyboard<-1> = 'Page Down' hash:FNKEYTRANS(EB_CHARS(52))
+        keyboard<-1> = 'Bookmark' hash:FNKEYTRANS(EB_CHARS(7))
 !    keyboard<-1> = 'Next field' hash:FNKEYTRANS(EB_CHARS(9))
-    keyboard<-1> = 'Prev word' hash:FNKEYTRANS(EB_CHARS(28))
-    keyboard<-1> = 'End of line' hash:FNKEYTRANS(EB_CHARS(29))
-    keyboard<-1> = 'Next word' hash:FNKEYTRANS(EB_CHARS(30))
-    keyboard<-1> = 'Leftarrow' hash:FNKEYTRANS(EB_CHARS(31))
-    keyboard<-1> = 'Downarrow' hash:FNKEYTRANS(EB_CHARS(33))
-    keyboard<-1> = 'Uparrow' hash:FNKEYTRANS(EB_CHARS(34))
-    keyboard<-1> = 'Rightarrow' hash:FNKEYTRANS(EB_CHARS(35))
-    keyboard<-1> = 'Next occurrence' hash:FNKEYTRANS(EB_CHARS(36))
-    keyboard<-1> = 'Top of screen/record' hash:FNKEYTRANS(EB_CHARS(38))
-    keyboard<-1> = 'Start of line' hash:FNKEYTRANS(EB_CHARS(41))
-    keyboard<-1> = 'Back tab' hash:FNKEYTRANS(EB_CHARS(45))
-    keyboard<-1> = 'Goto line/label' hash:FNKEYTRANS(EB_CHARS(70))
+        keyboard<-1> = 'Prev word' hash:FNKEYTRANS(EB_CHARS(28))
+        keyboard<-1> = 'End of line' hash:FNKEYTRANS(EB_CHARS(29))
+        keyboard<-1> = 'Next word' hash:FNKEYTRANS(EB_CHARS(30))
+        keyboard<-1> = 'Leftarrow' hash:FNKEYTRANS(EB_CHARS(31))
+        keyboard<-1> = 'Downarrow' hash:FNKEYTRANS(EB_CHARS(33))
+        keyboard<-1> = 'Uparrow' hash:FNKEYTRANS(EB_CHARS(34))
+        keyboard<-1> = 'Rightarrow' hash:FNKEYTRANS(EB_CHARS(35))
+        keyboard<-1> = 'Next occurrence' hash:FNKEYTRANS(EB_CHARS(36))
+        keyboard<-1> = 'Top of screen/record' hash:FNKEYTRANS(EB_CHARS(38))
+        keyboard<-1> = 'Start of line' hash:FNKEYTRANS(EB_CHARS(41))
+        keyboard<-1> = 'Back tab' hash:FNKEYTRANS(EB_CHARS(45))
+        keyboard<-1> = 'Goto line/label' hash:FNKEYTRANS(EB_CHARS(70))
+    END
     navigation = keyboard
-    keyboard = ''
-    keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10)) minihash:\(press twice to select current line)\
-    keyboard<-1> = 'Lower case' hash:FNKEYTRANS(EB_CHARS(26))
-    keyboard<-1> = 'Toggle case' hash:FNKEYTRANS(EB_CHARS(27))
-    keyboard<-1> = 'Tab' hash:FNKEYTRANS(EB_CHARS(32))
-    keyboard<-1> = 'Paste' hash:FNKEYTRANS(EB_CHARS(37))
-    keyboard<-1> = 'Toggle INS/OVR' hash:FNKEYTRANS(EB_CHARS(39))
-!    keyboard<-1> = 'SPELL.CH' hash:FNKEYTRANS(EB_CHARS(40))
-    keyboard<-1> = 'Truncate/cut' hash:FNKEYTRANS(EB_CHARS(42))
-    keyboard<-1> = 'Undo' hash:FNKEYTRANS(EB_CHARS(43))
-    keyboard<-1> = 'Redo' hash:FNKEYTRANS(EB_CHARS(12))
-    keyboard<-1> = 'Insert line' hash:FNKEYTRANS(EB_CHARS(44))
-    keyboard<-1> = 'Insert space' hash:FNKEYTRANS(EB_CHARS(46))
-    keyboard<-1> = 'Delete line' hash:FNKEYTRANS(EB_CHARS(47))
-    keyboard<-1> = 'Delete char' hash:FNKEYTRANS(EB_CHARS(48))
-    keyboard<-1> = 'Delete word' hash:FNKEYTRANS(EB_CHARS(49))
-    keyboard<-1> = 'Comment/select toggle' hash:FNKEYTRANS(EB_CHARS(58))
-!    keyboard<-1> = 'SUS.CH' hash:FNKEYTRANS(EB_CHARS(50))
-!    keyboard<-1> = 'MERGE.CH' hash:FNKEYTRANS(EB_CHARS(53))
-!    keyboard<-1> = 'EXIT.LN' hash:FNKEYTRANS(EB_CHARS(59))
-!    keyboard<-1> = 'TAG.CMD' hash:FNKEYTRANS(EB_CHARS(60))
-!    keyboard<-1> = 'HOT.KEYS' hash:FNKEYTRANS(EB_CHARS(61))
-!    keyboard<-1> = 'QUICK.CH' hash:FNKEYTRANS(EB_CHARS(62))
-!    keyboard<-1> = 'TUT.CH' hash:FNKEYTRANS(EB_CHARS(63))
-!    keyboard<-1> = 'Mouse click' hash:FNKEYTRANS(EB_CHARS(64))
-!    keyboard<-1> = 'EXPECT.CR' hash:FNKEYTRANS(EB_CHARS(65))
-    keyboard<-1> = 'Backspace' hash:FNKEYTRANS(EB_CHARS(66))
-!    keyboard<-1> = 'ALT.CH' hash:FNKEYTRANS(EB_CHARS(67))
-!    keyboard<-1> = 'CLR.CMD' hash:FNKEYTRANS(EB_CHARS(68))
-!    keyboard<-1> = 'MENU.CH' hash:FNKEYTRANS(EB_CHARS(71))
-!    keyboard<-1> = 'ADD.CH' hash:FNKEYTRANS(EB_CHARS(72))
-!    keyboard<-1> = 'APP.CH' hash:FNKEYTRANS(EB_CHARS(73))
-!    keyboard<-1> = 'AMD.CH' hash:FNKEYTRANS(EB_CHARS(74))
-!    keyboard<-1> = 'FUNC.CHARS' hash:FNKEYTRANS(EB_CHARS(97))
-!    keyboard<-1> = 'FUNC.VALS' hash:FNKEYTRANS(EB_CHARS(98))
-!    keyboard<-1> = 'MNENOMICS' hash:FNKEYTRANS(EB_CHARS(100))
+    READ keyboard FROM FG_EB.PARAMS,'EB_editing.txt' THEN
+        GOSUB parse_help
+    END ELSE
+        keyboard = ''
+        keyboard<-1> = 'Start/end block' hash:FNKEYTRANS(EB_CHARS(10)) minihash:\(press twice to select current line)\
+        keyboard<-1> = 'Lower case' hash:FNKEYTRANS(EB_CHARS(26))
+        keyboard<-1> = 'Toggle case' hash:FNKEYTRANS(EB_CHARS(27))
+        keyboard<-1> = 'Tab' hash:FNKEYTRANS(EB_CHARS(32))
+        keyboard<-1> = 'Paste' hash:FNKEYTRANS(EB_CHARS(37))
+        keyboard<-1> = 'Toggle INS/OVR' hash:FNKEYTRANS(EB_CHARS(39))
+        keyboard<-1> = 'Truncate/cut' hash:FNKEYTRANS(EB_CHARS(42))
+        keyboard<-1> = 'Undo' hash:FNKEYTRANS(EB_CHARS(43))
+        keyboard<-1> = 'Redo' hash:FNKEYTRANS(EB_CHARS(12))
+        keyboard<-1> = 'Insert line' hash:FNKEYTRANS(EB_CHARS(44))
+        keyboard<-1> = 'Insert space' hash:FNKEYTRANS(EB_CHARS(46))
+        keyboard<-1> = 'Delete line' hash:FNKEYTRANS(EB_CHARS(47))
+        keyboard<-1> = 'Delete char' hash:FNKEYTRANS(EB_CHARS(48))
+        keyboard<-1> = 'Delete word' hash:FNKEYTRANS(EB_CHARS(49))
+        keyboard<-1> = 'Comment/select toggle' hash:FNKEYTRANS(EB_CHARS(58))
+        keyboard<-1> = 'Backspace' hash:FNKEYTRANS(EB_CHARS(66))
+    END
     editing = keyboard
-    uline = STR('=',70)
+    uline = STR('=',78)
     keyboard = ''
     keyboard<-1> = ''
     keyboard<-1> = uline:@AM:'Main':@AM:uline:@AM:mainhelp
@@ -354,4 +351,18 @@ DisplayEBcmds:
             IF FG_ACT.CODE = FG_ABT.CODE THEN RETURN
         END
     NEXT i
+    RETURN
+parse_help:
+    dc = DCOUNT(keyboard, @AM)
+    ebcmatch = "'ebc_'1N0N"
+    FOR L = 1 TO dc
+        line = keyboard<L>
+        fkey = line<1,2,1>
+        IF fkey MATCHES ebcmatch THEN
+            line<1,2,1> = FNKEYTRANS(EB_CHARS(OCONV(line<1,2,1>, 'MCN')))
+        END
+        IF LEN(line<1,2,2>) THEN line<1,2,1> = line<1,2,1> minihash
+        IF LEN(line<1,2,1>) THEN line<1,1> = line<1,1> hash
+        keyboard<L> = line<1,1>:line<1,2,1>:line<1,2,2>
+    NEXT L
     RETURN

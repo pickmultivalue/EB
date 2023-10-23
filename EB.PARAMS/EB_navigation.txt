@@ -1,0 +1,18 @@
+Bottom of screen/recordýebc_75
+Zoomýebc_55
+Previous fieldýebc_4
+Page Upýebc_51
+Page Downýebc_52
+Bookmarkýebc_7
+Prev wordýebc_28
+End of lineýebc_29
+Next wordýebc_30
+Leftarrowýebc_31
+Downarrowýebc_33
+Uparrowýebc_34
+Rightarrowýebc_35
+Next occurrenceýebc_36
+Top of screen/recordýebc_38
+Start of lineýebc_41
+Back tabýebc_45
+Goto line/labelýebc_70
