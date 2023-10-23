@@ -73,6 +73,10 @@ MAIN$:!
                 END ELSE POS=INDEX(SRCH.STRING,SSTR,1)
             END
             IF POS THEN
+                IF POS<1,2> THEN
+                    L = POS<1,2>
+                    POS = POS<1,1>
+                END
                 IF WHOLE.WORDS OR NOCOMMENTS THEN
                     IF WHOLE.WORDS THEN
                         CHR1=SRCH.STRING[POS-1,1]

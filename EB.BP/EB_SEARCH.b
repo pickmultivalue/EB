@@ -17,7 +17,7 @@ MAIN$:!
     RefreshRequired=FALSE
     DELIMS=' ():;+-*/,&!^#=<>[]@{}':AM:VM:SVM:TAB
 !
-    MSG='String (A{+-}{;./}for all, V{;,/}vars, C{;,/}char) ([F1]) '
+    MSG='String (F1]/[F2]/up-arrow/down-arrow) '
     ICOL=LEN(MSG); IROW=(PDEPTH-1)
     Indent=ITAB<ITABPOS>
     GOSUB DisplayPrompt

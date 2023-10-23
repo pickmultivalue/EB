@@ -17,7 +17,7 @@ MAIN$:!
     INPTYPE='LIT'
     SCOL=''
     IF FG_ACT.CODE=FG_PASTE.CODE THEN
-        MSG='Enter Paste Name or 0 for previous deleted lines '
+        MSG='Enter Paste Name or 0 for previous deleted lines ([F2]) '
         ICOL=LEN(MSG); IROW=(PDEPTH-1)
         CRT MSG.CLR:MSG:
         L=PWIDTH-1-ICOL; Z=0

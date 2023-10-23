@@ -15,7 +15,7 @@
                   sstr = line[pos, s]
                   IF REGEXP(sstr, expr) THEN BREAK
               NEXT c
-              positions<-1> = lnpos + pos
+              positions<-1> = (lnpos + pos):@VM:LEN(sstr)
               IF NOT(all) THEN BREAK
           END
           lnpos += 1+LEN(line)

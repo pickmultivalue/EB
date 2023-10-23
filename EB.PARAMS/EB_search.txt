@@ -23,6 +23,9 @@ Examples	u
 * Find all occurrences of the variable "MY.VAR" starting at the current position
 > AV+;MY.VAR
 
+* Find a variable that starts with CUST and ends with BALANCE (case insensitive)
+> XIV;cust.*balance
+
 * Find a label starting with MAIN
 > ^MAIN
 
