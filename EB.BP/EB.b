@@ -1832,7 +1832,7 @@ CHG.LROW:
                 INS DUMMY BEFORE REC<STL>
             END
         CASE FTYP='R'
-            CALL EB_ROTATE(REC)
+            CALL EB_ROTATE(REC, Z)
             SCR.UD=TRUE
         CASE FTYP='U'
             GOSUB UNINDENT
