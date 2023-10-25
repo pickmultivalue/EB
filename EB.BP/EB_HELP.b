@@ -241,7 +241,7 @@ showhelp:
     nbr_lines = DCOUNT(helptext, @AM)
     FOR i = 1 TO nbr_lines
         CRT INDENT:helptext<i>
-        IF i = nbr_lines OR (MOD(i, PDEPTH-3) = 0) THEN
+        IF MOD(i, PDEPTH-3) EQ 0 THEN
             CRT
             CALL EB_GET_INPUT(CHR, CHR.NBR)
             IF FG_ACT.CODE = FG_ABT.CODE THEN RETURN
@@ -251,6 +251,8 @@ showhelp:
     CRT INDENT:'Press any key...':
     CALL EB_GET_INPUT(CHR, CHR.NBR)
     IF FG_ACT.CODE = FG_HLP.CODE THEN GOSUB DisplayEBcmds
+    SCR.LR=1
+    CALL EB_REFRESH
     FG_ACT.CODE=FALSE
     OS.HELP=TRUE
     RETURN

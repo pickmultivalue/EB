@@ -7,3 +7,5 @@ Special commands:
 >ıindent block
 <ıunindent block
 ^ırotate block (on an AM/VM perspective)
+vıshow git log
+[F3]ıPop out selection in editor 

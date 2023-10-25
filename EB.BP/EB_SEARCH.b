@@ -38,7 +38,6 @@ MAIN$:!
             LOCATE FG_ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
             IF FG_ACT.CODE=FG_HLP.CODE THEN
                 CALL EB_HELP('EBSEARCH', TRUE)
-                SCR.LR=1
                 CALL EB_REFRESH
                 GOSUB DisplayPrompt
                 POS = TRUE

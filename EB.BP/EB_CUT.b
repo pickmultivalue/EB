@@ -87,6 +87,16 @@ MAIN$:!
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN] NE COMMENT<1,1,1>
         END
         NEW.D.L = NO.D.L
+        IF DOWNCASE(Z)[1,1] EQ 'v' THEN
+            sline = INDROW+ROW
+            EXECUTE 'git log -L':sline:',':sline+NO.D.L-1:':':FLNM:DIR_DELIM_CH:ITNM
+            CRT MSG.CLR:"Press <enter>...":
+            L=20; Z=''
+            GOSUB INPT
+            SCR.LR=1
+            CALL EB_REFRESH
+            RETURN
+        END
         IF Z [1,1] EQ '^' THEN
             ROTATE = ''
             INDROW--

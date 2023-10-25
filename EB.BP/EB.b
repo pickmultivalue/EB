@@ -1236,8 +1236,8 @@ GET.HELP:   !
             CALL EB_HELP(WORD,Z)
             IF Z THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
-                SCR.LR=1
-                CALL EB_REFRESH
+!                SCR.LR=1
+!                CALL EB_REFRESH
             END
             IF OPEN.HELP THEN
                 CALL EB_HELP('EB',0,0,0,0)
@@ -1693,8 +1693,8 @@ CHG.LROW:
             CALL EB_HELP('EBOPTS', Z)
             IF Z THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
-                SCR.LR=1
-                CALL EB_REFRESH
+!                SCR.LR=1
+!                CALL EB_REFRESH
             END
         END
         IF FG_ACT.CODE THEN GO STRT

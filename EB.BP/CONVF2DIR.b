@@ -16,9 +16,10 @@
         STOP
     END
     rc = IOCTL(f.orig, JBC_COMMAND_GETFILENAME, fileName)
-    fileName = CHANGE(fileName, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
     dirName = 'dir_':OCONV(fileName, 'MCA')
-    PCPERFORM 'mkdir ':dirName CAPTURING io
+    dirName = CHANGE(dirName, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
+    ksh = @IM:'k'
+    EXECUTE ksh:'mkdir ':dirName CAPTURING io
     IF LEN(io) THEN
         CRT io
         STOP
@@ -30,10 +31,12 @@
             WRITE rec ON f.new, id
         END
     REPEAT
-    EXECUTE @IM:'krm ':fileName CAPTURING io
+    CLOSE f.orig
+    CLOSE f.new
+    EXECUTE ksh:RM_CMD:' ':fileName CAPTURING io
     IF LEN(io) THEN
         CRT 'Fatal error removing original file'
         CRT io
         STOP
     END
-    EXECUTE @IM:'kmv ':dirName:' ':fileName
+    EXECUTE ksh:MOVE_CMD:' ':dirName:' ':fileName
