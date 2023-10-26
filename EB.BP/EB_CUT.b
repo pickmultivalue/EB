@@ -89,9 +89,14 @@ MAIN$:!
         NEW.D.L = NO.D.L
         IF DOWNCASE(Z)[1,1] EQ 'v' THEN
             sline = INDROW+ROW
-            EXECUTE 'git log -L':sline:',':sline+NO.D.L-1:':':FLNM:DIR_DELIM_CH:ITNM
+            IF GETCWD(currdir) AND CHDIR(FLNM) THEN
+                EXECUTE 'git log -L':sline:',':sline+NO.D.L-1:':':ITNM
+                rc = CHDIR(currdir)
+            END ELSE
+                CRT @(-1):FLNM:' is not part of a git repository'
+            END
             CRT MSG.CLR:"Press <enter>...":
-            L=20; Z=''
+            L=0; Z=''
             GOSUB INPT
             SCR.LR=1
             CALL EB_REFRESH
