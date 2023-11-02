@@ -64,8 +64,8 @@ MAIN$:!
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)
-            IF @FALSE THEN
-                IF accuterm THEN
+            IF accuterm THEN
+                IF @FALSE THEN
                     lword = DOWNCASE(WORD)
                     READV help_url FROM FG_EB.CONTROL,'jbasedoc_url',1 ELSE
                         help_url = 'https://docs.zumasys.com/jbase/jbc'
@@ -78,36 +78,36 @@ MAIN$:!
                         CRT @ESC:CHAR(2):'<':URL:@CR:
                         OS.HELP = @TRUE
                     END
-                END ELSE
-                    EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
-                    IF LEN(list) EQ 0 THEN
-                        EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
-                    END
-                    loc=0
-                    manpages=''
-                    FWORD=UPCASE(WORD)    ;!:'()'
-                    LOOP
-                        REMOVE line FROM list AT loc SETTING delim
-                        line=SWAP(line,', ',@VM)
-                        FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
-                            FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
-                        END
-                        IF POS THEN
-                            vol=OCONV(FIELD(line,'(',2),'MCN')
-                            IF LEN(vol) THEN
-                                POS=INDEX(line,vol,1)
-                                vol=FIELD(line[POS,9],')',1)
-                                LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
-                                    INS vol BEFORE manpages<pos>
-                                END
-                            END
-                            CRT @(-1):
-                            EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
-                            OS.HELP=TRUE
-                            delim = @FALSE
-                        END
-                    WHILE delim DO REPEAT
                 END
+            END ELSE
+                EXECUTE ksh:'man ':WORD:' 2>&1' CAPTURING list
+                IF LEN(list) EQ 0 THEN
+                    EXECUTE ksh:'man -k ':WORD:' 2>&1' CAPTURING list
+                END
+                loc=0
+                manpages=''
+                FWORD=UPCASE(WORD)    ;!:'()'
+                LOOP
+                    REMOVE line FROM list AT loc SETTING delim
+                    line=SWAP(line,', ',@VM)
+                    FINDSTR FWORD IN line<1,vm_start> SETTING POS ELSE
+                        FINDSTR WORD IN line<1,vm_start> SETTING POS ELSE POS = @FALSE
+                    END
+                    IF POS THEN
+                        vol=OCONV(FIELD(line,'(',2),'MCN')
+                        IF LEN(vol) THEN
+                            POS=INDEX(line,vol,1)
+                            vol=FIELD(line[POS,9],')',1)
+                            LOCATE vol IN manpages<am_start> BY 'AR' SETTING pos ELSE
+                                INS vol BEFORE manpages<pos>
+                            END
+                        END
+                        CRT @(-1):
+                        EXECUTE ksh:'man ':vol:' ':WORD:' 2>&1'
+                        OS.HELP=TRUE
+                        delim = @FALSE
+                    END
+                WHILE delim DO REPEAT
             END
             IF NOT(OS.HELP) THEN
                 IF LEN(EBJSHOW('-c man')) AND LEN(WORD) THEN

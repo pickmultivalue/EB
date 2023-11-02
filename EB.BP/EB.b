@@ -1236,8 +1236,8 @@ GET.HELP:   !
             CALL EB_HELP(WORD,Z)
             IF Z THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
-!                SCR.LR=1
-!                CALL EB_REFRESH
+                SCR.LR=1
+                CALL EB_REFRESH
             END
             IF OPEN.HELP THEN
                 CALL EB_HELP('EB',0,0,0,0)
@@ -1373,7 +1373,7 @@ GET.HELP:   !
                         DUMMY := '.jabba'
                     CASE 1
                         READ tags FROM F.currdir,'tags' THEN
-                            POS=INDEX(tags,DUMMY:TAB,1)
+                            POS=INDEX(tags,word:TAB,1)
                         END ELSE POS = FALSE
                         IF POS THEN
                             DUMMY=tags[POS,99]
@@ -1693,8 +1693,8 @@ CHG.LROW:
             CALL EB_HELP('EBOPTS', Z)
             IF Z THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
-!                SCR.LR=1
-!                CALL EB_REFRESH
+                SCR.LR=1
+                CALL EB_REFRESH
             END
         END
         IF FG_ACT.CODE THEN GO STRT
