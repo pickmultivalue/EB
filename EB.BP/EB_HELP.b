@@ -121,7 +121,8 @@ MAIN$:!
                         EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING help
                         K.HELP = '%EB_HELP*':WORD:'%'
                         WRITE help ON JET.PASTE,K.HELP
-                        EXECUTE 'EB JET.PASTE ':K.HELP
+                        rc = IOCTL(JET.PASTE, JBC_COMMAND_GETFILENAME, OS.HELP)
+                        EXECUTE 'EB ':OS.HELP:' ':K.HELP
                         DELETE JET.PASTE,K.HELP
                         CRT
                         CRT 'Press return or F1 for EB help':

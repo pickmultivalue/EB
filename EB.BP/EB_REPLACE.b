@@ -39,6 +39,7 @@ MAIN$:!
     RSTR=SWAP(RSTR,'...','@1')
     WSTR=SWAP(WSTR,'...','@1')
     STR.CNT=0
+    OK=1
     OCCURS=''
     FIRST.DISP=TRUE
 !
