@@ -1,5 +1,11 @@
 Bottom of screen/recordýebc_75
 Zoomýebc_55
+ýOpen a new EB session:
+ýCALL..	15ü=> open SUBROUTINE
+ýGO{SUB}..	15ü=> jump to label 
+ýINCLUDE..	15ü=> open INCLUDE
+ýEXECUTE..	15ü=> open Cataloged program after (first word after quote)
+ýobject..	15ü=> open jabba class named after first word in quote inside the () 
 Previous fieldýebc_4
 Page Upýebc_51
 Page Downýebc_52

@@ -2241,7 +2241,7 @@ UNINDENT: !
     WRITE REC ON JET.PASTE,Y
     CRT MSG.CLR:'Unformatting program...':
     ECHO OFF
-    EXECUTE 'EBUFMT ':path:'JET.PASTE ':Y
+    EXECUTE 'jEDIfmt ':path:'JET.PASTE ':Y: ' (RCFO'
     ECHO ON
     READ REC FROM JET.PASTE,Y ELSE NULL
     DELETE JET.PASTE,Y
