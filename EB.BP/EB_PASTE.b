@@ -17,12 +17,16 @@ MAIN$:!
     INPTYPE='LIT'
     SCOL=''
     IF FG_ACT.CODE=FG_PASTE.CODE THEN
-        MSG='Enter Paste Name or 0 for previous deleted lines ([F2]) '
-        ICOL=LEN(MSG); IROW=(PDEPTH-1)
-        CRT MSG.CLR:MSG:
-        L=PWIDTH-1-ICOL; Z=0
-        GOSUB INPT
-        CRT MSG.CLR:
+        SAVE.ACT=FG_ACT.CODE
+        LOOP
+            MSG='Enter Paste Name or 0 for previous deleted lines ([F2]) '
+            L=PWIDTH - LEN(MSG); Z=0
+            GOSUB INPT
+        WHILE FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO
+            IF FG_ACT.CODE = FG_HLP.CODE THEN
+                CALL EB_HELP('EBPASTE', @FALSE)
+            END
+        REPEAT
         IF INDEX(ESC,Z,1) THEN G60=TRUE; RETURN
         SHELL.CMD=FALSE
         SHOW.PASTE=FALSE
@@ -153,9 +157,11 @@ MAIN$:!
     RETURN
 !
 INPT: !
+    CRT MSG.CLR:MSG:
     POS=1
     EDITED=FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
+    CRT MSG.CLR:
     IF FG_ACT.CODE = FG_OPT.CODE THEN
         FG_ACT.CODE=FALSE
         CALL EB_CHOICES(20,3,'',10,EBGETHOME():'JET.PASTE','',Z,1,1,0:SVM:1,'L#20':SVM:'L#40':CTRL.C:'MCP','Paste items':SVM:'Item')

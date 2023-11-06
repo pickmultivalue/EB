@@ -1,0 +1,8 @@
+Enter a number or name of paste item.
+Press [F2] for a list/preview of available paste items.
+
+Special commands:
+
+!ıPaste in the result of the command following the !
+^ıSet paste mode so that the clipboard is processed as raw text
+ıso that EB doesn't try and format

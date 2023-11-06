@@ -61,6 +61,16 @@ MAIN$:!
                 helptext = 'Missing ':hkey:' from EB.PARAMS'
             END
             GOSUB showhelp
+        CASE WORD='EBPASTE'
+            CRT @(-1):'Paste Help'
+            CRT
+            hkey = 'EB_paste.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE 1
             OS.HELP=FALSE
             WORD = TRIM(WORD)
