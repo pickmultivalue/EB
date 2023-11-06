@@ -22,10 +22,8 @@ MAIN$:!
             MSG='Enter Paste Name or 0 for previous deleted lines ([F2]) '
             L=PWIDTH - LEN(MSG); Z=0
             GOSUB INPT
-        WHILE FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO
-            IF FG_ACT.CODE = FG_HLP.CODE THEN
-                CALL EB_HELP('EBPASTE', @FALSE)
-            END
+        WHILE FG_ACT.CODE EQ FG_HLP.CODE DO
+            CALL EB_HELP('EBPASTE', @FALSE)
         REPEAT
         IF INDEX(ESC,Z,1) THEN G60=TRUE; RETURN
         SHELL.CMD=FALSE

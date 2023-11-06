@@ -20,6 +20,17 @@ MAIN$:!
     INCLUDE EB.OS.INCLUDES OS.REL
     INDENT = SPACE(4)
     BEGIN CASE
+        CASE WORD='EBSAVE'
+            dc = COUNT(FG_SENTENCE, ' ') - 1
+            CRT @(-1):'Save Help'
+            CRT
+            hkey = 'EB_save.txt'
+            READ helptext FROM FG_EB.PARAMS,hkey THEN
+                GOSUB parse_help
+            END ELSE
+                helptext = 'Missing ':hkey:' from EB.PARAMS'
+            END
+            GOSUB showhelp
         CASE WORD='EBOPTS'
             dc = COUNT(FG_SENTENCE, ' ') - 1
             CRT @(-1):'Options Help'

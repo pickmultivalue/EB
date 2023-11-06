@@ -1535,29 +1535,34 @@ EB.SUB: !
         GO WRAPUP
     END ELSE
         IF FG_ACT.CODE NE FG_ALT.CODE THEN
-            IF UPDATES THEN
-                YNCHRS='S'; Y = '(S)ave'
-                IF ORIG.REC NE REC THEN
-                    YNCHRS<1,-1> = 'U'
-                    Y = '(U)ndo, ':Y
+            SAVE.ACT=FG_ACT.CODE
+            LOOP
+                IF UPDATES THEN
+                    YNCHRS='S'; Y = '(S)ave'
+                    IF ORIG.REC NE REC THEN
+                        YNCHRS<1,-1> = 'U'
+                        Y = '(U)ndo, ':Y
+                    END
+                    Z = GETFLNM(FLNM)
+                    IF Z NE 'tmp' AND Z NE ('JET.PASTE]D'[1, LEN(Z)]) THEN
+                        Y = "(F) to file, (E)ncrypt, ":Y
+                        YNCHRS<1,-1>='F':VM:'E'
+                    END
+                    CRT MSG.CLR:Y:
+                END ELSE
+                    CRT MSG.CLR:"Save (A)s, (C)ompile, e(X)it":
+                    YNCHRS='A':VM:'C':VM:'X'
                 END
-                Z = GETFLNM(FLNM)
-                IF Z NE 'tmp' AND Z NE ('JET.PASTE]D'[1, LEN(Z)]) THEN
-                    Y = "(F) to file, (E)ncrypt, ":Y
-                    YNCHRS<1,-1>='F':VM:'E'
+                IF YNCHRS NE 'S' THEN
+                    CRT ", (D) to delete, (N)ew item, (R)ename, (v)ersion Control":
+                    YNCHRS:=VM:'D':VM:'V':VM:'R':VM:'N':VM:ESC
                 END
-                CRT MSG.CLR:Y:
-            END ELSE
-                CRT MSG.CLR:"Save (A)s, (C)ompile, e(X)it":
-                YNCHRS='A':VM:'C':VM:'X'
-            END
-            IF YNCHRS NE 'S' THEN
-                CRT ", (D) to delete, (N)ew item, (R)ename, (v)ersion Control":
-                YNCHRS:=VM:'D':VM:'V':VM:'R':VM:'N':VM:ESC
-            END
-            YNC=COL; YNR=ROW
-            YNL=1; GOSUB GET.CHAR
-            CRT MSG.AKN:
+                YNC=COL; YNR=ROW
+                YNL=1; GOSUB GET.CHAR
+                CRT MSG.AKN:
+            WHILE FG_ACT.CODE EQ FG_HLP.CODE DO
+                CALL EB_HELP('EBSAVE', @FALSE)
+            REPEAT
             Y=OCONV(Y,"MCU")
         END
         IF Y='E' THEN Y='F'; ENCRYPTED='Y' ELSE ENCRYPTED=''

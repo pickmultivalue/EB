@@ -1,0 +1,18 @@
+SıSave
+UıUndo all edits
+AıSave as
+CıCompile
+XıExit
+DıDelete
+NıNew item
+RıRename
+VıVersion control
+
+Version control options are:
+
+CıInitiate commit proceedings
+DıSimilar to Commit but delete
+RıRevert current item to last git status
+PıPerform git pull
+HıGet git history of current item in a popup
+SıShow stashes (similar to History)

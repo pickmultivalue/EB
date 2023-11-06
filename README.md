@@ -47,3 +47,21 @@ When EB is operating on a selection of jBC code the CATALOG is performed when th
  - (R)otate attributes/multi-values (useful for associated multi-values)
  - Edit list item (EBL)
  - Read only edit (EBV)
+
+## Utilities
+### COMPARE_ITEM
+Side by side compare utility (supports left/right copy/merge/edit)
+
+### COMPL
+Front end to COMPARE_ITEM to compare two directories (run COMPL to get help)
+
+### EBFIND
+Front end to EB (EBFIND -?)
+
+## EBL
+Edit a saved list using EB
+
+### LASTEB
+Shows the last EB item.
+LASTEB .. shows previous to last
+LASTEB -v outputs full path 
