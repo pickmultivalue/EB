@@ -85,7 +85,7 @@
     colors<COL_MENU_BG>        = BLUE<1,2>
 
 *-- Read iNI file,  if none the return a default set
-    jb = GETENV("JBCRELEASEDIR")
+    jb = GETENV("JBCGLOBALDIR")
 #ifdef WIN32
     srcName = jb:"\config"
 #else
