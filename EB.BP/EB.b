@@ -2242,14 +2242,7 @@ INDENT: !
     SCR.UD=TRUE
     RETURN
 UNINDENT: !
-    Y='%':ITNM:'%'
-    WRITE REC ON JET.PASTE,Y
-    CRT MSG.CLR:'Unformatting program...':
-    ECHO OFF
-    EXECUTE 'jEDIfmt ':path:'JET.PASTE ':Y: ' (RCFO'
-    ECHO ON
-    READ REC FROM JET.PASTE,Y ELSE NULL
-    DELETE JET.PASTE,Y
+    REC = TRIMFS(REC)
     SCR.UD=TRUE
     RETURN
 BACK.WORD:!
