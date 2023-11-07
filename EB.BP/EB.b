@@ -647,7 +647,7 @@ UPDATE.REC: !
     RETURN
 !==========
 STRT: ! top of main loop
-    IF NOT(case_insensitive) AND INDEX(REC,'$options jabba', 1) THEN
+    IF NOT(case_insensitive) AND (ITNM 'R#6'='.jabba' OR INDEX(REC,'$options jabba', 1)) THEN
         case_insensitive = @TRUE
     END
     Z = FG_ACT.CODE

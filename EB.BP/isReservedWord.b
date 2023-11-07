@@ -1,5 +1,5 @@
     FUNCTION isReservedWord(token)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, case_insensitive
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
     DEFC INT JBASEEmulateGETINT(INT, INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
     am_start=IF_COMPILED_PRIME
