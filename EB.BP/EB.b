@@ -1897,8 +1897,10 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     DUMMY=RDSP(LROW); LNM=1; GOSUB FORMAT
     COL=I+4
     CALL EB_TRIM(TMP,RDSP(LROW+1),SPC,'L')
-    IF FIELD(TMP,SPC,1)='ELSE' THEN
-        TMP='END ':TMP
+    DUMMY=FIELD(TMP,SPC,1)
+    IF UPCASE(DUMMY)='ELSE' THEN
+        DUMMY=(IF DUMMY EQ 'ELSE' THEN 'END' ELSE 'end')
+        TMP=DUMMY:' ':TMP
         IF I>3 THEN I-=ITAB<1>
     END
     RDSP(LROW+1)=SPACE(I-1):TMP
@@ -1936,12 +1938,15 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
         CALL EB_TRIM(TMP,RDSP(LROW+J.LINE),SPC,'L')
         IF TAB.MODE THEN CALL EB_TRIM(TMP,TMP,TAB,'L')
     END
-    NWORD = UPCASE(FIELD(TMP,SPC,1))
+    DUMMY = FIELD(TMP,SPC,1)
+    NWORD = UPCASE(DUMMY)
     BEGIN CASE
         CASE NWORD='END' ; TMP=TMP[COL2()+1,MAX]
         CASE (NWORD='CASE' OR NWORD='IF') AND TRIM(RDSP(LROW+J.LINE)) NE ''
             TMP=TMP[COL2(),MAX]
-            IF INDEX(TMP,'#',1) THEN TMP='AND':TMP ELSE TMP='OR':TMP
+            IF INDEX(TMP,'#',1) THEN NWORD='AND' ELSE NWORD='OR'
+            IF DUMMY NE UPCASE(DUMMY) THEN NWORD = DOWNCASE(NWORD)
+            TMP = NWORD:TMP
     END CASE
     LOOP
         CHR = RDSP(LROW)[LCOL-1,1]
