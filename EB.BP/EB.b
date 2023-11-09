@@ -1393,9 +1393,11 @@ GET.HELP:   !
                                 DUMMY=''
                             END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
                         END ELSE
-                            DUMMY=FIELD(DUMMY:'(','(',1)
-                            IO = EBJSHOW('-c ':DUMMY)
-                            IF LEN(IO) = 0 THEN DUMMY = ''
+                            word=FIELD(word:'(','(',1)
+                            IO = EBJSHOW('-c ':word)
+                            IF LEN(IO) = 0 THEN
+                                DUMMY = ''
+                            END ELSE DUMMY=word
                         END
                 END CASE
                 IF LEN(DUMMY) THEN
