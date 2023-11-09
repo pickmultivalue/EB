@@ -19,6 +19,17 @@ MAIN$:!
     LOCATE WORD IN VARHEADERS<am_start> BY 'AL' SETTING VPOS THEN
         VARS=VARMEMBERS<VPOS>
     END ELSE
+        IF WORD EQ 'this' THEN
+            Z = LROW
+            LOOP WHILE Z GT 1 DO
+                line = TRIM(REC<Z>)
+                IF INDEX(line, '::', 1) AND FIELD(line, ' ', 1) EQ 'method' THEN
+                    WORD = FIELD(line[COL2()+1,-1], ':', 1)
+                    BREAK
+                END
+                --Z
+            REPEAT
+        END
         methods = $system->getroutines(WORD,0)
         IF methods->$isobject THEN
             for m in methods
