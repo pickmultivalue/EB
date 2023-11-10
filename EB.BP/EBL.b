@@ -15,5 +15,6 @@
         END CASE
     END
     IF FG_OSTYPE='UDT' THEN INAME:='000'
+    INAME = 'SEL*':@LOGNAME:'*':INAME
 !
     EXECUTE 'EB ':FNAME:' ':INAME
