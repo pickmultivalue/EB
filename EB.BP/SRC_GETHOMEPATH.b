@@ -1,5 +1,6 @@
     FUNCTION SRC_GETHOMEPATH(FileName)
     COMMON /SRC_GETHOMEPATH/ filenames, homepaths
+    IF UNASSIGNED(filenames) THEN filenames = ''
 !
 ! Return the user's homepath version of a given file
 !

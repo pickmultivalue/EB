@@ -1,0 +1,5 @@
+    COMMON /EBJSHOW/ commands, outputs
+    IF UNASSIGNED(commands) THEN
+        commands = ''
+        outputs = ''
+    END

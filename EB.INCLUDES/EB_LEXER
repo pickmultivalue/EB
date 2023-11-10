@@ -1,0 +1,9 @@
+    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    IF UNASSIGNED(reservedWords) THEN
+        reservedWords = ''
+        colors = ''
+        comments = ''
+        commentlen = ''
+        incomment = ''
+        case_insensitive = ''
+    END

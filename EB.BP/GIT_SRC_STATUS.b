@@ -1,5 +1,6 @@
     FUNCTION GIT_SRC_STATUS(FileName, ItemName)
     COMMON /GIT_SRC_STATUS/ lockvars, results
+    IF UNASSIGNED(lockvars) THEN lockvars = ''
     INCLUDE JBC.h
 !
 ! Return the git status of given file/item

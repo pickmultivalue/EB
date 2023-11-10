@@ -1,5 +1,5 @@
     FUNCTION lexLine(wholeline, line,colours)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    INCLUDE EB.INCLUDES EB_LEXER
 ! token should have the following structure
 !
 !   token

@@ -1,0 +1,5 @@
+    COMMON /EB_OPEN/ dfname, parsed
+    IF UNASSIGNED(dfname) THEN
+        dfname = ''
+        parsed = ''
+    END

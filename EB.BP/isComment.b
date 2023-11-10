@@ -1,6 +1,6 @@
     FUNCTION isComment(token)
 !
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    INCLUDE EB.INCLUDES EB_LEXER
     INCLUDE EB.INCLUDES lex.h
     EQU tab TO CHAR(9), spc TO ' '
 !

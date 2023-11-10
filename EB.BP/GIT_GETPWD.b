@@ -1,5 +1,6 @@
     FUNCTION GIT_GETPWD(FilePath, Delim, Remove_trunk)
     COMMON /GIT_GETPWD/ FilePaths, Results
+    IF UNASSIGNED(FilePaths) THEN FilePaths = ''
 ! * COPIED from SVN program
 !
 ! Return the portion of the given filepath

@@ -1,6 +1,6 @@
     FUNCTION EBJSHOW(command)
     INCLUDE JBC.h
-    COMMON /EBJSHOW/ commands, outputs
+    INCLUDE EB.INCLUDES EBJSHOW
 !    DEBUG
     IF command[1,2] = '-c' THEN
         prog = FIELD(command,' ',2)

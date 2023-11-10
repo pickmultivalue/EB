@@ -1,0 +1,5 @@
+    COMMON /EB_EXPANDFLNM/ filenames, paths
+    IF UNASSIGNED(filenames) THEN
+        filenames = ''
+        paths = ''
+    END

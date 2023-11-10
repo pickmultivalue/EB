@@ -1,5 +1,5 @@
     SUBROUTINE EB_PASTE(G60)
-    COMMON /EB_LEXER/reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    INCLUDE EB.INCLUDES EB_LEXER
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
