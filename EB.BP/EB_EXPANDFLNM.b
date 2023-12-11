@@ -30,4 +30,4 @@
         INS result BEFORE paths<pos>
     END
 
-    RETURN result
+    RETURN TRIM(result,DIR_DELIM_CH,'T')
