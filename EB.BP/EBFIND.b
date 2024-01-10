@@ -99,7 +99,7 @@
                 FOR t = 1 TO DCOUNT(types, ',')
                     matching<-1> = '-name "*.':FIELD(types,',',t):'"'
                 NEXT t
-                find_cmd:= ' \( ':CHANGE(matching, @AM, ' -oE '):' \)'
+                find_cmd:= ' \( ':CHANGE(matching, @AM, ' -o '):' \)'
             END
             find_cmd:= ' -exec fgrep'
             IF NOT(LEN(types)) THEN

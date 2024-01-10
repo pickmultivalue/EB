@@ -314,7 +314,9 @@
                                 NUM.FLDS=DCOUNT(T.STMT,SPC)
                                 F1=FIELD(T.STMT,SPC,1)
                                 IF NUM(F1) OR (INDEX(LBL.SUFFIX,F1[LEN(F1),1],1) AND NOT(INDEX(F1,DQ,1) OR INDEX(F1,SQ,1))) THEN
-                                    LBL=F1; F1=FIELD(T.STMT,SPC,2)
+                                    IF INDEX(F1, '"', 1) OR INDEX(F1, '\', 1) OR INDEX(F1, \'\, 1) ELSE
+                                        LBL=F1; F1=FIELD(T.STMT,SPC,2)
+                                    END
                                 END
                                 FLAST=FIELD(T.STMT,SPC,NUM.FLDS)
                                 NFLAST=FIELD(T.STMT,SPC,NUM.FLDS-1)

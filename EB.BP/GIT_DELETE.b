@@ -15,7 +15,7 @@
     INCLUDE EB.INCLUDES SRCDBG
 !
     IO = GIT_SRC_STATUS(FilePath, ItemName)
-    IF FIELD(IO, ' ',1) = 'A' THEN
+    IF IO EQ '' OR FIELD(IO, ' ',1) = 'A' THEN
         cmd = 'revert'
     END ELSE
         cmd = 'delete'
