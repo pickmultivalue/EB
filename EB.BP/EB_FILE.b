@@ -55,14 +55,14 @@ MAIN$:!
         CRT MSG.CLR:YNL:
         YNC=LEN(YNL); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':AM:AM:'Y'; YNL=1; GOSUB GET.CHAR
         CRT MSG.CLR:
-        IF Y='Y' THEN
+        IF Z='Y' THEN
             EXECUTE 'jchmod +w ':SRC_GETORIGPATH(FLNM):DIR_DELIM_CH:ITNM CAPTURING result
             WRITE REC ON FIL,ITNM SETTING setvar ON ERROR
                 CRT MSG.CLR:' unable to update (':setvar:')'
-                Y='N'
+                Z='N'
             END
         END
-        IF Y#'N' THEN RETURN
+        IF Z#'N' THEN RETURN
     END
     Y=FLNM:'*':ITNM
     DELETE JET.PASTE,ITNM:'.sav'
