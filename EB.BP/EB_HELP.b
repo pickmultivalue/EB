@@ -133,9 +133,12 @@ MAIN$:!
             IF NOT(OS.HELP) THEN
                 IF LEN(EBJSHOW('-c man')) AND LEN(WORD) THEN
                     CRT @(-1):
-                    IF DIR_DELIM_CH = '/' THEN
-                        mandir = '-M $JBCRELEASEDIR/man '
-                    END ELSE mandir = ''
+                    mandir = ''
+                    IF NOT(GETENV('MANPATH')) THEN
+                        IF DIR_DELIM_CH = '/' THEN
+                            mandir = '-M $JBCRELEASEDIR/man '
+                        END
+                    END
                     EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
                     notfound = INDEX(list, 'o manual entry', 1) OR INDEX(list, 'hat manual page', 1)
                     IF NOT(notfound) THEN
