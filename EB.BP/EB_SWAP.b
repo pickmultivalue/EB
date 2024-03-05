@@ -115,9 +115,17 @@
     POS=USTMP[1,4]='FOR '
     IF POS THEN
         PART1=FIELD(STMP,'=',1)
-        PART2=TRIM(STMP[COL2()+1,MAX])
+        PART2=STMP[COL2()+1,MAX]
+        SPACING = ''
+        I = 1
+        LOOP WHILE PART2[I,1] EQ ' ' DO
+            SPACING := ' '
+            I++
+        REPEAT
+        PART2 = PART2[I,MAX]
         VAR1=FIELD(PART2,' ',1)
         VAR2=FIELD(PART2,' ',3)
+        hass=FIELD(PART2,' ',4)
         IF STMP[1,3] EQ 'FOR' THEN
             t = ' TO '
             s = 'STEP'
@@ -125,7 +133,13 @@
             t = ' to '
             s = 'step'
         END
-        STMP=INDENT:PART1:'=':VAR2:t:VAR1:' ':s:' -1':SUFFIX
+        IF hass EQ 'STEP' THEN
+            s = ''
+        END ELSE
+            s = ' ':s
+            s := ' -1':SUFFIX
+        END
+        STMP=INDENT:PART1:'=':SPACING:VAR2:t:VAR1:s
         RETURN
     END
 !
