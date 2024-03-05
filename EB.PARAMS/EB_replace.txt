@@ -32,8 +32,9 @@ You can use @n (i.e. @1, @2, etc) to mask any number of characters in both the s
 
 e.g. R/READ @1 FROM @2,@3 @4/CALL READSUB(@2, @3, @1)
 
-A special @ replace is  which will replace a with a sequential number
-e.g. R99/@1/EQU A.@1 TO A.ARRAY(1) is an easy way to generate equates
+A special @ replace is @x which will replace a with a sequential number
+e.g. R99/@1/EQU A.@1 TO A.ARRAY(@x) is an easy way to generate equates
+You can optionall follow @x with a starting number.
 
 The R is optional for readability but is useful for reversing the last replace thus:
 
