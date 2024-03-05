@@ -261,7 +261,6 @@ DisplayEBcmds:
     helptext<-1> = uline:@AM:'Navigation':@AM:uline:@AM:navigation
     helptext<-1> = ''
     helptext<-1> = uline:@AM:'Editing':@AM:uline:@AM:editing
-    GOSUB showhelp
 showhelp:
     nbr_lines = DCOUNT(helptext, @AM)
     FOR i = 1 TO nbr_lines
