@@ -39,11 +39,11 @@
                     COL=INDEX(DSPLY<ROW+2>,'^',1)
                     IF COL THEN
                         Y=DSPLY<ROW+1>
-                        DSPLY = DSPLY<ROW>
+                        FIRSTERR = DSPLY<ROW>
                         IF suffix[1,1] EQ 'c' THEN
-                            INDROW = FIELD(DSPLY, ':', 2)
+                            INDROW = FIELD(FIRSTERR, ':', 2)
                         END ELSE
-                            INDROW=TRIM(FIELD(FIELD(DSPLY,',',2),'(',1))
+                            INDROW=TRIM(FIELD(FIELD(FIRSTERR,',',2),'(',1))
                         END
                         INDROW = OCONV(INDROW, 'MCN')
                         IF INDROW THEN
