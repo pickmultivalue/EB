@@ -2384,7 +2384,7 @@ Abort: !
             IF NOT(changed) THEN
                 OPEN.PATCH = FALSE
             END
-            IF INDEX(Z, 'C', 1) THEN
+            IF INDEX(Z, 'B', 1) OR INDEX(Z, 'C', 1) THEN
                 CALL EB_FILE(X,K.PATCHFILE,MAT PATCH,Y,ENCRYPTED,UPG)
                 GOSUB 10010
             END ELSE
