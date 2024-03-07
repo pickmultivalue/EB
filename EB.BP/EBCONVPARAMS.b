@@ -1,0 +1,12 @@
+    OPEN 'EB.PARAMS' TO F.params ELSE STOP 201,'EB.PARAMS'
+    SELECT F.params
+    VALID_TYPES = 'COLOUR':@AM:'CRT':@AM:'EB.CHARS':@AM:'FUNC'
+    LOOP WHILE READNEXT ID DO
+        IF ID 'R#1' EQ '@' THEN CONTINUE
+        TYPE = FIELD(ID, '@', 1)
+        LOCATE TYPE IN VALID_TYPES SETTING pos ELSE CONTINUE
+        READU REC FROM F.params,ID THEN
+            REC = OCONV(REC,'MX')
+            WRITE REC ON F.params,ID
+        END
+    REPEAT
