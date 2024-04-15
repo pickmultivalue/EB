@@ -1336,7 +1336,7 @@ GET.HELP:   !
                     IF NUM(DUMMY) THEN Y = '' ELSE Y = ':'
                     ROW = PDEPTH-2
                     LBL = DUMMY
-                    REC<LAST.AM+1> = LBL:Y:(IF NUM(LBL) THEN '' ELSE ' !')
+                    REC<LAST.AM+1> = LBL:Y:(IF NUM(LBL) THEN ' !' ELSE '')
                 END ELSE
                     ROW=1
                     LCOL=1

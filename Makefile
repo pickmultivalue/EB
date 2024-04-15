@@ -1,3 +1,5 @@
+JBCDEV_BIN=./bin
+
 .PHONY : all targets
 
 all: targets

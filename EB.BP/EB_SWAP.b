@@ -301,8 +301,9 @@
     IF TRIM(STMP) MATCHES WHOLENUM.MATCH THEN        ;! convert to ALPHA.DATE
         SUFFIX = ' ':FIELD(STMP,' ', 2, 999)
         STMP = STMP[1, COL1()-1]
-        STMP = OCONV(STMP, 'D')
-        STMP=INDENT:STMP:SUFFIX
+        DT = OCONV(STMP, 'D')
+        TM = OCONV(STMP, 'MTS')
+        STMP=INDENT:DT:' ':TM:SUFFIX
         POS=1
         RETURN
     END

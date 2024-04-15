@@ -87,7 +87,7 @@ MAIN$:!
             ZFLAG=REC<INDROW+ROW>[1,COMMENTLEN] NE COMMENT<1,1,1>
         END
         NEW.D.L = NO.D.L
-        IF DOWNCASE(Z)[1,1] EQ 'v' THEN
+        IF DOWNCASE(Z) EQ '!v' THEN
             sline = INDROW+ROW
             IF GETCWD(currdir) AND CHDIR(FLNM) THEN
                 EXECUTE 'git log -L':sline:',':sline+NO.D.L-1:':':ITNM

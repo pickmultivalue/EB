@@ -18,9 +18,11 @@ MAIN$:!
     SCOL=''
     IF FG_ACT.CODE=FG_PASTE.CODE THEN
         SAVE.ACT=FG_ACT.CODE
+        LINES.DELETED = DCOUNT(DEL.LINES,AM)
         LOOP
             MSG='Enter Paste Name or 0 for previous deleted lines ([F2]) '
-            L=PWIDTH - LEN(MSG); Z=0
+            L=PWIDTH - LEN(MSG)
+            Z=(IF LINES.DELETED THEN 0 ELSE '')
             GOSUB INPT
         WHILE FG_ACT.CODE EQ FG_HLP.CODE DO
             CALL EB_HELP('EBPASTE', @FALSE)
@@ -60,7 +62,7 @@ MAIN$:!
                 EXECUTE shell:Z:shellend CAPTURING STMP
             END ELSE
                 IF INDEX(0,Z,1) THEN
-                    IF DCOUNT(DEL.LINES,AM) THEN
+                    IF LINES.DELETED THEN
                         STMP=DEL.LINES<1>:AM
                         IF NOT(SHOW.PASTE) THEN DEL DEL.LINES<1>
                     END ELSE STMP=''

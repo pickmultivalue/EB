@@ -11,6 +11,11 @@
     DEFFUN FNKEYTRANS()
 
     ttype = cmd<2>
+    IF LEN(ttype) EQ 0 THEN
+        CRT
+        CRT 'Syntax: EBKEYS <term-type> [<specific-setting>]'
+        STOP
+    END
     specific_setting = cmd<3>
 
     IF (specific_setting 'R#1') = '*' THEN
@@ -20,8 +25,10 @@
 
     key = 'EB.CHARS@':ttype
 
-    MATREAD EB_CHARS FROM f.params, key THEN
+    READ HEXFILE FROM f.params, key THEN
         status = 'updated'
+        HEXFILE = ICONV(HEXFILE,'MX')
+        MATPARSE EB_CHARS FROM HEXFILE
     END ELSE
         MAT EB_CHARS =''
         CRT 'New term type...';RQM
@@ -83,8 +90,12 @@
     IF changed THEN
         len = 0
         FOR attr = 2 TO 100
-            l = LEN(EB_CHARS(attr))
-            IF l > len THEN len = l
+            VAL = EB_CHARS(attr)
+            vmc = DCOUNT(VAL, @VM)
+            FOR V = 1 TO vmc
+                l = LEN(VAL<1,V>)
+                IF l > len THEN len = l
+            NEXT V
         NEXT attr
 
         EB_CHARS(1) = len
@@ -95,7 +106,9 @@
         GOSUB get_key
 
         IF OCONV(chars, 'MCU') = 'Y' THEN
-            MATWRITE EB_CHARS ON f.params, key
+            MATBUILD HEXFILE FROM EB_CHARS
+            HEXFILE = OCONV(HEXFILE, 'MX')
+            WRITE HEXFILE ON f.params, key
             CRT key:' ':status
         END
     END

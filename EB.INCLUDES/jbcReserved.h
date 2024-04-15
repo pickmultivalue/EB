@@ -50,6 +50,7 @@
     jbcReserved<-1> = \CASE\
     jbcReserved<-1> = \CASING\
     jbcReserved<-1> = \CAT\
+    jbcReserved<-1> = \CATCH\
     jbcReserved<-1> = \CATS\
     jbcReserved<-1> = \CHAIN\
     jbcReserved<-1> = \CHANGE\
@@ -422,6 +423,7 @@
     jbcReserved<-1> = \TRIMF\
     jbcReserved<-1> = \TRIMFS\
     jbcReserved<-1> = \TRIMS\
+    jbcReserved<-1> = \TRY\
     jbcReserved<-1> = \TTYCTL\
     jbcReserved<-1> = \TTYGET\
     jbcReserved<-1> = \TTYSET\
