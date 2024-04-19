@@ -82,7 +82,7 @@
     CASE KeyCode=cmd_key_f27		  ; FG_ACT.CODE=0   ;! Function key
     CASE KeyCode=cmd_key_f28		  ; FG_ACT.CODE=0   ;! Function key
     CASE KeyCode=cmd_key_f29		  ; FG_ACT.CODE=0   ;! Function key
-    CASE KeyCode=cmd_key_f30		  ; FG_ACT.CODE=FG_MOUSE.CODE ;! Function key
+    CASE KeyCode=cmd_key_f30		  ; FG_ACT.CODE=FG_LMOUSE.CODE ;! Function key
     CASE KeyCode=cmd_key_f31		  ; FG_ACT.CODE=FG_ADD.CODE   ;! Function key
     CASE KeyCode=cmd_key_f32		  ; FG_ACT.CODE=FG_APP.CODE
 *

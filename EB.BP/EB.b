@@ -1452,7 +1452,8 @@ GET.HELP:   !
                 DELETE JET.PASTE,ITNM:'.sav'
             END
             GO NEXT.ITEM
-        CASE FG_ACT.CODE=FG_MOUSE.CODE
+        CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
+            EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
             CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
             IF LEN(R) THEN
                 IF EVENT=SPC THEN ;! down

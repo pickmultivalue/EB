@@ -3,13 +3,13 @@ EQU FG_ABT.CODE      TO 1  ;! Exit/Cancel
 EQU FG_HLP.CODE      TO 2  ;! Help
 EQU FG_RFR.CODE      TO 3  ;! Refresh
 EQU FG_TCL.CODE      TO 4  ;! Shell
-EQU FG_FUNK.CODE     TO 5  ;! 
+EQU FG_FUNK.CODE     TO 5  ;!
 EQU FG_SUS.CODE      TO 6  ;!
 EQU FG_JMP.CODE      TO 7  ;! Zoom
 EQU FG_SKP.CODE      TO 8  ;! Down arrow
 EQU FG_BCK.CODE      TO 9  ;! Up arrow
 EQU FG_END.CODE      TO 10 ;! Save/Accept
-EQU FG_QUICK.CODE    TO 11 ;! 
+EQU FG_QUICK.CODE    TO 11 ;!
 EQU FG_LST.CODE      TO 12 ;! Bookmark
 EQU FG_OPT.CODE      TO 13 ;! Options
 EQU FG_SEL.CODE      TO 14 ;! Start/End block
@@ -17,7 +17,7 @@ EQU FG_NXT.KEY.CODE  TO 15 ;! Next record
 EQU FG_INS.LINE.CODE TO 16 ;! Insert line
 EQU FG_DEL.LINE.CODE TO 17 ;! Delete line
 EQU FG_TAG.CODE      TO 18 ;! Toggle comment/selection
-EQU FG_EXIT.LN.CODE  TO 19 ;! 
+EQU FG_EXIT.LN.CODE  TO 19 ;!
 EQU FG_SEARCH.CODE   TO 20 ;! Search
 EQU FG_NXTS.CODE     TO 21 ;! Page down
 EQU FG_PRVS.CODE     TO 22 ;! Page up
@@ -29,11 +29,11 @@ EQU FG_BWORD.CODE    TO 27 ;! Previous word
 EQU FG_EOL.CODE      TO 28 ;! End of line
 EQU FG_FWORD.CODE    TO 29 ;! Next word
 EQU FG_TAB.CODE      TO 30 ;! Tab
-EQU FG_MULTI.CODE    TO 31 ;! 
+EQU FG_MULTI.CODE    TO 31 ;!
 EQU FG_PASTE.CODE    TO 32 ;! Paste
 EQU FG_TOP.CODE      TO 33 ;! Top of screen/record
 EQU FG_INSERT.CODE   TO 34 ;! Toggle over-type
-EQU FG_SPELL.CODE    TO 35 ;! 
+EQU FG_SPELL.CODE    TO 35 ;!
 EQU FG_SOL.CODE      TO 36 ;! Start of line
 EQU FG_CUT.CODE      TO 37 ;! Truncate (or cut)
 EQU FG_UNDEL.CODE    TO 38 ;! Undelete
@@ -41,18 +41,19 @@ EQU FG_BTAB.CODE     TO 39 ;! Back tab
 EQU FG_INS.CODE      TO 40 ;! Insert space
 EQU FG_DEL.CHAR.CODE TO 41 ;! Delete character
 EQU FG_DEL.WORD.CODE TO 42 ;! Delete word
-EQU FG_MERGE.CODE    TO 43 ;! 
-EQU FG_TUT.CODE      TO 44 ;! 
-EQU FG_MOUSE.CODE    TO 45 ;! Mouse click
-EQU FG_ALT.CODE      TO 46 ;! 
-EQU FG_PRV.KEY.CODE  TO 47 ;! Previous record
-EQU FG_GOTO.CODE     TO 48 ;! Goto
-EQU FG_MENU.CODE     TO 49 ;! 
-EQU FG_ADD.CODE      TO 50 ;! New line
-EQU FG_APP.CODE      TO 51 ;! Append
-EQU FG_DEL.CODE      TO 52 ;! 
-EQU FG_COPY.CODE     TO 53 ;! 
-EQU FG_AMD.CODE      TO 54 ;! 
-EQU FG_BOT.CODE      TO 55 ;! Bottom of screen/record
-EQU FG_IND.CODE      TO 56 ;! 
+EQU FG_MERGE.CODE    TO 43 ;!
+EQU FG_TUT.CODE      TO 44 ;!
+EQU FG_LMOUSE.CODE   TO 45 ;! Mouse click
+EQU FG_RMOUSE.CODE   TO 46
+EQU FG_ALT.CODE      TO 47 ;!
+EQU FG_PRV.KEY.CODE  TO 48 ;! Previous record
+EQU FG_GOTO.CODE     TO 49 ;! Goto
+EQU FG_MENU.CODE     TO 50 ;!
+EQU FG_ADD.CODE      TO 51 ;! New line
+EQU FG_APP.CODE      TO 52 ;! Append
+EQU FG_DEL.CODE      TO 53 ;!
+EQU FG_COPY.CODE     TO 54 ;!
+EQU FG_AMD.CODE      TO 55 ;!
+EQU FG_BOT.CODE      TO 56 ;! Bottom of screen/record
+EQU FG_IND.CODE      TO 57 ;!
 EQU FG_BSEARCH.CODE  TO 57 ;! Backwards search

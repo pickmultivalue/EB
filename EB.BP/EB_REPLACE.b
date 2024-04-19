@@ -53,14 +53,15 @@ MAIN$:!
             THE.REST=WSTR[POS+1,9]
             ACNT=INDEX(THE.REST,'x',1)
             IF ACNT THEN
+                ACNT++
                 APOS=ACNT
-                ACNT=THE.REST[1,ACNT-1]
+                LOOP WHILE THE.REST[APOS,1] MATCHES "1N0N" DO APOS++ REPEAT
+                ACNT = THE.REST[ACNT,APOS-ACNT]
+                WSTR=WSTR[1,POS]:'x':THE.REST[APOS,MAX]
                 IF ACNT='' THEN ACNT=1
-                IF NOT(ACNT MATCHES "1N0N") THEN ACNT=FALSE
             END
         END
     UNTIL ACNT OR NOT(POS) DO SOP+=1 REPEAT
-    IF ACNT THEN WSTR=WSTR[1,POS]:WSTR[POS+APOS,MAX]
     LHASH='L#':PWIDTH-4
 !
 ! Break-up wild-cards and literals

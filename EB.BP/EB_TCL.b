@@ -111,7 +111,7 @@ MAIN$:!
         END
         ORIG.COMMAND=COMMAND
         BEGIN CASE
-            CASE COMMAND=FG_MOUSE.CODE
+            CASE COMMAND=FG_LMOUSE.CODE OR COMMAND=FG_RMOUSE.CODE
                 ECHO OFF
                 INPUT NOTHING
                 ECHO ON
