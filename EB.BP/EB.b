@@ -1,7 +1,15 @@
 ! Initialisation
 ! ==============
     INCLUDE EB.EQUS EB.COMMON
-    INCLUDE EB.INCLUDES EB_LEXER
+    COMMON /EB_LEXER/ reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    IF UNASSIGNED(reservedWords) THEN
+        reservedWords = ''
+        colors = ''
+        comments = ''
+        commentlen = ''
+        incomment = ''
+        case_insensitive = ''
+    END
     INCLUDE EB.INCLUDES lex.h
     INCLUDE EB.INCLUDES jbcReserved.h
     INCLUDE EB.INCLUDES cReserved.h
@@ -217,6 +225,7 @@
     COMPILE.OPTS=COMPILE.VERB<3>
     IF LEN(COMPILE.OPTS) THEN COMPILE.OPTS=SPC:COMPILE.OPTS
     COMPILE.VERB=shell:COMPILE.VERB<1>
+!    COMPILE.VERB=COMPILE.VERB<1>
     ITAB = ''
     READ ITAB FROM FG_EB.PARAMS,'EB.ITAB' ELSE
         ITAB=2:@AM:8:@AM:3
@@ -270,12 +279,11 @@
     FLNM=CHANGE(FLNM, '{sp}', SPC)
     ITNM=CHANGE(ITNM, '{sp}', SPC)
     IF FLNM="DICT" THEN
-        DCT = 'DICT'
-        FLNM=ITNM
+        FLNM='DICT ':ITNM
         WCNT+=1
         ITNM=FIELD(FG_SENTENCE," ",WCNT)
         ITNM=CHANGE(ITNM, '{sp}', SPC)
-    END ELSE DCT = ''
+    END
     ORIG_WCNT = WCNT
     END.WORDS='END':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
     USEMODE=''; PASSWD=''
@@ -284,7 +292,7 @@
     INCLUDE EB.OS.INCLUDES BASIC.VERB
     CATL.LIST=''
     CALL EB_RSS(0)
-    CALL EB_OPEN(DCT,FLNM,FIL,0,FPOS)
+    CALL EB_OPEN('',FLNM,FIL,0,FPOS)
     IF LEN(FLNM) AND FLNM NE '.' AND FLNM NE '..' AND (ITNM='' OR NOT(FPOS)) THEN
         SITNM = ITNM
         ITNM=FLNM
@@ -456,7 +464,8 @@ FIRST.ITEM: !
     BAS.OPTS = ''
     CALL EB_OPEN('DICT',FLNM,f_dummy,0,found)
     IF found THEN
-        READ ITAB FROM f_dummy,'EB_INDENT' ELSE NULL
+        SITAB = ITAB
+        READ ITAB FROM f_dummy,'EB_INDENT' ELSE ITAB = SITAB
         READ BAS.OPTS FROM f_dummy,'EB_BAS_OPTS' ELSE NULL
     END
 READ.ITEM:!
@@ -2186,12 +2195,17 @@ TCL: !
                         loc=0
                         LOOP
                             REMOVE inc FROM jedifilepath AT loc SETTING delim
-                            IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN BAS.ARGS:=' -I':inc
+                            IF NOT(INDEX(inc, SPC, 1)) AND LEN(inc) THEN
+                                OPEN inc THEN
+                                    BAS.ARGS:=' -I':inc
+                                END
+                            END
                         WHILE delim DO REPEAT
                         IF DIR_DELIM_CH = '\' THEN
                             FULLPATH = CHANGE(FLNM, '\', '\\')
                         END ELSE FULLPATH=FLNM
                         EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
+!                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS CAPTURING DSPLY RETURNING ERR.NOS
                     END
                     INCLUDE EB.OS.INCLUDES RTED.BASIC
                 END
@@ -2369,7 +2383,7 @@ Abort: !
         END ELSE Z = 'Confirm'
     END
     IF LEN(Z) THEN
-        Z := " exit (Y/N/FI{B{C}}? "
+        Z := " exit (Y/N/FI{B{C}})? "
         CRT MSG.CLR:Z:
         YNC=LEN(Z); YNR=(PDEPTH-1); YNCHRS='Y':VM:'N':VM:'F'; YNL=1; GOSUB GET.CHAR
     END
@@ -2649,7 +2663,7 @@ GET.CATL: !
             IF SOP THEN prefix = '-L' ELSE prefix = '-o'
             FLNM.CAT.OPTIONS = prefix:FLNM.CAT.OPTIONS
         END ELSE FLNM.CAT.OPTIONS = ''
-        CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':
+        CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':FLNM:
     END
     RETURN
 displayLine: !

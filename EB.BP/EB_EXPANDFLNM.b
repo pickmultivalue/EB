@@ -1,5 +1,9 @@
     FUNCTION EB_EXPANDFLNM(FLNM)
-    INCLUDE EB.INCLUDES EB_EXPANDFLNM
+    COMMON /EB_EXPANDFLNM/ filenames, paths
+    IF UNASSIGNED(filenames) THEN
+        filenames = ''
+        paths = ''
+    END
 !
     DEFFUN GETFULLPATH()
     EQU SPC TO ' '
@@ -25,9 +29,15 @@
         IF INDEX(FullPath, 'jshow', 1) THEN
             RETURN ORIG_FLNM
         END
-        result = CHANGE(DICT:FullPath, DIR_DELIM_CH:'.':DIR_DELIM_CH, DIR_DELIM_CH)
+        FullPath = CHANGE(FullPath, DIR_DELIM_CH, @AM)
+        dc = DCOUNT(FullPath, @AM)
+        FOR i = dc TO 2 STEP -1
+            IF FullPath<i> EQ '.' THEN DEL FullPath<i>
+        NEXT
+        FullPath = CHANGE(FullPath, @AM, DIR_DELIM_CH)
+        result = DICT:FullPath
         INS FLNM BEFORE filenames<pos>
         INS result BEFORE paths<pos>
     END
 
-    RETURN TRIM(result,DIR_DELIM_CH,'T')
+    RETURN result
