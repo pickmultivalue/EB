@@ -19,3 +19,4 @@
         CASE scType = 'SVN'
             RETURN SVN_DELETE(RemoveFlag, FilePath, ItemName)
     END CASE
+    RETURN -1

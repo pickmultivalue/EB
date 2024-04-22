@@ -2343,15 +2343,19 @@ GET.PREVWORD: !
 !
     RELEASE FIL,ITNM
     Z = SRC_DELETE(TRUE, FLNM, ITNM)
-    Y = (FIELD(Z,SPC,1) = 'D')
-    IF LEN(Z) = 0 OR Y THEN
-        Z = ITNM:" deleted!"
-        IF Y THEN
-            Z := ' Awaiting commit to repository'
+    IF Z LT 0 THEN
+        DELETE FIL,ITNM
+    END ELSE
+        Y = (FIELD(Z,SPC,1) = 'D')
+        IF LEN(Z) = 0 OR Y THEN
+            Z = ITNM:" deleted!"
+            IF Y THEN
+                Z := ' Awaiting commit to repository'
+            END
         END
+        CRT MSG.CLR:Z:
+        Z = ''; L=1; GOSUB INPT
     END
-    CRT MSG.CLR:Z:
-    Z = ''; L=1; GOSUB INPT
     GO NEXT.ITEM
 Abort: !
     FG_ACT.CODE = FALSE
