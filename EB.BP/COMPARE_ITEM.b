@@ -20,6 +20,19 @@
     END
     CALL JBASEParseCommandLine1(args, TCL.OPTS, FG_SENTENCE)
     FG_SENTENCE=' ':CHANGE(FG_SENTENCE, @AM, ' ')
+    IF TRIM(FG_SENTENCE) EQ '?' THEN
+        CRT
+        CRT 'Syntax: COMPARE_ITEM <left-dir/full-item-path><right-dir/full-item-path>'
+        CRT
+        CRT 'Can be run from an active select'
+        CRT
+        CRT 'Examples:'
+        CRT
+        CRT 'COMPARE_ITEM /old_tree/BP/INV_UPDATE.b /new_tree/BP/INV_UPDATE.b'
+        CRT
+        STOP
+    END
+
     TCL.OPTS=OCONV(TCL.OPTS, 'MCU')
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
@@ -167,11 +180,17 @@
         k = 0
     END
 100 ! Enter First File Name
-    IF ASENT THEN ASENT=FALSE ELSE
-        CRT @(0,2):'ENTER FILE A: ':
-        INPUT FA
-    END
+    LOOP
+        IF ASENT THEN ASENT=FALSE ELSE
+            CRT @(0,2):'ENTER FILE A: ':@(-4):
+            INPUT FA
+        END
+    WHILE FA EQ '?' DO
+        FH = 'A'
+        GOSUB SHOW_FILE_HELP
+    REPEAT
     IF FA EQ 'EX' THEN GO 99999
+    CRT @(-3):
     IF FIELD(FA,' ',1) EQ 'DICT' THEN
         DICT='DICT'
         FA=FIELD(FA,' ',2)
@@ -203,8 +222,14 @@
         END
     END ELSE
         IF AISENT THEN AISENT=FALSE ELSE
-            CRT @(0,4):'ENTER ID A: ':
-            INPUT IDA
+            LOOP
+                CRT @(0,4):'ENTER ID A: ':@(-4):
+                INPUT IDA
+            WHILE IDA EQ '?' DO
+                IDH = 'A'
+                GOSUB SHOW_ID_HELP
+            REPEAT
+            CRT @(-3):
         END
     END
     IF IDA EQ 'EXK'[1,LEN(IDA)] THEN GO 99999
@@ -234,8 +259,14 @@
     END ELSE
 131     !
         IF BISENT THEN BISENT=FALSE ELSE
-            CRT @(42,4):'ENTER ID B: ':
-            INPUT IDB
+            LOOP
+                CRT @(42,4):'ENTER ID B: ':@(-4):
+                INPUT IDB
+            WHILE IDB EQ '?' DO
+                IDH = 'B'
+                GOSUB SHOW_ID_HELP
+            REPEAT
+            CRT @(-3):
         END
     END
     IF IDB EQ '' THEN IDB=IDA
@@ -1553,8 +1584,14 @@ DECRYPT: !
 OPEN.FILEB: !
 120 ! Enter Second File Name
     IF BSENT OR UPGBACKUP THEN BSENT=FALSE ELSE
-        CRT @(42,2):'ENTER FILE B: ':
-        INPUT FVB
+        LOOP
+            CRT @(42,2):'ENTER FILE B: ':@(-4):
+            INPUT FVB
+        WHILE FVB EQ '?' DO
+            FH = 'B'
+            GOSUB SHOW_FILE_HELP
+        REPEAT
+        CRT @(-3):
     END
     IF FVB EQ '' THEN FVB=FA
     IF FVB EQ '^' THEN RETURN TO 100
@@ -1663,4 +1700,12 @@ CHECKRANGE: !
         INPUT RANGE_OK,1:_
         RANGE_OK = UPCASE(RANGE_OK EQ 'Y')
     END
+    RETURN
+SHOW_FILE_HELP:
+    CRT
+    CRT 'Enter EX to exit, [DICT ] file name (or full path)':(IF FH EQ 'A' THEN "" ELSE " or ^ to go back"):
+    RETURN
+SHOW_ID_HELP:
+    CRT
+    CRT 'Enter an item name from ':(IF IDH EQ 'A' THEN FILEA ELSE FILEB):', "^" to go back or "EX{K}" to exit':
     RETURN

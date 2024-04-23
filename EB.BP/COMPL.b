@@ -41,7 +41,7 @@
         CRT 'T option trims all spaces'
         CRT 'A option trims trailing AMs'
         CRT 'V option trims trailing VMs'
-        CRT 'C option starts off COMPARE.ITEM for the different items'
+        CRT 'C option starts off COMPARE_ITEM for the different items'
         CRT 'I option suppress output'
         CRT 'O option include object code'
         CRT 'M include missing items'
