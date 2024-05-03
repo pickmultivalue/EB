@@ -7,5 +7,6 @@ Special commands:
 >ıindent block
 <ıunindent block
 ^ırotate block (on an AM/VM perspective)
+^S{by}ısort block by {by} (default "AL")
 !vıshow git log
-[F3]ıPop out selection in editor 
+[F3]ıPop out selection in editor

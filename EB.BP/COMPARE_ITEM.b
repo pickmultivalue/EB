@@ -277,7 +277,7 @@
         STOP
         GO 131
     END
-    IF RECA EQ RECB THEN STOP
+    IF RECA EQ RECB THEN GOTO 110
     IF READN THEN GOTO 200
     CRT EL:
     CRT @(25,6):'--- OPTIONS ---':

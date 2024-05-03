@@ -111,15 +111,33 @@ MAIN$:!
             IF Z EQ '^' THEN
                 CALL EB_ROTATE(ROTATE, NEW.D.L)
             END ELSE
-                path = EBGETHOME()
-                Y ='.PASTE*':FG_LOGNAME:'*'
-                WRITE ROTATE ON JET.PASTE,Y
-                EXECUTE 'EB ':path:'JET.PASTE ':Y
-                READ ROTATE FROM JET.PASTE,Y
+                IF UPCASE(Z[2,1]) EQ 'S' THEN ;!
+                    SORTED = ''
+                    SORTBY = Z[3,2]
+                    IF SORTBY = '' THEN SORTBY = 'A'
+                    IF LEN(SORTBY) EQ 1 THEN SORTBY := 'L'
+                    FOR J = 1 TO NO.D.L
+                        Y = ROTATE<J>
+                        LOCATE Y IN SORTED BY SORTBY SETTING POS ELSE
+                            INS Y BEFORE SORTED<POS>
+                        END
+                    NEXT J
+                    ROTATE = SORTED
+                    Y = ''
+                    Z = '^^'
+                END ELSE
+                    path = EBGETHOME()
+                    Y ='.PASTE*':FG_LOGNAME:'*'
+                    WRITE ROTATE ON JET.PASTE,Y
+                    EXECUTE 'EB ':path:'JET.PASTE ':Y
+                    READ ROTATE FROM JET.PASTE,Y
+                END
                 FOR J=1 TO NO.D.L
                     REC<INDROW+ROW+J> = ROTATE<J>
                 NEXT J
-                DELETE JET.PASTE,Y
+                IF LEN(Y) THEN
+                    DELETE JET.PASTE,Y
+                END
             END
             INDROW++
             IF Z EQ '^^' THEN

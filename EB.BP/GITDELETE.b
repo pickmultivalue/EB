@@ -17,22 +17,22 @@
     FullPaths = SRC_SENTENCE(TRUE, FALSE)
 !
     IF LEN(FullPaths) THEN
-    CRT
-    CRT 'The following paths will be deleted:'
-    CRT
-    loc = 0
-    LOOP
-    REMOVE FullPath FROM FullPaths AT loc SETTING delim
-    CRT FullPath
-WHILE delim DO REPEAT
-    CRT
-    ANS = GETYN('Continue', 'N', 2)
-    IF ANS = 'Y' THEN
-    loc = 0
-    LOOP
-    REMOVE FullPath FROM FullPaths AT loc SETTING delim
-    CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
-    CRT GIT_DELETE(TRUE, FilePath, ItemName)
-WHILE delim DO REPEAT
-    END
+        CRT
+        CRT 'The following paths will be deleted:'
+        CRT
+        loc = 0
+        LOOP
+            REMOVE FullPath FROM FullPaths AT loc SETTING delim
+            CRT FullPath
+        WHILE delim DO REPEAT
+        CRT
+        ANS = GETYN('Continue', 'N', 2)
+        IF ANS = 'Y' THEN
+            loc = 0
+            LOOP
+                REMOVE FullPath FROM FullPaths AT loc SETTING delim
+                CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
+                CRT GIT_DELETE(TRUE, FilePath, ItemName)
+            WHILE delim DO REPEAT
+        END
     END

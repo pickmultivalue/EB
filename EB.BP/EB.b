@@ -1411,7 +1411,16 @@ GET.HELP:   !
                             IO = EBJSHOW('-c ':word)
                             IF LEN(IO) = 0 THEN
                                 DUMMY = ''
-                            END ELSE DUMMY=word
+                            END ELSE
+                                Y = "0X'Item '0X'in file '0X"
+                                Z = MATCHFIELD(IO, Y, 3)
+                                IF LEN(Z) THEN
+                                    DUMMY = MATCHFIELD(IO, Y, 5)<1>:' ':Z
+                                    WRITE FG_MULTI.CODE:AM:'::':word:'(' ON F.currdir,'eb_auto'
+                                END ELSE
+                                    DUMMY=word
+                                END
+                            END
                         END
                 END CASE
                 IF LEN(DUMMY) THEN
@@ -2663,7 +2672,7 @@ GET.CATL: !
             IF SOP THEN prefix = '-L' ELSE prefix = '-o'
             FLNM.CAT.OPTIONS = prefix:FLNM.CAT.OPTIONS
         END ELSE FLNM.CAT.OPTIONS = ''
-        CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':FLNM:
+        CRT MSG.CLR:'CATALOG ':CHANGE(FLNM.CAT.OPTIONS, @AM, ' | '):' ':FLNM:' ':
     END
     RETURN
 displayLine: !
