@@ -1413,10 +1413,26 @@ GET.HELP:   !
                                 DUMMY = ''
                             END ELSE
                                 Y = "0X'Item '0X'in file '0X"
-                                Z = MATCHFIELD(IO, Y, 3)
-                                IF LEN(Z) THEN
-                                    DUMMY = MATCHFIELD(IO, Y, 5)<1>:' ':Z
-                                    WRITE FG_MULTI.CODE:AM:'::':word:'(' ON F.currdir,'eb_auto'
+                                matches = ''
+                                X = DCOUNT(IO, AM)
+                                FOR I = 1 TO X
+                                    LINE = IO<I>
+                                    prog = MATCHFIELD(LINE, Y, 3)
+                                    IF LEN(prog) THEN
+                                        Z = MATCHFIELD(LINE, Y, 5)
+                                        DUMMY = Z:' ':prog
+                                        LOCATE DUMMY IN matches<1> BY 'AL' SETTING POS ELSE
+                                            INS DUMMY BEFORE matches<1, POS>
+                                            INS Z BEFORE matches<2, POS>
+                                            INS prog BEFORE matches<3, POS>
+                                        END
+                                    END
+                                NEXT I
+                                IF LEN(matches) THEN
+                                    CALL EB_CHOICES(10,3,'',X,'',matches,DUMMY,1,1,1:SVM:2:SVM:3,'L#0':SVM:'R#40':SVM:'L#30','Matching sources for ':DQUOTE(word):SVM:'Path')
+                                    IF LEN(DUMMY) THEN
+                                        WRITE FG_MULTI.CODE:AM:'::':word:'(' ON F.currdir,'eb_auto'
+                                    END
                                 END ELSE
                                     DUMMY=word
                                 END
