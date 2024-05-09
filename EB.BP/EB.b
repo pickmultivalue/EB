@@ -1625,15 +1625,7 @@ EB.SUB: !
                 LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
                 CALL EB_VERSION(Y)
                 IF Y THEN
-                    READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' THEN
-                        LOOP
-                            LOCATE LUK IN LAST.EB<1> SETTING POS THEN
-                                DEL LAST.EB<1, POS>
-                                DEL LAST.EB<2, POS>
-                            END ELSE POS = FALSE
-                        WHILE POS DO REPEAT
-                        WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
-                    END
+                    GOSUB REMOVE.LAST.EB
                     GOSUB SETUP.SWITCH
                     GOSUB SET.MSG
                     CRT MSG.DSP:
@@ -1729,10 +1721,10 @@ CHG.LROW:
     IF FG_ACT.CODE=FG_ALT.CODE THEN
         FG_ACT.CODE=FALSE
     END ELSE
-        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e, <L>ower ?"
+        cmds ="D<a>te/time,<B>asicErrs,<C>ompare,<D>upe,<E>d,<F>ormat,To<g>gle Tab Mode,<H>ex toggle,<J>compile to C,<I>ntegrate,Insert <k>ey,<M>erge,M<o>ve,<P>rt,<Q>uestion,<R>otate,<S>wap,<T>abs,<U>nindent,Ed<V>al,<W>rite,E<x>pand toggle,Si<z>e, <L>ower ?"
         CRT MSG.CLR:CHANGE(CHANGE(cmds,'<',RVON),'>',RVOFF):' ([F1])':
         YNC=PWIDTH; YNR=PDEPTH;
-        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'K':VM:'L':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
+        YNCHRS='.':VM:'A':VM:'B':VM:'C':VM:'D':VM:'E':VM:'F':VM:'G':VM:'H':VM:'I':VM:'J':VM:'K':VM:'L':VM:'M':VM:'N':VM:'O':VM:'P':VM:'Q':VM:'R':VM:'S':VM:'T':VM:'U':VM:'V':VM:'W':VM:'X':VM:'Z'
         YNL=1; GOSUB GET.CHAR
         CRT MSG.DSP:
         IF FG_ACT.CODE=FG_OPT.CODE THEN Y='.'; FG_ACT.CODE=FALSE
@@ -1796,6 +1788,20 @@ CHG.LROW:
         CASE FTYP='I'
             CALL EB_INTEGRATE
             GO STRT
+        CASE FTYP='J'
+            suffix = FIELD(ITNM,'.',DCOUNT(ITNM,'.'))
+            IF suffix EQ 'b' OR suffix EQ 'jabba' THEN
+                Y = ITNM[1,COL1()-1]
+                EXECUTE 'jcompile -S ':FLNM:DIR_DELIM_CH:ITNM CAPTURING io
+                EXECUTE 'EB ':FLNM:' ':Y:'.c'
+                DELETE FIL,Y:'.c'
+                DELETE FIL,Y:'.j'
+                LUK=FLNM:'*':OEDIT.MODE:'*':Y:'.c'
+                GOSUB REMOVE.LAST.EB
+                SCR.UD=1; CALL EB_REFRESH
+            END ELSE
+                CRT MSG.CLR:'Incompatible suffix: ':suffix:MSG.AKN:
+            END
         CASE FTYP='T'
             tab_display = NOT(tab_display)
             SCR.LR=1
@@ -2736,6 +2742,17 @@ DO_UNDO:
     COL=REC<1,1>; ROW = REC<1,2>; INDROW = REC<1,3>; LCOL = REC<1,4>; DEL REC<1>
     SCR.UD = 1
     CALL EB_REFRESH
+    RETURN
+REMOVE.LAST.EB:
+    READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' THEN
+        LOOP
+            LOCATE LUK IN LAST.EB<1> SETTING POS THEN
+                DEL LAST.EB<1, POS>
+                DEL LAST.EB<2, POS>
+            END ELSE POS = FALSE
+        WHILE POS DO REPEAT
+        WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
+    END
     RETURN
 WRAPUP: !
     IF MOD(FG_STERM,3) THEN
