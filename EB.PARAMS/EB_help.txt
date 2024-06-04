@@ -2,14 +2,18 @@ Editing programs items with EB can be initiated as follows:
 
 EBýPopup-list of previous sessions will display
 ý - The [F8] key can be used to filter
-EBýEdit last file/program
-EBýEdit previous to last file (pops last file)
-EBýSimilar to ED/JED, can be run from a list
-EBýEnter one or more cataloged programs/subroutines 
-EBFINDýSearch for items with matching text and invoke EB
+EB .ýEdit last file/program
+EB ..ýEdit previous to last file (pops last file)
+EB <filename> {<itemlist>}ýSimilar to ED/JED, can be run from a list
+EB <fullpath_to_file>ýSimilar to JED, but multiple paths can be entered
+EB <program> {<program>}ýEnter one or more cataloged programs/subroutines
+EBFIND <options>ýSearch for items with matching text and invoke EB
 
 Editing tips:
 - pressing <enter> will split the line at the current cursor
 - pressing <del> anywere after the last character merges the line below
 - pressing <tab> on a blank line tries to determine the correct indentation
-- When shelling out to jshell ([F10]) press ctrl-D to return 
+- When shelling out to jshell ([F10]) press ctrl-D to return
+- All search/replace prompts support up/down and [F2] to reuse previous
+- New programs default to a single comment line with PROGRAM
+  Press [F2], then "s" to convert to SUBROUTINE and again to FUNCTION

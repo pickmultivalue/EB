@@ -136,7 +136,7 @@ MAIN$:!
                     mandir = ''
                     IF NOT(GETENV('MANPATH')) THEN
                         IF DIR_DELIM_CH = '/' THEN
-                            mandir = '-M $JBCRELEASEDIR/man '
+                            mandir = '-M $JBCGLOBALDIR/man '
                         END
                     END
                     EXECUTE ksh:'man ':mandir:WORD:' 2>&1' CAPTURING list
@@ -178,7 +178,7 @@ DisplayEBcmds:
         helptext<-1> = \\
         helptext<-1> = \EB\ hash:\Popup-list of previous sessions will display\
         helptext<-1> = \\ hash:\ - The [F8] key can be used to filter\
-        helptext<-1> = \EB\ hash:\Edit last file/program\
+        helptext<-1> = \EB ..\ hash:\Edit last file/program\
         helptext<-1> = \EB\ hash:\Edit previous to last file (pops last file)\
         helptext<-1> = \EB\ hash:\Similar to ED/JED, can be run from a list\
         helptext<-1> = \EB\ hash:\Enter one or more cataloged programs/subroutines \

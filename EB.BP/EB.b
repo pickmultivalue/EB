@@ -395,14 +395,14 @@ FIRST.ITEM: !
     ITNM=CHANGE(ITNM, '{sp}', SPC)
     IF ITNM='' THEN
         GO WRAPUP
-    END ELSE
-        TMP=FIELD(ITNM,'*',1)
-        IF TMP NE ITNM THEN
-            FLNM=TMP
-            EDIT.MODE=FIELD(ITNM,'*',2)
-            ITNM=ITNM[COL2()+1,MAX]
-        END ELSE GOSUB GET.EDIT.MODE
-        IF LEN(EDIT.MODE) THEN GOSUB SET.MODE
+!    END ELSE
+!        TMP=FIELD(ITNM,'*',1)
+!        IF TMP NE ITNM THEN
+!            FLNM=TMP
+!            EDIT.MODE=FIELD(ITNM,'*',2)
+!            ITNM=ITNM[COL2()+1,MAX]
+!        END ELSE GOSUB GET.EDIT.MODE
+!        IF LEN(EDIT.MODE) THEN GOSUB SET.MODE
     END
     IF LEN(FLNM) THEN GO 20
 !
@@ -2658,9 +2658,9 @@ SWITCH.FILE: !
     IF FLNM = HFLNM THEN
         FIL = SFIL
         FLNM = SFLNM
-    END ELSE
-        FIL = HFIL
-        FLNM = HFLNM
+!    END ELSE
+!        FIL = HFIL
+!        FLNM = HFLNM
     END
     RETURN
 GET.CATL: !
