@@ -164,8 +164,8 @@
     MSG.AKN=@(0,(PDEPTH-1))
     MSG.CLR=MSG.AKN:CLEOP
     EQU DELIMS TO ' ():;+-*/,&!^#=<>[]@'
-    EQU OTHER.MARGIN TO CHAR(22)        ;*Control V
-    EQU REP.STR TO CHAR(18)   ;* Control R
+    EQU OTHER.MARGIN TO CHAR(22)        ;!Control V
+    EQU REP.STR TO CHAR(18)   ;! Control R
     BS.CH=FG_BS.CH
     SUB.CODES=BS.CH:VM:REP.STR:VM:OTHER.MARGIN:VM:CTRL.N
     READ ALPHA.CHARS FROM FG_EB.PARAMS,'ALPHA.CHARS' ELSE
@@ -321,8 +321,8 @@
                     WCNT = DCOUNT(LAST.EB<1>, VM)
                     FOR I = WCNT TO 1 STEP -1
                         LUK = LAST.EB<1, I>
-                        Y = FIELD(LUK, '*', 1)
-                        Z = FIELD(LUK, '*', 3)
+                        Y = FIELD(LUK, TAB, 1)
+                        Z = FIELD(LUK, TAB, 3)
                         CALL EB_OPEN('', Y, FIL, FALSE, POS)
                         IF POS THEN
                             READV LOC FROM FIL,Z,1 ELSE POS = FALSE
@@ -339,7 +339,7 @@
                         END
                     NEXT I
                     POPUP_WIDTH=SYSTEM(2)-70
-                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G*1':SVM:'L#60':CTRL.C:'G2*99','Previous EB Sessions':SVM:'File':SVM:'Item')
+                    CALL EB_CHOICES(20,3,'',wdepth,'',LAST.EB,ITNM,1,1,1:SVM:1,'R#':POPUP_WIDTH:CTRL.C:'G':TAB:'1':SVM:'L#60':CTRL.C:'G2':TAB:'99','Previous EB Sessions':SVM:'File':SVM:'Item')
                     FLNM=''
                 END
                 NPOS = DCOUNT(EB.FILE.LIST<1>,VM)
@@ -362,15 +362,15 @@
                     WCNT = 2
                     ORIG_WCNT = WCNT
                 END ELSE
-                    IF ITNM#'' AND FLNM#'' THEN ITNM=FLNM:'**':ITNM
+                    IF ITNM#'' AND FLNM#'' THEN ITNM=FLNM:TAB:TAB:ITNM
                 END
                 POS=0
         END CASE
         IF POS THEN ITNM = LAST.EB<1,POS>
         IF LEN(ITNM) THEN
-            IF INDEX(ITNM, '*', 1) THEN
-                FLNM=FIELD(ITNM,'*',1)
-                EDIT.MODE=FIELD(ITNM,'*',2)
+            IF INDEX(ITNM, TAB, 1) THEN
+                FLNM=FIELD(ITNM,TAB,1)
+                EDIT.MODE=FIELD(ITNM,TAB,2)
                 ITNM=ITNM[COL2()+1,MAX]
             END
         END ELSE
@@ -395,14 +395,14 @@ FIRST.ITEM: !
     ITNM=CHANGE(ITNM, '{sp}', SPC)
     IF ITNM='' THEN
         GO WRAPUP
-!    END ELSE
-!        TMP=FIELD(ITNM,'*',1)
-!        IF TMP NE ITNM THEN
-!            FLNM=TMP
-!            EDIT.MODE=FIELD(ITNM,'*',2)
-!            ITNM=ITNM[COL2()+1,MAX]
-!        END ELSE GOSUB GET.EDIT.MODE
-!        IF LEN(EDIT.MODE) THEN GOSUB SET.MODE
+    END ELSE
+        TMP=FIELD(ITNM,TAB,1)
+        IF TMP NE ITNM THEN
+            FLNM=TMP
+            EDIT.MODE=FIELD(ITNM,TAB,2)
+            ITNM=ITNM[COL2()+1,MAX]
+        END ELSE GOSUB GET.EDIT.MODE
+        IF LEN(EDIT.MODE) THEN GOSUB SET.MODE
     END
     IF LEN(FLNM) THEN GO 20
 !
@@ -606,7 +606,7 @@ ALREADY.LOCKED: !
     GOSUB SET.MSG
     DEL.LINES=''; CUT.TEXT=''; NEW.CHARS=''; PREV.TIME=TIME()
     MOUSEROW=0; MOUSECOL=0; MOUSESTATE='';
-    LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
+    LUK=FLNM:TAB:OEDIT.MODE:TAB:ITNM
     LAST.AM = DCOUNT(REC, AM)
     LOCATE LUK IN LAST.EB<1> SETTING POS THEN
         COL = LAST.EB<2,POS>
@@ -1622,7 +1622,7 @@ EB.SUB: !
                     SCR.UD=TRUE
                 END
             CASE Y='V'
-                LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
+                LUK=FLNM:TAB:OEDIT.MODE:TAB:ITNM
                 CALL EB_VERSION(Y)
                 IF Y THEN
                     GOSUB REMOVE.LAST.EB
@@ -1654,7 +1654,7 @@ EB.SUB: !
                         WRITE REC ON FIL,Z
                         IF Y='R' THEN
                             DELETE FIL,ITNM
-                            YNC=FLNM:'*':OEDIT.MODE:'*':Z
+                            YNC=FLNM:TAB:OEDIT.MODE:TAB:Z
                             GOSUB LAST.USED
                             LAST.EB<1,1>=YNC
                             WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
@@ -1796,7 +1796,7 @@ CHG.LROW:
                 EXECUTE 'EB ':FLNM:' ':Y:'.c'
                 DELETE FIL,Y:'.c'
                 DELETE FIL,Y:'.j'
-                LUK=FLNM:'*':OEDIT.MODE:'*':Y:'.c'
+                LUK=FLNM:TAB:OEDIT.MODE:TAB:Y:'.c'
                 GOSUB REMOVE.LAST.EB
                 SCR.UD=1; CALL EB_REFRESH
             END ELSE
@@ -2613,12 +2613,12 @@ LAST.USED:!
     IF (ITNM 'R#4')='.tmp' THEN RETURN
     IF tempItem THEN RETURN
     READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' ELSE LAST.EB=''
-    LUK=FLNM:'**':ITNM
+    LUK=FLNM:TAB:TAB:ITNM
     LOCATE LUK IN LAST.EB<1,vm_start> SETTING POS THEN
         DEL LAST.EB<1,POS>
         DEL LAST.EB<2,POS>
     END
-    LUK=FLNM:'*':OEDIT.MODE:'*':ITNM
+    LUK=FLNM:TAB:OEDIT.MODE:TAB:ITNM
     LOCATE LUK IN LAST.EB<1,vm_start> SETTING POS THEN
         DEL LAST.EB<1,POS>
         DEL LAST.EB<2,POS>
