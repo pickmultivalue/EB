@@ -2080,6 +2080,7 @@ TCL: !
     IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     CRT CURS.ON:
+    SCR.UD=1
     RETURN
 !================
 5000 ! Merge lines from an item
