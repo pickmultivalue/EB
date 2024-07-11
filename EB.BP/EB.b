@@ -196,7 +196,7 @@
         A=1
         LOOP
             LINE=BASE.ITEM<A>
-        WHILE LINE[1,1]='*' DO
+        WHILE LINE[1,1] EQ '*' DO
             BEGIN CASE
                 CASE INDEX(LINE,'Author',1)
                     LINE:=SPC:FG_USER.NAME
@@ -1140,13 +1140,13 @@ SCROLL.LINE:    !
                 IF LNM EQ '<' THEN
                     Z=INDROW+ROW:SVM:LCOL+4
                     POS=Y
-                    LOOP UNTIL MARKERS<1,POS>='<' AND MARKERS<2,POS>=Z OR POS=0 DO POS-=1 REPEAT
+                    LOOP UNTIL MARKERS<1,POS> EQ '<' AND MARKERS<2,POS> EQ Z OR POS EQ 0 DO POS-=1 REPEAT
                     IF POS THEN
                         FOR I=POS TO Y
                             DEL MARKERS<1,POS>
                             DEL MARKERS<2,POS>
                         NEXT I
-                        LOOP UNTIL MARKERS<1,POS>='<' OR POS=0 DO POS-=1 REPEAT
+                        LOOP UNTIL MARKERS<1,POS> EQ '<' OR POS EQ 0 DO POS-=1 REPEAT
                         IF POS THEN
                             Y=MARKERS<2,POS,1>; COL=MARKERS<2,POS,2>
                             DEL MARKERS<1,POS>
@@ -1232,7 +1232,7 @@ GEOL:       !
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
             I=OFFSET
             IF OFFSET AND (COL GT PWIDTH) THEN COL-=(PWIDTH-5)
-            LOOP WHILE (COL>PWIDTH) DO
+            LOOP WHILE COL GT PWIDTH DO
                 COL-=(PWIDTH-5)
                 OFFSET+=(PWIDTH-5)
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
@@ -1294,7 +1294,7 @@ GET.HELP:   !
                 LLEN+=LEN(TMP)
             END ELSE
                 Y=LROW+(LROW<3)
-                LOOP WHILE Y>2 AND RDSP(Y-1)[1,COMMENTLEN]=COMMENT DO Y-=1 REPEAT
+                LOOP WHILE Y GT 2 AND RDSP(Y-1)[1,COMMENTLEN] EQ COMMENT DO Y-=1 REPEAT
                 IF Y GT 1 THEN CHECK.LINE=RDSP(Y-1) ELSE CHECK.LINE=REC<INDROW-Y>
                 IF TAB.MODE THEN CALL EB_TABS(CHECK.LINE,PWIDTH,0,0)
                 LLEN=LEN(CHECK.LINE)
@@ -1329,7 +1329,8 @@ GET.HELP:   !
             IF CHANGED THEN GOSUB SCRN.TO.REC
             LLEN1=LLEN+1
 ! first search for the next non-alpha character
-            Y=LCOL+1; LOOP WHILE RDSP(LROW)[Y,1]=SPC DO Y+=1 REPEAT
+            Y=LCOL+1
+            LOOP WHILE RDSP(LROW)[Y,1] EQ SPC DO Y+=1 REPEAT
             FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE '' OR RDSP(LROW)[I,1]='.'); NEXT I
             word=FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1)
             DUMMY=UPCASE(word)
@@ -1652,7 +1653,7 @@ EB.SUB: !
                         CRT MSG.CLR:"Item Name? ":CLEOP:
                         L=40; Z=ITNM
                         GOSUB EDIT.INP
-                    WHILE TRIM(Z)='' DO REPEAT
+                    WHILE TRIM(Z) EQ '' DO REPEAT
                     IF NOT(FG_ACT.CODE) AND Z NE ESC AND Z NE ITNM THEN
                         WRITE REC ON FIL,Z
                         IF Y EQ 'R' THEN
@@ -2331,7 +2332,7 @@ GET.WORD: !
             LOOP WHILE ICONV(RDSP(LROW)[I,1],PC) NE '' DO I+=1 REPEAT
             IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN I+=1
         END ELSE
-            LOOP Y=RDSP(LROW)[I,1] UNTIL Y='' OR ICONV(Y,PC) NE '' DO I+=1 REPEAT
+            LOOP Y=RDSP(LROW)[I,1] UNTIL Y EQ '' OR ICONV(Y,PC) NE '' DO I+=1 REPEAT
         END
     END
     WORD=RDSP(LROW)[LCOL,I-LCOL]
@@ -2351,13 +2352,13 @@ GET.PREVWORD: !
         LOOP
             I-=1
             Y=RDSP(LROW)[I,1]
-        UNTIL I<2 OR NOT(INDEX(TAB:SPC,RDSP(LROW)[I,1],1)) DO REPEAT
+        UNTIL I LT 2 OR NOT(INDEX(TAB:SPC,RDSP(LROW)[I,1],1)) DO REPEAT
     END ELSE
         IF LEN(ICONV(RDSP(LROW)[LCOL,1],PC)) THEN
-            LOOP UNTIL ICONV(RDSP(LROW)[I,1],PC)='' OR I=1 DO I-=1 REPEAT
+            LOOP UNTIL ICONV(RDSP(LROW)[I,1],PC) EQ '' OR I EQ 1 DO I-=1 REPEAT
             IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN I-=1
         END ELSE
-            LOOP Y=RDSP(LROW)[I,1] UNTIL I<2 OR ICONV(Y,PC)='' DO I-=1 REPEAT
+            LOOP Y=RDSP(LROW)[I,1] UNTIL I LT 2 OR ICONV(Y,PC) EQ '' DO I-=1 REPEAT
         END
     END
     WORD=RDSP(LROW)[I, LCOL-I]
@@ -2631,7 +2632,7 @@ LAST.USED:!
     INS LUK BEFORE LAST.EB<1,1>
     INS LCOL+4:SVM:ROW:SVM:INDROW:SVM:OFFSET:SVM:LCOL BEFORE LAST.EB<2,1>
     I = DCOUNT(LAST.EB<1>, VM)
-    LOOP WHILE I > 500 DO
+    LOOP WHILE I GT 500 DO
         DEL LAST.EB<1, I>
         DEL LAST.EB<2, I>
         I--
@@ -2688,7 +2689,7 @@ GET.CATL: !
                     POS++
                     LINE1 = FLNM.CAT.OPTIONS<POS>
                     SOP = INDEX(LINE1, DIR_DELIM_CH:'lib', 1)
-                UNTIL SOP OR POS = A DO REPEAT
+                UNTIL SOP OR POS EQ A DO REPEAT
                 IF NOT(SOP) THEN POS = FALSE
             END
         END
