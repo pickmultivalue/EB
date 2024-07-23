@@ -10,7 +10,6 @@
 MAIN$:!
 !
     LAST.AM = DCOUNT(REC, AM)
-*-- Default set
     IF LAST.ROW NE (INDROW+ROW) THEN
         LAST.ROW-=INDROW
         RR=PDEPTH-LAST.ROW
@@ -80,7 +79,7 @@ MAIN$:!
         CRT MSG.DSP:
         RR=J-INDROW
         LROW=RR+1
-        RDSP(LROW)=REC<J>
+!        RDSP(LROW)=REC<J>
         SCR.UD=FALSE; LLEN=LEN(RDSP(ROW+1)); SCRL=0
     END
     IF SCR.LR THEN
