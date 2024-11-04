@@ -359,7 +359,7 @@
                         NBR.WORDS++
                     WHILE DELIM DO REPEAT
                     ITNM=LIST<1,1,1>
-                    WCNT = 2
+                    WCNT = 3
                     ORIG_WCNT = WCNT
                 END ELSE
                     IF ITNM NE '' AND FLNM NE '' THEN ITNM=FLNM:TAB:TAB:ITNM
