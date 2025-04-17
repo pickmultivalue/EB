@@ -8,7 +8,8 @@
     ERR.NOS=ERR.NOS<1,1,1>
     IF Y#'P' THEN
         suffix = FIELD(ITNM, '.', 2)
-        IF suffix[1,1] EQ 'c' AND INDEX(DSPLY, 'error: ', 1) OR suffix[1,1] NE 'c' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
+!         IF suffix[1,1] EQ 'c' AND INDEX(DSPLY, 'error: ', 1) OR suffix[1,1] NE 'c' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
+        IF suffix[1,1] EQ 'c' AND INDEX(DSPLY, 'error: ', 1) OR suffix[1,1] NE 'c' AND NOT(INDEX(DSPLY,'successfully',1)) THEN
             source = DSPLY<1>
             IF source NE ITNM THEN
                 source = FIELD(DSPLY<2>, '"', 2)

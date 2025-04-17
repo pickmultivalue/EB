@@ -74,7 +74,7 @@
         CRT '       u - update item with unresolved format structure'
         STOP
     END
-    OPEN FNAME TO FILE ELSE STOP 201,FNAME
+    OPEN FNAME TO fn ELSE STOP 201,FNAME
     path = EBGETHOME()
     MAT IND=0; IND(1)=4; IND(2)=4
     IF FIELD(FNAME, DIR_DELIM_CH, DCOUNT(FNAME, DIR_DELIM_CH)) EQ 'JET.PASTE' THEN
@@ -194,7 +194,7 @@
             END
         END
     END
-    IF LISTACTIVE THEN SELECT FILE TO LIST1
+    IF LISTACTIVE THEN SELECT fn TO LIST1
     IF F.OPTION THEN
         T.OPTION=FALSE
         PRINTER OFF
@@ -248,7 +248,7 @@
             READNEXT ID FROM LIST1 ELSE EOL=TRUE
         END
     UNTIL EOL DO
-        READU D.ITEM FROM FILE,ID THEN
+        READU D.ITEM FROM fn,ID THEN
             MATPARSE ITEM FROM D.ITEM USING AM SETTING NA; IF NA NE DCOUNT(D.ITEM,AM) THEN MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
             IF L.OPTION THEN OMASK='' ELSE
                 IF NA > 999 THEN OMASK='R%4 ' ELSE OMASK='R%3 '
@@ -525,8 +525,8 @@
 Error:      !
             IF F.OPTION THEN
                 IF CUR.INDEX > 1 THEN
-                    IF U.OPTION THEN MATWRITE ITEM ON FILE,ID:ID.SUFFIX
-                END ELSE MATWRITE ITEM ON FILE,ID:ID.SUFFIX
+                    IF U.OPTION THEN MATWRITE ITEM ON fn,ID:ID.SUFFIX
+                END ELSE MATWRITE ITEM ON fn,ID:ID.SUFFIX
             END
             IF SYSTEM(1) ELSE
                 IF F.OPTION THEN
@@ -543,7 +543,7 @@ Error:      !
         END ELSE
             CRT BELL:SQ:ID:"' not on file!"
             INPUT CONT,1
-            RELEASE FILE,ID
+            RELEASE fn,ID
         END
         IF LISTACTIVE THEN ICNT=ICNT+1 ELSE STOP
     REPEAT

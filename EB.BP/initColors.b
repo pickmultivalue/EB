@@ -73,16 +73,18 @@
 
 *-- Default set
     colors = ""
-    colors<COL_COMMENT>        = BLUE<1,1>
-    colors<COL_NUMBER>         = CYAN<1,1>
-    colors<COL_RESERVED_WORD>  = WHITE<1,1>
-    colors<COL_SEPERATOR>      = YELLOW<1,1>
-    colors<COL_SPACER>         = BLACK<1,1>
-    colors<COL_STRING>         = GREEN<1,1>
-    colors<COL_UNKNOWN>        = CYAN<1,1>
-    colors<COL_BACKGROUND>     = BLACK<1,2>
-    colors<COL_MENU_FG>        = WHITE<1,1>
-    colors<COL_MENU_BG>        = BLUE<1,2>
+    IF LEN(BLUE) THEN
+        colors<COL_COMMENT>        = BLUE<1,1>
+        colors<COL_NUMBER>         = CYAN<1,1>
+        colors<COL_RESERVED_WORD>  = WHITE<1,1>
+        colors<COL_SEPERATOR>      = YELLOW<1,1>
+        colors<COL_SPACER>         = BLACK<1,1>
+        colors<COL_STRING>         = GREEN<1,1>
+        colors<COL_UNKNOWN>        = CYAN<1,1>
+        colors<COL_BACKGROUND>     = BLACK<1,2>
+        colors<COL_MENU_FG>        = WHITE<1,1>
+        colors<COL_MENU_BG>        = BLUE<1,2>
+    END
 
 *-- Read iNI file,  if none the return a default set
     jb = GETENV("JBCGLOBALDIR")

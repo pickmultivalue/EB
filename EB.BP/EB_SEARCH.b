@@ -414,8 +414,12 @@ RETRY:
     END ELSE
         CRT MSG.CLR:PR:" for next page, or line number? ":
     END
-    L=6; Z=""; INPTYPE='N0'
-    GOSUB INPT
+    LOOP
+        L=6; Z=""; INPTYPE='N0'
+        GOSUB INPT
+    WHILE FG_TIMEDOUT DO
+        FG_TIMEDOUT = FALSE
+    REPEAT
     Y=Z
     CRT MSG.DSP:
     IF Y=ESC THEN GO 4199

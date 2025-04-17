@@ -30,11 +30,11 @@
         FOR J=1 TO NBR.ATTS
             ATTR=ATTRS<1,J>
             IF INDEX(ATTR,CTRL.F,1) THEN
-                FILE=FIELD(ATTR,CTRL.F,1)
-                IF FILE THEN
+                fn=FIELD(ATTR,CTRL.F,1)
+                IF fn THEN
                     ATTR=ATTR[COL2()+1,99]
                     IF ATTR MATCHES "1N0N" THEN
-                        READV STMP FROM OPENED.FILES(FILE),DISPLAY.LIST<J,MV>,ATTR ELSE STMP=''
+                        READV STMP FROM OPENED.FILES(fn),DISPLAY.LIST<J,MV>,ATTR ELSE STMP=''
                     END ELSE STMP=''
                 END ELSE STMP=''
             END ELSE STMP=DISPLAY.LIST<J,MV>

@@ -1,5 +1,6 @@
 ! Side by side (or above/below) comparison tool
 !
+    $option jabba
     DEFFUN EBJSHOW()
     DEFFUN EBGETHOME()
     INCLUDE EB.EQUS EB.COMMON
@@ -12,6 +13,8 @@
     EQU MAX TO 9999
     INCLUDE EB.OS.INCLUDES TERM.SETTINGS
     path = EBGETHOME()
+    jelf = new object('jelf_helper')
+    jelf_opt = jelf->$hasmethod('getobject')
     OPEN path:'JET.PASTE' TO F.JET.PASTE ELSE STOP 'JET.PASTE'
     OPEN path:'SAVEDLISTS' TO F.PF ELSE
         OPEN path:'POINTER-FILE' TO F.PF ELSE
@@ -125,16 +128,16 @@
         IF ITNM#'' THEN
             AISENT=TRUE
             IF INDEX(ITNM, Bslsh, 1) THEN
-                gslsh=Bslsh
-                bslsh=Fslsh
+                g_slsh=Bslsh
+                b_slsh=Fslsh
             END ELSE
-                gslsh=Fslsh
-                bslsh=Bslsh
+                g_slsh=Fslsh
+                b_slsh=Bslsh
             END
-            CONVERT bslsh TO gslsh IN ITNM
-            IF INDEX(ITNM,gslsh,1) THEN
+            CONVERT b_slsh TO g_slsh IN ITNM
+            IF INDEX(ITNM,g_slsh,1) THEN
                 FLNM=ITNM
-                ITNM=FIELD(FLNM,gslsh,DCOUNT(FLNM,gslsh))
+                ITNM=FIELD(FLNM,g_slsh,DCOUNT(FLNM,g_slsh))
                 FLNM=FLNM[1,COL1()-1]
             END ELSE
                 INCLUDE EB.OS.INCLUDES GET.FLNM
@@ -144,17 +147,17 @@
             ITNM=FIELD(FG_SENTENCE,' ',3)
             IF ITNM#'' THEN
                 IF INDEX(ITNM, Bslsh, 1) THEN
-                    gslsh=Bslsh
-                    bslsh=Fslsh
+                    g_slsh=Bslsh
+                    b_slsh=Fslsh
                 END ELSE
-                    gslsh=Fslsh
-                    bslsh=Bslsh
+                    g_slsh=Fslsh
+                    b_slsh=Bslsh
                 END
                 BISENT=TRUE
-                CONVERT bslsh TO gslsh IN ITNM
-                IF INDEX(ITNM,gslsh,1) THEN
+                CONVERT b_slsh TO g_slsh IN ITNM
+                IF INDEX(ITNM,g_slsh,1) THEN
                     FLNM=ITNM
-                    ITNM=FIELD(FLNM,gslsh,DCOUNT(FLNM,gslsh))
+                    ITNM=FIELD(FLNM,g_slsh,DCOUNT(FLNM,g_slsh))
                     FLNM=FLNM[1,COL1()-1]
                 END ELSE
                     INCLUDE EB.OS.INCLUDES GET.FLNM
@@ -182,7 +185,7 @@
 100 ! Enter First File Name
     LOOP
         IF ASENT THEN ASENT=FALSE ELSE
-            CRT @(0,2):'ENTER FILE A: ':@(-4):
+            CRT @(0,2):'Enter file A: ':@(-4):
             INPUT FA
         END
     WHILE FA EQ '?' DO
@@ -210,6 +213,19 @@
         BSENT=(FVB#'' OR UPGBACKUP)
     END
     IF NOT(UPGBACKUP) THEN GOSUB OPEN.FILEB
+    AOBJ = FIELD(FA, ',', 2) EQ 'OBJECT'
+    BOBJ = FIELD(FB, ',', 2) EQ 'OBJECT'
+    IF AOBJ THEN
+        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper';STOP
+        rc = IOCTL(FILEA, JBC_COMMAND_GETFILENAME, AOBJ)
+        AOBJ := DIR_DELIM_CH
+    END
+    IF BOBJ THEN
+        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper';STOP
+        rc = IOCTL(FILEB, JBC_COMMAND_GETFILENAME, AOBJ)
+        BOBJ := DIR_DELIM_CH
+    END
+
 110 ! Enter First Id
     IF SEL THEN
         IF k < NbrRecs THEN
@@ -234,9 +250,13 @@
     END
     IF IDA EQ 'EXK'[1,LEN(IDA)] THEN GO 99999
     IF IDA EQ '^' THEN GO 120
-    READ RECA FROM FILEA,IDA ELSE
-        CRT EL:IDA:' NOT IN ':FA:
-        GO 110
+    IF AOBJ THEN
+        RECA = jelf->getobject(AOBJ:IDA:'.so')->embed_source
+    END ELSE
+        READ RECA FROM FILEA,IDA ELSE
+            CRT EL:IDA:' NOT IN ':FA:
+            GO 110
+        END
     END
     CRT EL:
 !
@@ -272,10 +292,14 @@
     IF IDB EQ '' THEN IDB=IDA
     IF IDB EQ '^' THEN GO 110
     IF IDB EQ 'EX' THEN GO 99999
-    READ RECB FROM FILEB,IDB ELSE
-        CRT EL:IDB:' NOT IN ':FVB:
-        STOP
-        GO 131
+    IF BOBJ THEN
+        RECB = jelf->getobject(BOBJ:IDB:'.so')->embed_source
+    END ELSE
+        READ RECB FROM FILEB,IDB ELSE
+            CRT EL:IDB:' NOT IN ':FVB:
+            STOP
+            GO 131
+        END
     END
     IF RECA EQ RECB THEN GOTO 110
     IF READN THEN GOTO 200
@@ -305,6 +329,9 @@
 !
 ! Save Items In-Case You Do Somethine Stupid With Copy/Merge Commands
 !
+    IF AOBJ THEN
+        RECA = jelf->getobject(AOBJ:IDA:'.so')->embed_source
+    END ELSE
     READ RECA FROM FILEA,IDA THEN
         IF INDEX(IDA,'@',1) THEN
             TMP=''
@@ -312,15 +339,17 @@
                 TMP<I>=RECA<1>; DEL RECA<1>
             NEXT I
         END ELSE TMP=''
-        GOSUB DECRYPTA
         IF TMP#'' THEN
             INS TMP BEFORE RECA<1>
             DATA 'A10'
         END
     END ELSE RECA=''
-    READ RECB FROM FILEB,IDB THEN
-        GOSUB DECRYPTB
-    END ELSE RECB=''
+    END
+    IF BOBJ THEN
+        RECB = jelf->getobject(BOBJ:IDB:'.so')->embed_source
+    END ELSE
+        READ RECB FROM FILEB,IDB ELSE RECB=''
+    END
     NDA='%':IDA:'%'
     SAVA='%':IDA:'.sav%'
     BCKA='%':IDA:'.bck%'
@@ -509,8 +538,8 @@ FILE.ITEM:!
                 IF CALLSTACK THEN GOTO 99999
                 CRT @(-1)
                 CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
-                CRT @(0,2):'ENTER FILE A: ':FA
-                CRT @(42,2):'ENTER FILE B: ':FVB:
+                CRT @(0,2):'Enter file A: ':FA
+                CRT @(42,2):'Enter file B: ':FVB:
                 GO 110
             END
         CASE CMD EQ 'EXK' OR CMD EQ 'FIK'
@@ -1544,48 +1573,12 @@ DELETEB: !
         DELBREQ=FALSE
         RETURN
     END
-DECRYPTLA:!
-    UPGITEM=LINEA; UPGFNAME=FA; UPGINAME=IDA
-    GOSUB DECRYPT
-    LINEA=UPGITEM
-    RETURN
-DECRYPTLB:!
-    UPGITEM=LINEB; UPGFNAME=FVB; UPGINAME=IDB
-    GOSUB DECRYPT
-    LINEB=UPGITEM
-    RETURN
-DECRYPTA: !
-    UPGITEM=RECA; UPGFNAME=FA; UPGINAME=IDA
-    GOSUB DECRYPT
-    RECA=UPGITEM
-    RETURN
-DECRYPTB: !
-    UPGITEM=RECB; UPGFNAME=FVB; UPGINAME=IDB
-    GOSUB DECRYPT
-    RECB=UPGITEM
-    RETURN
-DECRYPT: !
-    IF UPG THEN
-        CALL UPGCHKENCRYPT(UPGITEM,ENCRYPTED,CHKSUM,SIZE,VERSION)
-    END ELSE ENCRYPTED=''
-    IF ENCRYPTED THEN
-        IF NOT(UPG) THEN
-            CRT 'Encrypted program (':IDA:')...required UPG.WORKFILE'
-            STOP
-        END
-    END
-    IF ENCRYPTED THEN
-        IF USEMODE EQ '' THEN CALL UPGMODE (USEMODE)
-        IF PASSWD EQ '' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
-        CALL UPGCONVERT(UPGFNAME,UPGINAME,UPGITEM,'DQ',USEMODE,F.UPG.WORKFILE,PASSWD,CONVOK)
-        IF NOT(CONVOK) THEN STOP
-    END
     RETURN
 OPEN.FILEB: !
 120 ! Enter Second File Name
     IF BSENT OR UPGBACKUP THEN BSENT=FALSE ELSE
         LOOP
-            CRT @(42,2):'ENTER FILE B: ':@(-4):
+            CRT @(42,2):'Enter file B: ':@(-4):
             INPUT FVB
         WHILE FVB EQ '?' DO
             FH = 'B'
@@ -1597,7 +1590,7 @@ OPEN.FILEB: !
     IF FVB EQ '^' THEN RETURN TO 100
     IF FVB EQ 'EX' THEN RETURN TO 99999
     IF SEL AND FVB EQ FA THEN
-        CRT 'Select Active, FILE B must be different'
+        CRT 'Select Active, file B must be different'
         GOTO 120
     END
     IF FIELD(FVB,' ',1) EQ 'DICT' THEN
@@ -1606,7 +1599,7 @@ OPEN.FILEB: !
     END ELSE
         DICT=''
     END
-    CRT @(42,2):'ENTER FILE B: ':FVB:
+    CRT @(42,2):'Enter file B: ':FVB:
     OPEN DICT,FVB TO FILEB ELSE
         CRT EL:'CANNOT OPEN ':FVB:
         GO 120
@@ -1620,8 +1613,8 @@ OPEN.FILEB: !
     PATCHFILE=INDEX(FVB:FA,'PATCH',1)
     RETURN
 UPDATE.CHANGE: !
-    IF CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FA; CRT FA:' written to POINTER-FILE'
-    IF CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FVB; CRT FVB:' written to POINTER-FILE'
+    IF NOT(AOBJ) AND CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FA; CRT FA:' written to POINTER-FILE'
+    IF NOT(BOBJ) AND CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FVB; CRT FVB:' written to POINTER-FILE'
     RETURN
 GETLINES: !
     LINEA=RECA<AMA>
