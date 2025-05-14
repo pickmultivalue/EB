@@ -1,4 +1,4 @@
-    PROGRAM UNCOMPILED
+    PROGRAM COMPILED
     INCLUDE JBC.h
 
     jelf = FIELD(GETENV('JELF'), ',', 1)
@@ -9,7 +9,7 @@
 
     IF NOT(SYSTEM(11)) THEN SELECT F.source
 
-    uncompiled = ''
+    compiled = ''
     suffixes = 'b':@AM:'jabba'
 
     LOOP WHILE READNEXT id DO
@@ -30,17 +30,16 @@
                 obj_id = '$':obj_id
             END
         END
-        READV temp FROM F.object, obj_id, 1 ELSE uncompiled<-1> = id
+        READV temp FROM F.object, obj_id, 1 THEN compiled<-1> = id
     REPEAT
 
-    IF LEN(uncompiled) = 0 THEN
-        CRT 'All compiled'
+    IF LEN(compiled) EQ 0 THEN
+        CRT 'None compiled'
         STOP
     END ELSE
-        dc = DCOUNT(uncompiled, @AM)
+        dc = DCOUNT(compiled, @AM)
         CRT
         CRT dc:' item':(IF dc GT 1 THEN 's' ELSE ''):' selected'
         CRT
     END
-
-    WRITELIST uncompiled ON ''
+    WRITELIST compiled ON ''
