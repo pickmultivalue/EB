@@ -1,7 +1,9 @@
     INCLUDE JBC.h
+    $option jabba
     DEFC INT JBASEEmulateGETINT(INT, INT)
     DEFFUN EBGETHOME()
     path = EBGETHOME()
+    jelf = new object('jelf_helper')
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
     am_start=IF_COMPILED_PRIME
     mv_start=IF_COMPILED_PRIME
@@ -22,6 +24,8 @@
     I.OPTION=INDEX(OPTIONS,'I',1)
     O.OPTION=INDEX(OPTIONS,'O',1)
     R.OPTION=INDEX(OPTIONS,'R',1)
+    W.OPTION=INDEX(OPTIONS,'W',1)
+    ONE_DIFF = NOT(W.OPTION)
     COMPARE.ITEM=INDEX(OPTIONS,'C',1)
     IF LEN(OPTIONS) THEN SENT=SENT[1,COL1()-1]
     FLNM=FIELD(SENT,' ',2)
@@ -46,6 +50,7 @@
         CRT 'O option include object code'
         CRT 'M include missing items'
         CRT 'R recurse each dir'
+        CRT 'W hole record is parsed for differences.'
         STOP
     END
     IF SFLNM='DICT' THEN
@@ -58,12 +63,12 @@
     END ELSE UPG=FALSE
     LIST=''
     EQU COMMENTS TO '!*'
-    OPEN 'SAVEDLISTS' THEN
-        UNIDATA=1
-    END ELSE
-        UNIDATA=0
-        OPEN path:'POINTER-FILE' ELSE STOP 201,path:'POINTER-FILE'
-    END
+!    OPEN 'SAVEDLISTS' THEN
+!        UNIDATA=1
+!    END ELSE
+    UNIDATA=0
+    OPEN path:'POINTER-FILE' ELSE STOP 201,path:'POINTER-FILE'
+!    END
     IF R.OPTION THEN
         PFLNM = FLNM; PSFLNM = SFLNM
         OPEN PFLNM TO F.parent ELSE STOP 201,PFLNM
@@ -86,11 +91,26 @@
 compare:
     OPEN FLNM TO FIRST ELSE STOP OPER,FLNM
     OPEN SFLNM TO SECOND ELSE STOP OPER,SFLNM
-    IF NOT(SYSTEM(11)) THEN SELECT FIRST
+    IF NOT(SYSTEM(11)) THEN
+        SELECT FIRST
+    END
+    FOBJ = FIELD(FLNM, ',', 2) EQ 'OBJECT'
+    SFOBJ = FIELD(SFLNM, ',', 2) EQ 'OBJECT'
+    IF FOBJ THEN
+        rc = IOCTL(FIRST, JBC_COMMAND_GETFILENAME, FOBJ)
+        FOBJ := DIR_DELIM_CH
+    END
+    IF SFOBJ THEN
+        rc = IOCTL(SECOND, JBC_COMMAND_GETFILENAME, FOBJ)
+        SFOBJ := DIR_DELIM_CH
+    END
     EOF=0
     LOOP
         READNEXT ID ELSE EOF=1
     UNTIL EOF OR SYSTEM(14) DO
+        IF FOBJ THEN
+            ID = ID[1, LEN(ID)-3]
+        END
         sfx = FIELD(ID,'.',DCOUNT(ID,'.'))
         IF O.OPTION THEN
             bpos = @FALSE
@@ -100,23 +120,29 @@ compare:
             END
         END
         IF NOT(bpos) THEN
-            READ FITEM FROM FIRST,ID THEN
-                IF NOT(B.OPTION) THEN
-                    LINE = FITEM<1>
-                    IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
-                END
-            END ELSE FITEM=''
+            IF FOBJ THEN
+                FITEM = jelf->getobject(FOBJ:ID:'.so')->embed_source
+            END ELSE
+                READ FITEM FROM FIRST,ID THEN
+                    IF NOT(B.OPTION) THEN
+                        LINE = FITEM<1>
+                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+                    END
+                END ELSE FITEM=''
+            END
             UPGITEM=FITEM; UPGFNAME=FLNM; UPGINAME=ID
-            GOSUB DECRYPT
             FITEM=UPGITEM
-            READ SFITEM FROM SECOND,ID THEN
-                IF NOT(B.OPTION) THEN
-                    LINE = SFITEM<1>
-                    IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
-                END
-            END ELSE SFITEM=''
+            IF SFOBJ THEN
+                SFITEM = jelf->getobject(SFOBJ:ID:'.so')->embed_source
+            END ELSE
+                READ SFITEM FROM SECOND,ID THEN
+                    IF NOT(B.OPTION) THEN
+                        LINE = SFITEM<1>
+                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+                    END
+                END ELSE SFITEM=''
+            END
             UPGITEM=SFITEM; UPGFNAME=SFLNM
-            GOSUB DECRYPT
             SFITEM=UPGITEM
             IF FITEM='' OR SFITEM='' AND NOT(M.OPTION) ELSE
                 IF A.OPTION THEN
@@ -167,16 +193,21 @@ compare:
                             END
                             DIFF=((LINEF NE LINES))
                         END
-                    UNTIL DIFF OR (I>=SCOUNT AND I>=FCOUNT) DO I+=1 REPEAT
-                    IF DIFF THEN
-                        LOCATE ID IN LIST<am_start> BY 'AL' SETTING POS ELSE
-                            IF NOT(I.OPTION) THEN
-                                CRT ID 'L#20 ':'(':I 'R%3) >>':LINEF 'L#50<<'
-                                CRT SPACE(21):'(':I 'R%3) >>':LINES 'L#50<<'
+                        IF DIFF THEN
+                            LOCATE ID IN LIST<am_start> BY 'AL' SETTING POS THEN
+                                POS = ONE_DIFF
+                            END ELSE
+                                INS ID BEFORE LIST<POS>
+                                POS = @FALSE
                             END
-                            INS ID BEFORE LIST<POS>
+                            IF NOT(POS) THEN
+                                IF NOT(I.OPTION) THEN
+                                    CRT ID 'L#20 ':'(':I 'R%3':') >>':LINEF 'L#50<<'
+                                    CRT SPACE(21):'(':I 'R%3':') >>':LINES 'L#50<<'
+                                END
+                            END
                         END
-                    END
+                    UNTIL DIFF AND ONE_DIFF OR (I>=SCOUNT AND I>=FCOUNT) DO I+=1 REPEAT
                 END
             END
         END
@@ -194,21 +225,4 @@ compare:
             CRT FLNM:'v':SFLNM:' list saved'
         END
     END ELSE CRT 'No differences'
-    RETURN
-DECRYPT: !
-    IF UPG THEN
-        CALL UPGCHKENCRYPT(UPGITEM,ENCRYPTED,CHKSUM,SIZE,VERSION)
-    END ELSE ENCRYPTED=''
-    IF ENCRYPTED THEN
-        IF NOT(UPG) THEN
-            CRT 'Encrypted program (':ID:')...required UPG.WORKFILE'
-            STOP
-        END
-    END
-    IF ENCRYPTED THEN
-        IF USEMODE='' THEN CALL UPGMODE (USEMODE)
-        IF PASSWD='' THEN CALL UPGPASSWD (PASSWD,F.UPG.WORKFILE)
-        CALL UPGCONVERT(UPGFNAME,UPGINAME,UPGITEM,'DQ',USEMODE,F.UPG.WORKFILE,PASSWD,CONVOK)
-        IF NOT(CONVOK) THEN STOP
-    END
     RETURN

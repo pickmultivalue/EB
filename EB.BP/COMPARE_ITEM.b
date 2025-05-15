@@ -332,18 +332,18 @@
     IF AOBJ THEN
         RECA = jelf->getobject(AOBJ:IDA:'.so')->embed_source
     END ELSE
-    READ RECA FROM FILEA,IDA THEN
-        IF INDEX(IDA,'@',1) THEN
-            TMP=''
-            FOR I=1 TO TMP
-                TMP<I>=RECA<1>; DEL RECA<1>
-            NEXT I
-        END ELSE TMP=''
-        IF TMP#'' THEN
-            INS TMP BEFORE RECA<1>
-            DATA 'A10'
-        END
-    END ELSE RECA=''
+        READ RECA FROM FILEA,IDA THEN
+            IF INDEX(IDA,'@',1) THEN
+                TMP=''
+                FOR I=1 TO TMP
+                    TMP<I>=RECA<1>; DEL RECA<1>
+                NEXT I
+            END ELSE TMP=''
+            IF TMP#'' THEN
+                INS TMP BEFORE RECA<1>
+                DATA 'A10'
+            END
+        END ELSE RECA=''
     END
     IF BOBJ THEN
         RECB = jelf->getobject(BOBJ:IDB:'.so')->embed_source
