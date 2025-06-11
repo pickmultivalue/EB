@@ -23,6 +23,7 @@
     rc = GETCWD(currdir)
     rc = CHDIR(FilePath)
     scType = GETSRCTYPE()
+    result = ''
     BEGIN CASE
         CASE scType = 'GIT'
             result = GIT_HISTORY(FilePath, ItemName, Filters)
