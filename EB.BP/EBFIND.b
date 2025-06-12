@@ -115,6 +115,7 @@
         OPEN fname THEN
             EXECUTE 'EB ':fname PASSLIST list
         END ELSE
-            EXECUTE @IM:'kEB ':TRIM(fname:' ':CHANGE(list, @AM, ' '))
+!            EXECUTE @IM:'kEB ':TRIM(fname:' ':CHANGE(list, @AM, ' '))
+            EXECUTE 'EB ':TRIM(fname:' ':CHANGE(list, @AM, ' '))
         END
     END ELSE CRT 'No match'
