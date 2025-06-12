@@ -21,8 +21,6 @@
         COL-=(1-EMBED)
         IF COL<0 THEN COL=0
         BEGIN CASE
-            CASE MOD(FG_STERM,3)
-                BOX.CLEAR=ESC:'[=':ROW+1:';':COL+1:';':DEPTH:';':COL+WIDTH-1:';0;1B'
             CASE 1
                 BOX.CLEAR=@(COL,ROW)
                 IF CLR.BOX='' THEN
@@ -61,13 +59,6 @@
 !
     WIDTH-=1
     BEGIN CASE
-        CASE MOD(FG_STERM,3)
-            CALL EB_AT_BOX(ROW+1,COL+1,DEPTH,COL+WIDTH,2,1:AM:1,BOX.DRAW)
-!    CASE RNET
-!        BOX.DRAW=ESC:'\\box ':COL:',':ROW:',':COL+WIDTH-1:',':DEPTH-1:',1,0':CHAR(127)
-!        IF SAVE.IT AND SCREEN.SAVE<1,1>#'' THEN
-!            BOX.DRAW=SCREEN.SAVE<1,1>:FG_DISK.DRIVE:'BOX':SCREEN.SAVE<1,2>:BOX.DRAW
-!        END
         CASE 1
             IF COL='' OR CRT.BOX='' THEN
                 IF CRT.STRING='' THEN

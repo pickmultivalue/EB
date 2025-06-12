@@ -231,15 +231,6 @@
         ITAB=2:@AM:8:@AM:3
     END
     MAT OPENED.FILES=''; OPEN.FILE.LIST=''
-    IF MOD(FG_STERM,3) THEN
-        CALL EB_AT.WINDOW.OPEN(PDEPTH+1,PWIDTH+1,1,1,1,'',ITNM,1)
-        CALL EB_STERM.MENU('EB.MENU','','',1,'')
-        CSI=ESC:'['; APC=ESC:'_'; ST=ESC:'\'
-        LEADIN=CSI:'='
-        CRT LEADIN:'1;6O':    ;! return co-ords on single click
-        CRT APC:'6;0O':ST:
-        CRT APC:'1O|AM':ST:
-    END
     IF NOT(GETENV('EBACCUTERM',accuterm)) THEN accuterm = TRUE
     IF accuterm THEN CRT ESC:CHAR(2):1:
 !
@@ -1260,7 +1251,7 @@ GET.HELP:   !
             IF OPEN.HELP THEN
                 CALL EB_HELP('EB',0,0,0,0)
                 INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
-                IF MOD(FG_STERM,3) ELSE SCR.UD=TRUE
+                SCR.UD=TRUE
             END
         CASE FG_ACT.CODE EQ FG_L.CASE.CODE
             GOSUB ADD_TO_UNDO
@@ -1568,11 +1559,7 @@ EB.SUB: !
     EXECUTE DUMMY
     IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
-    IF MOD(FG_STERM,3) THEN
-        CALL EB_STERM.MENU('EB.MENU','','',1,'')
-        CRT CURS.ON:
-        SCR.LR=DUMMY[1,2]='ED'
-    END ELSE SCR.LR=1
+    SCR.LR=1
     GOSUB LAST.USED
     RETURN
 999 !
@@ -1905,9 +1892,7 @@ CHG.LROW:
             DELETE JET.PASTE,Y
             CONVERT VM:AM TO SVM:VM IN STMP
             IF STMP NE RDSP(LROW) THEN RDSP(LROW)=STMP; GOSUB CHG.LROW
-            IF MOD(FG_STERM,3) THEN
-                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
-            END ELSE SCR.UD=1
+            SCR.UD=1
         CASE FTYP EQ 'S'
             STMP=RDSP(LROW)
             CALL EB_SWAP(STMP,POS)
@@ -2064,7 +2049,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     GO STRT
 !============
 TCL: !
-    IF MOD(FG_STERM,3) ELSE SCR.LR=1; CRT @(-1)
+    SCR.LR=1; CRT @(-1)
     IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
 !  CALL EB_TCL
@@ -2082,7 +2067,6 @@ TCL: !
         END
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
-    IF MOD(FG_STERM,3) THEN CALL EB_STERM.MENU('EB.MENU','','',1,'')
     IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     CRT CURS.ON:
@@ -2768,10 +2752,7 @@ REMOVE.LAST.EB:
     END
     RETURN
 WRAPUP: !
-    IF MOD(FG_STERM,3) THEN
-        CALL EB_STERM.MENU('EB.MENU','','',-1,'')
-        CALL EB_AT.WINDOW.CLOSE(1)
-    END ELSE CRT @(0,PDEPTH)
+    CRT @(0,PDEPTH)
     IF accuterm THEN CRT ESC:CHAR(2):0:
     ECHO ON
     IF COL.80 NE '' AND COL.132 NE '' THEN
