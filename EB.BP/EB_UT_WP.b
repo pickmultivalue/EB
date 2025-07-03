@@ -228,8 +228,8 @@ PROCESS.RTN: !
                     SUB.CODE=FG_RIGHT.CODE
                     FG_ACT.CODE=FALSE
                 CASE FG_ACT.CODE=FG_ABT.CODE
-!                    RTN.STRING=EB.CMD<1>
-!                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
+                    RTN.STRING=EB.CMD<1>
+                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
                 CASE FG_ACT.CODE=FG_BCK.CODE
 !                    RTN.STRING=EB.CMD<2>
 !                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING

@@ -6,7 +6,8 @@
     DEFFUN GETSRCTYPE()
     DEFFUN GIT_SRC_STATUS()
     DEFFUN SVN_SRC_STATUS()
-    scType = GETSRCTYPE()
+
+    scType = GETSRCTYPE(FIELD(FileName, DIR_DELIM_CH, 1, COUNT(FileName, DIR_DELIM_CH)))
     BEGIN CASE
         CASE scType = 'GIT'
             RETURN GIT_SRC_STATUS(FileName, ItemName)

@@ -18,6 +18,6 @@
 ! 06/08/92 - check to see if width and depth uses whole screen
 !            and use CLEOP and CLEOL where applicable
 !
-    CALL EB_UT_BOX(MAT SCREEN.PARAMS,FG_STERM,C.COL,C.ROW,C.WIDTH,C.DEPTH,IMAGE,BOX.CLEAR,BOX.DRAW)
+    CALL EB_UT_BOX(MAT SCREEN.PARAMS,0,C.COL,C.ROW,C.WIDTH,C.DEPTH,IMAGE,BOX.CLEAR,BOX.DRAW)
     RETURN
 END

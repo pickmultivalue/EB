@@ -73,7 +73,7 @@ MAIN$:!
     END
     READ STACK FROM STACK.FILE,STACK.ID ELSE STACK=''
     RNET=INDEX(CRT.BOX,'\\box',1)
-    GUI=FG_STERM=6
+    GUI=0
 !
     SEARCH.STRING=''
     EQU CTRL.X TO CHAR(24)
@@ -90,10 +90,6 @@ MAIN$:!
         CALL EB_GUI_SEND('r','')
         PROMPT ''
     END ELSE CRT @(0,PROW):CLEOP:@(0,21):FG_ERROR.MSGS<83>
-    IF MOD(FG_STERM,3) THEN
-        OPTIONS=2:AM:-1
-        OPTIONS<6>=1
-    END
     LOOP
         IF SYSTEM(11) OR TCL.LIST NE '' THEN PROMPT.CHR='>' ELSE PROMPT.CHR=' '
         CRT EB.PROMPT:PROMPT.CHR:CLEOL:
@@ -124,10 +120,6 @@ MAIN$:!
                 POST.PROMPT=NOT(POST.PROMPT)
                 CRT @(0,23):CLEOL:FG_ERROR.MSGS<100,1>:FG_ERROR.MSGS<100,2+POST.PROMPT>:
                 RQM
-            CASE FG_ACT.CODE=FG_TCL.CODE AND MOD(FG_STERM,3)
-                CALL EB_AT_WINDOW_OPEN(PDEPTH+1,PWIDTH+1,1,1,1,'','S-Query',1)
-                EXECUTE SQUERY.VERB
-                CALL EB_AT_WINDOW_CLOSE(1)
             CASE UCOMMAND[1,2]='.L'
                 GOSUB DISPLAY.STACK
             CASE UCOMMAND[1,2]='.X' OR COMMAND MATCHES "'.'1N0X"
@@ -280,9 +272,6 @@ MAIN$:!
     FG_ACT.CODE=FALSE
     CRT FG_CURR.COLOURS:
     IF INDEX('ZR',FG_TERM.TYPE,1) THEN FG_CRT.PAGES=''; FG_CRT.SEQUENCES=''
-    IF MOD(FG_STERM,3) THEN
-        CALL EB_AT_WINDOW_CLOSE(1)
-    END
     RETURN
 !
 !----------------------------------------------------------------------
@@ -584,8 +573,6 @@ PERFORM.COMMAND: !
                 GOSUB UPDATE.STACK
                 CRT ESC:'\ ':COMMAND:CHAR(13)
                 IF COMMAND[1,1]='\' THEN COMMAND=COMMAND[2,MAX]
-!      CASE MOD(FG_STERM,3)
-!        CALL AT.EXECUTE.DOS(COMMAND,'',0,0);!STKING,CAPTRING,TYPE)
             CASE 1
                 GOSUB UPDATE.STACK
                 CRT BELL:'[3] ':COMMAND:' is not a verb'
