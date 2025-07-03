@@ -1,7 +1,8 @@
     FUNCTION GETSRCTYPE
     COMMON /GETSRCTYPE/ processed, result
     DEFFUN EBJSHOW()
-    IF UNASSIGNED(processed) OR NOT(processed) THEN
+    result = ''
+    IF UNASSIGNED(processed) OR NOT(processed) OR LEN(result) EQ 0 THEN
         processed = @TRUE
         git = (IF LEN(EBJSHOW('-c git')) THEN 'git' ELSE '')
         svn = (IF LEN(EBJSHOW('-c svn')) THEN 'svn' ELSE '')

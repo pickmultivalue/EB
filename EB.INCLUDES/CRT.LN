@@ -5,6 +5,7 @@ CRT.LN:   !
     END ELSE CRTLN = CRTLN[CRT.X,CRT.Y]
     CONVERT VM:SVM TO ']\' IN CRTLN
     CRTLN = OCONV(CRTLN,'MCP')
+    CRT colors<COL_BACKGROUND>:
     IF isComment(wholeLine) AND LEN(colors<1,1>) EQ 0 THEN CRT BG:
     CRTLN = LOWER(lexLine(wholeLine, CRTLN, colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
