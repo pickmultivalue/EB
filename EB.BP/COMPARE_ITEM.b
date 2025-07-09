@@ -301,7 +301,11 @@
             GO 131
         END
     END
-    IF RECA EQ RECB THEN GOTO 110
+    IF RECA EQ RECB THEN
+        CRT BELL:' items are identical'
+        IF DCOUNT(FG_SENTENCE, ' ') GE 2 THEN RQM; STOP
+        GOTO 110
+    END
     IF READN THEN GOTO 200
     CRT EL:
     CRT @(25,6):'--- OPTIONS ---':
@@ -472,7 +476,7 @@
                     FR.RANGE = 2
             END CASE
 
-            FR.RANGE = TRIM(CMD[FR.RANGE,-1])
+            FR.RANGE = TRIM(CMD[FR.RANGE,9999])
             IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" OR FR.RANGE MATCHES "1N0N'-'1N0N" THEN
                 CONVERT '/' TO @AM IN SUBSTRS
                 SUBSTRS = CHANGE(SUBSTRS, '\':@AM, '/')
@@ -568,7 +572,7 @@ FILE.ITEM:!
             GOSUB 600
         CASE CMD[1,1] EQ 'I' ;! insert blank lines
             msg = 'Syntax error'
-            FR.RANGE = TRIM(CMD[3,-1])
+            FR.RANGE = TRIM(CMD[3,9999])
             IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" THEN
                 SIDE = 'A'
                 SIDES = 1
@@ -610,7 +614,7 @@ FILE.ITEM:!
                     SIDES = 2
                     FR.RANGE = 3
             END CASE
-            FR.RANGE = TRIM(CMD[FR.RANGE,-1])
+            FR.RANGE = TRIM(CMD[FR.RANGE,9999])
             IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" OR FR.RANGE MATCHES "1N0N'-'1N0N" THEN
                 IF INDEX(FR.RANGE, '-', 1) THEN
                     FR.ST=FIELD(FR.RANGE,'-',1); FR.FI=FIELD(FR.RANGE,'-',2)
@@ -651,9 +655,9 @@ FILE.ITEM:!
                 GOSUB 990
             END ELSE
                 OK=TRUE
-                IF CMD MATCHES "'C'1N0X" THEN CMD = 'CA ':CMD[2,-1]
-                IF FIELD(CMD,' ',1) EQ 'C' THEN CMD = 'CA':CMD[COL2(),-1]
-                IF CMD MATCHES "2A1N0X" THEN CMD = CMD[1,2]:' ':CMD[3,-1]
+                IF CMD MATCHES "'C'1N0X" THEN CMD = 'CA ':CMD[2,9999]
+                IF FIELD(CMD,' ',1) EQ 'C' THEN CMD = 'CA':CMD[COL2(),9999]
+                IF CMD MATCHES "2A1N0X" THEN CMD = CMD[1,2]:' ':CMD[3,9999]
                 SIDES = 2
                 SIDE = 'A'
                 BEGIN CASE
@@ -1022,7 +1026,7 @@ FILE.ITEM:!
                 BREAK
             END
         NEXT L
-        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,-1], ' ', 'L')[1,LINE.LEN-2]
+        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,9999], ' ', 'L')[1,LINE.LEN-2]
         LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,-2], ' ', 'L')[1,LINE.LEN-2]
         IF CMTA # CMTB THEN
             PAD=HION
@@ -1227,8 +1231,8 @@ FILE.ITEM:!
                     BREAK
                 END
             NEXT L
-            IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,-1]
-            IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,-1]
+            IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,9999]
+            IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,9999]
             CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:RVOFF:
             CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:RVOFF:
         END
@@ -1338,7 +1342,7 @@ FILE.ITEM:!
         END
     NEXT J
     IF MERGE.CODE#'' THEN
-        MERGE.CODE = MERGE.CODE[2,-1]
+        MERGE.CODE = MERGE.CODE[2,9999]
         IF CMD[2,1] EQ 'B' THEN
             MERGE.CODE<-1>=RECA<AMA>
             RECA<MERGE.LINE>= MERGE.CODE

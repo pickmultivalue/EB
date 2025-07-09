@@ -21,7 +21,15 @@ MAIN$:!
     ILEN=70
     IF MFLNM NE '' THEN IDATA=MFLNM ELSE IDATA=FLNM
     GOSUB 1500      ;! input the field
-    MFLNM=IDATA
+    IF FG_ACT.CODE=FG_OPT.CODE THEN
+        VALIDATE=''; VALIDATE<5>=1
+        CALL EB_CHOICES(50,5,'','','', 'OBJECT':@VM:FLNM, IDATA,1,VALIDATE,1,'L#30','')
+    END
+    IF IDATA EQ 'OBJECT' THEN
+        MFLNM = FLNM:',OBJECT'
+    END ELSE
+        MFLNM=IDATA
+    END
     CRT MSG.AKN:
     IF MFLNM=ESC THEN GO 5090
     IF MFLNM=FLNM AND POS=1 THEN        ;! default was accepted
@@ -34,34 +42,44 @@ MAIN$:!
             GO 5010
         END
     END
-5020 CRT MSG.CLR:"Item name ":
-    ILEN=69
-    IF MITNM NE '' THEN IDATA=MITNM ELSE IDATA=ITNM
-    GOSUB 1500      ;! input the field
-    IF FG_ACT.CODE=FG_OPT.CODE THEN
-        VALIDATE=''; VALIDATE<5>=1
-        CALL EB_CHOICES(50,5,'','',MFLNM,'',IDATA,1,VALIDATE,0,'L#30',MFLNM:' items')
-    END
-    MITNM=IDATA
-    CRT MSG.AKN:
-    IF FG_ACT.CODE=FG_ABT.CODE THEN GO 5090
-    IF FG_ACT.CODE=FG_BCK.CODE THEN GO 5010
+5020 !
+    IF IDATA NE 'OBJECT' THEN
+        CRT MSG.CLR:"Item name ":
+        ILEN=69
+        IF MITNM NE '' THEN IDATA=MITNM ELSE IDATA=ITNM
+        GOSUB 1500      ;! input the field
+        IF FG_ACT.CODE=FG_OPT.CODE THEN
+            VALIDATE=''; VALIDATE<5>=1
+            CALL EB_CHOICES(50,5,'','',MFLNM,'',IDATA,1,VALIDATE,0,'L#30',MFLNM:' items')
+        END
+        MITNM=IDATA
+        CRT MSG.AKN:
+        IF FG_ACT.CODE=FG_ABT.CODE THEN GO 5090
+        IF FG_ACT.CODE=FG_BCK.CODE THEN GO 5010
+    END ELSE MITNM = 'OBJECT'
 !
     IF MFLNM=FLNM AND MITNM=ITNM AND POS=1 THEN   ;!merge from memory.
         READ.AGAIN=0; MCNT=CNT
     END ELSE
         READ.AGAIN=1
         WRITE REC ON FIL,ITNM:".COMP2"
+        IF IDATA NE 'OBJECT' THEN
 ! can now use REC for the merge item, temporarily.
-        READ REC FROM MFL,MITNM ELSE
-            CRT MSG.CLR:BELL:"Item Not On File ":PR
-            IDATA=''; ILEN=1; GOSUB 1500        ;! DMY=OCONV(IDATA,'MCU')
-            GO 5020
+            READ REC FROM MFL,MITNM ELSE
+                CRT MSG.CLR:BELL:"Item Not On File ":PR
+                IDATA=''; ILEN=1; GOSUB 1500        ;! DMY=OCONV(IDATA,'MCU')
+                GO 5020
+            END
+            MCNT=DCOUNT(REC,AM)
         END
-        MCNT=DCOUNT(REC,AM)
         WRITE REC ON FIL,ITNM:".COMP1"
     END
-    ITNM1 = FLNM:DIR_DELIM_CH:ITNM:'.COMP1'
+    IF IDATA EQ 'OBJECT' THEN
+        IDATA = CHANGE(CHANGE(ITNM, '.b', ''), '.jabba', '')
+        ITNM1 = MFLNM:DIR_DELIM_CH:IDATA
+    END ELSE
+        ITNM1 = FLNM:DIR_DELIM_CH:ITNM:'.COMP1'
+    END
     ITNM2 = FLNM:DIR_DELIM_CH:ITNM:'.COMP2'
     EXECUTE 'COMPARE_ITEM ':ITNM1:' ':ITNM2:' -t'
     DELETE FIL,ITNM:".COMP1"
