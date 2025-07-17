@@ -21,7 +21,7 @@ MAIN$:!
     INDENT = SPACE(4)
     BEGIN CASE
         CASE WORD='EBSAVE'
-            dc = COUNT(FG_SENTENCE, ' ') - 1
+            dc = COUNT(FG_SENTENCE, @AM) - 1
             CRT @(-1):'Save Help'
             CRT
             hkey = 'EB_save.txt'
@@ -32,7 +32,7 @@ MAIN$:!
             END
             GOSUB showhelp
         CASE WORD='EBOPTS'
-            dc = COUNT(FG_SENTENCE, ' ') - 1
+            dc = COUNT(FG_SENTENCE, @AM) - 1
             CRT @(-1):'Options Help'
             CRT
             hkey = 'EB_opts.txt'
