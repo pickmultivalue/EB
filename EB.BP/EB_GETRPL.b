@@ -41,7 +41,7 @@ MAIN$:!
     WHILE POS DO
         BEGIN CASE
             CASE FG_ACT.CODE=FG_OPT.CODE
-                CALL EB_CHOICES(50,8,31,10,'',RSS,Z,1,RPOS,1,'L#30','Previous Searches')
+                CALL EB_CHOICES(10,8,71,20,'',RSS,Z,1,RPOS,1,'L#70','Previous Searches')
             CASE FG_ACT.CODE=FG_SKP.CODE OR FG_ACT.CODE=FG_MULTI.CODE; RPOS+=1
             CASE FG_ACT.CODE=FG_SEL.CODE
                 ReplMode=NOT(ReplMode)
