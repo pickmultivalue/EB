@@ -2225,7 +2225,71 @@ TCL: !
 !                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
                         EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS CAPTURING DSPLY RETURNING ERR.NOS
                     END
-                    INCLUDE EB.OS.INCLUDES RTED.BASIC
+                    DEFFUN EB_REGEX()
+                    CONVERT CR TO '' IN DSPLY
+                    NBR.DSPLY=DCOUNT(DSPLY,AM)
+                    FOR I=1 TO NBR.DSPLY UNTIL SYSTEM(14)
+                        CRT DSPLY<I>
+                    NEXT I
+                    CRT
+                    ERR.NOS=ERR.NOS<1,1,1>
+                    IF Y#'P' THEN
+                        suffix = FIELD(ITNM, '.', 2)
+!         IF suffix[1,1] EQ 'c' AND INDEX(DSPLY, 'error: ', 1) OR suffix[1,1] NE 'c' AND (INDEX(DSPLY,'parse',1) OR INDEX(DSPLY,'arning',1) OR INDEX(DSPLY,'rror',1)) THEN
+                        IF INDEX(DSPLY, 'rror: ', 1) OR INDEX(DSPLY, 'arning: ', 1) OR NOT(INDEX(DSPLY,'successfully',1)) THEN
+                            ERR.NOS = 'error'
+                            source = DSPLY<1>
+                            IF source NE ITNM THEN
+                                source = FIELD(DSPLY<2>, '"', 2)
+                            END
+                            IF LEN(source) AND FIELD(source, DIR_DELIM_CH, DCOUNT(source, DIR_DELIM_CH)) # ITNM THEN
+                                WRITE DSPLY ON JET.PASTE,'%DSPLY%'
+                                EXECUTE 'EB ':source
+                            END
+                            TXT="re-edit"
+                            IF suffix[1,1] EQ 'c' THEN
+                                offsetpos = INDEX(DSPLY, 'error: ', 1)
+                            END ELSE
+                                offsetpos = INDEX(DSPLY,'offset',1)
+                            END
+                            IF offsetpos THEN
+                                ERRPOS = @FALSE
+                            END ELSE
+                                ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
+                            END
+                            IF ERRPOS THEN
+                                TEMP = DSPLY[ERRPOS,MAX]
+                                ERRPOS = INDEX(TEMP,'Line ', 1)
+                                TEMP = FIELD(TEMP[ERRPOS, MAX], ' ', 2)
+                                IF TEMP MATCHES "1N0N" THEN INDROW=TEMP
+                            END ELSE
+                                IF offsetpos THEN
+                                    ROW=DCOUNT(DSPLY[1,offsetpos],AM)
+                                    COL=INDEX(DSPLY<ROW+2>,'^',1)
+                                    IF COL THEN
+                                        Y=DSPLY<ROW+1>
+                                        FIRSTERR = DSPLY<ROW>
+                                        IF suffix[1,1] EQ 'c' THEN
+                                            INDROW = FIELD(FIRSTERR, ':', 2)
+                                        END ELSE
+                                            INDROW=TRIM(FIELD(FIELD(FIRSTERR,',',2),'(',1))
+                                        END
+                                        INDROW = OCONV(INDROW, 'MCN')
+                                        IF INDROW THEN
+                                            Z=REC<INDROW>
+                                            COL+=(LEN(Z)-LEN(Y))+4
+                                        END
+                                    END
+                                END
+                            END
+                            INDROW-=11
+                            IF COL<5 THEN COL=5
+                            ROW=11
+                            IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
+                            CRT MSG.CLR:
+                            SCR.UD=1
+                        END
+                    END
                 END
             END
     END CASE
@@ -2250,7 +2314,21 @@ TCL: !
                 INS ITNM BEFORE CATL.LIST<2, CATFPOS, IPOS>
             END
         END ELSE
-            INCLUDE EB.OS.INCLUDES CATALOG
+            FULLFLNM=FLNM
+            IF INDEX(FLNM,'/',1) THEN
+                FLNM = FIELD(FLNM,'/',DCOUNT(FLNM,'/'))
+                EXECUTE 'jshow -f ':FLNM CAPTURING FLNMO
+                IF FIELD(TRIM(FLNMO),' ',2)#FULLFLNM THEN FLNM=FULLFLNM
+            END
+            READ CAT.OPTIONS FROM FG_EB.PARAMS,FLNM:'_lib' ELSE CAT.OPTIONS=''
+            IF CAT.OPTIONS#'' THEN
+                READ CAT.OPTIONS FROM FG_EB.PARAMS,FLNM:'_':SCR.VALIDATE:'_lib' ELSE NULL
+            END
+            IF FIELD(TRIM(REC<1>),' ',1)='SUBROUTINE' THEN
+                CAT.OPTIONS=CAT.OPTIONS<1>
+            END ELSE CAT.OPTIONS=CAT.OPTIONS<2>
+            CATALOG.CMD='CATALOG ':TRIM(CAT.OPTIONS:' ':FLNM):' ':SCR.VALIDATE
+            FLNM=FULLFLNM
             EXECUTE CATALOG.CMD
         END
     END

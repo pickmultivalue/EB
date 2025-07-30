@@ -11,6 +11,8 @@
     INCLUDE EB.EQUS COLOURS
     DEFFUN EB_REGEX()
 MAIN$:!
+    case_state = SYSTEM(28)
+    CASING ON
     MAX=LEN(REC)
     LAST.AM=DCOUNT(REC,AM)
     PR="--Press <RETURN>"
@@ -362,6 +364,7 @@ RETRY:
     MREC=""; SSTR=""
 4099 !
     PWIDTH = SPWIDTH
+    CASING case_state
     RETURN
 !========
 4100 ! Display all occurrences of a string.
