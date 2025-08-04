@@ -10,6 +10,7 @@ opts:
 U or Aýall occurrences
 Výreplace matching variable names only
 Cýconfirm each replacement
+Sýsuppress output
 
 Eýend of record
 ý(this is typically used in a range e.g. R5-E/old/new replaces from line 5 to the end)

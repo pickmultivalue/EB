@@ -31,7 +31,8 @@ MAIN$:!
     IF EMBED.ATTR<1,1> THEN HILON=RVOFF; HILOFF=RVON ELSE HILON=BG; HILOFF=FG
     HILRESET=FG:RVOFF
     WHOLE.WORDS=WHOLE
-    CASE.INSENSITIVE=WHOLE.WORDS[4,1]
+    SUPPRESS.OUTPUT=WHOLE.WORDS[4,1]
+!    CASE.INSENSITIVE=WHOLE.WORDS[4,1]
     REGEX.SEARCH=WHOLE.WORDS[3,1]
     NOCOMMENTS=WHOLE.WORDS[2,1]
     WHOLE.WORDS=WHOLE.WORDS[1,1]
@@ -317,17 +318,17 @@ MAIN$:!
                 CRTLN=LINE
                 CALL EB_TABS(CRTLN,PWIDTH,0,0)
                 IF ENDL=STRT AND NOT(CONFIRM) THEN
-                    CRT CRTLN[1,PWIDTH-4] LHASH:
+                    IF NOT(SUPPRESS.OUTPUT) THEN CRT CRTLN[1,PWIDTH-4] LHASH:
                 END ELSE
                     IF CONFIRM THEN
                         CRT @(0,19):CLEOL:
                     END ELSE
                         IF ALOC AND FIRST.DISP THEN
-                            CRT @(-1)
+                            IF NOT(SUPPRESS.OUTPUT) THEN CRT @(-1)
                             FIRST.DISP=FALSE
                         END
                     END
-                    CRT LINE.NO 'R%4>':CRTLN[1,PWIDTH-4] LHASH
+                    IF NOT(SUPPRESS.OUTPUT) THEN CRT LINE.NO 'R%4>':CRTLN[1,PWIDTH-4] LHASH
                 END
                 REC<LINE.NO>=LINE
                 CHANGED=TRUE
