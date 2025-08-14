@@ -10,9 +10,14 @@ CRT.LN:   !
     CRTLN = LOWER(lexLine(wholeLine, CRTLN, colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
     sitokenCounte = 0
-    FOR tokenCount = 1 TO DCOUNT(tokens,@FM)
-        CRT tokens<tokenCount,3>:tokens<tokenCount,1>:
+    remwidth = PWIDTH
+    dc = DCOUNT(tokens,@FM)
+    FOR tokenCount = 1 TO dc
+        token = tokens<tokenCount,1>
+        remwidth -= LEN(token)
+        CRT tokens<tokenCount,3>:token:
         sitokenCounte += tokens<tokenCount,4>
     NEXT tokenCount
+    CRT SPACE(remwidth):
     CRT C_WHITE:FG:
     RETURN
