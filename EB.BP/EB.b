@@ -2222,8 +2222,8 @@ TCL: !
                         IF DIR_DELIM_CH EQ '\' THEN
                             FULLPATH = CHANGE(FLNM, '\', '\\')
                         END ELSE FULLPATH=FLNM
-!                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS:shellend CAPTURING DSPLY RETURNING ERR.NOS
-                        EXECUTE COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS CAPTURING DSPLY RETURNING ERR.NOS
+                        CMD = COMPILE.VERB:BAS.ARGS:SPC:FULLPATH:SPC:ITNM:SPC:BAS.OPTS
+                        EXECUTE CMD CAPTURING DSPLY RETURNING ERR.NOS
                     END
                     DEFFUN EB_REGEX()
                     CONVERT CR TO '' IN DSPLY

@@ -89,19 +89,13 @@
     NORM.MODE=COL.80
     BEGIN CASE
         CASE TERM EQ 'B'
-!      WIDE.MODE=ESC:'[=;132Z'
             DEEP.MODE=ESC:'[=33;Z'
-!      NORM.MODE=ESC:'[=;80Z'
             SHALLOW.MODE=ESC:'[=25;Z'
         CASE TERM[1,1] EQ 'W'
             DEEP.MODE=ESC:"e":"*"
-!      WIDE.MODE=ESC:'`;'
-!      NORM.MODE=ESC:'`:'
             SHALLOW.MODE=ESC:'e&'
         CASE TERM EQ 'Q' OR TERM EQ 'U'     ;! these were copied from W and are probably wrong
             DEEP.MODE=ESC:"e":"*"
-!      WIDE.MODE=ESC:'`;'
-!      NORM.MODE=ESC:'`:'
             SHALLOW.MODE=ESC:'e&'
         CASE 1
             DEEP.MODE=''
@@ -330,6 +324,8 @@
 !!!!!!!!!!!!!!!!!!!!!!!!
 200 ! Mainline
     IF SEL THEN READN=TRUE
+    AOFFSET = 1
+    BOFFSET = 1
 !
 ! Save Items In-Case You Do Somethine Stupid With Copy/Merge Commands
 !
@@ -460,6 +456,18 @@
                 STARTB=NBR
                 GOSUB 900 ;! display items
             END
+        CASE (CMD[1,1] EQ 'R' OR CMD[1,1] EQ 'L') AND NUM(CMD[2,9])
+            amount = OCONV(CMD, 'MCN')
+            IF NOT(amount) THEN amount = PWIDTH
+            IF CMD[1,1] EQ 'L' THEN amount = -amount
+            AOFFSET += amount
+            BOFFSET += amount
+            IF AOFFSET LT 1 THEN AOFFSET = 1
+            IF BOFFSET LT 1 THEN BOFFSET = 1
+            GOSUB 900
+!
+! Rarely used so replaced with shift to Right
+!
         CASE CMD[1,1] EQ 'R' AND OCONV(CMD,'MCN') ;! replace
             msg = 'Syntax error'
             SUBSTRS = FIELD(CMD, '/', 2, 99)
@@ -1010,12 +1018,12 @@ FILE.ITEM:!
         IF LINEA EQ '' THEN
             LINEA=BLANK.LINE
         END ELSE
-            LINEA=NBRA:LINEA:BLANK.LINE
+            LINEA=NBRA:RVOFF:LINEA:BLANK.LINE
         END
         IF LINEB EQ '' THEN
             LINEB=BLANK.LINE
         END ELSE
-            LINEB=NBRB:LINEB:BLANK.LINE
+            LINEB=NBRB:RVOFF:LINEB:BLANK.LINE
         END
         CMTA = CMTA[1, LINE.LEN-2 - LEN(LINEA)]
         CMTB = CMTB[1, LINE.LEN-2 - LEN(LINEB)]
@@ -1027,9 +1035,11 @@ FILE.ITEM:!
             END
         NEXT L
         LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,9999], ' ', 'L')[1,LINE.LEN-2]
-        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,-2], ' ', 'L')[1,LINE.LEN-2]
+        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,9999], ' ', 'L')[1,LINE.LEN-2]
         IF CMTA # CMTB THEN
             PAD=HION
+            LINEA = PAD:LINEA
+            LINEB = PAD:LINEB
         END ELSE
             PAD=HIOFF
         END
@@ -1091,25 +1101,26 @@ FILE.ITEM:!
     CRT @(10,5):'"A=number" - set first line of A to "number"':
     CRT @(10,6):'"B=number" - set first line of B to "number"':
     CRT @(10,7):'"B=number" - scroll B by "number" lines':
-    CRT @(10,8):'"V"ertical display':
-    CRT @(10,9):'"H"orizontal display':
-    CRT @(10,10):'"LOC"ate string':
-    CRT @(10,11):'"S"earch again':
-    CRT @(10,12):'"F"ind next difference; "R{[<A>,B}}" re-adjust items':
-    CRT @(10,13):'"TOP" of items':
-    CRT @(10,14):'"EA" edit item A; "EB" edit item B':
-    CRT @(10,15):'"PR"int comparsion':
-    CRT @(10,16):'"XEQ"ECUTE A TCL STATEMENT':
-    CRT @(10,17):'"C{[<A>,B]}"opy different lines':
-    CRT @(10,18):'"CW{[<A>,B]}"opy record':
-    CRT @(10,19):'"M{[<A>,B]}"erge different lines':
-    CRT @(10,20):'"C{{[<A>,B]} a-b n-m}" replace lines n-m with a-b':
-    CRT @(10,21):'"M{{[<A>,B]} a-b n}" merge lines a-b before n':
-    CRT @(10,22):'"DE{{[<A>,B]} a{-b}}" delete line a or lines a-b':
-    CRT @(10,23):'"I{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
-    CRT @(10,24):'"R{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
-    CRT @(10,25):'"EX{K}" exit without save; "FI{K}" file changes':
-    CRT @(10,26):'"UNDO restore prior to last changes':
+    CRT @(10,8):'"R {number}" - scroll to the right "number" chars':
+    CRT @(10,9):'"L {number}" - scroll to the left "number" chars':
+    CRT @(10,10):'"V"ertical display':
+    CRT @(10,11):'"H"orizontal display':
+    CRT @(10,12):'"LOC"ate string':
+    CRT @(10,13):'"S"earch again':
+    CRT @(10,14):'"F"ind next difference; "R{[<A>,B}}" re-adjust items':
+    CRT @(10,15):'"TOP" of items':
+    CRT @(10,16):'"EA" edit item A; "EB" edit item B':
+    CRT @(10,17):'"PR"int comparsion':
+    CRT @(10,18):'"XEQ"ECUTE A TCL STATEMENT':
+    CRT @(10,19):'"C{[<A>,B]}"opy different lines':
+    CRT @(10,20):'"CW{[<A>,B]}"opy record':
+    CRT @(10,21):'"M{[<A>,B]}"erge different lines':
+    CRT @(10,22):'"C{{[<A>,B]} a-b n-m}" replace lines n-m with a-b':
+    CRT @(10,23):'"M{{[<A>,B]} a-b n}" merge lines a-b before n':
+    CRT @(10,24):'"DE{{[<A>,B]} a{-b}}" delete line a or lines a-b':
+    CRT @(10,25):'"I{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
+    CRT @(10,26):'"EX{K}" exit without save; "FI{K}" file changes':
+    CRT @(10,27):'"UNDO restore prior to last changes':
     CRT @(0,CMD.ROW):'Press [RETURN] to continue ':CLEOL:
     INPUT RET,1:
     IF TOGGLE2#'' THEN
@@ -1201,8 +1212,10 @@ FILE.ITEM:!
             GOSUB GETLINES
             IF TMPA # TMPB THEN
                 PAD=REV.OFF
+                LNRV = RVON
             END ELSE
                 PAD=REV.ON
+                LNRV = ''
             END
             LINEA = CHANGE(TMPA, TAB, '    ')
             LINEB = CHANGE(TMPB, TAB, '    ')
@@ -1221,6 +1234,7 @@ FILE.ITEM:!
             LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]
             IF CMTA # CMTB THEN
                 PAD=HION
+                LNRV = ''
             END ELSE
                 PAD=HIOFF
             END
@@ -1233,8 +1247,8 @@ FILE.ITEM:!
             NEXT L
             IF LEN(CMTA) THEN LINEA:=CMTA[1,C]:PAD:CMTA[C+1,9999]
             IF LEN(CMTB) THEN LINEB:=CMTB[1,C]:PAD:CMTB[C+1,9999]
-            CRT @(COLA,ROWA):CLEOL:NBRA:LINEA:RVOFF:
-            CRT @(COLB,ROWB):CLEOL:NBRB:LINEB:RVOFF:
+            CRT @(COLA,ROWA):CLEOL:LNRV:NBRA:RVOFF:LINEA:RVOFF:
+            CRT @(COLB,ROWB):CLEOL:LNRV:NBRB:RVOFF:LINEB:RVOFF:
         END
     NEXT J
     STLN=1
@@ -1628,6 +1642,8 @@ GETLINES: !
     LINEA=TRIM(LINEA,SVM,'T')
     LINEB=TRIM(LINEB,VM,'T')
     LINEB=TRIM(LINEB,SVM,'T')
+    LINEA = LINEA[AOFFSET, 99999]
+    LINEB = LINEB[BOFFSET, 99999]
     TMPA=LINEA
     TMPB=LINEB
     CTMP = TMPA; GOSUB SPLITCOMMENT; TMPA = CTMP<1>; CMTA = CTMP<2>
@@ -1639,8 +1655,8 @@ GETLINES: !
         TMPB=TRIM(TMPB)
     END
     IF PATCHFILE THEN
-        IF INDEX('!*',LINEA[1,1],1) THEN TMPA=TRIM(TMPA[2,999])
-        IF INDEX('!*',LINEB[1,1],1) THEN TMPB=TRIM(TMPB[2,999])
+        IF INDEX('!*',LINEA[1,1],1) THEN TMPA=TRIM(TMPA[2,9999])
+        IF INDEX('!*',LINEB[1,1],1) THEN TMPB=TRIM(TMPB[2,9999])
         TMPA = SWAP(TMPA, ';*', ';!')
         TMPB = SWAP(TMPB, ';*', ';!')
         TMPA = SWAP(TMPA, ' ;!', ';!')
@@ -1661,7 +1677,7 @@ SPLITCOMMENT: !
         POSC = INDEX(CTMP, '/*', 1)
     END
     IF POSC THEN
-        CTMP = CTMP[1, POSC-1]:@AM:CTMP[POSC,-1]
+        CTMP = CTMP[1, POSC-1]:@AM:CTMP[POSC,9999]
     END
     RETURN
 CHECKRANGE: !

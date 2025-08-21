@@ -24,6 +24,7 @@
     I.OPTION=INDEX(OPTIONS,'I',1)
     O.OPTION=INDEX(OPTIONS,'O',1)
     R.OPTION=INDEX(OPTIONS,'R',1)
+    X.OPTION=INDEX(OPTIONS,'X',1)
     W.OPTION=INDEX(OPTIONS,'W',1)
     ONE_DIFF = NOT(W.OPTION)
     COMPARE.ITEM=INDEX(OPTIONS,'C',1)
@@ -40,42 +41,54 @@
     END
     IGNORE.LIST=FIELD(SENT,' ',N+1)
     CONVERT ',' TO AM IN IGNORE.LIST
-    IF FLNM='' OR SFLNM='' THEN
-        CRT 'Syntax: COMPL first_file second_file {(CTM}'
-        CRT 'T option trims all spaces'
+    IF SFLNM='' AND NOT(X.OPTION) THEN
+        CRT 'Syntax: COMPL first_file{ second_file} {(AVBCIMORTXW}'
         CRT 'A option trims trailing AMs'
         CRT 'V option trims trailing VMs'
+        CRT 'B convert binary to "."'
         CRT 'C option starts off COMPARE_ITEM for the different items'
         CRT 'I option suppress output'
-        CRT 'O option include object code'
         CRT 'M include missing items'
+        CRT 'O option include object code'
         CRT 'R recurse each dir'
+        CRT 'T option trims all spaces'
+        CRT 'X compare object with source'
         CRT 'W hole record is parsed for differences.'
         STOP
     END
-    IF SFLNM='DICT' THEN
-        SFLNM='DICT ':FIELD(SENT,' ',N+1)
+    IF X.OPTION THEN
+        IF LEN(SFLNM) EQ 0 THEN
+            SFLNM = FLNM
+            IF NOT(R.OPTION) THEN FLNM := ',OBJECT'
+        END
+    END ELSE
+        IF SFLNM='DICT' THEN
+            SFLNM='DICT ':FIELD(SENT,' ',N+1)
+        END
+        IF FLNM=SFLNM THEN CRT 'I think comparing items from the same file is wasting my time'; STOP
     END
-    IF FLNM=SFLNM THEN CRT 'I think comparing items from the same file is wasting my time'; STOP
     OPEN 'UPG.WORKFILE' TO F.UPG.WORKFILE THEN
         UPG=TRUE
         USEMODE=''; PASSWD=''
     END ELSE UPG=FALSE
     LIST=''
     EQU COMMENTS TO '!*'
-!    OPEN 'SAVEDLISTS' THEN
-!        UNIDATA=1
-!    END ELSE
     UNIDATA=0
     OPEN path:'POINTER-FILE' ELSE STOP 201,path:'POINTER-FILE'
-!    END
     IF R.OPTION THEN
         PFLNM = FLNM; PSFLNM = SFLNM
         OPEN PFLNM TO F.parent ELSE STOP 201,PFLNM
-        SELECT F.parent TO paths
+        cmd = 'SSELECT ':PFLNM
+        IF X.OPTION THEN
+            cmd := ' LIKE "...]MOBJECT"'
+        END ELSE
+            cmd := ' UNLIKE "...]..."'
+        END
+        EXECUTE cmd CAPTURING OUTPUT RTNLIST paths
         LOOP WHILE READNEXT path FROM paths DO
-            FLNM = PFLNM:DIR_DELIM_CH:path
-            SFLNM = PSFLNM:DIR_DELIM_CH:path
+            IF path[1,1] EQ '.' THEN CONTINUE
+            FLNM = PFLNM:DIR_DELIM_CH:CHANGE(path, ']M', ',')
+            SFLNM = PSFLNM:DIR_DELIM_CH:CHANGE(path, ']MOBJECT', '')
             OPEN FLNM THEN
                 OPEN SFLNM THEN
                     CRT 'Processing ':FLNM
@@ -104,9 +117,13 @@ compare:
         rc = IOCTL(SECOND, JBC_COMMAND_GETFILENAME, FOBJ)
         SFOBJ := DIR_DELIM_CH
     END
-    EOF=0
+    EOF=@FALSE
     LOOP
-        READNEXT ID ELSE EOF=1
+        try
+            READNEXT ID ELSE EOF=@TRUE
+        catch ex
+            EOF = @TRUE
+        end try
     UNTIL EOF OR SYSTEM(14) DO
         IF FOBJ THEN
             ID = ID[1, LEN(ID)-3]

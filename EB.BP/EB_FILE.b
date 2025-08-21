@@ -2,6 +2,7 @@
     INCLUDE JBC.h
     INCLUDE EB.EQUS EB.COMMON
     DEFFUN GETFLNM()
+    DEFFUN fnGETHISTFILE()
 
     DEFFUN SRC_GETORIGPATH()
     DEFFUN SRC_READHIST()
@@ -252,6 +253,8 @@ RESTART: !
                     CASE FG_ACT.CODE=FG_OPT.CODE
                         IF UPDHIST THEN
                             CRT MSG.CLR:'Building history...':
+                            fnhist = fnGETHISTFILE(FLNM)
+                            EXECUTE 'SSELECT ':fnhist:' BY-DSND MOD.DATE BY-DSND MOD.TIME' CAPTURING io RTNLIST HISTLIST
                             IF PDESC#'' THEN Z=PDESC:';' ELSE Z=''
                             PREV.HIST = HISTORY<1>
                             IF LEN(PREV.HIST) THEN
@@ -259,7 +262,7 @@ RESTART: !
                             END
                             IDLEN = 15
                             DESCLEN = PWIDTH - IDLEN - 10
-                            SELECT F.HISTFILE TO HISTLIST
+!                            SELECT F.HISTFILE TO HISTLIST
                             LOOP
                                 READNEXT HID FROM HISTLIST ELSE HID=AM
                             UNTIL HID=AM DO
