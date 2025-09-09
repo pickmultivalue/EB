@@ -17,8 +17,8 @@
     OPEN path:'EB.CONTROL' TO FG_EB.CONTROL THEN
         READ LAST.EB FROM FG_EB.CONTROL,@LOGNAME:'.LAST.EB' ELSE LAST.EB=''
         LAST.EB = LAST.EB<1,1,1>
-        dir = FIELD(LAST.EB<1,1,1>,'*',1)
-        LAST.EB = FIELD(LAST.EB<1,1,1>,CHAR(9),3,99)
+        dir = FIELD(FIELD(LAST.EB<1,1,1>,'*',1), @TAB, 1)
+        LAST.EB = FIELD(LAST.EB<1,1,1>,@TAB,3,99)
         BEGIN CASE
         CASE verbose
             LAST.EB = dir:DIR_DELIM_CH:LAST.EB

@@ -70,6 +70,7 @@
     DEEP.FLAG=TRUE
     WRAP.FLAG=FALSE
     READN=FALSE
+    SHOW_COMMENTS=TRUE
     DEFAULT.OFFSET=99
     NORMAL.LEN=SYSTEM(2)
     NORMAL.WIDTH=SYSTEM(3)
@@ -982,6 +983,9 @@ FILE.ITEM:!
                 DELETE F.UPG.WORKFILE,UPGB
                 GOSUB 900
             END
+        CASE CMD EQ '*'
+            SHOW_COMMENTS = NOT(SHOW_COMMENTS)
+            GOSUB 900
         CASE OTHERWISE
             STARTA+=MAX.LINES
             STARTB+=MAX.LINES
@@ -1119,8 +1123,9 @@ FILE.ITEM:!
     CRT @(10,23):'"M{{[<A>,B]} a-b n}" merge lines a-b before n':
     CRT @(10,24):'"DE{{[<A>,B]} a{-b}}" delete line a or lines a-b':
     CRT @(10,25):'"I{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
-    CRT @(10,26):'"EX{K}" exit without save; "FI{K}" file changes':
-    CRT @(10,27):'"UNDO restore prior to last changes':
+    CRT @(10,26):'"*" toggle comment display'
+    CRT @(10,27):'"EX{K}" exit without save; "FI{K}" file changes':
+    CRT @(10,28):'"UNDO restore prior to last changes':
     CRT @(0,CMD.ROW):'Press [RETURN] to continue ':CLEOL:
     INPUT RET,1:
     IF TOGGLE2#'' THEN
@@ -1635,8 +1640,14 @@ UPDATE.CHANGE: !
     IF NOT(BOBJ) AND CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FVB; CRT FVB:' written to POINTER-FILE'
     RETURN
 GETLINES: !
-    LINEA=RECA<AMA>
-    LINEB=RECB<AMB>
+    LOOP
+        LINEA=RECA<AMA>
+        AOK = LEN(LINEA) EQ 0 OR SHOW_COMMENTS OR NOT(INDEX('!*', TRIM(LINEA)[1,1], 1))
+    UNTIL AOK DO AMA++ REPEAT
+    LOOP
+        LINEB=RECB<AMB>
+        BOK = LEN(LINEB) EQ 0 OR SHOW_COMMENTS OR NOT(INDEX('!*', TRIM(LINEB)[1,1], 1))
+    UNTIL BOK DO AMB++ REPEAT
     GOSUB GETINTEGRATE
     LINEA=TRIM(LINEA,VM,'T')
     LINEA=TRIM(LINEA,SVM,'T')
