@@ -10,6 +10,7 @@ FıFormat (indent)
 GıToggle whether TABs are used or SPACEs
 HıHex mode toggle
 Iıgit/svn merge conflict resolution
+Jıcompile to C
 KıInsert key of current record
 MıMerge
 NıNot Used
@@ -19,13 +20,13 @@ RıRotate record on AM/VM axis
 SıSwap/Convert current line
 
 e.g.ıX=Y	15ü=> Y=X
-ıLOCATE	15ü=> INS BEFORE
-ıINS ..	15ü=> DEL
-ıREAD	15ü=> WRITE
+ıLOCATE	15ü=> ins before
+ıINS ..	15ü=> del
+ıREAD	15ü=> write
 ıFOR...	15ü=> Reverse FOR...STEP-1
-ıIF	15ü=> CASE
-ıPROGRAM	15ü=> SUBROUTINE
-ıSUBROUTINE	15ü=> FUNCTION
+ıIF	15ü=> case
+ıPROGRAM	15ü=> subroutine
+ıSUBROUTINE	15ü=> function
 ıExternal/internal Date toggle
 
 TıToggle visual display of TABs
