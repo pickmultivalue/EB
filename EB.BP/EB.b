@@ -1402,7 +1402,7 @@ GET.HELP:   !
                             word=FIELD(word:'(','(',1)
                             IO = EBJSHOW('-c ':word)
                             IF LEN(IO) EQ 0 THEN
-                                DUMMY = ''
+                                DUMMY = word
                             END ELSE
                                 Y = "0X'Item '0X'in file '0X"
                                 matches = ''
@@ -2612,53 +2612,53 @@ SET.MODE: !
             COMMENT='C '
             TYPE='PROC'
             ITABPOS=1
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'Q')
             COMMENT='--'
             TYPE='SQL'
             ITABPOS=3
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'S')
             COMMENT='# '
             TYPE='SCRIPT'
             ITABPOS=2
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'py')
             reservedWords = cReserved       ;! hack
             COMMENT='# '
             TYPE='PYTHON'
             ITABPOS=3
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'*')
             COMMENT='*'
             TYPE='BASIC'
             ITABPOS=1
-            PC:=';("_");(".")'
+            PC:=';("_");("/");(".")'
         CASE COUNT(EDIT.MODE,'cpp')
             COMMENT='//'
             TYPE='C++'
             ITABPOS=2
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'c')
             COMMENT='//'          ;!*':@SVM:'*/'
             TYPE='C'
             ITABPOS=2
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'h')
             COMMENT='//'
             TYPE='H'
             ITABPOS=2
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'hpp')
             COMMENT='//'
             TYPE='HPP'
             ITABPOS=2
-            PC:=';("_")'
+            PC:=';("_");("/")'
         CASE 1
             COMMENT='!'
             TYPE='BASIC'
             ITABPOS=2
-            PC:=';("_");(".");("$")'
+            PC:=';("_");("/");(".");("$")'
     END CASE
     BEGIN CASE
         CASE COUNT(EDIT.MODE,'c')

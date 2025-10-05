@@ -79,6 +79,7 @@
     COL.POS = COL.WIDTH-1
     NORMAL.DEPTH=23
     WIDE.DEPTH=PDEPTH
+    ADJLEN = 10
     TERM=SYSTEM(7)
     TOGGLE='' ;!FWD.PAGE;!ESC:'J'
     TOGGLE2=BACK.PAGE   ;!ESC:'K'
@@ -180,8 +181,9 @@
 100 ! Enter First File Name
     LOOP
         IF ASENT THEN ASENT=FALSE ELSE
-            CRT @(0,2):'Enter file A: ':@(-4):
-            INPUT FA
+            prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0;YNR=2;CRT @(0,2):prmpt:@(-4):
+            Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+            FA = Z
         END
     WHILE FA EQ '?' DO
         FH = 'A'
@@ -234,8 +236,9 @@
     END ELSE
         IF AISENT THEN AISENT=FALSE ELSE
             LOOP
-                CRT @(0,4):'ENTER ID A: ':@(-4):
-                INPUT IDA
+                prmpt = 'ENTER ID A: '; YNC=LEN(prmpt)+0;YNR=4;CRT @(0,4):prmpt:@(-4):
+                Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+                IDA = Z
             WHILE IDA EQ '?' DO
                 IDH = 'A'
                 GOSUB SHOW_ID_HELP
@@ -275,8 +278,9 @@
 131     !
         IF BISENT THEN BISENT=FALSE ELSE
             LOOP
-                CRT @(42,4):'ENTER ID B: ':@(-4):
-                INPUT IDB
+                prmpt = 'ENTER ID B: '; YNC=LEN(prmpt)+42;YNR=4;CRT @(42,4):prmpt:@(-4):
+                Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+                IDB = Z
             WHILE IDB EQ '?' DO
                 IDH = 'B'
                 GOSUB SHOW_ID_HELP
@@ -305,20 +309,26 @@
     CRT EL:
     CRT @(25,6):'--- OPTIONS ---':
 150 ! Enter Display Mode
-    CRT @(10,8):'HORIZONTAL OR VERTICAL DISPLAY (H/V): ':
-    INPUT OPT
+    prmpt = 'HORIZONTAL OR VERTICAL DISPLAY (H/V): '; YNC=LEN(prmpt)+10;YNR=8;CRT @(10,8):prmpt:
+    YNCHRS='H':VM:'V'
+    YNL=1; GOSUB GET.CHAR
+    OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 130
     IF OPT EQ 'H' THEN VERT.FLAG=FALSE ELSE VERT.FLAG=TRUE
 160 ! Enter Display Type
-    CRT @(10,10):'WIDE OR NORMAL SCREEN (W/N): ':
-    INPUT OPT
+    prmpt = 'WIDE OR NORMAL SCREEN (W/N): '; YNC=LEN(prmpt)+10;YNR=10;CRT @(10,10):prmpt:
+    YNCHRS='W':VM:'N'
+    YNL=1; GOSUB GET.CHAR
+    OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 150
     IF INDEX('W',OPT,1) THEN WIDE.FLAG=TRUE ELSE WIDE.FLAG=FALSE
 170 ! Enter Display Level
-    CRT @(10,12):'DEEP OR NORMAL SCREEN DEPTH (D/N): ':
-    INPUT OPT
+    prmpt = 'DEEP OR NORMAL SCREEN DEPTH (D/N): '; YNC=LEN(prmpt)+10;YNR=12;CRT @(10,12):prmpt:
+    YNCHRS='D':VM:'N'
+    YNL=1; GOSUB GET.CHAR
+    OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 160
     IF INDEX('D',OPT,1) THEN DEEP.FLAG=TRUE ELSE DEEP.FLAG=FALSE
@@ -425,7 +435,8 @@
         POS2=@(0,NORMAL.DEPTH)
     END
     CRT CL:POS1:'ENTER "?" FOR HELP':POS2:FG:REV.ON:'COMMAND: ':
-    INPUT CMD:
+    Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+    CMD = Z
     CMDU=OCONV(FIELD(CMD,' ',1),'MCU')
     CMD=CMDU:CMD[COL2(),999]
     CRT RVOFF:
@@ -1508,8 +1519,10 @@ UPDATE: !
     IF (ORIGB#RECB OR ORIGA#RECA) THEN
         IF CMD[1,2] EQ 'EX' THEN
             LOOP
-                CRT BELL:@(0,CMD.ROW):CLEOL:'Changes have been made...continue (Y/N) ? ':
-                INPUT ANS,1:
+                CRT BELL:
+                CRT @(0,CMD.ROW):CLEOL:'Changes have been made...continue (Y/N) ? ':
+                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                ANS = Z
             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
         END ELSE ANS='Y'
 !
@@ -1522,8 +1535,12 @@ UPDATE: !
                     IF CMD[2,1] EQ 'I' THEN
                         IF 0*NOT(INDEX(FA,'PATCH',1)) THEN
                             LOOP
-                                CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FA:' ':IDA:' (Y/N) ? ':
-                                INPUT ANS,1:
+                                CRT BELL:
+                                prmpt = 'Make patch for ':FA:' ':IDA:' (Y/N) ? '
+                                YNC = LEN(prmpt); YNR = CMD.ROW
+                                CRT @(0,CMD.ROW):prmpt:CLEOL
+                                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
                                 EXECUTE 'EB ':FA:' ':IDA
@@ -1540,8 +1557,11 @@ UPDATE: !
                     IF CMD[2,1] EQ 'I' THEN
                         IF 0*NOT(INDEX(FVB,'PATCH',1)) THEN
                             LOOP
-                                CRT BELL:@(0,CMD.ROW):CLEOL:'Make patch for ':FVB:' ':IDB:' (Y/N) ? ':
-                                INPUT ANS,1:
+                                prmpt = 'Make patch for ':FVB:' ':IDB:' (Y/N) ? '
+                                CRT @(0,CMD.ROW):prmpt:CLEOL
+                                YNC = LEN(prmpt); YNR = CMD.ROW
+                                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
                                 EXECUTE 'EB ':FVB:' ':IDB
@@ -1601,8 +1621,9 @@ OPEN.FILEB: !
 120 ! Enter Second File Name
     IF BSENT OR UPGBACKUP THEN BSENT=FALSE ELSE
         LOOP
-            CRT @(42,2):'Enter file B: ':@(-4):
-            INPUT FVB
+            prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42;YNR=2;CRT @(42,2):prmpt:@(-4):
+            Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+            FVB = Z
         WHILE FVB EQ '?' DO
             FH = 'B'
             GOSUB SHOW_FILE_HELP
@@ -1721,7 +1742,9 @@ CHECKRANGE: !
             CRT ' / ':TO.ST:'-':TO.FI:
         END
         CRT ") not in current view. Enter 'Y' to override ":BELL:
-        INPUT RANGE_OK,1:_
+        YNR = CMD.ROW; YNC = 50
+        Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+        RANGE_OK = Z
         RANGE_OK = UPCASE(RANGE_OK EQ 'Y')
     END
     RETURN
@@ -1732,4 +1755,26 @@ SHOW_FILE_HELP:
 SHOW_ID_HELP:
     CRT
     CRT 'Enter an item name from ':(IF IDH EQ 'A' THEN FILEA ELSE FILEB):', "^" to go back or "EX{K}" to exit':
+    RETURN
+INPT: !
+    POS=1
+    EDITED=FALSE
+    CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
+    INPTYPE='AN'
+    GOSUB trans_codes
+    RETURN
+GET.CHAR: !
+    CALL EB_UT_INPUT_ZERO(Z,MAT EB_CHARS,FG_ACT.CODE,YNC,YNR,FG_INPUT.CODES,YNCHRS,YNL,FG_TIMEOUT:AM:FG_MONITOR.SECS)
+    GOSUB trans_codes
+    RETURN
+trans_codes:
+    BEGIN CASE
+        CASE FG_ACT.CODE EQ FG_HLP.CODE ; Z = '?'
+        CASE FG_ACT.CODE EQ FG_ABT.CODE ; Z = 'EX'
+        CASE FG_ACT.CODE EQ FG_TOP.CODE ; Z = 'TOP'
+        CASE FG_ACT.CODE EQ FG_TAB.CODE ; Z = 'R':ADJLEN
+        CASE FG_ACT.CODE EQ FG_BTAB.CODE ; Z = 'L':ADJLEN
+        CASE FG_ACT.CODE EQ FG_BTAB.CODE ; Z = 'L':ADJLEN
+        CASE FG_ACT.CODE EQ FG_PRVS.CODE ; Z = '-':MAX.LINES
+    END CASE
     RETURN
