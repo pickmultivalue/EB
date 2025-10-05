@@ -1551,7 +1551,9 @@ SCROLL.DOWN: !
 !==========
 EB.SUB: !
     CALL EB_RSS(1)
-    WRITE HEADERS ON F.currdir,'eb_headers'
+    IF LEN(HEADERS) THEN
+        WRITE HEADERS ON F.currdir,'eb_headers'
+    END
     IF accuterm THEN CRT ESC:CHAR(2):0:
     EXECUTE DUMMY
     IF accuterm THEN CRT ESC:CHAR(2):1:
