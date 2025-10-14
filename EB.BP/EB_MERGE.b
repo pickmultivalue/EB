@@ -78,7 +78,7 @@ MAIN$:!
 5030 !
     Y=X+PDEPTH-1
     FOR K=X TO Y
-        CRT @(0,K-X):CLEOL:K"R#4":" ":; CRTLN=REC<K>;CRT.X=1;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+        CRT @(0,K-X):CLEOL:K lnbr_hash1:; CRTLN=REC<K>;CRT.X=1;CRT.Y=PWIDTH-4; GOSUB CRT.LN
     NEXT K
 5040 !
     CRT MSG.CLR:"From line (or F or B)? ":
@@ -103,7 +103,7 @@ MAIN$:!
 5050 !
     Y=X+(PDEPTH-1)
     FOR K=X TO Y
-        CRT @(0,K-X):CLEOL:K"R#4":" ":; CRTLN=REC<K>[1,PWIDTH-4]; GOSUB CRT.LN
+        CRT @(0,K-X):CLEOL:K lnbr_hash1:; CRTLN=REC<K>[1,PWIDTH-lnbr_width]; GOSUB CRT.LN
     NEXT K
 5060 !
     IF FRLN > X THEN
