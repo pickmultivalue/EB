@@ -30,6 +30,7 @@
             WHILE delim DO REPEAT
         end else
             items<-1> = item
+            EXECUTE 'git add ':item CAPTURING io
         end
     next
 
