@@ -509,13 +509,13 @@ ALREADY.LOCKED: !
         ITNM = SITNM
         IF FIRST.READ THEN
             GOSUB SWITCH.FILE
-            GOSUB SET.MSG
+!            GOSUB SET.MSG
             FIRST.READ = FALSE
             RELEASE FIL,ITNM
             GO REREAD.ITEM
         END ELSE
             GOSUB SWITCH.FILE
-            GOSUB SET.MSG
+!            GOSUB SET.MSG
         END
         CRT MSG.CLR:"New record ":PR:; RQM
         IF ITNM 'R#2' NE '.b' AND ITNM 'R#6' NE '.jabba' THEN
