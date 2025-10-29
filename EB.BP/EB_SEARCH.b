@@ -141,7 +141,7 @@ MAIN$:!
                 END
                 IF STRT<INDROW OR STRT>(INDROW+(PDEPTH-1)) THEN
                     IF CHANGED THEN GOSUB 6000
-                    INDROW=STRT; SCR.UD=TRUE; OFFSET=0; COL=5; ROW=0
+                    INDROW=STRT; SCR.UD=TRUE; OFFSET=0; COL=(lnbr_width+1); ROW=0
                 END ELSE ROW=STRT-INDROW; COL=I+Indent
                 SCR.UD=1
                 CALL EB_REFRESH
@@ -302,7 +302,7 @@ RETRY:
         SCOL = COL
         CALL EB_TABCOL(RDSP(STR.LINE),COL,LCOL,FALSE)
         IF COL GE (SPWIDTH-3) THEN
-            ADJUST = COL-SCOL - 5
+            ADJUST = COL-SCOL - (lnbr_width+1)
         END ELSE
             ADJUST = 0-OFFSET
         END
@@ -321,9 +321,9 @@ RETRY:
             IF 0 THEN
                 DUMMY=INDROW+(PDEPTH-2)
                 FOR J=INDROW TO DUMMY
-                    Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-4]
+                    Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-lnbr_width]
                     IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH,0,0)
-                    Y=OCONV(Y[1+OFFSET,SPWIDTH-4],'MCP')
+                    Y=OCONV(Y[1+OFFSET,SPWIDTH-lnbr_width],'MCP')
                     IF REGEX.SEARCH THEN
                         LINE.POS=EB_REGEX(Y,SSTR, @FALSE)
                     END ELSE
@@ -351,7 +351,7 @@ RETRY:
                         DIMON = BG
                         DIMOFF = FG
                     END ELSE DIMON = ''; DIMOFF = ''
-                    CRT @(0,J-INDROW):CLEOL:DIMON:J"R#4":DIMOFF:" ":;!Y:
+                    CRT @(0,J-INDROW):CLEOL:DIMON:J lnbr_hash1:DIMOFF:;!Y:
                     CRTLN=Y; GOSUB CRT.LN
                 NEXT J
             END
@@ -402,7 +402,7 @@ RETRY:
             IF LN.POS < 1 THEN LN.POS = 1
             MREC = '...':TRIM(MREC[LN.POS, MAX])
         END
-        CRT DIMON:STR.LINE "R#4":DIMOFF:" ":OCONV(MREC[1,SPWIDTH-5],'MCP')
+        CRT DIMON:STR.LINE lnbr_hash1:DIMOFF:OCONV(MREC[1,SPWIDTH-(lnbr_width+1)],'MCP')
         CALL EB_FIND(LPOS,WHOLE.WORDS:'')
         DIFF=STR.POS-LPOS+LEN(MREC)
         STRT+=DIFF
@@ -430,7 +430,7 @@ RETRY:
         IF STR.POS THEN PGE+=1; GO 4110 ELSE GO 4199
     END
     IF Y<1 THEN Y=1
-    INDROW=Y; ROW=0; COL=5
+    INDROW=Y; ROW=0; COL=(lnbr_width+1)
 4199 !
     IF RefreshRequired THEN
         SCR.UD=1

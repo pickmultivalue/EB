@@ -65,7 +65,7 @@ MAIN$:!
             END
         END
     UNTIL ACNT OR NOT(POS) DO SOP+=1 REPEAT
-    LHASH='L#':PWIDTH-4
+    LHASH='L#':PWIDTH-lnbr_width
 !
 ! Break-up wild-cards and literals
 !
@@ -186,9 +186,9 @@ MAIN$:!
             OCC=0; OCCURS=0
             IF CONFIRM AND ALOC THEN
                 CRT @(0,20):CLEOP:
-                IF LINE.NO>1 THEN CRT LINE.NO-1 'R%4 ':REC<LINE.NO-1>[1,PWIDTH-4] ELSE CRT
-                CRT LINE.NO 'R%4 ':REC<LINE.NO>[1,PWIDTH-4]
-                CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
+                IF LINE.NO>1 THEN CRT LINE.NO-1 lnbr_hash1:REC<LINE.NO-1>[1,PWIDTH-lnbr_width] ELSE CRT
+                CRT LINE.NO lnbr_hash1:REC<LINE.NO>[1,PWIDTH-lnbr_width]
+                CRT LINE.NO+1 lnbr_hash1:REC<LINE.NO+1>[1,PWIDTH-lnbr_width]
                 CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (<Y>/N/Last) ":
                 CALL EB_UT_INPUT_ZERO(DMY,MAT EB_CHARS,FG_ACT.CODE,35,PDEPTH,FG_INPUT.CODES,'Y':@VM:'N',1,FG_TIMEOUT)
                 IF FG_ACT.CODE THEN GO RTN
@@ -225,11 +225,11 @@ MAIN$:!
                     IF CONFIRM THEN
                         CRT @(0,20):@(-3)
                         CRT @(0,20):CLEOP:
-                        IF LINE.NO>1 THEN CRT LINE.NO-1 'R%4 ':REC<LINE.NO-1>[1,PWIDTH-4] ELSE CRT
+                        IF LINE.NO>1 THEN CRT LINE.NO-1 lnbr_hash1:REC<LINE.NO-1>[1,PWIDTH-lnbr_width] ELSE CRT
                         CRT LINE.NO 'R%4 ':HILON:
                         CRT LINE[1,SPOS-1]:HILOFF:LINE[SPOS,RSTRL]:HILON:LINE[SPOS+RSTRL,MAX]:HILOFF
                         CRT HILRESET:
-                        CRT LINE.NO+1 'R%4 ':REC<LINE.NO+1>[1,PWIDTH-4]
+                        CRT LINE.NO+1 lnbr_hash1:REC<LINE.NO+1>[1,PWIDTH-lnbr_width]
                         CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (Y/<N>/Last) ":
                         CALL EB_UT_INPUT_ZERO(DMY,MAT EB_CHARS,FG_ACT.CODE,35,PDEPTH,FG_INPUT.CODES,'Y':@VM:'N':@VM:'L',1,FG_TIMEOUT)
                         IF FG_ACT.CODE THEN GO RTN
@@ -318,7 +318,7 @@ MAIN$:!
                 CRTLN=LINE
                 CALL EB_TABS(CRTLN,PWIDTH,0,0)
                 IF ENDL=STRT AND NOT(CONFIRM) THEN
-                    IF NOT(SUPPRESS.OUTPUT) THEN CRT CRTLN[1,PWIDTH-4] LHASH:
+                    IF NOT(SUPPRESS.OUTPUT) THEN CRT CRTLN[1,PWIDTH-lnbr_width] LHASH:
                 END ELSE
                     IF CONFIRM THEN
                         CRT @(0,19):CLEOL:
@@ -328,7 +328,7 @@ MAIN$:!
                             FIRST.DISP=FALSE
                         END
                     END
-                    IF NOT(SUPPRESS.OUTPUT) THEN CRT LINE.NO 'R%4>':CRTLN[1,PWIDTH-4] LHASH
+                    IF NOT(SUPPRESS.OUTPUT) THEN CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
                 END
                 REC<LINE.NO>=LINE
                 CHANGED=TRUE

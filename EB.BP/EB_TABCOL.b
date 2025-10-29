@@ -10,7 +10,7 @@
     IF CHGLCOL THEN
         IF TAB.MODE THEN
             TMPCOL=0
-            TDCOL=DCOL+OFFSET-4
+            TDCOL=DCOL+OFFSET-lnbr_width
             TCOL=0
             LOOP
                 TCOL+=1
@@ -22,10 +22,10 @@
             REPEAT
             TCOL-=1
         END ELSE
-            TCOL=DCOL-4+OFFSET
+            TCOL=DCOL-lnbr_width+OFFSET
         END
-        IF TCOL GT (OFFSET+PWIDTH-5) THEN
-            ADJUST = (PWIDTH-5)
+        IF TCOL GT (OFFSET+PWIDTH-(lnbr_width+1)) THEN
+            ADJUST = (PWIDTH-(lnbr_width+1))
         END
     END ELSE
         GOSUB SETCOL
@@ -49,12 +49,12 @@ SETCOL:
         NEXT C
         NCOL++
     END ELSE NCOL=TCOL
-    DCOL=NCOL-OFFSET+4
-    IF DCOL<5 THEN
-        ADJUST = 0-(PWIDTH-5)
+    DCOL=NCOL-OFFSET+lnbr_width
+    IF DCOL<(lnbr_width+1) THEN
+        ADJUST = 0-(PWIDTH-(lnbr_width+1))
     END ELSE
         IF DCOL>PWIDTH THEN
-            ADJUST = (PWIDTH-5)
+            ADJUST = (PWIDTH-(lnbr_width+1))
         END
     END
     RETURN

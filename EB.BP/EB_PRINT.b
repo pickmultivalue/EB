@@ -65,8 +65,12 @@ MAIN$:!
             RETURN
     END CASE
 5050 !
-    FOR K=X TO X+22
-        CRT @(0,K-X):CLEOL:K'R#4':' ':; CRTLN=REC<K>[1,75]; GOSUB CRT.LN
+    E = X+22
+    FOR K=X TO E
+        CRT @(0,K-X):CLEOL:K lnbr_hash1:
+        CRTLN=REC<K>
+        CRTLN = CRTLN[1, LEN(CRTLN)-lnbr_width-1]
+        GOSUB CRT.LN
     NEXT K
     IF NOT(NUM(FRLN)) THEN GO 5040
 5060 !

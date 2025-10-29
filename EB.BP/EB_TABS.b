@@ -6,7 +6,7 @@
     EQU TABCH TO CHAR(9), SPC TO ' ', TRUE TO 1, FALSE TO 0
     EQU TABDSP TO '>'
     Indent=ITAB<ITABPOS>
-    IF NOT(NUM(Indent)) OR NOT(Indent) THEN Indent = 4
+    IF NOT(NUM(Indent)) OR NOT(Indent) THEN Indent = lnbr_width
     TABSPC=SPACE(Indent)
     Nbr.Tabs=DCOUNT(CRTLN,TABCH)
     IF CRTLN 'R#1'=TABCH THEN
@@ -25,5 +25,5 @@
     CRTLN=TRIM(NEWLN,' ','T')
     IF ADD.DOT THEN CRTLN=CRTLN[1,LEN(CRTLN)-1]
     IF ST THEN CRTLN = CRTLN[ST,FI]
-    CRTLN=CRTLN[1,PWIDTH-5]
+    CRTLN=CRTLN[1,PWIDTH-(lnbr_width+1)]
     RETURN

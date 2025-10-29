@@ -1,10 +1,10 @@
     INCLUDE JBC.h
     $option jabba
-    DEFC INT JBASEEmulateGETINT(INT, INT)
+    DEFC INT JBASEEmulateGETINT(INT)
     DEFFUN EBGETHOME()
     path = EBGETHOME()
     jelf = new object('jelf_helper')
-    IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
+    IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
     am_start=IF_COMPILED_PRIME
     mv_start=IF_COMPILED_PRIME
     SENT=SENTENCE()
@@ -231,15 +231,16 @@ compare:
     REPEAT
     IF LEN(LIST) THEN
         IF UNIDATA THEN SUFFIX='000' ELSE SUFFIX=''
-        WRITELIST LIST ON FLNM:'v':SFLNM:SUFFIX
+        k.list = CHANGE(FLNM:'v':SFLNM:SUFFIX, DIR_DELIM_CH, '_')
+        WRITELIST LIST ON K.list
         LIST = ''
         IF COMPARE.ITEM THEN
             DATA.STACK='COMPARE_ITEM ':FLNM:' ':SFLNM
             IF T.OPTION THEN DATA.STACK := ' (T'
             DATA DATA.STACK
-            EXECUTE 'GET-LIST ':FLNM:'v':SFLNM
+            EXECUTE 'GET-LIST ':K.list
         END ELSE
-            CRT FLNM:'v':SFLNM:' list saved'
+            CRT K.list:' list saved'
         END
     END ELSE CRT 'No differences'
     RETURN

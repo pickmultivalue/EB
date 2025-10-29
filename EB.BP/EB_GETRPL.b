@@ -224,7 +224,7 @@ MAIN$:!
         END
         CRT MSG.AKN:
 ! Perform the Replacements
-        IF CONFIRM OR ENDL NE STRT THEN CRT ELSE IF ENDL=ORIG.ROW THEN CRT @(5,ROW):
+        IF CONFIRM OR ENDL NE STRT THEN CRT ELSE IF ENDL=ORIG.ROW THEN CRT @((lnbr_width+1),ROW):
         IF SwitchValues THEN
             SwitchValues = RSTR
             RSTR = WSTR

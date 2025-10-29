@@ -36,8 +36,8 @@
     DEBUG.CODES = CHANGE(DEBUG.CODES, ',', @AM)
 !
     MAT GEX=''; MAT EXTRAS=''; MAT OTHER.PARAMS=''
-    DEFC INT JBASEEmulateGETINT(INT, INT)
-    IF_COMPILED_PRIME=JBASEEmulateGETINT(30,2)
+    DEFC INT JBASEEmulateGETINT(INT)
+    IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
     am_start=IF_COMPILED_PRIME
     vm_start=IF_COMPILED_PRIME
     INCLUDE EB.OS.INCLUDES GET.TCL.SENTENCE
@@ -133,10 +133,6 @@
     INCLUDE EB.EQUS EB.CHARS
     INCLUDE EB.EQUS ACT.CODES
     CYCLES=FG_OPT.CODE:AM:FG_SKP.CODE:AM:FG_BCK.CODE:AM:FG_NXT.KEY.CODE:AM:FG_PRV.KEY.CODE:AM:FG_SEL.CODE
-    IF CURS.BLOCK<1,1> EQ '' THEN CURS.INS=@(PWIDTH-5,(PDEPTH-1)):SPC:'Ins':CLEOL ELSE CURS.INS=CURS.BLOCK<1,1>
-    IF CURS.LINE<1,1> EQ '' THEN CURS.RPL=@(PWIDTH-5,(PDEPTH-1)):SPC:FLSH:'Rpl':NFLSH:CLEOL ELSE CURS.RPL=CURS.LINE<1,1>
-    IF CURS.ON NE CURS.LINE<1,1> THEN CURS.INS:=CURS.ON
-    CURS.RPL:=CURS.ON
     INP.SUB=0
     INS.MODE=1
     DIM RPL.PARMS(3),RPL.PROMPTS(3),RPL.COLS(3)
@@ -275,6 +271,7 @@
     ORIG_WCNT = WCNT
     END.WORDS='END':AM:'NEXT':AM:'UNTIL':AM:'WHILE'
     USEMODE=''; PASSWD=''
+    CURS.INS = ''
     UPG=FALSE
     ENCRYPT.HEADCNT=0; ENCRYPT.MESG=''
     INCLUDE EB.OS.INCLUDES BASIC.VERB
@@ -512,13 +509,13 @@ ALREADY.LOCKED: !
         ITNM = SITNM
         IF FIRST.READ THEN
             GOSUB SWITCH.FILE
-            GOSUB SET.MSG
+!            GOSUB SET.MSG
             FIRST.READ = FALSE
             RELEASE FIL,ITNM
             GO REREAD.ITEM
         END ELSE
             GOSUB SWITCH.FILE
-            GOSUB SET.MSG
+!            GOSUB SET.MSG
         END
         CRT MSG.CLR:"New record ":PR:; RQM
         IF ITNM 'R#2' NE '.b' AND ITNM 'R#6' NE '.jabba' THEN
@@ -591,11 +588,18 @@ ALREADY.LOCKED: !
             DCT<1>=FLNM
         END
     END
-    GOSUB SET.MSG
     DEL.LINES=''; CUT.TEXT=''; NEW.CHARS=''; PREV.TIME=TIME()
     MOUSEROW=0; MOUSECOL=0; MOUSESTATE='';
     LUK=FLNM:TAB:OEDIT.MODE:TAB:ITNM
     LAST.AM = DCOUNT(REC, AM)
+    lnbr_width = MAXIMUM(4:@AM:LEN(LAST.AM))
+    IF CURS.BLOCK<1,1> EQ '' THEN CURS.INS=@(PWIDTH-(lnbr_width+1),(PDEPTH-1)):SPC:'Ins':CLEOL ELSE CURS.INS=CURS.BLOCK<1,1>
+    IF CURS.LINE<1,1> EQ '' THEN CURS.RPL=@(PWIDTH-(lnbr_width+1),(PDEPTH-1)):SPC:FLSH:'Rpl':NFLSH:CLEOL ELSE CURS.RPL=CURS.LINE<1,1>
+    IF CURS.ON NE CURS.LINE<1,1> THEN CURS.INS:=CURS.ON
+    CURS.RPL:=CURS.ON
+    GOSUB SET.MSG
+    lnbr_hash2 = 'R#':lnbr_width
+    lnbr_hash1 = lnbr_hash2:' '
     LOCATE LUK IN LAST.EB<1> SETTING POS THEN
         COL = LAST.EB<2,POS>
     END ELSE COL = ''
@@ -604,9 +608,9 @@ ALREADY.LOCKED: !
         INDROW = COL<1,1,3>
         OFFSET = COL<1,1,4>
         LCOL = COL<1,1,5>
-        COL = LCOL+4-OFFSET   ;!COL<1,1,1>
+        COL = LCOL+lnbr_width-OFFSET   ;!COL<1,1,1>
     END ELSE
-        COL=5; ROW=0; INDROW=1; OFFSET=0; LCOL=1
+        COL=lnbr_width+1; ROW=0; INDROW=1; OFFSET=0; LCOL=1
     END
     STRT=0 ; SCR.UD=TRUE; SCR.LR=FALSE; CHANGED=FALSE; MAT CHANGES=FALSE; SCRL=0
     LAST.ROW=''
@@ -659,7 +663,7 @@ STRT: ! top of main loop
     IF Z EQ FG_MULTI.CODE THEN FG_ACT.CODE = Z
 TOP: !
     INCLUDE EB.INCLUDES VERS_CTRL
-    IF COL LT 5 THEN GO STRT
+    IF COL LT (lnbr_width+1) THEN GO STRT
     THIS.ROW=INDROW+ROW
     IF LAST.ROW NE THIS.ROW THEN
         IF LAST.ROW GT LAST.AM THEN
@@ -668,13 +672,13 @@ TOP: !
         END ELSE DIMON = ''; DIMOFF = ''
         LAST.ROW-=INDROW
         RR=PDEPTH-LAST.ROW
-        IF RR GE 0 THEN CRT @(0,LAST.ROW):DIMON:(LAST.ROW+INDROW) "R#4":DIMOFF:
+        IF RR GE 0 THEN CRT @(0,LAST.ROW):DIMON:(LAST.ROW+INDROW) lnbr_hash2:DIMOFF:
         LAST.ROW=INDROW+ROW
         IF LAST.ROW GT LAST.AM THEN
             DIMON = BG
             DIMOFF = FG
         END ELSE DIMON = ''; DIMOFF = ''
-        CRT @(0,ROW):HLON:DIMON:LAST.ROW "R#4":DIMOFF:HLOFF:
+        CRT @(0,ROW):HLON:DIMON:LAST.ROW lnbr_hash2:DIMOFF:HLOFF:
     END
     READ autocmd FROM F.currdir,'eb_auto' THEN
         DELETE F.currdir,'eb_auto'
@@ -785,7 +789,7 @@ TOP: !
         CASE FG_ACT.CODE EQ FG_LST.CODE
         CASE 1
             POS=DCOUNT(MARKERS<1>,VM)
-            Z=INDROW+ROW:SVM:LCOL+4
+            Z=INDROW+ROW:SVM:LCOL+lnbr_width
             IF Z NE MARKERS<2,POS> THEN
                 POS+=1
                 INS '<' BEFORE MARKERS<1,POS>
@@ -807,23 +811,23 @@ TOP: !
                 GOSUB ADD_TO_UNDO
                 IF INS.MODE THEN
                     SP1=""
-                    IF COL GT 4 THEN
+                    IF COL GT lnbr_width THEN
                         CRT BS.CH:
                         Y=RDSP(LROW)
                         CALL EB_TABS(Y,PWIDTH,0,0)
-                        Y=Y[PWIDTH-4+OFFSET,2]
+                        Y=Y[PWIDTH-lnbr_width+OFFSET,2]
                         IF LEN(DEL.CHAR) THEN
                             CRT DEL.CHAR:
                             IF LEN(Y[2,1]) THEN CRT @(PWIDTH-1,ROW):Y:
                         END ELSE
-                            CRT @(COL-1,ROW):CLEOL:Y[COL-4,PWIDTH+1-COL]:
+                            CRT @(COL-1,ROW):CLEOL:Y[COL-lnbr_width,PWIDTH+1-COL]:
                         END
                     END
                 END ELSE SP1=SPC
                 RDSP(LROW)=RDSP(LROW)[1,LCOL-2]:SP1:RDSP(LROW)[LCOL,MAX]
                 IF LCOL EQ LLEN+1 THEN LLEN-=1; RDSP(LROW)=RDSP(LROW)[1,LLEN]
                 COL-=1; GOSUB CHG.LROW
-                IF COL GT 4 THEN CRT @(COL,ROW):SP1:
+                IF COL GT lnbr_width THEN CRT @(COL,ROW):SP1:
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
                 GO TOP
             END
@@ -836,7 +840,7 @@ CHECK.CODES: !
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
             GO TOP
         CASE FG_ACT.CODE EQ FG_LEFT.CODE
-            IF COL EQ 5 THEN
+            IF COL EQ (lnbr_width+1) THEN
                 IF NOT(OFFSET) THEN
                     IF LROW GT 1 THEN
                         LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
@@ -856,7 +860,7 @@ CHECK.CODES: !
                 Y=INDROW
                 INDROW=CNT-(PDEPTH-2)
                 IF INDROW LT 0 THEN INDROW=1
-                COL=5; ROW=CNT-INDROW
+                COL=(lnbr_width+1); ROW=CNT-INDROW
                 SCR.UD=Y NE INDROW
             END ELSE
                 ROW-=1
@@ -876,8 +880,8 @@ CHECK.CODES: !
                                 DIMON = BG
                                 DIMOFF = FG
                             END ELSE DIMON = ''; DIMOFF = ''
-                            CRT DIMON:INDROW 'R#4 ':DIMOFF:
-                            CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
+                            CRT DIMON:INDROW lnbr_hash1:DIMOFF:
+                            CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
                             S=LROW; LROW=1; GOSUB CRT.LN; LROW=S
                             CRT MSG.DSP:
                         END ELSE SCR.UD=TRUE; SCR.LR=TRUE
@@ -930,13 +934,13 @@ SCROLL.LINE:    !
                     SCR.UD=TRUE
                     SCR.LR=1
                     SCRL=0
-                    COL=5
+                    COL=(lnbr_width+1)
                     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
                 END ELSE SCR.LR=1-2*(INS.LINE NE '')
             END ELSE
                 NLEN=LEN(CHECK.LINE)
                 IF NLEN LT LCOL THEN ;! next line is shorter
-                    IF NLEN LT PWIDTH-5 AND OFFSET THEN SCR.LR=1-2*(INS.LINE NE ''); OFFSET=0; SCRL=0
+                    IF NLEN LT PWIDTH-(lnbr_width+1) AND OFFSET THEN SCR.LR=1-2*(INS.LINE NE ''); OFFSET=0; SCRL=0
                     LCOL=NLEN+1
                     IF RDSP(LROW) EQ '' AND TAB.MODE THEN RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
                     CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
@@ -957,7 +961,7 @@ SCROLL.LINE:    !
 !                LCOL=LEN(RDSP(LROW))
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
                 IF SCR.UD ELSE
-                    CRT @(5,ROW):RDSP(LROW):
+                    CRT @((lnbr_width+1),ROW):RDSP(LROW):
                     GO TOP
                 END
             END
@@ -994,7 +998,7 @@ SCROLL.LINE:    !
 !                IF LEN(NOT(TAB.MODE) AND DEL.CHAR) THEN
                 IF LEN(DEL.CHAR) THEN
                     CRT @(COL,ROW):DEL.CHAR:
-                    CRTLN=RDSP(LROW);CRT.X=PWIDTH-4+OFFSET;CRT.Y=2
+                    CRTLN=RDSP(LROW);CRT.X=PWIDTH-lnbr_width+OFFSET;CRT.Y=2
                     IF LEN(CRTLN[CRT.X+1,1]) THEN
                         CRT @(PWIDTH,ROW):
                         GOSUB CRT.LN
@@ -1024,8 +1028,8 @@ SCROLL.LINE:    !
                     RDSP(LROW)=RDSP(LROW)[1,LEN(RDSP(LROW))-2]
                 END
             END
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
-            IF COL GT 5 THEN
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
+            IF COL GT (lnbr_width+1) THEN
                 COL+=Y
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             END
@@ -1103,7 +1107,7 @@ SCROLL.LINE:    !
             SCRL=0
             IF CHANGED THEN GOSUB SCRN.TO.REC
             INDROW+=(PDEPTH-2)
-            COL=5; ROW=1
+            COL=(lnbr_width+1); ROW=1
             SCR.UD=TRUE
         CASE FG_ACT.CODE EQ FG_PRVS.CODE
             SCRL=0
@@ -1111,7 +1115,7 @@ SCROLL.LINE:    !
             INDROW-=(PDEPTH-2)
             IF INDROW LT 1 THEN INDROW=1
 !            CRT @(0,0):CLEOP:
-            COL=5; ROW=0
+            COL=(lnbr_width+1); ROW=0
             SCR.UD=TRUE
         CASE FG_ACT.CODE EQ FG_GOTO.CODE
             CRT MSG.CLR:"Line Number ":
@@ -1126,7 +1130,7 @@ SCROLL.LINE:    !
             Y=DCOUNT(MARKERS<1>,VM)
             IF NOT(NUM(LNM)) THEN
                 IF LNM EQ '<' THEN
-                    Z=INDROW+ROW:SVM:LCOL+4
+                    Z=INDROW+ROW:SVM:LCOL+lnbr_width
                     POS=Y
                     LOOP UNTIL MARKERS<1,POS> EQ '<' AND MARKERS<2,POS> EQ Z OR POS EQ 0 DO POS-=1 REPEAT
                     IF POS THEN
@@ -1164,13 +1168,13 @@ SCROLL.LINE:    !
             CNT=DCOUNT(REC,AM)
             IF LNM GT CNT THEN LNM=CNT-(PDEPTH-2)
             IF LNM LT 1 THEN LNM=INDROW
-            IF LNM GT 0 THEN INDROW=LNM; SCR.UD=TRUE; OFFSET=0; COL=5; ROW=0
+            IF LNM GT 0 THEN INDROW=LNM; SCR.UD=TRUE; OFFSET=0; COL=(lnbr_width+1); ROW=0
         CASE FG_ACT.CODE EQ FG_INSERT.CODE
             INS.MODE=NOT(INS.MODE); CHR=''
             GOSUB SET.MSG.DSP
             CRT @(COL,ROW):
         CASE CHR EQ OTHER.MARGIN
-            OFFSET+=5
+            OFFSET+=(lnbr_width+1)
             SCR.LR=1
         CASE FG_ACT.CODE EQ FG_FUNK.CODE
             GOSUB REV_UNDO
@@ -1181,7 +1185,7 @@ SCROLL.LINE:    !
             GOSUB INDENT
         CASE FG_ACT.CODE EQ FG_SUS.CODE
             RDSP(LROW)=REC<INDROW+ROW>
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
             CHANGES(LROW)=FALSE
         CASE FG_ACT.CODE EQ FG_TOP.CODE
             IF ROW NE 0 THEN
@@ -1189,7 +1193,7 @@ SCROLL.LINE:    !
             END ELSE
                 IF CHANGED THEN GOSUB SCRN.TO.REC
                 INDROW=1; OFFSET=0
-                COL=5; ROW=0
+                COL=(lnbr_width+1); ROW=0
                 SCR.UD=TRUE
             END
         CASE FG_ACT.CODE EQ FG_BOT.CODE OR FG_ACT.CODE EQ FG_APP.CODE
@@ -1205,7 +1209,7 @@ SCROLL.LINE:    !
                 Y=INDROW
                 INDROW=CNT-(PDEPTH-2)+(FG_ACT.CODE=FG_APP.CODE)
                 IF INDROW LT 0 THEN INDROW=1
-                COL=5
+                COL=(lnbr_width+1)
                 ROW=(FG_ACT.CODE=FG_APP.CODE)*(PDEPTH-2)
                 IF ROW GT CNT THEN ROW=CNT
                 SCR.UD=Y NE INDROW
@@ -1213,16 +1217,16 @@ SCROLL.LINE:    !
         CASE FG_ACT.CODE EQ FG_SOL.CODE
             IF OFFSET THEN OFFSET=0; SCR.LR=1
             LCOL=1
-            COL=5
+            COL=(lnbr_width+1)
         CASE FG_ACT.CODE EQ FG_EOL.CODE
 GEOL:       !
             LCOL=LLEN+1
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
             I=OFFSET
-            IF OFFSET AND (COL GT PWIDTH) THEN COL-=(PWIDTH-5)
+            IF OFFSET AND (COL GT PWIDTH) THEN COL-=(PWIDTH-(lnbr_width+1))
             LOOP WHILE COL GT PWIDTH DO
-                COL-=(PWIDTH-5)
-                OFFSET+=(PWIDTH-5)
+                COL-=(PWIDTH-(lnbr_width+1))
+                OFFSET+=(PWIDTH-(lnbr_width+1))
                 CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             REPEAT
             IF I NE OFFSET THEN
@@ -1233,7 +1237,7 @@ GEOL:       !
             CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
             GOSUB GET.WORD
             RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
-            CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN; CRT @(COL,ROW):
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
         CASE FG_ACT.CODE EQ FG_HLP.CODE
 GET.HELP:   !
@@ -1330,7 +1334,7 @@ GET.HELP:   !
                     INS DFLT.LINE BEFORE MARKERS<1,POS>
                     INS '' BEFORE MARKERS<2,POS>
                 END
-                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
+                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+lnbr_width
                 INDROW=DCOUNT(REC[1,INDEX(REC,AM:LMARGIN:DUMMY,1)],AM)
                 IF NOT(INDROW) THEN
                     INDROW = LAST.AM - PDEPTH + 3
@@ -1341,7 +1345,7 @@ GET.HELP:   !
                 END ELSE
                     ROW=1
                     LCOL=1
-                    COL=5
+                    COL=(lnbr_width+1)
                 END
                 SCR.UD=TRUE
             END ELSE
@@ -1369,7 +1373,7 @@ GET.HELP:   !
                             CONVERT TAB TO SPC IN DUMMY
                             CALL EB_READINCL(HEADERS, DUMMY:'', DUMMY, HEADER, FALSE)
                         END
-                    CASE DUMMY EQ 'OBJECT' OR RDSP(LROW)[LCOL-4,4] EQ 'new '
+                    CASE DUMMY EQ 'OBJECT' OR RDSP(LROW)[LCOL-lnbr_width,4] EQ 'new '
                         IF DUMMY EQ 'OBJECT' THEN
                             DUMMY=FIELD(RDSP(LROW)[LCOL,MAX],'(',2)
                             DUMMY=FIELD(CONVERT(DUMMY,'"',"'"),"'", 2)
@@ -1395,7 +1399,7 @@ GET.HELP:   !
                                     INS DFLT.LINE BEFORE MARKERS<1,POS>
                                     INS '' BEFORE MARKERS<2,POS>
                                 END
-                                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
+                                MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+lnbr_width
                                 DUMMY=''
                             END ELSE DUMMY='.':DIR_DELIM_CH:DUMMY
                         END ELSE
@@ -1458,7 +1462,7 @@ GET.HELP:   !
                 INS Y BEFORE MARKERS<1,POS>
                 INS '' BEFORE MARKERS<2,POS>
             END
-            MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+4
+            MARKERS<2,POS>=INDROW+ROW:SVM:LCOL+lnbr_width
         CASE FG_ACT.CODE EQ FG_PRV.KEY.CODE AND WCNT EQ ORIG_WCNT; CRT BELL:
         CASE FG_ACT.CODE EQ FG_NXT.KEY.CODE AND WCNT EQ NBR.WORDS; CRT BELL:
         CASE FG_ACT.CODE EQ FG_PRV.KEY.CODE OR FG_ACT.CODE EQ FG_NXT.KEY.CODE
@@ -1542,8 +1546,8 @@ SCROLL.DOWN: !
         DIMON = BG
         DIMOFF = FG
     END ELSE DIMON = ''; DIMOFF = ''
-    CRT @(0,(PDEPTH-2)):CLEOL:DIMON:I 'R#4 ':DIMOFF:
-    CRTLN=RDSP(PDEPTH-1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4
+    CRT @(0,(PDEPTH-2)):CLEOL:DIMON:I lnbr_hash1:DIMOFF:
+    CRTLN=RDSP(PDEPTH-1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
     GOSUB CRT.LN
     IF DEL.LINE EQ '' THEN CRT MSG.DSP:
     Y=2
@@ -1551,7 +1555,9 @@ SCROLL.DOWN: !
 !==========
 EB.SUB: !
     CALL EB_RSS(1)
-    WRITE HEADERS ON F.currdir,'eb_headers'
+    IF LEN(HEADERS) THEN
+        WRITE HEADERS ON F.currdir,'eb_headers'
+    END
     IF accuterm THEN CRT ESC:CHAR(2):0:
     EXECUTE DUMMY
     IF accuterm THEN CRT ESC:CHAR(2):1:
@@ -1896,7 +1902,7 @@ CHG.LROW:
             IF POS THEN
                 RDSP(LROW)=STMP
                 GOSUB CHG.LROW
-                CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+                CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
             END
         CASE FTYP EQ 'X'
 !      GOSUB ABORT
@@ -1930,7 +1936,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     RDSP(LROW)=RDSP(LROW)[1,LCOL-1]
     RDSP(LROW+1)=RDSP(LROW+1)[LCOL,MAX]
     DUMMY=RDSP(LROW); LNM=1; GOSUB FORMAT
-    COL=I+4
+    COL=I+lnbr_width
     CALL EB_TRIM(TMP,RDSP(LROW+1),SPC,'L')
     DUMMY=FIELD(TMP,SPC,1)
     IF UPCASE(DUMMY) EQ 'ELSE' THEN
@@ -1942,7 +1948,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     CHANGES(LROW+1)=TRUE
     IF LROW LT (PDEPTH-1) THEN
         SCR.LR=1-2*(INS.LINE NE ''); SCRL=ROW
-        CRT CLEOL:@(0,ROW+1):INS.LINE:@(5,ROW+1):; CRTLN=RDSP(LROW+1);CRT.X=1;CRT.Y=PWIDTH-5; GOSUB CRT.LN
+        CRT CLEOL:@(0,ROW+1):INS.LINE:@((lnbr_width+1),ROW+1):; CRTLN=RDSP(LROW+1);CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
         GOSUB CHG.LROW
     END ELSE
         GOSUB CHG.LROW
@@ -1999,7 +2005,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
         CALL EB_TABCOL(RDSP(LROW+J.LINE),0,LCOL,FALSE)
         CRTLN=RDSP(LROW+J.LINE)
         CRT.X=1;CRT.Y=PWIDTH+1-COL
-        CRT @(5,ROW):
+        CRT @((lnbr_width+1),ROW):
     END ELSE
         CRT @(COL-DUMMY,ROW):CLEOL:
         IF LEN(CHR) NE 0 THEN
@@ -2024,7 +2030,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     IF SCRL LT 0 THEN SCRL=0
     CRT MSG.DSP:
     GO STRT
-!==========! 4
+!==========!
 2500 ! Size of record
     RLEN=LEN(REC)+LEN(ITNM)+6
     CRT MSG.CLR:"Record length is ":RLEN:" bytes, ":DCOUNT(REC,AM):' attributes'          ;!There are ":32267-RLEN:" bytes available.":
@@ -2073,7 +2079,7 @@ TCL: !
 5000 ! Merge lines from an item
     CALL EB_MERGE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
     SCR.UD=TRUE; OFFSET=0; SCRL=0
-    COL=5
+    COL=(lnbr_width+1)
     MREC=''
     CRT MSG.DSP:
     GO STRT
@@ -2163,7 +2169,7 @@ TCL: !
                 UNTIL INDROW MATCHES "1N0N" OR NOT(basdelim) REPEAT
                 IF NOT(NUM(INDROW)) OR INDROW  LT  1 THEN INDROW = 1
                 INDROW-=11
-                COL=5
+                COL=(lnbr_width+1)
                 ROW=11
                 IF INDROW LT 1 THEN ROW=ROW+INDROW-1; INDROW=1
                 CRT MSG.CLR:
@@ -2278,13 +2284,13 @@ TCL: !
                                         INDROW = OCONV(INDROW, 'MCN')
                                         IF INDROW THEN
                                             Z=REC<INDROW>
-                                            COL+=(LEN(Z)-LEN(Y))+4
+                                            COL+=(LEN(Z)-LEN(Y))+lnbr_width
                                         END
                                     END
                                 END
                             END
                             INDROW-=11
-                            IF COL<5 THEN COL=5
+                            IF COL<(lnbr_width+1) THEN COL=(lnbr_width+1)
                             ROW=11
                             IF INDROW<1 THEN ROW=ROW+INDROW-1; INDROW=1
                             CRT MSG.CLR:
@@ -2691,7 +2697,7 @@ LAST.USED:!
         DEL LAST.EB<2,POS>
     END
     INS LUK BEFORE LAST.EB<1,1>
-    INS LCOL+4:SVM:ROW:SVM:INDROW:SVM:OFFSET:SVM:LCOL BEFORE LAST.EB<2,1>
+    INS LCOL+lnbr_width:SVM:ROW:SVM:INDROW:SVM:OFFSET:SVM:LCOL BEFORE LAST.EB<2,1>
     I = DCOUNT(LAST.EB<1>, VM)
     LOOP WHILE I GT 500 DO
         DEL LAST.EB<1, I>
@@ -2708,7 +2714,7 @@ SET.MSG.DSP:
         IDPOS = '(':WCNT-2:'/':NBR.WORDS-2:')'
         MSG.DSP[1,LEN(IDPOS)]=IDPOS
     END
-    MSG.COL=LEN(MSG.DSP)-4
+    MSG.COL=LEN(MSG.DSP)-lnbr_width
     MSG.DSP=MSG.CLR:MSG.DSP
     IF INS.MODE THEN
         MSG.DSP:=CURS.INS
@@ -2770,7 +2776,7 @@ GET.CATL: !
     END
     RETURN
 displayLine: !
-    CRT @(5,ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-5
+    CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-(lnbr_width+1)
     GOSUB CRT.LN
     CRT @(COL-1,ROW):
     RETURN

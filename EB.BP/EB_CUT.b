@@ -59,7 +59,7 @@ MAIN$:!
                 IF CUT.POS>=0 AND CUT.POS<=(PDEPTH-1) THEN
                     CRTLN=REC<CUT.POS+INDROW>[Y,1]
                     CONVERT VM:SVM TO ']\' IN CRTLN
-                    CRT @(Y+4,CUT.POS):OCONV(CRTLN,'MCP'):
+                    CRT @(Y+lnbr_width,CUT.POS):OCONV(CRTLN,'MCP'):
                 END
                 CUT.POS=''; G60=TRUE; RETURN
             END
@@ -217,7 +217,7 @@ MAIN$:!
                     INS PASTE.TEXT BEFORE REC<INDROW+ROW>
                     CALL EB_MARKADJ(INDROW+ROW,DCOUNT(PASTE.TEXT,AM),1)
                     LCOL=CUT.POS<1,1,2>
-                    COL=LCOL+4-OFFSET
+                    COL=LCOL+lnbr_width-OFFSET
                     IF COL GT 0 THEN
                         CRTLN=PASTE.TEXT[LCOL,PWIDTH-COL]
                         CRT @(COL,ROW):
@@ -228,7 +228,7 @@ MAIN$:!
                         IF CHR1=COMMENT<1,1,1> THEN CRT FG:
                     END ELSE
                         SCR.LR = 1
-                        ADJUST = (PWIDTH-5)
+                        ADJUST = (PWIDTH-(lnbr_width+1))
                         OFFSET -= ADJUST
                         COL += ADJUST
                     END

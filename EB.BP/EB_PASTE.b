@@ -79,8 +79,8 @@ MAIN$:!
             LOOP
                 Y=X+PDEPTH-2
                 FOR K=X TO Y
-                    CRT @(0,K-X):CLEOL:K"R#4":" ":
-                    CRTLN=STMP<K>;CRT.X=1;CRT.Y=PWIDTH-4; GOSUB CRT.LN
+                    CRT @(0,K-X):CLEOL:K lnbr_hash1:
+                    CRTLN=STMP<K>;CRT.X=1;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
                 NEXT K
                 CRT MSG.CLR:"Press <return>":
                 L=30; Z=''
@@ -90,7 +90,7 @@ MAIN$:!
             SCR.UD=TRUE; RETURN
         END
         PASTE=1
-        IF STMP<NO.I.L>='' THEN LCOL=1; COL=5   ;! always paste whole lines as whole
+        IF STMP<NO.I.L>='' THEN LCOL=1; COL=(lnbr_width+1)   ;! always paste whole lines as whole
     END ELSE
         PASTE=0; NO.I.L=1; INS.MODE=TRUE; STMP=''
         SCOL=0
@@ -139,8 +139,8 @@ MAIN$:!
                 END
                 INS CHECK.LINE BEFORE REC<INDROW+ROW>
                 IF SCR.UD=-1 THEN
-                    CRT @(0,ROW):INS.LINE:@(5,ROW):
-                    CRTLN=CHECK.LINE;CRT.X=1;CRT.Y=PWIDTH-4
+                    CRT @(0,ROW):INS.LINE:@((lnbr_width+1),ROW):
+                    CRTLN=CHECK.LINE;CRT.X=1;CRT.Y=PWIDTH-lnbr_width
                     GOSUB CRT.LN
                 END
             END ELSE INS IDENT BEFORE REC<INDROW+ROW>
@@ -151,7 +151,7 @@ MAIN$:!
             LCOL=SCOL
             CALL EB_TABCOL(CHECK.LINE,COL,LCOL,FALSE)
         END
-        COL = LCOL+4
+        COL = LCOL+lnbr_width
     END
     CHANGED=TRUE
     RETURN

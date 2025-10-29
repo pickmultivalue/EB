@@ -19,26 +19,26 @@ MAIN$:!
                 DIMON = BG
                 DIMOFF = FG
             END ELSE DIMON = ''; DIMOFF = ''
-            CRT @(0,LAST.ROW):DIMON:J "R#4":DIMOFF:
+            CRT @(0,LAST.ROW):DIMON:J lnbr_hash2:DIMOFF:
         END
     END
     IF COL>PWIDTH AND LEN(LROW) THEN
-        COL-=(PWIDTH-4)
-        OFFSET+=(PWIDTH-5); COL+=1; SCR.LR=1
+        COL-=(PWIDTH-lnbr_width)
+        OFFSET+=(PWIDTH-(lnbr_width+1)); COL+=1; SCR.LR=1
         IF LEN(NEW.CHARS) THEN
             CALL EB_ADD(START,LCOL,LLEN,INS.MODE,NEW.CHARS,RDSP(LROW))
             CHANGED=TRUE; CHANGES(LROW)=TRUE
         END
-        CRT @(5,ROW):CLEOL:
+        CRT @(lnbr_width+1,ROW):CLEOL:
         CRTLN=RDSP(LROW)
         CRT.X=1+OFFSET
-        CRT.Y=PWIDTH-4
+        CRT.Y=PWIDTH-lnbr_width
         GOSUB CRT.LN
     END
-    IF COL<5 THEN
+    IF COL<(lnbr_width+1) THEN
         COL=83-COL
         IF NOT(OFFSET) THEN ROW-=1 ELSE
-            OFFSET-=(PWIDTH-5); COL-=1; SCR.LR=1
+            OFFSET-=(PWIDTH-(lnbr_width+1)); COL-=1; SCR.LR=1
             IF OFFSET<0 THEN OFFSET=0
         END
     END
@@ -62,17 +62,17 @@ MAIN$:!
                     DIMON = BG
                     DIMOFF = FG
                 END ELSE DIMON = ''; DIMOFF = ''
-                CRT @(0,RR):DIMON:J "R#4 ":DIMOFF:
+                CRT @(0,RR):DIMON:J lnbr_hash1:DIMOFF:
                 IF SCR.UD>0 OR (RR-(PDEPTH-2)-SCR.UD)>0 THEN
                     CRT CLEOL:
                     CRTLN=RDSP(LROW)
                     CRT.X=1+OFFSET
-                    CRT.Y=PWIDTH-4
+                    CRT.Y=PWIDTH-lnbr_width
                     GOSUB CRT.LN
                 END
-            END ELSE IF J=CUT.POS THEN CRT @(4,RR):'[':
+            END ELSE IF J=CUT.POS THEN CRT @(lnbr_width,RR):'[':
             IF J=CUT.POS<1,1,1> THEN
-                CRT @(CUT.POS<1,1,2>+4-OFFSET,RR):BG:'[':FG:
+                CRT @(CUT.POS<1,1,2>+lnbr_width-OFFSET,RR):BG:'[':FG:
             END
         NEXT J
         J += am_start
@@ -92,7 +92,7 @@ MAIN$:!
                 DIMON = BG
                 DIMOFF = FG
             END ELSE DIMON = ''; DIMOFF = ''
-            CRT @(0,J-1):DIMON:AMPOS "R#4":DIMOFF:
+            CRT @(0,J-1):DIMON:AMPOS lnbr_hash2:DIMOFF:
             IF (J+INDROW-1) NE CUT.POS THEN CRT ' ': ELSE CRT '[':
             IF SCR.LR>0 OR (J-LROW)>0 THEN
                 CRT CLEOL:
@@ -100,7 +100,7 @@ MAIN$:!
                 LROW=J
                 CRTLN=RDSP(J)
                 CRT.X=1+OFFSET
-                CRT.Y=PWIDTH-4
+                CRT.Y=PWIDTH-lnbr_width
                 GOSUB CRT.LN
                 S=LROW
             END
@@ -115,6 +115,6 @@ MAIN$:!
         DIMON = BG
         DIMOFF = FG
     END ELSE DIMON = ''; DIMOFF = ''
-    CRT @(0,ROW):HLON:DIMON:LAST.ROW "R#4":DIMOFF:HLOFF:
+    CRT @(0,ROW):HLON:DIMON:LAST.ROW lnbr_hash2:DIMOFF:HLOFF:
     RETURN
     INCLUDE EB.INCLUDES CRT.LN

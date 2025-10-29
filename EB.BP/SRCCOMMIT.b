@@ -1,7 +1,18 @@
     PROGRAM SRCCOMMIT
     INCLUDE JBC.h
     $option jabba
+    INCLUDE EB.EQUS EB.COMMON
     DEFFUN GETSRCTYPE()
+    DEFFUN GIT_REPOSITORY(FilePath)
+    MAT GEX=''; MAT EXTRAS=''; MAT OTHER.PARAMS=''
+    githome = GIT_REPOSITORY('.')
+    IF FIELD(githome, ':', 1) EQ 'fatal' THEN
+        githome = GETENV('GITHOME')
+    END
+    IF LEN(githome) THEN
+        rc = GETCWD(currpwd)
+        rc = CHDIR(githome)
+    END ELSE currpwd = ''
     scType = GETSRCTYPE()
     SENT = DELETE(SYSTEM(1000), 1)
     items = ''
@@ -19,7 +30,9 @@
             WHILE delim DO REPEAT
         end else
             items<-1> = item
+            EXECUTE 'git add ':item CAPTURING io
         end
     next
 
     EXECUTE scType:'COMMIT ':CHANGE(items, @AM, ' ')
+    IF LEN(currpwd) THEN rc = CHDIR(currpwd)
