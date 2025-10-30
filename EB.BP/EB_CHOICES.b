@@ -134,7 +134,7 @@ MAIN$:!
     NBR.ATTRS=DCOUNT(ATTRS,SVM)
     disable_multi_sel = INDEX(FLD.NBRS, '-', 1)
     force_selection = INDEX(FLD.NBRS, '+', 1)
-    CONVERT '-' TO '' IN FLD.NBRS
+    CONVERT '-+' TO '' IN FLD.NBRS
     NBR.FLDS=DCOUNT(FLD.NBRS,SVM)
     FIRST.VAL=0
     FIRST.ATTR=''
