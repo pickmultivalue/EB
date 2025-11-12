@@ -34,6 +34,7 @@
     DEBUG.CODES = ''
     rc = GETENV('EB_DEBUG', DEBUG.CODES)
     DEBUG.CODES = CHANGE(DEBUG.CODES, ',', @AM)
+    no_file = @TRUE
 !
     MAT GEX=''; MAT EXTRAS=''; MAT OTHER.PARAMS=''
     DEFC INT JBASEEmulateGETINT(INT)
@@ -289,6 +290,8 @@
         IF LEN(SITNM) THEN
             FG_SENTENCE = SITNM:@AM:FG_SENTENCE
         END
+    END ELSE
+        no_file = @FALSE
     END
     READ LAST.EB FROM FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB' ELSE LAST.EB=''
     IF ITNM EQ '' THEN
@@ -385,7 +388,12 @@ FIRST.ITEM: !
             FLNM=TMP
             EDIT.MODE=FIELD(ITNM,TAB,2)
             ITNM=ITNM[COL2()+1,MAX]
-        END ELSE GOSUB GET.EDIT.MODE
+        END ELSE
+            IF no_file THEN
+            INCLUDE EB.OS.INCLUDES GET.FLNM
+            END
+            GOSUB GET.EDIT.MODE
+        END
         IF LEN(EDIT.MODE) THEN GOSUB SET.MODE
     END
     IF LEN(FLNM) THEN GO 20
