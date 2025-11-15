@@ -13,7 +13,7 @@
     EQU TRUE TO 1, FALSE TO 0
     shell = @IM:'k'
     shellend = ' 2>&1'
-    OPTIONS = UPCASE(SYSTEM(15))
+    OPTIONS = UPCASE(FIELD(@SENTENCE, '(', 2))
     INCLUDE EB.EQUS EB.EQUS
     MAT EXTRAS=''
 !
@@ -60,8 +60,10 @@
                 CRT result
                 DEBUG
             END ELSE
-                IF GETYN('Push to respository', '', 1) EQ 'Y' THEN
-                    CRT SRCPUSH()
+                IF NOT(INDEX(OPTIONS,'C',1)) THEN        ;! skip push
+                    IF GETYN('Push to respository', '', 1) EQ 'Y' THEN
+                        CRT SRCPUSH()
+                    END
                 END
             END
         END
