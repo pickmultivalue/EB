@@ -305,6 +305,7 @@
                 SPOS = DCOUNT(EB.FILE.LIST<1>,VM) + 1
                 IF LEN(FLNM) THEN
                     CALL EB_CHOICES(20,3,'',wdepth,FLNM,'',ITNM,1,1,0,'L#50','Records in file ':FLNM:SVM:'Item')
+                    no_file = @FALSE
                 END ELSE
                     WCNT = DCOUNT(LAST.EB<1>, VM)
                     FOR I = WCNT TO 1 STEP -1
