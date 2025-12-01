@@ -204,6 +204,11 @@ MAIN$:!
                 IF FG_ACT.CODE THEN GO RTN
                 IF INDEX('YL',DMY,1) ELSE GO 3090
             END ELSE DMY=''
+            IF REGEX.SEARCH THEN
+                TMP = SLINE
+            END ELSE
+                TMP = LINE
+            END
             LOOP
                 OCC+=1
                 IF FIRST='' THEN
@@ -211,15 +216,19 @@ MAIN$:!
                     LOOP WHILE LINE[SPOS,1]=' ' DO SPOS+=1 REPEAT
                 END ELSE
                     IF REGEX.SEARCH THEN
-                        SPOS=EB_REGEX(SLINE,FIRST, @FALSE)
+                        SPOS=EB_REGEX(TMP,FIRST, @FALSE)
                     END ELSE
-                        SPOS=INDEX(LINE,FIRST,OCC)
+                        SPOS=INDEX(TMP,FIRST,1)
+                    END
+                    IF SPOS THEN
+                        TMP = TMP[SPOS+LEN(FIRST), MAX]
                     END
                 END
                 OCCURS<OCC>=SPOS
             WHILE ALOC AND SPOS AND FIRST NE '' DO REPEAT
             OCCS=OCC-(SPOS=0)
-            FOR I=OCCS TO 1 STEP -1
+            NLINE = ''
+            FOR I = 1 TO OCCS
                 SPOS=OCCURS<I>
                 IF WHOLE.WORDS THEN
                     LOOP
@@ -247,7 +256,8 @@ MAIN$:!
                 IF INDEX('N',DMY,1) ELSE
                     IF RSTR=RRSTR THEN
                         TMP=WSTR; GOSUB CONV.CHARS
-                        LINE=LINE[1,SPOS-1]:TMP:LINE[SPOS+RSTRL,MAX]
+                        NLINE := LINE[1,SPOS-1]:TMP
+                        LINE = LINE[SPOS+RSTRL,MAX]
                     END ELSE
 !
 ! Build up wild-card replacements
@@ -279,7 +289,8 @@ MAIN$:!
                             LEN.DIFF=LEN(LINE)
                             IF WWSTR NE '' THEN
                                 TMP=WSTR; GOSUB CONV.CHARS
-                                LINE=SLINE<1>:TMP:THE.REST
+                                NLINE := SLINE<1>:TMP
+                                LINE = THE.REST
                             END ELSE
                                 DEL SLINE<1>
                                 PWSTR=WSTR
@@ -308,10 +319,11 @@ MAIN$:!
                                     END
                                 NEXT CNT
                                 TMP=PWSTR; GOSUB CONV.CHARS; PWSTR=TMP
-                                LINE=NEW.LINE:PWSTR:THE.REST
+                                NLINE := NEW.LINE:PWSTR
+                                LINE = THE.REST
                             END
                         END
-                        LEN.DIFF=LEN(LINE)-LEN.DIFF+1
+                        LEN.DIFF=LEN(NLINE:LINE)-LEN.DIFF+1
                     END
                     LOOP
                         POS=INDEX(LINE,'@x',1)
@@ -322,6 +334,8 @@ MAIN$:!
                     END.POS+=LEN.DIFF
                 END
             NEXT I
+            NLINE := LINE
+            LINE = NLINE
             IF LINE NE ORIG.LINE THEN
                 LINE = LEADWS:LINE:TRAILWS
                 CRTLN=LINE
