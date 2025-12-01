@@ -110,6 +110,8 @@ MAIN$:!
         INIT=RSTR<I>
         TMP=INIT; GOSUB CONV.CHARS; INIT=TMP
     NEXT I
+    TMP = RSTR; GOSUB CONV.CHARS; ODC = COUNT(TMP, @AM)
+    TMP = WSTR; GOSUB CONV.CHARS; NDC = COUNT(TMP, @AM)
 !
 ! Start of main search/replace loop
 !
@@ -138,7 +140,10 @@ MAIN$:!
         THIS.LINE.CHANGED=FALSE
         IF LINE.NO = PREV.LINE.NO AND NOT(ALOC) THEN CONTINUE
         PREV.LINE.NO = LINE.NO
-        LINE=REC<LINE.NO>
+        LINE = ''
+        FOR I = 0 TO ODC
+            LINE<I+1>=REC<LINE.NO+I>
+        NEXT I
         LEADWS = ''; TRAILWS = ''
         IF NOT(INDEX(RSTR, TAB, 1)) THEN
             FOR I = 1 TO LEN(LINE)
@@ -171,10 +176,15 @@ MAIN$:!
                 NEW.LINE=RSTR<CNT>
                 IF NEW.LINE NE '' THEN
                     TMP=NEW.LINE; GOSUB CONV.CHARS; NEW.LINE=TMP
+                    TMPDC = DCOUNT(NEW.LINE, @AM)
+                    FOR TMPA = 2 TO TMPDC
+                        TMPO = TMPA-1
+                        NEW.LINE<TMPA> = RSTR<CNT+TMPO>
+                    NEXT TMPA
                     IF REGEX.SEARCH THEN
                         POS=EB_REGEX(SLINE,NEW.LINE, @FALSE)
                     END ELSE
-                        POS=INDEX(SLINE,NEW.LINE,1)
+                        FINDSTR NEW.LINE IN SLINE,1 SETTING POS ELSE POS = @FALSE
                     END
                     IF POS THEN
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
@@ -200,7 +210,6 @@ MAIN$:!
                     SPOS=1
                     LOOP WHILE LINE[SPOS,1]=' ' DO SPOS+=1 REPEAT
                 END ELSE
-                    SPOS=INDEX(LINE,FIRST,OCC)
                     IF REGEX.SEARCH THEN
                         SPOS=EB_REGEX(SLINE,FIRST, @FALSE)
                     END ELSE
@@ -216,7 +225,7 @@ MAIN$:!
                     LOOP
                         OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND (NOT(RSTRL) OR INDEX(DELIMS,LINE[SPOS+RSTRL,1],1)))
                     UNTIL OK DO
-                        NPOS=INDEX(LINE[SPOS+1,MAX],FIRST,OCC)
+                        FINDSTR FIRST IN LINE[SPOS+1,MAX],OCC SETTING NPOS ELSE NPOS = @FALSE
                         IF NOT(NPOS) THEN BREAK
                         SPOS += NPOS
                     REPEAT
@@ -248,7 +257,7 @@ MAIN$:!
                         POS=TRUE
                         FOR CNT=2 TO STR.CNT WHILE POS
                             TMP=RSTR<CNT>; GOSUB CONV.CHARS; RSTR<CNT>=TMP
-                            POS=INDEX(THE.REST,TMP,1)
+                            FINDSTR TMP IN THE.REST,1 SETTING POS ELSE POS = @FALSE
                             SLINE<CNT>=THE.REST[1,POS-1]
                             POS+=LEN(TMP)
                             THE.REST=THE.REST[POS,MAX]
@@ -258,7 +267,7 @@ MAIN$:!
                             POS=RSTR<CNT>
                             IF POS NE '' THEN
                                 TMP=POS; GOSUB CONV.CHARS; POS=TMP
-                                POS=INDEX(THE.REST,POS,1)
+                                FINDSTR POS IN THE.REST,1 SETTING POS ELSE POS = @FALSE
                                 SLINE<CNT>=THE.REST[1,POS-1]
                                 THE.REST=THE.REST[POS+LEN(TMP),MAX]
                             END ELSE
@@ -331,6 +340,11 @@ MAIN$:!
                     IF NOT(SUPPRESS.OUTPUT) THEN CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
                 END
                 REC<LINE.NO>=LINE
+                IF NDC LT ODC THEN
+                    FOR I = NDC+1 TO ODC
+                        DEL REC<LINE.NO+I>
+                    NEXT I
+                END
                 CHANGED=TRUE
             END
             IF DMY='L' THEN GO RTN
