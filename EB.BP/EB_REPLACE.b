@@ -48,23 +48,23 @@ MAIN$:!
 !
 ! Initialise counter
 !
-    SOP=1
-    ACNT=''
-    LOOP
-        POS=INDEX(WSTR,'@',SOP)
-        IF POS THEN
-            THE.REST=WSTR[POS+1,9]
-            ACNT=INDEX(THE.REST,'x',1)
-            IF ACNT THEN
-                ACNT++
-                APOS=ACNT
-                LOOP WHILE THE.REST[APOS,1] MATCHES "1N0N" DO APOS++ REPEAT
-                ACNT = THE.REST[ACNT,APOS-ACNT]
-                WSTR=WSTR[1,POS]:'x':THE.REST[APOS,MAX]
-                IF ACNT='' THEN ACNT=1
-            END
-        END
-    UNTIL ACNT OR NOT(POS) DO SOP+=1 REPEAT
+!    SOP=1
+!    ACNT=''
+!    LOOP
+!        POS=INDEX(WSTR,'@',SOP)
+!        IF POS THEN
+!            THE.REST=WSTR[POS+1,9]
+!            ACNT=INDEX(THE.REST,'x',1)
+!            IF ACNT THEN
+!                ACNT++
+!                APOS=ACNT
+!                LOOP WHILE THE.REST[APOS,1] MATCHES "1N0N" DO APOS++ REPEAT
+!                ACNT = THE.REST[ACNT,APOS-ACNT]
+!                WSTR=WSTR[1,POS]:'x':THE.REST[APOS,MAX]
+!                IF ACNT='' THEN ACNT=1
+!            END
+!        END
+!    UNTIL ACNT OR NOT(POS) DO SOP+=1 REPEAT
     LHASH='L#':PWIDTH-lnbr_width
 !
 ! Break-up wild-cards and literals
@@ -92,13 +92,11 @@ MAIN$:!
             WSTR=WSTR[1,STR.POS-1]:@AM:WCNT:@VM:WSTR[STR.POS+1+LEN(WCNT),MAX]
         REPEAT
     NEXT CNT
-    WSTR.CNT=COUNT(WSTR,@VM)
 !
     IF INDEX(RSTR,@AM,1) THEN
         RRSTR = ''
         RSTRL = 0
     END ELSE RRSTR=RSTR
-    IF INDEX(WSTR,@AM,1) THEN WWSTR='' ELSE WWSTR=WSTR
 !
 ! Find first literal to be used for searching through text
 !
@@ -110,8 +108,23 @@ MAIN$:!
         INIT=RSTR<I>
         TMP=INIT; GOSUB CONV.CHARS; INIT=TMP
     NEXT I
-    TMP = RSTR; GOSUB CONV.CHARS; ODC = COUNT(TMP, @AM)
-    TMP = WSTR; GOSUB CONV.CHARS; NDC = COUNT(TMP, @AM)
+
+    POS = INDEX(WSTR, '@x', 1)
+    IF POS THEN
+        XCNT = MATCHFIELD(WSTR[POS+2,MAX], '0N0X', 1)
+        IF LEN(XCNT) EQ 0 THEN
+            XCNT = 1
+        END ELSE
+            WSTR = CHANGE(WSTR, '@x':XCNT, '@x')
+        END
+        WSTR = CHANGE(WSTR, '@x', @AM:'x':@VM)
+    END
+    WSTR.CNT=COUNT(WSTR,@VM)
+
+    IF INDEX(WSTR,@AM,1) THEN WWSTR='' ELSE WWSTR=WSTR
+
+    TMP = RSTR; GOSUB CONV.CHARS; ODC = COUNT(TMP, @AM)-COUNT(RSTR, @AM)
+    TMP = WSTR; GOSUB CONV.CHARS; NDC = COUNT(TMP, @AM)-COUNT(WSTR, @AM)
 !
 ! Start of main search/replace loop
 !
@@ -267,7 +280,7 @@ MAIN$:!
                         POS=TRUE
                         FOR CNT=2 TO STR.CNT WHILE POS
                             TMP=RSTR<CNT>; GOSUB CONV.CHARS; RSTR<CNT>=TMP
-                            FINDSTR TMP IN THE.REST,1 SETTING POS ELSE POS = @FALSE
+                            POS = INDEX(THE.REST, TMP, 1)
                             SLINE<CNT>=THE.REST[1,POS-1]
                             POS+=LEN(TMP)
                             THE.REST=THE.REST[POS,MAX]
@@ -277,7 +290,7 @@ MAIN$:!
                             POS=RSTR<CNT>
                             IF POS NE '' THEN
                                 TMP=POS; GOSUB CONV.CHARS; POS=TMP
-                                FINDSTR POS IN THE.REST,1 SETTING POS ELSE POS = @FALSE
+                                POS = INDEX(THE.REST, POS, 1)
                                 SLINE<CNT>=THE.REST[1,POS-1]
                                 THE.REST=THE.REST[POS+LEN(TMP),MAX]
                             END ELSE
@@ -312,6 +325,7 @@ MAIN$:!
                                             CASE op = 'l'; op = 'MCL'
                                             CASE op = 'u'; op = 'MCU'
                                             CASE op = 'c'; op = 'MCT'
+                                            CASE op = 'x'; op = ''; WCNT = XCNT; XCNT++
                                         END CASE
                                         IF LEN(op) THEN WCNT = OCONV(WCNT, op)
                                         NEW.LINE:=WCNT
@@ -325,12 +339,12 @@ MAIN$:!
                         END
                         LEN.DIFF=LEN(NLINE:LINE)-LEN.DIFF+1
                     END
-                    LOOP
-                        POS=INDEX(LINE,'@x',1)
-                    WHILE POS DO
-                        LINE=LINE[1,POS-1]:ACNT:LINE[POS+2,MAX]
-                        ACNT+=1
-                    REPEAT
+!                    LOOP
+!                        POS=INDEX(LINE,'@x',1)
+!                    WHILE POS DO
+!                        LINE=LINE[1,POS-1]:ACNT:LINE[POS+2,MAX]
+!                        ACNT+=1
+!                    REPEAT
                     END.POS+=LEN.DIFF
                 END
             NEXT I
