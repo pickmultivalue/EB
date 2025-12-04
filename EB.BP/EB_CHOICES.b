@@ -648,7 +648,7 @@ CHAR.SEARCH:    !
                 C=J
                 LOOP
                     C+=1
-                    CHR=OCONV(DISP.VALUES<FIRST.VAL,C>[1,1],'MCU')
+                    CHR=OCONV(VALUES<FIRST.VAL,C>[1,1],'MCU')
                 UNTIL CHR=REPLY OR C>NBR.VALS OR C=J DO REPEAT
                 IF C GT NBR.VALS THEN
                     IF C GT J AND J NE 0 THEN J=0; GO CHAR.SEARCH ELSE C=1

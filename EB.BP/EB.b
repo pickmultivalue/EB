@@ -1331,6 +1331,7 @@ GET.HELP:   !
             LLEN1=LLEN+1
 ! first search for the next non-alpha character
             Y=LCOL+1
+            Z = (IF LCOL EQ 1 THEN '' ELSE RDSP(LROW)[LCOL-1,1])
             LOOP WHILE RDSP(LROW)[Y,1] EQ SPC DO Y+=1 REPEAT
             FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE '' OR RDSP(LROW)[I,1]='.'); NEXT I
             word=FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1)
@@ -1358,6 +1359,7 @@ GET.HELP:   !
                 END
                 SCR.UD=TRUE
             END ELSE
+                IF INDEX('[(', Z, 1) THEN DUMMY = Z:DUMMY
                 BEGIN CASE
                     CASE RDSP(LROW)[LCOL-6,6] EQ 'this->'
                         SSS='::':word:'('
@@ -1373,8 +1375,14 @@ GET.HELP:   !
                             DUMMY = FIELD(DUMMY, DUMMY[1,1], 2)
                         END
                         DUMMY := ' (!'
+                    CASE DUMMY[1,1] EQ '[' OR DUMMY[1,1] = '('
+                        DUMMY = DUMMY[2,MAX]:RDSP(LROW)[I,MAX]
+                        Z = DUMMY 'R#1'
+                        IF INDEX(')]', Z, 1) THEN DUMMY = DUMMY[1, LEN(DUMMY)-1]
+                        IF LEN(DUMMY) THEN
+                            DUMMY := ' (C'
+                        END
                     CASE INDEX(OCONV(DUMMY,'MCU'),'INCLUDE',1)
-                        DUMMY=RDSP(LROW)[I+1,MAX]
                         CONVERT TAB TO SPC IN DUMMY
                         DUMMY=FIELD(DUMMY,SPC,1)
                         IF LEN(DUMMY) THEN

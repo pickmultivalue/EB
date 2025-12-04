@@ -48,15 +48,13 @@
     EQU OTHERWISE TO 1
     EQU TRUE TO 1, FALSE TO 0
     EQU SPC TO ' ', TAB TO CHAR(9)
-    OPEN 'UPG.WORKFILE' TO F.UPG.WORKFILE THEN
-        UPG=TRUE
-        USEMODE=''; PASSWD=''
-    END ELSE UPG=FALSE
     ORIG.DEPTH=SYSTEM(3)
     ORIG.WIDTH=SYSTEM(2)
     INCLUDE EB.EQUS SCREEN.PARAMS
     INCLUDE EB.OS.INCLUDES WHO
     CALL EB_UT_INIT
+    FG_TIMEOUT = 0
+    FG_MONITOR.SECS = 0
     EQU ESC TO CHAR(27)
     STLN=1
     CNTA=0
@@ -201,15 +199,14 @@
         CRT EL:'CANNOT OPEN ':FA:
         GO 100
     END
-    UPGBACKUP=(FIELD(FA,'.',2)='UPGBACKUP')
     CRT EL:
     IF SEL THEN
         IF FIELD(FA,' ',1) EQ 'DICT' THEN POS=4 ELSE POS=3
         FVB=FIELD(FG_SENTENCE,' ',POS)
         IF FVB EQ 'DICT' THEN FVB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
-        BSENT=(FVB#'' OR UPGBACKUP)
+        BSENT=FVB#''
     END
-    IF NOT(UPGBACKUP) THEN GOSUB OPEN.FILEB
+    GOSUB OPEN.FILEB
     AOBJ = FIELD(FA, ',', 2) EQ 'OBJECT'
     BOBJ = FIELD(FB, ',', 2) EQ 'OBJECT'
     IF AOBJ THEN
@@ -260,20 +257,14 @@
 !
 130 ! Enter Second Id
     IF SEL THEN
-        IF UPGBACKUP THEN
-            FVB=FIELD(IDA,'\',2)
-            GOSUB OPEN.FILEB
-            IDB=FIELD(IDA,'\',3)
-        END ELSE
-            BEGIN CASE
-                CASE INDEX(IDA,'@',1) AND PATCH.MODE
-                    IDB=FIELD(IDA,'@',2)
-                CASE INDEX(IDA,'*',1) AND BCKUP.MODE
-                    IDB=FIELD(IDA,'*',DCOUNT(IDA,'*'))
-                CASE 1
-                    IDB=IDA
-            END CASE
-        END
+        BEGIN CASE
+            CASE INDEX(IDA,'@',1) AND PATCH.MODE
+                IDB=FIELD(IDA,'@',2)
+            CASE INDEX(IDA,'*',1) AND BCKUP.MODE
+                IDB=FIELD(IDA,'*',DCOUNT(IDA,'*'))
+            CASE 1
+                IDB=IDA
+        END CASE
     END ELSE
 131     !
         IF BISENT THEN BISENT=FALSE ELSE
@@ -412,10 +403,7 @@
     ORIGA=RECA
     ORIGB=RECB
 !
-    IF UPGBACKUP THEN
-        TMP=FIELD(IDA,'\',1)
-        TMP=FIELD(TMP,'*',1) 'D2/':'@':FIELD(TMP,'*',2) 'MTS'
-    END ELSE TMP=IDA
+    TMP=IDA
     DIS.IDA=FA:' - ':TMP
     DIS.IDB=FVB:' - ':IDB
     PREV.LOC=''
@@ -969,31 +957,29 @@ FILE.ITEM:!
             STARTB+=CMD
             GOSUB 900 ;! Display Both Items
         CASE CMD[1,1] EQ 'Z'   ;! zoom into multi-valued attribute
-            IF UPG THEN
-                AMA=OCONV(CMD,'MCN')
-                AMB=STARTB+(AMA-STARTA)
-                LINEA = RECA<AMA>
-                CONVERT VM:SVM TO AM:VM IN LINEA
-                UPGA='%COMPA%':IDA:'%':AMA:'%':FG_TLINE
-                UPGB='%COMPB%':IDB:'%':AMB:'%':FG_TLINE
-                WRITE LINEA ON F.UPG.WORKFILE,UPGA
-                LINEB = RECB<AMB>
-                CONVERT VM:SVM TO AM:VM IN LINEB
-                WRITE LINEB ON F.UPG.WORKFILE,UPGB
-                DATA 'UPG.WORKFILE',''
-                DATA UPGA, UPGB
-                DATA '','',''
-                EXECUTE 'COMPARE_ITEM'
-                READ LINEA FROM F.UPG.WORKFILE,UPGA ELSE NULL
-                READ LINEB FROM F.UPG.WORKFILE,UPGB ELSE NULL
-                CONVERT VM:AM TO SVM:VM IN LINEA
-                RECA<AMA>=LINEA
-                CONVERT VM:AM TO SVM:VM IN LINEB
-                RECB<AMB>=LINEB
-                DELETE F.UPG.WORKFILE,UPGA
-                DELETE F.UPG.WORKFILE,UPGB
-                GOSUB 900
-            END
+            AMA=OCONV(CMD,'MCN')
+            AMB=STARTB+(AMA-STARTA)
+            LINEA = RECA<AMA>
+            CONVERT VM:SVM TO AM:VM IN LINEA
+            UPGA='%COMPA%':IDA:'%':AMA:'%':FG_TLINE
+            UPGB='%COMPB%':IDB:'%':AMB:'%':FG_TLINE
+            WRITE LINEA ON F.UPG.WORKFILE,UPGA
+            LINEB = RECB<AMB>
+            CONVERT VM:SVM TO AM:VM IN LINEB
+            WRITE LINEB ON F.UPG.WORKFILE,UPGB
+            DATA 'UPG.WORKFILE',''
+            DATA UPGA, UPGB
+            DATA '','',''
+            EXECUTE 'COMPARE_ITEM'
+            READ LINEA FROM F.UPG.WORKFILE,UPGA ELSE NULL
+            READ LINEB FROM F.UPG.WORKFILE,UPGB ELSE NULL
+            CONVERT VM:AM TO SVM:VM IN LINEA
+            RECA<AMA>=LINEA
+            CONVERT VM:AM TO SVM:VM IN LINEB
+            RECB<AMB>=LINEB
+            DELETE F.UPG.WORKFILE,UPGA
+            DELETE F.UPG.WORKFILE,UPGB
+            GOSUB 900
         CASE CMD EQ '*'
             SHOW_COMMENTS = NOT(SHOW_COMMENTS)
             GOSUB 900
@@ -1619,7 +1605,7 @@ DELETEB: !
     RETURN
 OPEN.FILEB: !
 120 ! Enter Second File Name
-    IF BSENT OR UPGBACKUP THEN BSENT=FALSE ELSE
+    IF BSENT THEN BSENT=FALSE ELSE
         LOOP
             prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42;YNR=2;CRT @(42,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
