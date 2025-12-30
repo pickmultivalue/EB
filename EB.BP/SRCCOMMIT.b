@@ -18,7 +18,7 @@
     opts = ''
     items = ''
     for item in SENT
-        if item[1,1] eq '-' then
+        if index('(-', item[1,1], 1) then
             opts<-1> = item[2,9]
         end else
             if fnOPEN(item, f.dir) then

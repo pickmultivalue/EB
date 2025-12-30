@@ -81,8 +81,11 @@
             CONVERT @AM:'"' TO ' ' IN sent
         END
         IF LEN(sent) THEN
-            DATA sent
-            DATA ''
+!            DATA sent
+!            DATA ''
+            find_cmd = CHANGE(find_cmd, 'SEARCH', 'SSELECT')
+            find_cmd = CHANGE(find_cmd, '*', '')
+            find_cmd := ' WITH ANY_LINE = "[':sent:']"'
         END
         EXECUTE find_cmd CAPTURING io RTNLIST list
     END ELSE

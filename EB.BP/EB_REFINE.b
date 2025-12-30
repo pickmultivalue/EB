@@ -1,4 +1,4 @@
-    SUBROUTINE EB_REFINE(DISPLAY.LIST,HILINE,DIMMED,NBR.ATTS,ATTRS,KEY.LIST,NBR.KEYS)
+    SUBROUTINE EB_REFINE(in_filter_string, INP.LENGTH, DISPLAY.LIST,HILINE,DIMMED,NBR.ATTS,ATTRS,KEY.LIST,NBR.KEYS, auto_complete)
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
     INCLUDE EB.EQUS EB.EQUS
@@ -10,21 +10,29 @@
 !
     MSG=FG_ERROR.MSGS<123>
     ICOL=LEN(MSG)+1; IROW=(PDEPTH-1)
-    CRT MSG.CLR:MSG:SPC:
     STMP=FG_INPUT.CODES
-    FG_INPUT.CODES=FG_REPLACE.CODES
-    SEARCH.LIST=''
-    CALL EB_UT_WP(SEARCH.LIST,'LIT',50,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
+    IF auto_complete THEN
+        abort_string = ''
+    END ELSE
+        abort_string = ESC
+        FG_INPUT.CODES=FG_REPLACE.CODES
+        CRT MSG.CLR:MSG:SPC:
+    END
+    type = 'LIT'
+    type<3> = LEN(in_filter_string) + 1
+    CALL EB_UT_WP(in_filter_string,type,INP.LENGTH,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',abort_string)
+    IF auto_complete AND FG_TIMEDOUT THEN FG_ACT.CODE = 0
     FG_INPUT.CODES=STMP
     IF FG_ACT.CODE THEN
-        IF FG_ACT.CODE=1 THEN ;! don't abort
-            FG_ACT.CODE=''
-        END
+!        IF FG_ACT.CODE=1 THEN ;! don't abort
+!            FG_ACT.CODE=''
+!        END
         GOTO FINISH
     END
-    IF SEARCH.LIST='' THEN RETURN
+    IF in_filter_string='' THEN RETURN
     MV=1
-    IF SEARCH.LIST[1,1]='~' THEN SEARCH.LIST=SEARCH.LIST[2,99]; Reverse=1 ELSE Reverse=0
+    filter_string = in_filter_string
+    IF filter_string[1,1]='~' THEN filter_string=filter_string[2,99]; Reverse=1 ELSE Reverse=0
     LOOP
         LINE=''
         FOR J=1 TO NBR.ATTS
@@ -41,7 +49,7 @@
             LINE:=STMP:' '
         NEXT J
     UNTIL TRIM(LINE)='' DO
-        POS=(INDEX(LINE,SEARCH.LIST,1) NE 0)
+        POS=(INDEX(LINE,filter_string,1) NE 0)
         IF POS-Reverse THEN MV+=1 ELSE
             FOR J=1 TO NBR.ATTS
                 DEL DISPLAY.LIST<J,MV>
@@ -54,7 +62,7 @@
         END
     REPEAT
 FINISH:   !
-    CRT @(0,22):CLEOL:
-    IF FG_VALID THEN CRT @(0,23):CLEOL:
+!    CRT @(0,22):CLEOL:
+!    IF FG_VALID THEN CRT @(0,23):CLEOL:
     RETURN
 END

@@ -83,6 +83,8 @@ MAIN$:!
     IF FG_TERM.TYPE[2,1]='V' THEN FG_KEEP.CHOICES=FALSE
     POPUP.LIST.BOX=NOT(C.COL<2>); C.COL=C.COL<1>
 !
+    SAVE_FG_TIMEOUT = FG_TIMEOUT
+    SAVE_FG_MONITOR.SECS = FG_MONITOR.SECS
     SAVE.COLOURS=FG_CURR.COLOURS:AM:FG_PREV.COLOURS
     HILINE=''       ;! used for tagged lines
     FOOTER=''
@@ -91,9 +93,7 @@ MAIN$:!
     GR.EMBED=(1-EMBED.ATTR<1,2>)
     IF UNASSIGNED(FG_SCR.CO.ORDS) THEN FG_SCR.CO.ORDS=''
     CC=C.COL
-    IF LEN(CC) THEN CC += FG_SCR.CO.ORDS<1,1>*(FG_TERM.TYPE[2,1]='V')
     RR=C.ROW
-    IF LEN(RR) THEN RR += FG_SCR.CO.ORDS<1,2>*(FG_TERM.TYPE[2,1]='V')
     COL.HDS=DELETE(HEADER,1,1,1); HEADER=HEADER<1,1,1>
     ID=C.ID
     KOFFSET=0       ;!(C.ID#'')
@@ -120,21 +120,23 @@ MAIN$:!
         OPERAND=MV[I,1]
         OPER.TEST=MV[I+1,999]
         OPER.LEN=LEN(OPER.TEST)
-        IF OPER.TEST[OPER.LEN,1]=']' THEN
+        IF OPER.TEST[OPER.LEN,1] EQ ']' THEN
             OPER.TEST=OPER.TEST[1,OPER.LEN-1]
             OPER.LEN-=1
         END ELSE OPER.LEN=999
     END ELSE OPERAND=''
     MV=1
+    last_filter = ''
 !
-    IF ATTRS='' THEN
+    IF ATTRS EQ '' THEN
         IF ID NE '' THEN ATTRS=1 ELSE ATTRS=0
     END
     DIMMED=ATTRS<2>; ATTRS=ATTRS<1>
     NBR.ATTRS=DCOUNT(ATTRS,SVM)
     disable_multi_sel = INDEX(FLD.NBRS, '-', 1)
     force_selection = INDEX(FLD.NBRS, '+', 1)
-    CONVERT '-+' TO '' IN FLD.NBRS
+    auto_complete = INDEX(FLD.NBRS, '*', 1)
+    CONVERT '-+*' TO '' IN FLD.NBRS
     NBR.FLDS=DCOUNT(FLD.NBRS,SVM)
     FIRST.VAL=0
     FIRST.ATTR=ATTRS<1,1,1>
@@ -148,7 +150,7 @@ MAIN$:!
             JUST=JUST[1,COL1()-1]
             JUSTS<1,1,A>=JUST
         END
-        IF JUST='L#0' THEN JUSTS<1,1,A>=''; JUST=''
+        IF JUST EQ 'L#0' THEN JUSTS<1,1,A>=''; JUST=''
         IF JUST NE '' AND NOT(FIRST.VAL) THEN FIRST.VAL=A
         IF COL.HDS NE '' THEN
             IF JUST NE '' THEN
@@ -209,15 +211,13 @@ MAIN$:!
         DEPTH=(PDEPTH-4)-RR
         IF DEPTH LT 10 THEN DEPTH=10
     END
-!    IF DEPTH LT 4 THEN DEPTH=4
     HASH='L#':WIDTH-2
     WIDTH+=4
     IF JUSTS EQ '' THEN JUSTS=HASH
     VALUE=''
     SORT.BY=JUSTS<1,1,FIRST.VAL>[1,1]
     IF INDEX('LR',SORT.BY,1) ELSE SORT.BY='L'
-!  SORT.BY='A':SORT.BY
-    IF JUSTS<2>  NE  '' THEN SORT.BY=JUSTS<2> ELSE SORT.BY='A':SORT.BY
+    IF JUSTS<2> NE '' THEN SORT.BY=JUSTS<2> ELSE SORT.BY='A':SORT.BY
     WARN.FLAG=TRUE
     fn=C.FILE
     IF fn NE fn<1,1> THEN LAST.CHOICE=DELETE(fn,1,1,0); fn=fn<1,1> ELSE LAST.CHOICE=''
@@ -229,7 +229,6 @@ MAIN$:!
         IF ATTRS<1,1,1> EQ 'N' THEN        ;* ace
             VMCNT=DCOUNT(VALUES<1>,VM)  ;* ace
             LATTR=DCOUNT(VALUES,AM)+1
-!      INS '' BEFORE VALUES<1>; * ace
             EOICNT=VMCNT
             NBRS=''
             FOR VMNO = 1 TO VMCNT       ;* ace
@@ -242,8 +241,8 @@ MAIN$:!
     END ELSE
         SAVE.ATTRS=ATTRS
         BEGIN CASE
-            CASE fn='EB.WORK'; F.FILE=FG_WORK.FILE
-            CASE fn='EB.HELP.INDEX'; F.FILE=FG_EB.HELP        ;!.INDEX
+            CASE fn EQ 'EB.WORK'; F.FILE=FG_WORK.FILE
+            CASE fn EQ 'EB.HELP.INDEX'; F.FILE=FG_EB.HELP        ;!.INDEX
             CASE fn MATCHES "1N0N"
                 IF FG_SCR.PAGING<1,fn> EQ FG_WINDOW THEN fn=WIN.PANE(fn) ELSE fn=DAT(fn)
                 GOSUB OPEN.FILE
@@ -293,7 +292,7 @@ MAIN$:!
                     VALUES=''
                     IDCNT=1; EOICNT=DCOUNT(B$LIST<1>,VM)
                     GOSUB RESUME.SEARCH
-                CASE ID#'' AND SAVE.ATTRS<1,FIRST.ATTR>=0
+                CASE ID NE '' AND SAVE.ATTRS<1,FIRST.ATTR> EQ 0
                     VALUES=ID
                 CASE 1
                     EOICNT=0
@@ -333,122 +332,13 @@ MAIN$:!
         END
     END
 !
-    IF WINTEGRATE THEN
-        CALL EB_ERRMSG(SPC, 0)
-        NBR.VALS=DCOUNT(DISP.VALUES<1>,VM)
-        PGE=1
-        ST=1
-        FI=NBR.VALS; INCR=NBR.VALS; NBR.PGES=1
-        TRANSLATE=(SAVE.ATTRS#DISP.ATTRS AND NOT(MULT.IDS) OR CONVS#'')
-        IF TRANSLATE ELSE DISP.ATTRS=ATTRS
-STERM.RESUME: !
-        VALUE=INIT.VALUE
-        PAGE.ITEMS=''
-        LOOP
-            IF PAGE.ITEMS<PGE> EQ '' THEN
-                EOICNT=NBR.VALS
-                IF TRANSLATE OR GUI THEN
-                    ATTRS=SAVE.ATTRS
-                    FOR MV=1 TO FI
-                        GOSUB GET.LINE
-                    NEXT MV
-                END ELSE
-                    DISP.VALUES=VALUES
-                END
-                ATTRS=DISP.ATTRS
-            END
-            IF GUI THEN
-                DISP.VALUES=DISP.VALUES<1>
-                CONVERT VM TO FB IN DISP.VALUES
-            END
-            IF BLD.SCRN THEN
-                VALUE=EOF:FB:DISP.VALUES          ;!<1>
-                RETURN
-            END
-            IF FG_DIALOG.BOX AND FG_FLD MATCHES "1N0N" THEN
-                CC=FG_SCR.COL<1,FG_FLD>
-                IF FG_SCR.PAGING<1,FG_FLD> THEN
-                    FIRST.PAGE=FG_SCR.ST.PAGE<1,FG_WINDOW>
-                    FIRST.ROW=FG_SCR.ROW<1,FIRST.PAGE>
-                    SKIP=FG_SCR.NBR.LINES<1,FG_WINDOW>
-                    THIS.ROWS=FG_SCR.NBR.ROWS<1,FG_WINDOW>
-                    RR=FIRST.ROW+MOD(FG_PANE-1,THIS.ROWS)*SKIP
-                END ELSE
-                    RR=FG_SCR.ROW<1,FG_FLD>
-                END
-                IF CC EQ C.COL AND RR EQ C.ROW AND FG_ACT.CODE EQ FG_OPT.CODE THEN       ;! normal lookup ?
-                    STD.LKUP=TRUE
-                END ELSE STD.LKUP=FALSE
-            END ELSE STD.LKUP=TRUE
-            R.TABLE=HEADER:AM:COL.HDS:AM:JUSTS:AM:DEPTH:AM:CC:VM:RR:VM:STD.LKUP
-            IF VALIDATE ELSE
-            END
-            R.TABLE<7>=(ST>INCR):VM:(EOICNT#NBR.VALS)
-            DLG.NAME=FG_DBX.NAME:'_':FG_SCREEN.PAGE
-            IF FG_DBX.NAME NE '' THEN
-                R.TABLE<8>=DLG.NAME
-                IF NOT(POPUP.LIST.BOX) THEN
-                    R.TABLE<9>='L':FG_FLD
-                END ;!ELSE R.TABLE<10>=DROPDOWN*FG_SCR.NBR.PAGES
-            END
-            MV=''; VALUE=INIT.VALUE
-            CALL EB_WIN.CHOICES(R.TABLE,DISP.VALUES,VALUE,1,ATTRS,0,FG_W.COL,FG_W.ROW)
-        WHILE VALUE=NEXT.SEL OR VALUE=PREV.SEL DO
-            DIRECTION=1-2*(VALUE=PREV.SEL)
-            ST+=(INCR*DIRECTION)
-        REPEAT
-        IF FG_DBX.NAME NE '' AND NOT(GUI) THEN
-            IF VALUE[1,1] EQ STX THEN
-                FG_NEXT.EVENT=VALUE
-                CALL EB_WIN.COMSUB('DB ShowControl ':R.TABLE<8>:',':R.TABLE<9>:',0')
-                VALUE=''
-            END
-        END
-        IF VALUE EQ '' AND ((NBR.VALS>50 AND NOT(ST EQ 1 AND FI EQ NBR.VALS)) OR NOT(EOF)) THEN
-            CALL EB_MERRMSG('',FG_ERROR.MSGS<124>,'',ANS,'Y':VM:'N')
-            IF ANS EQ 'Y' THEN
-                IF EOICNT EQ NBR.VALS AND ST EQ 1 ELSE
-                    IDCNT=1; EOICNT=NBR.VALS
-                    ATTRS=SAVE.ATTRS
-                    DISP.VALUES=''
-                    VALUES=''
-                    EOF=FALSE
-                    GOSUB RESUME.SEARCH
-                END
-                ORIG.COUNT=NBR.VALS
-                GOSUB REFINE
-                IF NBR.VALS NE ORIG.COUNT THEN
-                    IF NBR.VALS EQ 0 THEN
-                        CALL EB_MERRMSG('',FG_ERROR.MSGS<125>,'',ANS,'Y':VM:'N')
-                        IF ANS EQ 'Y' THEN
-                            ST=1
-                            NBR.VALS=ORIG.COUNT
-                            GO STERM.RESUME
-                        END
-                    END
-                    IF NBR.VALS THEN
-                        FI=NBR.VALS
-                        GO STERM.RESUME
-                    END
-                END
-            END
-        END
-        IF NOT(GUI) THEN
-            IF VALUE<2> THEN
-                VALUE=DISP.VALUES<FLD.NBRS<1,1,1>,VALUE<2>>
-!VALUE=VALUE<2>
-                TRANSLATE=FALSE
-            END
-        END
-        GO EXIT.2
-    END
-!
     IF K.ATTR EQ 'L' THEN
         NBR.VALS=DCOUNT(VALUES<ATTRS<1,1,FIRST.ATTR>>,VM)
     END ELSE
         NBR.VALS=DCOUNT(VALUES<K.ATTR>,VM)
     END
     IF NBR.VALS LT DEPTH THEN DEPTH=NBR.VALS+(COL.HDS NE '')
+    DEPTH += (auto_complete NE 0)
 !
     WIDTH+=GR.EMBED
     CC-=GR.EMBED
@@ -460,22 +350,13 @@ STERM.RESUME: !
     MENU.COLOURS=FG_CURR.COLOURS
     IF WHITE<1,1> NE '' THEN CALL EB_CH_COLOUR(BOX.COLOUR,BG.COLOUR)
     BOX.COLOURS=FG_CURR.COLOURS
-    BEGIN CASE
-        CASE FG_TERM.TYPE[2,1]='V'
-            BOX.CLEAR=ESC:CHAR(8):'WCLOSE':CHAR(0)
-            BOX.DRAW=ESC:CHAR(8):'WOPEN /S ':CC+2:',':RR:',':WIDTH-(lnbr_width+1):',':DEPTH+0:CHAR(0):ESC:CHAR(8):'WFRAME 1':CHAR(0):CLS
-            CRT BOX.DRAW:
-            IF HEADER NE '' THEN CRT ESC:CHAR(8):'WTITLE /C ':HEADER:CHAR(0):
-            CC=-2; RR=-1
-        CASE 1
-            IF SCREEN.SAVE<1,1> NE '' THEN CALL EB_SCREEN.SAVE(FG_DISK.DRIVE:FG_CRT.PAGE)
+    IF SCREEN.SAVE<1,1> NE '' THEN CALL EB_SCREEN.SAVE(FG_DISK.DRIVE:FG_CRT.PAGE)
 !
-            CALL EB_BOX(CC,RR,WIDTH,DEPTH,1,BOX.CLEAR,BOX.DRAW)
-            IF HEADER NE '' THEN
-                HEADER=TRIM(HEADER HASH,' ',"T")
-                CRT @(CC+INT((WIDTH-LEN(HEADER))/2)-2-GR.EMBED,RR):GROFF:HEADER:GRON:@(CC+WIDTH,RR):GROFF:
-            END
-    END CASE
+    CALL EB_BOX(CC,RR,WIDTH,DEPTH,1,BOX.CLEAR,BOX.DRAW)
+    IF HEADER NE '' THEN
+        HEADER=TRIM(HEADER HASH,' ',"T")
+        CRT @(CC+INT((WIDTH-LEN(HEADER))/2)-2-GR.EMBED,RR):GROFF:HEADER:GRON:@(CC+WIDTH,RR):GROFF:
+    END
     CC+=GR.EMBED
     CRT MENU.COLOURS:
     INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
@@ -492,6 +373,12 @@ STERM.RESUME: !
         NEXT I
         CRT @(CC,RR):BG:COL.HD HASH:FG:
     END
+    IF auto_complete THEN
+        RR+=1
+        DEPTH-=1
+        CRT @(CC,RR):BG:'Search:':FG:
+        auto_complete_pos = @(CC,RR)
+    END
     RR+=1
     SUB.LENGTH=''
     SUB.CODES=FG_SRCH.CH:VM:FG_SEL.CH:VM:FG_TOP.CH:VM:FG_NXT.CH:VM:FG_PRV.CH:VM:FG_TAB.CH
@@ -505,7 +392,14 @@ STERM.RESUME: !
     RR-=1
     FOOTER.PREFIX=@(CC+WIDTH-11-2*GR.EMBED,RR+DEPTH+1):GROFF
     FOOTER.SUFFIX=GRON:@(CC+WIDTH,RR+DEPTH+1):GROFF
+    FILTER.VALUE = ''
+    SAVE.DEPTH = DEPTH
+    SAVE.VALUES = VALUES
+    SAVE.DISP.VALUES = DISP.VALUES
+    SAVE.SUB.CODES = SUB.CODES
+!
 RESTART: !
+!
     R=1
     IF INIT.VALUE EQ '' THEN C=1 ELSE
         LOCATE INIT.VALUE IN VALUES<K.ATTR,vm_start> SETTING C ELSE C=1
@@ -536,26 +430,42 @@ RESTART: !
             END
             FG_ACT.CODE=FG_END.CODE
         END
-    UNTIL FG_ACT.CODE=FG_ABT.CODE OR FG_ACT.CODE=FG_END.CODE OR FG_ACT.CODE=FG_JMP.CODE DO
+        IF auto_complete AND FG_ACT.CODE EQ FG_ABT.CODE THEN
+            FG_ACT.CODE = FG_SEARCH.CODE
+            FG_MONITOR.SECS = 15
+            FG_TIMEOUT = 10*FG_MONITOR.SECS
+            SUB.CODES = FG_INPUT.CODES
+            CRT auto_complete_pos:
+        END
+    UNTIL FG_ACT.CODE EQ FG_ABT.CODE OR FG_ACT.CODE EQ FG_END.CODE OR FG_ACT.CODE EQ FG_JMP.CODE DO
         BEGIN CASE
-            CASE FG_ACT.CODE=FG_SEARCH.CODE
+            CASE FG_ACT.CODE EQ FG_SEARCH.CODE
                 LOOP
+                    VALUES = SAVE.VALUES
+                    DISP.VALUES = SAVE.DISP.VALUES
+                    DEPTH = SAVE.DEPTH
                     GOSUB REFINE
+                    IF VALUES EQ SAVE.VALUES AND NOT(FG_TIMEDOUT) THEN NBR.VALS = 0
+                    FG_MONITOR.SECS = SAVE_FG_MONITOR.SECS
+                    FG_TIMEOUT = SAVE_FG_TIMEOUT
+                    FG_TIMEDOUT = @FALSE
+                    SUB.CODES = SAVE.SUB.CODES
                 WHILE NBR.VALS=0 DO
+                    CRT @(CC,C.ROW+SAVE.DEPTH+4):
                     CALL EB_MERRMSG('',FG_ERROR.MSGS<125>,'',ANS,'Y':VM:'N')
                     IF ANS EQ 'Y' THEN
                         IDCNT=1
                         EOF=FALSE
-                        IF fn NE '' THEN
+                        IF NOT(auto_complete) AND fn NE '' THEN
                             GOSUB RESUME.SEARCH
                             NBR.VALS=EOICNT
-                        END ELSE
-                            VALUES=ORIG.VALUES
+!                        END ELSE
+!                            VALUES=SAVE.VALUES
                         END
                     END ELSE GO EXIT.2
                 REPEAT
                 GOSUB SCROLL.PAGE
-            CASE FG_ACT.CODE=FG_SEL.CODE
+            CASE FG_ACT.CODE EQ FG_SEL.CODE
                 IF NOT(disable_multi_sel) THEN
                     IF HILINE<1,1> THEN
                         HILINE=''
@@ -564,7 +474,7 @@ RESTART: !
                     END
                     GOSUB SCROLL.PAGE
                 END
-            CASE FG_ACT.CODE=FG_TAG.CODE
+            CASE FG_ACT.CODE EQ FG_TAG.CODE
                 IF NOT(disable_multi_sel) THEN
                     IF HILINE<1,I> THEN
                         HILINE<1,I>=''
@@ -584,9 +494,9 @@ RESTART: !
                 END
         END CASE
         BEGIN CASE
-            CASE FG_ACT.CODE=FG_SEARCH.CODE
-            CASE FG_ACT.CODE=FG_SEL.CODE
-            CASE FG_ACT.CODE=FG_SKP.CODE OR FG_ACT.CODE=FG_SKP.CODE
+            CASE FG_ACT.CODE EQ FG_SEARCH.CODE
+            CASE FG_ACT.CODE EQ FG_SEL.CODE
+            CASE FG_ACT.CODE EQ FG_SKP.CODE OR FG_ACT.CODE EQ FG_SKP.CODE
                 IF I NE NBR.VALS THEN
                     R+=1; I+=1
                     IF R GT DEPTH THEN PGE+=1; GOSUB SCROLL.PAGE
@@ -594,7 +504,7 @@ RESTART: !
                     I=1
                     IF LAST.PGE NE 1 THEN PGE=1; GOSUB SCROLL.PAGE ELSE R=1
                 END
-            CASE FG_ACT.CODE=FG_BCK.CODE
+            CASE FG_ACT.CODE EQ FG_BCK.CODE
                 IF I GT 1 THEN
                     R-=1; I-=1
                     IF R LT 1 THEN
@@ -611,23 +521,23 @@ RESTART: !
                         I=NBR.VALS; R=NBR.VALS-LAST.PGE+1
                     END
                 END
-            CASE FG_ACT.CODE=FG_TOP.CODE
+            CASE FG_ACT.CODE EQ FG_TOP.CODE
                 IF J GT 1 THEN
                     I=1; PGE=1; GOSUB SCROLL.PAGE
                 END ELSE CRT BELL:
-            CASE FG_ACT.CODE=FG_NXTS.CODE
+            CASE FG_ACT.CODE EQ FG_NXTS.CODE
                 J=I+DEPTH-R+1
                 IF J LE NBR.VALS THEN
                     I=J
                     PGE+=1; GOSUB SCROLL.PAGE
                 END ELSE CRT BELL:
-            CASE FG_ACT.CODE=FG_PRVS.CODE
+            CASE FG_ACT.CODE EQ FG_PRVS.CODE
                 J=I-DEPTH-R+1
                 IF J GE 1 THEN
                     I=J
                     PGE-=1; GOSUB SCROLL.PAGE
                 END ELSE CRT BELL:
-            CASE FG_ACT.CODE=FG_TAB.CODE
+            CASE FG_ACT.CODE EQ FG_TAB.CODE
                 C=I
                 LOOP
                     C+=1
@@ -649,7 +559,7 @@ CHAR.SEARCH:    !
                 LOOP
                     C+=1
                     CHR=OCONV(VALUES<FIRST.VAL,C>[1,1],'MCU')
-                UNTIL CHR=REPLY OR C>NBR.VALS OR C=J DO REPEAT
+                UNTIL CHR EQ REPLY OR C GT NBR.VALS OR C EQ J DO REPEAT
                 IF C GT NBR.VALS THEN
                     IF C GT J AND J NE 0 THEN J=0; GO CHAR.SEARCH ELSE C=1
                 END
@@ -684,11 +594,7 @@ FINISH: !
         CRT FG_CURR.COLOURS:
     END ELSE
         CRT FG_CURR.COLOURS:
-!    IF FG_KEEP.CHOICES ELSE
         CRT BOX.CLEAR:
-!    FG_REFRESH=FG_FULL.NOCLEAR
-!      CALL EB_REPAINT.WINDOW(0,CC,RR-(COL.HDS#''),WIDTH,DEPTH+(COL.HDS#''))
-!    END
     END
 EXIT.2: !
     INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
@@ -892,8 +798,11 @@ OPEN.FILE:!
     END ELSE POS=fn
     RETURN
 REFINE: !
-    ORIG.VALUES=VALUES
-    CALL EB_REFINE(VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS)
+    CALL EB_REFINE(last_filter, WIDTH-6, VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS, auto_complete)
+    IF LEN(last_filter) EQ 0 THEN
+        CRT auto_complete_pos:BG:'Search:':FG:
+    END
+RESET: !
     NBR.VALS=DCOUNT(VALUES<1>,VM)
     NBR.PAGES=INT((NBR.VALS-1)/DEPTH)+1
     LAST.PGE=INT((NBR.VALS-1)/DEPTH)*DEPTH+1
@@ -926,13 +835,13 @@ RESUME.SEARCH: !
         IF OPERAND NE '' THEN
             IF OPER.ATTR THEN ATTR=DESC<OPER.ATTR,1,1> ELSE ATTR=ID
             BEGIN CASE
-                CASE OPERAND='='
+                CASE OPERAND EQ '='
                     IF ATTR[1,OPER.LEN] EQ OPER.TEST ELSE OK=FALSE
-                CASE OPERAND='#'
+                CASE OPERAND EQ '#'
                     IF ATTR[1,OPER.LEN] NE OPER.TEST ELSE OK=FALSE
-                CASE OPERAND='>'
+                CASE OPERAND EQ '>'
                     IF ATTR[1,OPER.LEN] GT OPER.TEST ELSE OK=FALSE
-                CASE OPERAND='<'
+                CASE OPERAND EQ '<'
                     IF ATTR[1,OPER.LEN] LT OPER.TEST ELSE OK=FALSE
             END CASE
         END
