@@ -82,6 +82,9 @@ MAIN$:!
     EOF=TRUE
     IF FG_TERM.TYPE[2,1]='V' THEN FG_KEEP.CHOICES=FALSE
     POPUP.LIST.BOX=NOT(C.COL<2>); C.COL=C.COL<1>
+    IF NOT(GETENV('AUTO_COMPLETE_TIMEOUT', auto_complete_timeout)) THEN
+        auto_complete_timeout = 20
+    END
 !
     SAVE_FG_TIMEOUT = FG_TIMEOUT
     SAVE_FG_MONITOR.SECS = FG_MONITOR.SECS
@@ -432,7 +435,7 @@ RESTART: !
         END
         IF auto_complete AND FG_ACT.CODE EQ FG_ABT.CODE THEN
             FG_ACT.CODE = FG_SEARCH.CODE
-            FG_MONITOR.SECS = 15
+            FG_MONITOR.SECS = auto_complete_timeout
             FG_TIMEOUT = 10*FG_MONITOR.SECS
             SUB.CODES = FG_INPUT.CODES
             CRT auto_complete_pos:
@@ -446,6 +449,9 @@ RESTART: !
                     DEPTH = SAVE.DEPTH
                     GOSUB REFINE
                     IF VALUES EQ SAVE.VALUES AND NOT(FG_TIMEDOUT) THEN NBR.VALS = 0
+                    IF NBR.VALS EQ 0 THEN
+                        GOSUB SCROLL.PAGE
+                    END
                     FG_MONITOR.SECS = SAVE_FG_MONITOR.SECS
                     FG_TIMEOUT = SAVE_FG_TIMEOUT
                     FG_TIMEDOUT = @FALSE
@@ -646,7 +652,7 @@ EXIT.2: !
     RETURN
 !
 SCROLL.PAGE: !
-    IF NBR.VALS LT DEPTH THEN
+    IF NBR.VALS AND NBR.VALS LT DEPTH THEN
         ODEPTH=DEPTH
         DEPTH=NBR.VALS
         NBR.PAGES=INT((NBR.VALS-1)/DEPTH)+1
