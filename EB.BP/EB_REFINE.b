@@ -1,4 +1,5 @@
-    SUBROUTINE EB_REFINE(in_filter_string, INP.LENGTH, DISPLAY.LIST,HILINE,DIMMED,NBR.ATTS,ATTRS,KEY.LIST,NBR.KEYS, auto_complete)
+    SUBROUTINE EB_REFINE(cache, INP.LENGTH, DISPLAY.LIST,HILINE,DIMMED,NBR.ATTS,ATTRS,KEY.LIST,NBR.KEYS, auto_complete)
+    $option jabba
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
     INCLUDE EB.EQUS EB.EQUS
@@ -8,6 +9,7 @@
     INCLUDE EB.EQUS SCREEN.PARAMS
     MAIN$:!
 !
+    last_filter = cache->last_filter
     MSG=FG_ERROR.MSGS<123>
     ICOL=LEN(MSG)+1; IROW=(PDEPTH-1)
     STMP=FG_INPUT.CODES
@@ -19,19 +21,27 @@
         CRT MSG.CLR:MSG:SPC:
     END
     type = 'LIT'
-    type<3> = LEN(in_filter_string) + 1
-    CALL EB_UT_WP(in_filter_string,type,INP.LENGTH,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',abort_string)
+    type<3> = LEN(last_filter) + 1
+    CALL EB_UT_WP(last_filter,type,INP.LENGTH,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',abort_string)
     IF auto_complete AND FG_TIMEDOUT THEN FG_ACT.CODE = 0
     FG_INPUT.CODES=STMP
     IF FG_ACT.CODE THEN
-!        IF FG_ACT.CODE=1 THEN ;! don't abort
-!            FG_ACT.CODE=''
-!        END
         GOTO FINISH
     END
-    IF in_filter_string='' THEN RETURN
+    cache->last_filter = last_filter
+    IF last_filter='' THEN RETURN
+    IF cache->$hasproperty(last_filter) then
+        obj = cache->@last_filter
+        DISPLAY.LIST = obj->DISPLAY.LIST
+        KEY.LIST = obj->KEY.LIST
+        HILINE = obj->HILINE
+        DIMMED = obj->DIMMED
+        RETURN
+    END ELSE
+        obj = new object()
+    END
     MV=1
-    filter_string = in_filter_string
+    filter_string = last_filter
     IF filter_string[1,1]='~' THEN filter_string=filter_string[2,99]; Reverse=1 ELSE Reverse=0
     LOOP
         LINE=''
@@ -61,6 +71,11 @@
             DEL DIMMED<1,MV>
         END
     REPEAT
+    obj->DISPLAY.LIST = DISPLAY.LIST
+    obj->KEY.LIST = KEY.LIST
+    obj->HILINE = HILINE
+    obj->DIMMED = DIMMED
+    cache->@last_filter = obj
 FINISH:   !
 !    CRT @(0,22):CLEOL:
 !    IF FG_VALID THEN CRT @(0,23):CLEOL:

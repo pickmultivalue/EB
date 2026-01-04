@@ -1,4 +1,5 @@
     SUBROUTINE EB_CHOICES(C.COL,C.ROW,WIDTH,DEPTH,C.FILE,C.ID,VALUE,FLD.NBRS,MV,ATTRS,JUSTS,HEADER)
+    $option jabba
     INCLUDE EB.EQUS EB.COMMONS
     COM GEX(50),EXTRAS(50)
     GO MAIN$
@@ -129,7 +130,8 @@ MAIN$:!
         END ELSE OPER.LEN=999
     END ELSE OPERAND=''
     MV=1
-    last_filter = ''
+    filter_obj = new object()
+    filter_obj->last_filter = ''
 !
     IF ATTRS EQ '' THEN
         IF ID NE '' THEN ATTRS=1 ELSE ATTRS=0
@@ -722,19 +724,19 @@ GET.LINE: !
         CONV=CONVS<1,1,1>
         IF CONV EQ -1 THEN CONV='' ; OCONV.IT=FALSE ELSE OCONV.IT=TRUE
         IF K.ATTR EQ 'L' THEN STMP=MV ELSE STMP=DISP.VALUES<1,MV>
-        Key=STMP
-        IF CONV NE '' THEN Key=OCONV(Key,CONV)
-        DISP.VALUES<1,MV>=Key
+        KeyVal=STMP
+        IF CONV NE '' THEN KeyVal=OCONV(KeyVal,CONV)
+        DISP.VALUES<1,MV>=KeyVal
         IF JUST NE '' OR FG_DIALOG.BOX THEN
             BEGIN CASE
                 CASE FG_DIALOG.BOX
-                    LINE=Key
+                    LINE=KeyVal
                     GAP=SVM
                 CASE WINTEGRATE
-                    LINE=Key
+                    LINE=KeyVal
                     GAP='":tab:"'
                 CASE 1
-                    LINE=Key JUST
+                    LINE=KeyVal JUST
                     GAP=SPC
             END CASE
         END ELSE
@@ -755,7 +757,7 @@ GET.LINE: !
                         fn=FIELD(ATTR,CTRL.F,1)
                         IF fn THEN
                             ATTR=ATTR[COL2()+1,99]
-                            IF KPOS THEN KPOS=VALUES<KPOS+KOFFSET,MV> ELSE KPOS=Key
+                            IF KPOS THEN KPOS=VALUES<KPOS+KOFFSET,MV> ELSE KPOS=KeyVal
                             READV STMP FROM OPENED.FILES(fn),KPOS,ATTR ELSE STMP=''
                         END ELSE STMP=''
 !
@@ -804,8 +806,8 @@ OPEN.FILE:!
     END ELSE POS=fn
     RETURN
 REFINE: !
-    CALL EB_REFINE(last_filter, WIDTH-6, VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS, auto_complete)
-    IF LEN(last_filter) EQ 0 THEN
+    CALL EB_REFINE(filter_obj, WIDTH-6, VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS, auto_complete)
+    IF LEN(filter_obj->last_filter) EQ 0 THEN
         CRT auto_complete_pos:BG:'Search:':FG:
     END
 RESET: !
