@@ -7,7 +7,7 @@
     INCLUDE EB.EQUS ACT.CODES
     INCLUDE EB.EQUS STD.EQUS
     INCLUDE EB.EQUS SCREEN.PARAMS
-    MAIN$:!
+MAIN$:!
 !
     last_filter = cache->last_filter
     MSG=FG_ERROR.MSGS<123>
@@ -15,6 +15,7 @@
     STMP=FG_INPUT.CODES
     IF auto_complete THEN
         abort_string = ''
+        MSG.CLR = @(10,IROW):@(-3)
     END ELSE
         abort_string = ESC
         FG_INPUT.CODES=FG_REPLACE.CODES
@@ -40,24 +41,36 @@
     END ELSE
         obj = new object()
     END
+    IF cache->$hasproperty('lookup') THEN
+        lookupobj = cache->lookup
+        detail_routine = lookupobj->detail_routine
+    END ELSE
+        detail_routine = ''
+    END
+    CRT MSG.CLR:'Filtering...':
     MV=1
     filter_string = last_filter
     IF filter_string[1,1]='~' THEN filter_string=filter_string[2,99]; Reverse=1 ELSE Reverse=0
     LOOP
         LINE=''
-        FOR J=1 TO NBR.ATTS
-            ATTR=ATTRS<1,J>
-            IF INDEX(ATTR,CTRL.F,1) THEN
-                fn=FIELD(ATTR,CTRL.F,1)
-                IF fn THEN
-                    ATTR=ATTR[COL2()+1,99]
-                    IF ATTR MATCHES "1N0N" THEN
-                        READV STMP FROM OPENED.FILES(fn),DISPLAY.LIST<J,MV>,ATTR ELSE STMP=''
+        IF DISPLAY.LIST<1, MV> NE '' THEN
+            IF detail_routine NE ''  THEN
+                CALL @detail_routine(lookupobj, DISPLAY.LIST, MV)
+            END
+            FOR J=1 TO NBR.ATTS
+                ATTR=ATTRS<1,J>
+                IF INDEX(ATTR,CTRL.F,1) THEN
+                    fn=FIELD(ATTR,CTRL.F,1)
+                    IF fn THEN
+                        ATTR=ATTR[COL2()+1,99]
+                        IF ATTR MATCHES "1N0N" THEN
+                            READV STMP FROM OPENED.FILES(fn),DISPLAY.LIST<J,MV>,ATTR ELSE STMP=''
+                        END ELSE STMP=''
                     END ELSE STMP=''
-                END ELSE STMP=''
-            END ELSE STMP=DISPLAY.LIST<J,MV>
-            LINE:=STMP:' '
-        NEXT J
+                END ELSE STMP=DISPLAY.LIST<J,MV>
+                LINE:=STMP:' '
+            NEXT J
+        END
     UNTIL TRIM(LINE)='' DO
         POS=(INDEX(LINE,filter_string,1) NE 0)
         IF POS-Reverse THEN MV+=1 ELSE
@@ -70,14 +83,18 @@
             DEL HILINE<1,MV>
             DEL DIMMED<1,MV>
         END
+        IF SYSTEM(14) THEN
+            CRT MSG.CLR:'...interrupted'
+            INCLUDE EB.INCLUDES REMOVE.TYPEAHEAD
+            BREAK
+        END
     REPEAT
     obj->DISPLAY.LIST = DISPLAY.LIST
     obj->KEY.LIST = KEY.LIST
     obj->HILINE = HILINE
     obj->DIMMED = DIMMED
     cache->@last_filter = obj
-FINISH:   !
+FINISH: !
 !    CRT @(0,22):CLEOL:
 !    IF FG_VALID THEN CRT @(0,23):CLEOL:
     RETURN
-END

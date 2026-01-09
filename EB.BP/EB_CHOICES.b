@@ -99,7 +99,16 @@ MAIN$:!
     CC=C.COL
     RR=C.ROW
     COL.HDS=DELETE(HEADER,1,1,1); HEADER=HEADER<1,1,1>
-    ID=C.ID
+    filter_obj = new object()
+    filter_obj->last_filter = ''
+    IF C.ID->$hasproperty('array') THEN
+        ID = C.ID->array
+        detail_routine = C.ID->detail_routine
+        filter_obj->lookup = C.ID
+    END ELSE
+        ID=C.ID
+        detail_routine = ''
+    END
     KOFFSET=0       ;!(C.ID#'')
     B$LIST=''
     R.TABLE=''
@@ -130,8 +139,6 @@ MAIN$:!
         END ELSE OPER.LEN=999
     END ELSE OPERAND=''
     MV=1
-    filter_obj = new object()
-    filter_obj->last_filter = ''
 !
     IF ATTRS EQ '' THEN
         IF ID NE '' THEN ATTRS=1 ELSE ATTRS=0
@@ -395,7 +402,7 @@ MAIN$:!
         IF JUSTS<1,1,A> NE '' THEN FIRST.VAL=A
     NEXT A
     RR-=1
-    FOOTER.PREFIX=@(CC+WIDTH-11-2*GR.EMBED,RR+DEPTH+1):GROFF
+    FOOTER.PREFIX=@(CC+WIDTH-13-2*GR.EMBED,RR+DEPTH+1):GROFF
     FOOTER.SUFFIX=GRON:@(CC+WIDTH,RR+DEPTH+1):GROFF
     FILTER.VALUE = ''
     SAVE.DEPTH = DEPTH
@@ -679,7 +686,7 @@ SCROLL.PAGE: !
         J+=1
     REPEAT
     IF NBR.PAGES GT 1 OR FOOTER NE '' THEN
-        FOOTER=PGE 'R#2':'/':NBR.PAGES 'L#2'
+        FOOTER=PGE 'R#3':'/':NBR.PAGES 'L#3'
         IF FG_TERM.TYPE[2,1] NE 'V' THEN
             CRT FOOTER.PREFIX:FOOTER:FOOTER.SUFFIX:
         END ELSE
@@ -690,6 +697,10 @@ SCROLL.PAGE: !
     RETURN
 !
 GET.LINE: !
+    IF detail_routine NE '' THEN
+        CALL @detail_routine(C.ID, DISP.VALUES, MV)
+        VALUES<1, MV> = DISP.VALUES<1, MV>
+    END
     IF MV EQ NBR.VALS AND LAST.CHOICE NE '' THEN
         IF WINTEGRATE OR FG_DIALOG.BOX THEN
             GAP=''
