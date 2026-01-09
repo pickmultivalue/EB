@@ -388,7 +388,7 @@ MAIN$:!
     IF auto_complete THEN
         RR+=1
         DEPTH-=1
-        CRT @(CC,RR):BG:'Search:':FG:
+        CRT @(CC,RR):BG:'Filter:':FG:
         auto_complete_pos = @(CC,RR)
     END
     RR+=1
@@ -817,9 +817,12 @@ OPEN.FILE:!
     END ELSE POS=fn
     RETURN
 REFINE: !
+    IF LEN(filter_obj->last_filter) EQ 0 THEN
+        CRT auto_complete_pos:'       ':auto_complete_pos:
+    END
     CALL EB_REFINE(filter_obj, WIDTH-6, VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS, auto_complete)
     IF LEN(filter_obj->last_filter) EQ 0 THEN
-        CRT auto_complete_pos:BG:'Search:':FG:
+        CRT auto_complete_pos:BG:'Filter:':FG:
     END
 RESET: !
     NBR.VALS=DCOUNT(VALUES<1>,VM)
