@@ -818,11 +818,11 @@ OPEN.FILE:!
     RETURN
 REFINE: !
     IF LEN(filter_obj->last_filter) EQ 0 THEN
-        CRT auto_complete_pos:'       ':auto_complete_pos:
+        IF auto_complete THEN CRT auto_complete_pos:'       ':auto_complete_pos:
     END
     CALL EB_REFINE(filter_obj, WIDTH-6, VALUES,HILINE,DIMMED,NBR.ATTRS,ATTRS,DISP.VALUES,NBR.ATTRS, auto_complete)
     IF LEN(filter_obj->last_filter) EQ 0 THEN
-        CRT auto_complete_pos:BG:'Filter:':FG:
+        IF auto_complete THEN CRT auto_complete_pos:BG:'Filter:':FG:
     END
 RESET: !
     NBR.VALS=DCOUNT(VALUES<1>,VM)
