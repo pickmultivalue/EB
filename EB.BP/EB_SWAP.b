@@ -1,4 +1,6 @@
     SUBROUTINE EB_SWAP(STMP,POS)
+    case_state = SYSTEM(28)
+    CASING 1
 !
 ! Program to swap statments around
 ! ie. var1=var2 to var2=var1
@@ -384,4 +386,5 @@ MATSWITCH:
         END
     END
     STMP = ORIG.STRING
+    CASING case_state
     RETURN
