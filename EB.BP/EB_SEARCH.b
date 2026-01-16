@@ -200,10 +200,11 @@ RETRY:
         IF STRT>LAST.AM THEN
             STR.POS = FALSE
         END ELSE
-            CALL EB_TRIM(TMP,RDSP(LROW)[1,LCOL],' ','T')
-            LINE.POS=INDEX(REC,AM,STRT-1)+LEN(TMP)+2
+!            CALL EB_TRIM(TMP,RDSP(LROW)[1,LCOL],' ','T')
+            CALL EB_TRIM(TMP,RDSP(LROW),' ','T')
+            LINE.POS=INDEX(REC,AM,STRT-1)
             IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
-                RPOS=1; EPOS=LINE.POS
+                RPOS=1; EPOS=LINE.POS+LEN(TMP)+2
             END ELSE
                 RPOS=LINE.POS; EPOS=MAX
             END
