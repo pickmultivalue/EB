@@ -206,7 +206,7 @@ RETRY:
             IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
                 RPOS=1; EPOS=LINE.POS+LEN(TMP)+2
             END ELSE
-                RPOS=LINE.POS; EPOS=MAX
+                RPOS=LINE.POS+1; EPOS=MAX
             END
             GOSUB SETMREC
             CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
@@ -298,6 +298,10 @@ RETRY:
             ROW++
             MREC=RDSP(STR.LINE)
             CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
+            IF STR.POS ELSE
+                STRT=INDROW+ROW
+                GO RETRY
+            END
         END
         LCOL=STR.POS+COL
         SCOL = COL

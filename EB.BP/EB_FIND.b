@@ -33,7 +33,7 @@ MAIN$:!
                     CONTINUE
                 END
             CASE C1 = '|'
-                IF NOT(ESCFLAG) THEN C1 = @AM
+                IF NOT(ESCFLAG OR REGEX.SEARCH) THEN C1 = @AM
         END CASE
         SSTRINGS := C1
         ESCFLAG = @FALSE
