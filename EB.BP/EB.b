@@ -2285,11 +2285,11 @@ TCL: !
                             IF offsetpos THEN
                                 ERRPOS = @FALSE
                             END ELSE
-                                ERRPOS = EB_REGEX(DSPLY, '[Line ]\d+', @FALSE)
+                                ERRPOS = EB_REGEX(DSPLY, 'ine [^\d]', @FALSE)
                             END
                             IF ERRPOS THEN
-                                TEMP = DSPLY[ERRPOS,MAX]
-                                ERRPOS = INDEX(TEMP,'Line ', 1)
+                                TEMP = DSPLY[ERRPOS<1,1>,MAX]
+                                ERRPOS = INDEX(TEMP,'ine ', 1)
                                 TEMP = FIELD(TEMP[ERRPOS, MAX], ' ', 2)
                                 IF TEMP MATCHES "1N0N" THEN INDROW=TEMP
                             END ELSE
