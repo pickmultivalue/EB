@@ -1137,6 +1137,12 @@ SCROLL.LINE:    !
             IF CHANGED THEN GOSUB SCRN.TO.REC
             CRT MSG.DSP:
             Y=DCOUNT(MARKERS<1>,VM)
+            IF LNM MATCHES "'#'1N0N" THEN
+                Z = LNM[2,99]
+                LNM = DCOUNT(REC[1, Z], AM)
+                LCOL = Z-INDEX(REC, AM, LNM-1)
+                COL = LCOL+lnbr_width-OFFSET
+            END
             IF NOT(NUM(LNM)) THEN
                 IF LNM EQ '<' THEN
                     Z=INDROW+ROW:SVM:LCOL+lnbr_width
