@@ -107,6 +107,7 @@
         END ELSE LAST.POS=@(LAST.WPCOL,ROW)
     END
     IF INP.FLD<3> NE '' THEN INP.POS=INP.FLD<3> ELSE INP.POS=1
+    IF INP.POS EQ 1 AND LEN(INP.STRING) THEN CRT RVON:
     CC=INP.FLD<4,1>
     RR=INP.FLD<4,2>
     REPAINT=INP.FLD<5>
@@ -155,6 +156,7 @@
                 XX+=TRAIL
             END
     END CASE
+    IF INP.POS EQ 1 THEN CRT RVOFF:
     XX+=(1-INP.POS)
     IF XX > LENTH THEN XX=0   ;* ace Somehow XX gets set to 65373
     CRT STR(BACK,XX):
