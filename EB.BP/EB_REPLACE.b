@@ -111,7 +111,7 @@ MAIN$:!
 
     POS = INDEX(WSTR, '@x', 1)
     IF POS THEN
-        XCNT = MATCHFIELD(WSTR[POS+2,MAX], '0N0X', 1)
+        XCNT = MATCHFIELD(WSTR[POS+2,MAX], '1N0X', 1)
         IF LEN(XCNT) EQ 0 THEN
             XCNT = 1
         END ELSE
@@ -267,7 +267,7 @@ MAIN$:!
                     END ELSE DMY='Y'
                 END ELSE DMY='N'
                 IF INDEX('N',DMY,1) ELSE
-                    IF RSTR=RRSTR THEN
+                    IF RSTR EQ RRSTR AND WSTR EQ WWSTR THEN
                         TMP=WSTR; GOSUB CONV.CHARS
                         NLINE := LINE[1,SPOS-1]:TMP
                         LINE = LINE[SPOS+RSTRL,MAX]
