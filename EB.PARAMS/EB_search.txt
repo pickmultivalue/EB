@@ -26,6 +26,12 @@ Examples	u
 * Find a variable that starts with CUST and ends with BALANCE (case insensitive)
 > XIV;cust.*balance
 
+* Find a US zip (5N optionally followed by -4N)
+> X;[0-9]{5}(-[0-9]{4})?
+
+* Note that the REGEX search doesn't support \letter notation
+
+
 * Find a label starting with MAIN
 > ^MAIN
 
