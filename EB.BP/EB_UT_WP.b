@@ -156,10 +156,12 @@
                 XX+=TRAIL
             END
     END CASE
-    IF INP.POS EQ 1 THEN CRT RVOFF:
     XX+=(1-INP.POS)
     IF XX > LENTH THEN XX=0   ;* ace Somehow XX gets set to 65373
     CRT STR(BACK,XX):
+
+    remove_RV = (INP.POS EQ 1 AND LEN(INP.STRING))
+
     TRAIL=0
     INCLUDE EB.OS.INCLUDES PC.RESET.CURSOR
 !
@@ -217,6 +219,18 @@ PROCESS.RTN: !
                     NEXT TRAP
                 END
             END
+        END
+        IF remove_RV THEN
+            CRT RVOFF:
+            L = LEN(INP.STRING)
+            IF L LT LENTH THEN
+                CRT INP.STRING:
+                CRT DOTS[1,LENTH-L]:
+            END ELSE
+                CRT INP.STRING JUST:
+            END
+            CRT STR(BACK,LENTH):
+            remove_RV = FALSE
         END
 !
 ! Ignore certain functions if Word Processing

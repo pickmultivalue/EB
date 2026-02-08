@@ -71,7 +71,11 @@ MAIN$:!
         Z = 'N'
         CRT MSG.CLR:ex->message
     end try
-    IF Z EQ 'N' THEN RETURN
+    IF Z EQ 'N' THEN
+        RQM
+        FG_ACT.CODE = FG_ABT.CODE
+        RETURN
+    END
     Y=FLNM:'*':ITNM
     DELETE JET.PASTE,ITNM:'.sav'
     UPDHIST = SRC_OPENHIST(F.HISTFILE, FLNM)

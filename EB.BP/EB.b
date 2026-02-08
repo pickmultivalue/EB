@@ -391,7 +391,7 @@ FIRST.ITEM: !
             ITNM=ITNM[COL2()+1,MAX]
         END ELSE
             IF no_file THEN
-            INCLUDE EB.OS.INCLUDES GET.FLNM
+                INCLUDE EB.OS.INCLUDES GET.FLNM
             END
             GOSUB GET.EDIT.MODE
         END
@@ -1327,8 +1327,12 @@ GET.HELP:   !
             CALL EB_GETRPL(MAT RPL.PARMS,MAT RPL.PROMPTS,MAT RPL.COLS)
             IF FG_ACT.CODE EQ FG_AMD.CODE THEN
                 GOSUB SAVE.ITEM
-                FG_ACT.CODE = FG_AMD.CODE
-                GO NEXT.ITEM
+                IF FG_ACT.CODE = FG_ABT.CODE THEN
+                    FG_ACT.CODE = FALSE
+                END ELSE
+                    FG_ACT.CODE = FG_AMD.CODE
+                    GO NEXT.ITEM
+                END
             END
             IF REC EQ SREC THEN GOSUB POP_UNDO
             SREC = ''
@@ -1700,8 +1704,12 @@ EB.SUB: !
             CASE Y EQ "D"; GO 11000
             CASE Y EQ 'S'
                 GOSUB SAVE.ITEM
-                CRT
-                GO NEXT.ITEM
+                IF FG_ACT.CODE = FG_ABT.CODE THEN
+                    FG_ACT.CODE = FALSE
+                END ELSE
+                    CRT
+                    GO NEXT.ITEM
+                END
             CASE Y EQ 'N'
                 CRT MSG.CLR:'Not yet implemented':; RQM
         END CASE

@@ -34,6 +34,8 @@ MAIN$:!
             LOCATE FG_ACT.CODE IN CYCLES<am_start> SETTING POS ELSE POS=FALSE
             IF FG_ACT.CODE=FG_HLP.CODE THEN
                 CALL EB_HELP('EBREPLACE', TRUE)
+                SCR.UD=1
+                CALL EB_REFRESH
                 GOSUB DisplayPrompt
                 POS = TRUE
             END
@@ -42,6 +44,9 @@ MAIN$:!
         BEGIN CASE
             CASE FG_ACT.CODE=FG_OPT.CODE
                 CALL EB_CHOICES(10,8,71,20,'',RSS,Z,1,RPOS,1,'L#70','Previous Searches')
+                SCR.UD=1
+                CALL EB_REFRESH
+                GOSUB DisplayPrompt
             CASE FG_ACT.CODE=FG_SKP.CODE OR FG_ACT.CODE=FG_MULTI.CODE; RPOS+=1
             CASE FG_ACT.CODE=FG_SEL.CODE
                 ReplMode=NOT(ReplMode)

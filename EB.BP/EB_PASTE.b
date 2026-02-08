@@ -26,6 +26,8 @@ MAIN$:!
             GOSUB INPT
         WHILE FG_ACT.CODE EQ FG_HLP.CODE DO
             CALL EB_HELP('EBPASTE', @FALSE)
+            SCR.UD=1
+            CALL EB_REFRESH
         REPEAT
         IF INDEX(ESC,Z,1) THEN G60=TRUE; RETURN
         SHELL.CMD=FALSE
@@ -110,7 +112,7 @@ MAIN$:!
             STMP=CHECK.LINE[1,LCOL-1]:STMP:CHECK.LINE[LCOL,MAX]
             DEL REC<INDROW+ROW>
             IF I THEN
-                L = 1;
+                L = 1
                 LOOP WHILE L LE NO.I.L AND LEN(TRIM(STMP<L>)) GT 0 AND STMP<L>[1,COMMENTLEN] EQ COMMENT DO ++L REPEAT
                 IDENT=UPCASE(STMP<L>)
                 CALL EB_TABS(IDENT,PWIDTH,0,0)
@@ -155,17 +157,23 @@ MAIN$:!
     END
     CHANGED=TRUE
     RETURN
+DisplayPrompt:
+    CRT MSG.CLR:MSG:
+    RETURN
 !
 INPT: !
-    CRT MSG.CLR:MSG:
-    POS=1
-    EDITED=FALSE
-    CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
-    CRT MSG.CLR:
-    IF FG_ACT.CODE = FG_OPT.CODE THEN
+    LOOP
+        GOSUB DisplayPrompt
+        POS=1
+        EDITED=FALSE
+        CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
+        CRT MSG.CLR:
+    WHILE FG_ACT.CODE = FG_OPT.CODE DO
         FG_ACT.CODE=FALSE
         CALL EB_CHOICES(20,3,'',10,EBGETHOME():'JET.PASTE','',Z,1,1,0:SVM:1,'L#20':SVM:'L#40':CTRL.C:'MCP','Paste items':SVM:'Item')
-    END
+        SCR.UD=1
+        CALL EB_REFRESH
+    REPEAT
     INPTYPE='AN'
     RETURN
     INCLUDE EB.INCLUDES CRT.LN
