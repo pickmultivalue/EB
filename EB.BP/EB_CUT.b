@@ -148,7 +148,7 @@ MAIN$:!
             END
         END
         TABLEN=ITAB<1,1>
-        MODIFY=INDEX('!<>^',Z,1) AND LEN(Z)
+        MODIFY=INDEX('!<>^',Z,1) AND LEN(Z) EQ 1
         IF MODIFY AND NEW.D.L NE NO.D.L THEN
             IF NEW.D.L GT NO.D.L THEN
                 NL = NEW.D.L - 1
@@ -209,7 +209,7 @@ MAIN$:!
                 END ELSE INDROW+=1
             END
         NEXT J
-        IF Z NE '!' THEN
+        IF Z NE '!' OR Z MATCHES "'!>'":@VM:"'!<'" THEN
             IF CHR=SDEL THEN
                 IF NUM(Z) THEN Z='PASTE*':FG_LOGNAME:'*':Z
                 PASTE.TEXT=CUT.TEXT<1>[1,CUT.POS<1,1,2>-1]:CUT.TEXT<NO.D.L>[CUT.POS<2,1,2>,MAX]
@@ -246,7 +246,37 @@ MAIN$:!
                         CUT.TEXT := AM
                     END
                 END
-                WRITE CUT.TEXT ON JET.PASTE,Z
+                BEGIN CASE
+                    CASE Z EQ '!>'
+                        AREC = CUT.TEXT
+                    CASE Z EQ '!<'
+                        BREC = CUT.TEXT
+                        BEGIN CASE
+                            CASE AREC EQ ''
+                                MSG = "You need to do '>' first"
+                            CASE AREC EQ BREC
+                                MSG = 'Identical!!'
+                            CASE 1
+                                MSG = ''
+                                IDC1 = '>'; IDC2 = '<'
+                                WRITE AREC ON FIL,IDC1
+                                WRITE BREC ON FIL,IDC2
+                                ID1 = FLNM:DIR_DELIM_CH:IDC1
+                                ID2 = FLNM:DIR_DELIM_CH:IDC2
+                                EXECUTE 'COMPARE_ITEM ':ID1:' ':ID2
+                                DELETE FIL,IDC1
+                                DELETE FIL,IDC2
+                                SCR.UD=TRUE
+                                CALL EB_REFRESH
+                        END CASE
+                        IF MSG NE '' THEN
+                            CRT MSG.CLR:MSG:
+                            L=1; Z=''
+                            GOSUB INPT
+                        END
+                    CASE 1
+                        WRITE CUT.TEXT ON JET.PASTE,Z
+                END CASE
             END ELSE
                 INS CUT.TEXT BEFORE DEL.LINES<1>
             END

@@ -91,6 +91,7 @@ EQU tab_display TO EXTRAS(39)
 EQU lnbr_hash1  TO EXTRAS(40)
 EQU lnbr_hash2  TO EXTRAS(41)
 EQU lnbr_width  TO EXTRAS(42)
+EQU AREC        TO EXTRAS(43)
 
 EQU VersEdit   TO 1
 EQU VersSync   TO 2

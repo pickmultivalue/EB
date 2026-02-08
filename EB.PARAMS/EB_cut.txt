@@ -9,4 +9,6 @@ Special commands:
 ^ırotate block (on an AM/VM perspective)
 ^S{by}ısort block by {by} (default "AL")
 !vıshow git log
+!>ıset left compare
+!<ıset right compare and compare against left
 [F3]ıPop out selection in editor
