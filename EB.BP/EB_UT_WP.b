@@ -177,6 +177,18 @@ STARTLBL: !
             CALL EB_GET_INPUT(WPCHR, WPCHR.NBR)
             IF FG_TIMEDOUT THEN FG_ACT.CODE=FG_ABT.CODE
         END
+        IF remove_RV THEN
+            CRT RVOFF:
+            L = LEN(INP.STRING)
+            IF L LT LENTH THEN
+                CRT INP.STRING:
+                CRT DOTS[1,LENTH-L]:
+            END ELSE
+                CRT INP.STRING JUST:
+            END
+            CRT STR(BACK,LENTH):
+            remove_RV = FALSE
+        END
 !
 ! Was the <RETURN> or <Line-Feed> key used ?
 !
@@ -219,18 +231,6 @@ PROCESS.RTN: !
                     NEXT TRAP
                 END
             END
-        END
-        IF remove_RV THEN
-            CRT RVOFF:
-            L = LEN(INP.STRING)
-            IF L LT LENTH THEN
-                CRT INP.STRING:
-                CRT DOTS[1,LENTH-L]:
-            END ELSE
-                CRT INP.STRING JUST:
-            END
-            CRT STR(BACK,LENTH):
-            remove_RV = FALSE
         END
 !
 ! Ignore certain functions if Word Processing
