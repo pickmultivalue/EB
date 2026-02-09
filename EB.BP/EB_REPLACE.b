@@ -151,7 +151,10 @@ MAIN$:!
         LINE.NO=COUNT(REC[1,LINE.POS+STR.POS],@AM)+(REC[LINE.POS+STR.POS,1] NE @AM)
         IF LINE.NO>ENDL THEN GO RTN    ;! finished
         THIS.LINE.CHANGED=FALSE
-        IF LINE.NO = PREV.LINE.NO AND NOT(ALOC) THEN CONTINUE
+        IF LINE.NO = PREV.LINE.NO AND NOT(ALOC) THEN
+            PREV.LINE.NO++
+            CONTINUE
+        END
         PREV.LINE.NO = LINE.NO
         LINE = ''
         FOR I = 0 TO ODC
