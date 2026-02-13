@@ -39,7 +39,7 @@
     FG_SENTENCE=SENTENCE(-1)
     BUFF=FG_SENTENCE
     BUFF=TRIM(BUFF)
-    OPTS=OCONV(TRIM(FIELD(BUFF,'(',2)),'MCU')
+    OPTS=OCONV(TRIM(FIELD(@SENTENCE,'(',2)),'MCU')
     IF INDEX('Q',OPTS,1) THEN OPTS:='CFO'
     BUFF=TRIM(FIELD(BUFF,'(',1))
     BUFF=CHANGE(BUFF,SPC,AM)
@@ -315,7 +315,7 @@
                                 F1=FIELD(T.STMT,SPC,1)
                                 IF NUM(F1) OR (INDEX(LBL.SUFFIX,F1[LEN(F1),1],1) AND NOT(INDEX(F1,DQ,1) OR INDEX(F1,SQ,1))) THEN
                                     IF INDEX(F1, '"', 1) OR INDEX(F1, '\', 1) OR INDEX(F1, \'\, 1) ELSE
-                                        LBL=F1; F1=FIELD(T.STMT,SPC,2)
+                                        LBL=F1; F1=FIELD(TRIM(T.STMT),SPC,2)
                                     END
                                 END
                                 FLAST=FIELD(T.STMT,SPC,NUM.FLDS)
@@ -326,7 +326,9 @@
 !
                                 IF 1 THEN         ;!NOT(PLSQL) THEN
                                     LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
-                                        EPOS = FALSE
+                                        LOCATE UPCASE(FIELD(T.STMT, SPC, 1, 2)) IN EXACT<am_start> BY 'AL' SETTING EPOS THEN
+                                            EPOS = -EPOS
+                                        END ELSE EPOS = FALSE
                                     END
                                     LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
                                         SPOS = FALSE
@@ -346,7 +348,7 @@
                                             F1 = FIELD(ATTR, ' ',1)
                                             FLAST = FIELD(ATTR, ' ', DCOUNT(ATTR, ' '))
                                             GOSUB SPLITSTMT
-                                        UNTIL NEXT.ATTR = '' DO REPEAT
+                                        UNTIL NEXT.ATTR = '' OR INDEX(COMMENTS, TRIM(NEXT.ATTR)[1,1],1) DO REPEAT
                                         LOCATE UPCASE(F1) IN PREFIX<am_start> BY 'AL' SETTING NFPOS ELSE NFPOS = FALSE
                                         LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING NLPOS ELSE NLPOS = FALSE
                                         T.STMT = SAVE.T.STMT
@@ -354,6 +356,11 @@
                                     END ELSE
                                         NFPOS=FALSE
                                         NLPOS=FALSE
+                                    END
+                                    IF EPOS LT 0 THEN
+                                        EPOS = ABS(EPOS)
+                                        CUR.INDEX += EXACT.IND<EPOS>
+                                        EPOS = FALSE
                                     END
                                     BEGIN CASE
                                         CASE EPOS

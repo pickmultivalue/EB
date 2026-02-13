@@ -157,7 +157,8 @@ MAIN$:!
     REPEATSEARCH = (SSTR EQ PSSTR)
     IF SSTR EQ ';' THEN SSTR = ';;'
     I = INDEX(SSTR, ';', 1)
-    IF INDEX(SSTR, '/', 1) LT I THEN
+    L = INDEX(SSTR, '/', 1)
+    IF L AND L LT I THEN
         OPTIONS = ''
     END ELSE
         OPTIONS=FIELD(SSTR,';',1)
