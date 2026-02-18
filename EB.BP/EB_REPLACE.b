@@ -200,7 +200,9 @@ MAIN$:!
                     IF REGEX.SEARCH THEN
                         POS=EB_REGEX(SLINE,NEW.LINE, @FALSE)
                     END ELSE
-                        FINDSTR NEW.LINE IN SLINE,1 SETTING POS ELSE POS = @FALSE
+                        POS=INDEX(SLINE,NEW.LINE,1)
+                        cmline = SLINE[POS,MAX]; cmindex = NEW.LINE; NPOS = POS; GOSUB check_multi_attr
+                        POS = NPOS
                     END
                     IF POS THEN
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
@@ -250,7 +252,8 @@ MAIN$:!
                     LOOP
                         OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND (NOT(RSTRL) OR INDEX(DELIMS,LINE[SPOS+RSTRL,1],1)))
                     UNTIL OK DO
-                        FINDSTR FIRST IN LINE[SPOS+1,MAX],OCC SETTING NPOS ELSE NPOS = @FALSE
+                        NPOS=INDEX(LINE[SPOS+1,MAX],FIRST,OCC)
+                        cmline = SLINE[SPOS+1,MAX]; cmindex = FIRST; GOSUB check_multi_attr
                         IF NOT(NPOS) THEN BREAK
                         SPOS += NPOS
                     REPEAT
@@ -403,4 +406,17 @@ CONV.CHARS: ! convert ^nnn
             END
         NEXT P
     END
+    RETURN
+check_multi_attr:
+    cmc = DCOUNT(cmindex, @AM)
+    IF cmc EQ 1 THEN RETURN ;! ok
+
+    FOR cml = 2 TO cmc
+        DEL cmline<1>
+        cmstr = cmindex<cml>
+        IF NOT(INDEX(cmline, cmstr, 1)) THEN
+            NPOS = 0
+            BREAK
+        END
+    NEXT cml
     RETURN

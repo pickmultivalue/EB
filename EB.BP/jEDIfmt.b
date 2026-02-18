@@ -325,13 +325,15 @@
                                 END ELSE NFLAST=NFLAST[1,2]
 !
                                 IF 1 THEN         ;!NOT(PLSQL) THEN
-                                    LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
-                                        LOCATE UPCASE(FIELD(T.STMT, SPC, 1, 2)) IN EXACT<am_start> BY 'AL' SETTING EPOS THEN
-                                            EPOS = -EPOS
-                                        END ELSE EPOS = FALSE
-                                    END
                                     LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
                                         SPOS = FALSE
+                                    END
+                                    LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
+                                        IF SPOS THEN
+                                            LOCATE UPCASE(FIELD(T.STMT, SPC, 1, 2)) IN EXACT<am_start> BY 'AL' SETTING EPOS THEN
+                                                EPOS = -EPOS
+                                            END ELSE EPOS = FALSE
+                                        END ELSE EPOS = FALSE
                                     END
                                     LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING FLPOS ELSE
                                         FLPOS = FALSE
@@ -358,8 +360,10 @@
                                         NLPOS=FALSE
                                     END
                                     IF EPOS LT 0 THEN
-                                        EPOS = ABS(EPOS)
-                                        CUR.INDEX += EXACT.IND<EPOS>
+                                        IF FPOS THEN
+                                            EPOS = ABS(EPOS)
+                                            CUR.INDEX += EXACT.IND<EPOS>
+                                        END
                                         EPOS = FALSE
                                     END
                                     BEGIN CASE
