@@ -1980,6 +1980,9 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
     IF LROW LT (PDEPTH-1) THEN
         SCR.LR=1-2*(INS.LINE NE ''); SCRL=ROW
         CRT CLEOL:@(0,ROW+1):INS.LINE:@((lnbr_width+1),ROW+1):; CRTLN=RDSP(LROW+1);CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
+        FOR Y=ROW+2 TO (PDEPTH-1)
+            CRT @(0,Y):(INDROW+Y) lnbr_hash2:
+        NEXT Y
         GOSUB CHG.LROW
     END ELSE
         GOSUB CHG.LROW

@@ -24,6 +24,7 @@ MAIN$:!
     Indent=ITAB<ITABPOS>
     GOSUB DisplayPrompt
     SAVEROW=ROW
+    SAVELROW=LROW
     L=PWIDTH-1-ICOL; SSTR=''; SRCH.STR=''
     SPWIDTH = PWIDTH
     OPTIONS=''
@@ -210,7 +211,6 @@ RETRY:
         IF STRT>LAST.AM THEN
             STR.POS = FALSE
         END ELSE
-!            CALL EB_TRIM(TMP,RDSP(LROW)[1,LCOL],' ','T')
             CALL EB_TRIM(TMP,RDSP(LROW),' ','T')
             LINE.POS=INDEX(REC,AM,STRT-1)
             IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
@@ -277,6 +277,7 @@ RETRY:
                 RDSP(J-INDROW+1)=REC<J>
             NEXT J
             ROW=SAVEROW
+            LROW=SAVELROW
         END ELSE
             CRT MSG.CLR:"Wrapping to ":WORD:" of record!":MSG.AKN: BELL:; RQM
             INDROW=1
