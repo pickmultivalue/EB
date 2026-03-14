@@ -238,7 +238,7 @@ MAIN$:!
                     IF POS THEN
                         POSARR<-1> = POS
                         POSLEN<-1> = LEN(NEW.LINE)
-                        RVARS<VNBR> = SLINE[1, POS-1]
+                        RVARS<VNBR+1> = SLINE[1, POS-1]
                         RWCHARS<CNT> = NEW.LINE
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
                     END ELSE OK=FALSE
@@ -314,7 +314,7 @@ MAIN$:!
                         NLINE := LINE[1,SPOS-1]:TMP
                         LINE = LINE[SPOS+RSTRL,MAX]
                     END ELSE
-                        NEW.LINE = ''
+                        NEW.LINE = RVARS<1>; DEL RVARS<1>
                         SLINE = RVARS
                         PWSTR=WSTR
                         FOR CNT=1 TO WSTR.CNT
