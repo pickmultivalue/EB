@@ -123,9 +123,9 @@ gotvars:
         IF IDATA#'' THEN
             IF LCOL>1 THEN
                 HASH='L#':LCOL-1
-                Y=RDSP(LROW)[1,LCOL-1] HASH
+                Y=REC<LROW+INDROW-1>[1,LCOL-1] HASH
             END ELSE Y=''
-            RDSP(LROW)=Y:IDATA:RDSP(LROW)[LCOL,MAX]
+            REC<LROW+INDROW-1>=Y:IDATA:REC<LROW+INDROW-1>[LCOL,MAX]
             LCOL += LEN(IDATA)
             COL += LEN(IDATA)
         END

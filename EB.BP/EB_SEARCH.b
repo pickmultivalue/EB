@@ -89,7 +89,7 @@ MAIN$:!
     IF SSTR='///' OR SSTR='\\\' THEN
         PSSTR=SSTR
         IF SSTR='///' THEN LNM=1 ELSE LNM=-1
-        DUMMY=RDSP(LROW); GOSUB FORMAT
+        DUMMY=REC<LROW+INDROW-1>; GOSUB FORMAT
         SPOS=INDEX(REC,AM,INDROW+ROW)
         curlies = 0
         IF DUMMY='' THEN GO 4096 ELSE
@@ -211,7 +211,7 @@ RETRY:
         IF STRT>LAST.AM THEN
             STR.POS = FALSE
         END ELSE
-            CALL EB_TRIM(TMP,RDSP(LROW),' ','T')
+            CALL EB_TRIM(TMP,REC<LROW+INDROW-1>,' ','T')
             LINE.POS=INDEX(REC,AM,STRT-1)
             IF FG_ACT.CODE=FG_BSEARCH.CODE THEN
                 RPOS=1; EPOS=LINE.POS+LEN(TMP)+2
@@ -232,7 +232,8 @@ RETRY:
         GOSUB SETMREC
         CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         IF NOT(STR.POS) THEN GO 4095
-        STR.LINE=COUNT(REC[RPOS,STR.POS],AM)      ;!+(SSTR<1>='')
+!        STR.LINE=COUNT(REC[RPOS,STR.POS],AM)      ;!+(SSTR<1>='')
+        STR.LINE=COUNT(REC[1,RPOS+STR.POS],AM)      ;!+(SSTR<1>='')
     END
     FG_ACT.CODE=FALSE
     IF SSTR<1>='' THEN DEL SSTR<1> ELSE DEL SSTR<2>
@@ -287,7 +288,8 @@ RETRY:
             NEXT J
             J += am_start
             IF RSEARCH THEN
-                STRT=LAST.AM; LCOL=LEN(RDSP(J-1))
+                STRT=LAST.AM
+                LCOL=LEN(REC<J-1+INDROW-1>)
                 RPOS=LAST.AM-PDEPTH-2
             END ELSE
                 STRT=1; LCOL=0          ;!RPOS
@@ -298,16 +300,16 @@ RETRY:
         END
     END ELSE
         IF STR.LINE=LROW THEN
-            MREC=RDSP(STR.LINE)[LCOL+1,MAX]
+            MREC=REC<STR.LINE+INDROW-1>[LCOL+1,MAX]
             COL=LCOL
-        END ELSE COL=0; MREC=RDSP(STR.LINE); ROW=STR.LINE-1
+        END ELSE COL=0; MREC=REC<STR.LINE+INDROW-1>; ROW=STR.LINE-1
         CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
         IF NOT(STR.POS) THEN
             LCOL=0
             COL=0
             STR.LINE++
             ROW++
-            MREC=RDSP(STR.LINE)
+            MREC=REC<STR.LINE+INDROW-1>
             CALL EB_FIND(STR.POS,WHOLE.WORDS:'')
             IF STR.POS ELSE
                 STRT=INDROW+ROW
@@ -316,7 +318,7 @@ RETRY:
         END
         LCOL=STR.POS+COL
         SCOL = COL
-        CALL EB_TABCOL(RDSP(STR.LINE),COL,LCOL,FALSE)
+        CALL EB_TABCOL(REC<STR.LINE+INDROW-1>,COL,LCOL,FALSE)
         IF COL GE (SPWIDTH-3) THEN
             ADJUST = COL-SCOL - (lnbr_width+1)
         END ELSE
@@ -337,7 +339,7 @@ RETRY:
             IF 0 THEN
                 DUMMY=INDROW+(PDEPTH-2)
                 FOR J=INDROW TO DUMMY
-                    Y=RDSP(J-INDROW+1)[1+OFFSET,SPWIDTH-lnbr_width]
+                    Y=REC<J-INDROW+1+INDROW-1>[1+OFFSET,SPWIDTH-lnbr_width]
                     IF TAB.MODE THEN CALL EB_TABS(Y,SPWIDTH,0,0)
                     Y=OCONV(Y[1+OFFSET,SPWIDTH-lnbr_width],'MCP')
                     IF REGEX.SEARCH THEN
@@ -466,8 +468,8 @@ FORMAT: !
 6000 ! Incorporate changed lines into dynamic array, REC.
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
-            CALL EB_TRIM(RDSP(I),RDSP(I):'',' ','T')
-            REC<I+INDROW-1>=RDSP(I)
+            CALL EB_TRIM(TMP,REC<I+INDROW-1>:'',' ','T')
+            REC<I+INDROW-1>=TMP
         END
     NEXT I
     CHANGED=FALSE; MAT CHANGES=FALSE
@@ -483,10 +485,11 @@ CRT.LN: !
     END
     CRTLN = CHANGE(CRTLN, BG, '_bg_')
     CRTLN = CHANGE(CRTLN, FG, '_fg_')
-    CRTLN = LOWER(lexLine(RDSP(J-INDROW+1),CRTLN,colors) )
+    CRTLN = LOWER(lexLine(REC<J-INDROW+1+INDROW-1>,CRTLN,colors) )
     tokens = RAISE(RAISE(CRTLN<1,2>))
     sitokenCounte = 0
-    FOR tokenCount = 1 TO DCOUNT(tokens,@FM)
+    dc = DCOUNT(tokens,@FM)
+    FOR tokenCount = 1 TO dc
         io = tokens<tokenCount,3>:tokens<tokenCount,1>
         io = CHANGE(io, '_bg_', RVON)
         io = CHANGE(io, '_fg_', RVOFF)

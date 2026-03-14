@@ -40,9 +40,6 @@
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
     T.OPTION=INDEX(TCL.OPTS,'T',1)
-    EQU SVM TO CHAR(252)
-    EQU VM TO CHAR(253)
-    EQU AM TO CHAR(254)
     EQU INTEG TO CHAR(230)
     EQU BELL TO CHAR(7)
     EQU OTHERWISE TO 1
@@ -81,7 +78,7 @@
     WIDE.DEPTH=PDEPTH
     ADJLEN = 10
     TERM=SYSTEM(7)
-    TOGGLE='' ;!FWD.PAGE;!ESC:'J'
+    TOGGLE='' ;!FWD.PAGE;!ESC:'J'!ESC:'J'
     TOGGLE2=BACK.PAGE   ;!ESC:'K'
     IF TOGGLE='' THEN
         TOGGLE=CLS
@@ -113,8 +110,8 @@
     CRT @(-1)
     CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
     PROMPT ''
-    FA=''; IDA=''
-    FVB=''; IDB=''
+    FNAMEA=''; IDA=''
+    FNAMEB=''; IDB=''
     CHANGEDA=''; CHANGEDB=''
     ORIG.CHANGEDA=''; ORIG.CHANGEDB=''
     LAST.EXEC=''
@@ -139,7 +136,7 @@
                 INCLUDE EB.OS.INCLUDES GET.FLNM
             END
             IDA=ITNM
-            IF FLNM#'' THEN FA=FLNM; ASENT=TRUE
+            IF FLNM#'' THEN FNAMEA=FLNM; ASENT=TRUE
             ITNM=FIELD(FG_SENTENCE,' ',3)
             IF ITNM#'' THEN
                 IF INDEX(ITNM, Bslsh, 1) THEN
@@ -159,13 +156,13 @@
                     INCLUDE EB.OS.INCLUDES GET.FLNM
                 END
                 IDB=ITNM
-                IF FLNM#'' THEN FVB=FLNM; BSENT=TRUE
+                IF FLNM#'' THEN FNAMEB=FLNM; BSENT=TRUE
             END
         END
     END ELSE
-        FA=FIELD(FG_SENTENCE,' ',2)
-        IF FA EQ 'DICT' THEN FA='DICT ':FIELD(FG_SENTENCE,' ',3)
-        ASENT=(FA#'')
+        FNAMEA=FIELD(FG_SENTENCE,' ',2)
+        IF FNAMEA EQ 'DICT' THEN FNAMEA='DICT ':FIELD(FG_SENTENCE,' ',3)
+        ASENT=(FNAMEA#'')
         id_list = ''
         EOF=0
         LOOP
@@ -183,34 +180,34 @@
         IF ASENT THEN ASENT=FALSE ELSE
             prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0;YNR=2;CRT @(0,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
-            FA = Z
+            FNAMEA = Z
         END
-    WHILE FA EQ '?' DO
+    WHILE FNAMEA EQ '?' DO
         FH = 'A'
         GOSUB SHOW_FILE_HELP
     REPEAT
-    IF FA EQ 'EX' THEN GO 99999
+    IF FNAMEA EQ 'EX' THEN GO 99999
     CRT @(-3):
-    IF FIELD(FA,' ',1) EQ 'DICT' THEN
+    IF FIELD(FNAMEA,' ',1) EQ 'DICT' THEN
         DICT='DICT'
-        FA=FIELD(FA,' ',2)
+        FNAMEA=FIELD(FNAMEA,' ',2)
     END ELSE
         DICT=''
     END
-    OPEN DICT,FA TO FILEA ELSE
-        CRT EL:'CANNOT OPEN ':FA:
+    OPEN DICT,FNAMEA TO FILEA ELSE
+        CRT EL:'CANNOT OPEN ':FNAMEA:
         GO 100
     END
     CRT EL:
     IF SEL THEN
-        IF FIELD(FA,' ',1) EQ 'DICT' THEN POS=4 ELSE POS=3
-        FVB=FIELD(FG_SENTENCE,' ',POS)
-        IF FVB EQ 'DICT' THEN FVB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
-        BSENT=FVB#''
+        IF FIELD(FNAMEA,' ',1) EQ 'DICT' THEN POS=4 ELSE POS=3
+        FNAMEB=FIELD(FG_SENTENCE,' ',POS)
+        IF FNAMEB EQ 'DICT' THEN FNAMEB='DICT ':FIELD(FG_SENTENCE,' ',POS+1)
+        BSENT=FNAMEB#''
     END
     GOSUB OPEN.FILEB
-    AOBJ = FIELD(FA, ',', 2) EQ 'OBJECT'
-    BOBJ = FIELD(FB, ',', 2) EQ 'OBJECT'
+    AOBJ = FIELD(FNAMEA, ',', 2) EQ 'OBJECT'
+    BOBJ = FIELD(FNAMEB, ',', 2) EQ 'OBJECT'
     IF AOBJ THEN
         IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper';STOP
         rc = IOCTL(FILEA, JBC_COMMAND_GETFILENAME, AOBJ)
@@ -251,7 +248,7 @@
         RECA = jelf->getobject(AOBJ:IDA:'.so')->embed_source
     END ELSE
         READ RECA FROM FILEA,IDA ELSE
-            CRT EL:IDA:' NOT IN ':FA:
+            CRT EL:IDA:' NOT IN ':FNAMEA:
             GO 110
         END
     END
@@ -288,7 +285,7 @@
         RECB = jelf->getobject(BOBJ:IDB:'.so')->embed_source
     END ELSE
         READ RECB FROM FILEB,IDB ELSE
-            CRT EL:IDB:' NOT IN ':FVB:
+            CRT EL:IDB:' NOT IN ':FNAMEB:
             STOP
             GO 131
         END
@@ -303,7 +300,7 @@
     CRT @(25,6):'--- OPTIONS ---':
 150 ! Enter Display Mode
     prmpt = 'HORIZONTAL OR VERTICAL DISPLAY (H/V): '; YNC=LEN(prmpt)+10;YNR=8;CRT @(10,8):prmpt:
-    YNCHRS='H':VM:'V'
+    YNCHRS='H':@VM:'V'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
@@ -311,7 +308,7 @@
     IF OPT EQ 'H' THEN VERT.FLAG=FALSE ELSE VERT.FLAG=TRUE
 160 ! Enter Display Type
     prmpt = 'WIDE OR NORMAL SCREEN (W/N): '; YNC=LEN(prmpt)+10;YNR=10;CRT @(10,10):prmpt:
-    YNCHRS='W':VM:'N'
+    YNCHRS='W':@VM:'N'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
@@ -319,7 +316,7 @@
     IF INDEX('W',OPT,1) THEN WIDE.FLAG=TRUE ELSE WIDE.FLAG=FALSE
 170 ! Enter Display Level
     prmpt = 'DEEP OR NORMAL SCREEN DEPTH (D/N): '; YNC=LEN(prmpt)+10;YNR=12;CRT @(10,12):prmpt:
-    YNCHRS='D':VM:'N'
+    YNCHRS='D':@VM:'N'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
@@ -354,14 +351,14 @@
     END ELSE
         READ RECB FROM FILEB,IDB ELSE RECB=''
     END
-    NDA='%':IDA:'%'
-    SAVA='%':IDA:'.sav%'
-    BCKA='%':IDA:'.bck%'
-    NDB='%':IDB:'%'
-    SAVB='%':IDB:'.sav%'
-    BCKB='%':IDB:'.bck%'
+    NDA='%':FNAMEA:'%':IDA:'%'
+    SAVA='%':FNAMEA:'%':IDA:'.sav%'
+    BCKA='%':FNAMEA:'%':IDA:'.bck%'
+    NDB='%':FNAMEB:'%':IDB:'%'
+    SAVB='%':FNAMEB:'%':IDB:'.sav%'
+    BCKB='%':FNAMEB:'%':IDB:'.bck%'
     integrate = @FALSE
-    IF FA:IDA EQ FVB:IDB THEN ;! integrate?
+    IF FNAMEA:IDA EQ FNAMEB:IDB THEN ;! integrate?
         IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, '<<<<', 1) THEN
             integrate = @TRUE
             occ = 1
@@ -406,8 +403,8 @@
     ORIGB=RECB
 !
     TMP=IDA
-    DIS.IDA=FA:' - ':TMP
-    DIS.IDB=FVB:' - ':IDB
+    DIS.IDA=FNAMEA:' - ':TMP
+    DIS.IDB=FNAMEB:' - ':IDB
     PREV.LOC=''
     STARTA=1
     STARTB=1
@@ -430,8 +427,8 @@
     CMDU=OCONV(FIELD(CMD,' ',1),'MCU')
     CMD=CMDU:CMD[COL2(),999]
     CRT RVOFF:
-    LASTA=DCOUNT(RECA,AM)
-    LASTB=DCOUNT(RECB,AM)
+    LASTA=DCOUNT(RECA,@AM)
+    LASTB=DCOUNT(RECB,@AM)
     BEGIN CASE
         CASE CMD EQ 'RFR'
             GO 200
@@ -552,8 +549,8 @@ FILE.ITEM:!
                 IF CALLSTACK THEN GOTO 99999
                 CRT @(-1)
                 CRT @(0,0):'COMPARE.ITEMS':TIMEDATE() 'R#63':
-                CRT @(0,2):'Enter file A: ':FA
-                CRT @(42,2):'Enter file B: ':FVB:
+                CRT @(0,2):'Enter file A: ':FNAMEA
+                CRT @(42,2):'Enter file B: ':FNAMEB:
                 GO 110
             END
         CASE CMD EQ 'EXK' OR CMD EQ 'FIK'
@@ -782,48 +779,42 @@ FILE.ITEM:!
                 GO 215
             END
         CASE CMD EQ 'UNDO'
-            READ RECA FROM FILEA,SAVA ELSE NULL
-            READ RECB FROM FILEB,SAVB ELSE NULL
+            READ RECA FROM F.JET.PASTE,SAVA ELSE NULL
+            READ RECB FROM F.JET.PASTE,SAVB ELSE NULL
             GOSUB 900
         CASE CMD EQ 'EA'
-!            DATA "?"
             GOSUB WRITEA
-            DATA 'ED ':FA
-            EXECUTE 'SELECT ':FA:' "':NDA:'"'
-            READ RECA FROM FILEA,NDA ELSE NULL
+            EXECUTE 'ED JET.PASTE ':NDA
+            READ RECA FROM F.JET.PASTE,NDA ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'EB'
-!            DATA "?"
             GOSUB WRITEB
-            DATA 'ED ':FVB
-            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
-            READ RECB FROM FILEB,NDB ELSE NULL
+            EXECUTE 'ED JET.PASTE ':NDB
+            READ RECB FROM F.JET.PASTE,NDB ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'EBA'
             GOSUB WRITEA
-            DATA 'EB ':FA
-            EXECUTE 'SELECT ':FA:' "':NDA:'"'
-            READ RECA FROM FILEA,NDA ELSE NULL
+            EXECUTE 'EB JET.PASTE ':NDA
+            READ RECA FROM F.JET.PASTE,NDA ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'EBB'
             GOSUB WRITEB
-            DATA 'EB ':FVB
-            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
-            READ RECB FROM FILEB,NDB ELSE NULL
+            EXECUTE 'EB JET.PASTE ':NDB
+            READ RECB FROM F.JET.PASTE,NDB ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'I'
             GOSUB WRITEA
-            DATA 'jEDIfmt ':FA
-            EXECUTE 'SELECT ':FA:' "':NDA:'"'
-            READ RECA FROM FILEA,NDA ELSE NULL
+            DATA 'jEDIfmt JET.PASTE'
+            EXECUTE 'SELECT JET.PASTE ':DQUOTE(NDA)
+            READ RECA FROM F.JET.PASTE,NDA ELSE DEBUG
             GOSUB WRITEB
-            DATA 'jEDIfmt ':FVB
-            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
-            READ   RECB FROM FILEB,NDB ELSE NULL
+            DATA 'jEDIfmt JET.PASTE'
+            EXECUTE 'SELECT JET.PASTE ':DQUOTE(NDB)
+            READ   RECB FROM F.JET.PASTE,NDB ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'SVN' OR CMD EQ 'GIT'
@@ -835,9 +826,9 @@ FILE.ITEM:!
             UNTIL arg EQ '' DO
                 BEGIN CASE
                     CASE OCONV(arg,'MCU') EQ 'A'
-                        arg=FA:'/':IDA
+                        arg=FNAMEA:'/':IDA
                     CASE OCONV(arg,'MCU') EQ 'B'
-                        arg=FVB:'/':IDB
+                        arg=FNAMEB:'/':IDB
                 END CASE
                 NewCmd:=SPC:arg
                 OP++
@@ -845,16 +836,14 @@ FILE.ITEM:!
             EXECUTE NewCmd
         CASE CMD EQ 'JA'
             GOSUB WRITEA
-            DATA 'JED ':FA
-            EXECUTE 'SELECT ':FA:' "':NDA:'"'
-            READ RECA FROM FILEA,NDA ELSE NULL
+            EXECUTE 'JED JET.PASTE ':NDA
+            READ RECA FROM F.JET.PASTE,NDA ELSE NULL
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'JB'
             GOSUB WRITEB
-            DATA 'JED ':FVB
-            EXECUTE 'SELECT ':FVB:' "':NDB:'"'
-            READ RECB FROM FILEB,NDB ELSE NULL
+            EXECUTE 'JED JET.PASTE ':NDB
+            READ RECB FROM F.JET.PASTE,NDB ELSE NULL
             GOSUB 600
             GOSUB 900
         CASE CMD[1,3] EQ 'LOC'
@@ -862,14 +851,14 @@ FILE.ITEM:!
             IF LEN(side) EQ 0 THEN side = 'AB'
             POS=INDEX(CMD,' ',1)
             searchText=CMD[POS+1,999]
-215         CRT CL:'Searching for "':searchText:'", please wait ':CLEOL:
+215         CRT CL:'Searching for ':DQUOTE(searchText):', please wait ':CLEOL:
 ! Find String In Item A
             IF INDEX(side, 'A', 1) THEN
                 J=STARTA
 220             !
                 J+=1
                 IF J>LASTA THEN
-                    CRT EL:'"':searchText:'" NOT FOUND ':
+                    CRT EL:DQUOTE(searchText):' NOT FOUND ':
                     GO 210
                 END
                 LINE=RECA<J>
@@ -882,7 +871,7 @@ FILE.ITEM:!
 221             !
                 I+=1
                 IF I>LASTB THEN
-                    CRT CL:'"':searchText:'" NOT FOUND ':
+                    CRT CL:DQUOTE(searchText):' NOT FOUND ':
                     INPUT RET,1:
                     GO 210
                 END
@@ -962,12 +951,12 @@ FILE.ITEM:!
             AMA=OCONV(CMD,'MCN')
             AMB=STARTB+(AMA-STARTA)
             LINEA = RECA<AMA>
-            CONVERT VM:SVM TO AM:VM IN LINEA
+            CONVERT @VM:@SVM TO @AM:@VM IN LINEA
             UPGA='%COMPA%':IDA:'%':AMA:'%':FG_TLINE
             UPGB='%COMPB%':IDB:'%':AMB:'%':FG_TLINE
             WRITE LINEA ON F.JET.PASTE,UPGA
             LINEB = RECB<AMB>
-            CONVERT VM:SVM TO AM:VM IN LINEB
+            CONVERT @VM:@SVM TO @AM:@VM IN LINEB
             WRITE LINEB ON F.JET.PASTE,UPGB
             DATA 'UPG.WORKFILE',''
             DATA UPGA, UPGB
@@ -975,9 +964,9 @@ FILE.ITEM:!
             EXECUTE 'COMPARE_ITEM'
             READ LINEA FROM F.JET.PASTE,UPGA ELSE NULL
             READ LINEB FROM F.JET.PASTE,UPGB ELSE NULL
-            CONVERT VM:AM TO SVM:VM IN LINEA
+            CONVERT @VM:@VM TO @SVM:@VM IN LINEA
             RECA<AMA>=LINEA
-            CONVERT VM:AM TO SVM:VM IN LINEB
+            CONVERT @VM:@VM TO @SVM:@VM IN LINEB
             RECB<AMB>=LINEB
             DELETE F.JET.PASTE,UPGA
             DELETE F.JET.PASTE,UPGB
@@ -1138,8 +1127,8 @@ FILE.ITEM:!
     LINE.NO=99
     MAX.PAGE=55
     HD='COMPARE.ITEMS':TIMEDATE() 'R#119'
-    HA=FA:' - ':IDA
-    HB=FVB:' - ':IDB
+    HA=FNAMEA:' - ':IDA
+    HB=FNAMEB:' - ':IDB
     PRINTER ON
     HL=SPACE(6):(HA:SPACE(COL.WIDTH))[1,COL.WIDTH]:' | ':HB[1,COL.WIDTH]
     J=0
@@ -1169,17 +1158,17 @@ FILE.ITEM:!
 !!!!!!!
 900 ! Display A Page
 ! Do restore backup
-    READ BCKA FROM FILEA,NDA ELSE BCKA = RECA
+    READ BCKA FROM F.JET.PASTE,NDA ELSE BCKA = RECA
     IF RECA NE BCKA THEN
         DELSAVEA=TRUE
-        WRITE BCKA ON FILEA,SAVA
+        WRITE BCKA ON F.JET.PASTE,SAVA
         GOSUB WRITEA
     END
 
-    READ BCKB FROM FILEB,NDB ELSE BCKB = RECB
+    READ BCKB FROM F.JET.PASTE,NDB ELSE BCKB = RECB
     IF RECB NE BCKB THEN
         DELSAVEB=TRUE
-        WRITE BCKB ON FILEB,SAVB
+        WRITE BCKB ON F.JET.PASTE,SAVB
         GOSUB WRITEB
     END
     IF NOT(VERT.FLAG) THEN
@@ -1417,7 +1406,7 @@ FILE.ITEM:!
     AMA+=1
     AMB=STARTB
     CRT CL:'Now adjusting items (':AMA:'-':AMB:') ':
-    LASTA=DCOUNT(RECA,AM)
+    LASTA=DCOUNT(RECA,@AM)
     IF AMA>LASTA THEN
         CRT CL:'CANNOT ADJUST ITEMS, PRESS [RETURN] TO CONTINUE ':
         INPUT RET:
@@ -1425,7 +1414,7 @@ FILE.ITEM:!
     END
     LINEA=TRIM(RECA<AMA>)
     EMB=AMB+OFFSET
-    LASTB=DCOUNT(RECB,AM)
+    LASTB=DCOUNT(RECB,@AM)
     FOR J=AMB TO EMB
         CRT @(19,NORMAL.DEPTH):'(':AMA:'-':J:')':CLEOL:
         IF J>LASTB THEN GO 1105
@@ -1454,7 +1443,7 @@ FILE.ITEM:!
     AMB+=1
     AMA=STARTA
     CRT CL:'Now adjusting items (':AMB:'-':AMA:') ':
-    LASTA=DCOUNT(RECB,AM)
+    LASTA=DCOUNT(RECB,@AM)
     IF AMA>LASTB THEN
         CRT CL:'CANNOT ADJUST ITEMS, PRESS [RETURN] TO CONTINUE ':
         INPUT RET:
@@ -1462,7 +1451,7 @@ FILE.ITEM:!
     END
     LINEB=TRIM(RECB<AMB>)
     EMA=AMA+OFFSET
-    LASTA=DCOUNT(RECA,AM)
+    LASTA=DCOUNT(RECA,@AM)
     FOR J=AMA TO EMA
         CRT @(19,NORMAL.DEPTH):'(':AMB:'-':J:')':CLEOL:
         IF J>LASTA THEN GO 1205
@@ -1521,17 +1510,17 @@ UPDATE: !
                 IF ORIGA#RECA AND CMD[3,1] NE 'B' THEN
                     WRITE RECA ON FILEA,IDA
                     IF CMD[2,1] EQ 'I' THEN
-                        IF 0*NOT(INDEX(FA,'PATCH',1)) THEN
+                        IF 0*NOT(INDEX(FNAMEA,'PATCH',1)) THEN
                             LOOP
                                 CRT BELL:
-                                prmpt = 'Make patch for ':FA:' ':IDA:' (Y/N) ? '
+                                prmpt = 'Make patch for ':FNAMEA:' ':IDA:' (Y/N) ? '
                                 YNC = LEN(prmpt); YNR = CMD.ROW
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
                                 Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
-                                EXECUTE 'EB ':FA:' ':IDA
+                                EXECUTE 'EB ':FNAMEA:' ':IDA
                             END ELSE
                                 LOCATE IDA IN CHANGEDA<am_start> BY 'AL' SETTING POS ELSE
                                     INS IDA BEFORE CHANGEDA<POS>
@@ -1543,16 +1532,16 @@ UPDATE: !
                 IF ORIGB#RECB AND CMD[3,1] NE 'A' THEN
                     WRITE RECB ON FILEB,IDB
                     IF CMD[2,1] EQ 'I' THEN
-                        IF 0*NOT(INDEX(FVB,'PATCH',1)) THEN
+                        IF 0*NOT(INDEX(FNAMEB,'PATCH',1)) THEN
                             LOOP
-                                prmpt = 'Make patch for ':FVB:' ':IDB:' (Y/N) ? '
+                                prmpt = 'Make patch for ':FNAMEB:' ':IDB:' (Y/N) ? '
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
                                 YNC = LEN(prmpt); YNR = CMD.ROW
                                 Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
-                                EXECUTE 'EB ':FVB:' ':IDB
+                                EXECUTE 'EB ':FNAMEB:' ':IDB
                             END ELSE
                                 LOCATE IDB IN CHANGEDB<am_start> BY 'AL' SETTING POS ELSE
                                     INS IDB BEFORE CHANGEDB<POS>
@@ -1585,22 +1574,22 @@ FINISH: !
     END
     STOP
 WRITEA: !
-    WRITE RECA ON FILEA,NDA
+    WRITE RECA ON F.JET.PASTE,NDA
     DELAREQ=TRUE
     RETURN
 WRITEB: !
-    WRITE RECB ON FILEB,NDB
+    WRITE RECB ON F.JET.PASTE,NDB
     DELBREQ=TRUE
     RETURN
 DELETEA: !
     IF DELAREQ THEN
-        DELETE FILEA,NDA
+        DELETE F.JET.PASTE,NDA
         DELAREQ=FALSE
         RETURN
     END
 DELETEB: !
     IF DELBREQ THEN
-        DELETE FILEB,NDB
+        DELETE F.JET.PASTE,NDB
         DELBREQ=FALSE
         RETURN
     END
@@ -1611,42 +1600,42 @@ OPEN.FILEB: !
         LOOP
             prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42;YNR=2;CRT @(42,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
-            FVB = Z
-        WHILE FVB EQ '?' DO
+            FNAMEB = Z
+        WHILE FNAMEB EQ '?' DO
             FH = 'B'
             GOSUB SHOW_FILE_HELP
         REPEAT
         CRT @(-3):
     END
-    IF FVB EQ '' THEN FVB=FA
-    IF FVB EQ '^' THEN RETURN TO 100
-    IF FVB EQ 'EX' THEN RETURN TO 99999
-    IF SEL AND FVB EQ FA THEN
+    IF FNAMEB EQ '' THEN FNAMEB=FNAMEA
+    IF FNAMEB EQ '^' THEN RETURN TO 100
+    IF FNAMEB EQ 'EX' THEN RETURN TO 99999
+    IF SEL AND FNAMEB EQ FNAMEA THEN
         CRT 'Select Active, file B must be different'
         GOTO 120
     END
-    IF FIELD(FVB,' ',1) EQ 'DICT' THEN
+    IF FIELD(FNAMEB,' ',1) EQ 'DICT' THEN
         DICT='DICT'
-        FVB=FIELD(FVB,' ',2)
+        FNAMEB=FIELD(FNAMEB,' ',2)
     END ELSE
         DICT=''
     END
-    CRT @(42,2):'Enter file B: ':FVB:
-    OPEN DICT,FVB TO FILEB ELSE
-        CRT EL:'CANNOT OPEN ':FVB:
+    CRT @(42,2):'Enter file B: ':FNAMEB:
+    OPEN DICT,FNAMEB TO FILEB ELSE
+        CRT EL:'CANNOT OPEN ':FNAMEB:
         GO 120
     END
     CRT EL:
     IF CHANGEDA#'' THEN GOSUB UPDATE.CHANGE
-    READ CHANGEDA FROM F.PF,FA ELSE CHANGEDA=''
-    READ CHANGEDB FROM F.PF,FVB ELSE CHANGEDB=''
+    READ CHANGEDA FROM F.PF,FNAMEA ELSE CHANGEDA=''
+    READ CHANGEDB FROM F.PF,FNAMEB ELSE CHANGEDB=''
     ORIG.CHANGEDA=CHANGEDA
     ORIG.CHANGEDB=CHANGEDB
-    PATCHFILE=INDEX(FVB:FA,'PATCH',1)
+    PATCHFILE=INDEX(FNAMEB:FNAMEA,'PATCH',1)
     RETURN
 UPDATE.CHANGE: !
-    IF NOT(AOBJ) AND CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FA; CRT FA:' written to POINTER-FILE'
-    IF NOT(BOBJ) AND CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FVB; CRT FVB:' written to POINTER-FILE'
+    IF NOT(AOBJ) AND CHANGEDA#ORIG.CHANGEDA THEN WRITE CHANGEDA ON F.PF,FNAMEA; CRT FNAMEA:' written to POINTER-FILE'
+    IF NOT(BOBJ) AND CHANGEDB#ORIG.CHANGEDB THEN WRITE CHANGEDB ON F.PF,FNAMEB; CRT FNAMEB:' written to POINTER-FILE'
     RETURN
 GETLINES: !
     LOOP
@@ -1658,10 +1647,10 @@ GETLINES: !
         BOK = LEN(LINEB) EQ 0 OR SHOW_COMMENTS OR NOT(INDEX('!*', TRIM(LINEB)[1,1], 1))
     UNTIL BOK DO AMB++ REPEAT
     GOSUB GETINTEGRATE
-    LINEA=TRIM(LINEA,VM,'T')
-    LINEA=TRIM(LINEA,SVM,'T')
-    LINEB=TRIM(LINEB,VM,'T')
-    LINEB=TRIM(LINEB,SVM,'T')
+    LINEA=TRIM(LINEA,@VM,'T')
+    LINEA=TRIM(LINEA,@SVM,'T')
+    LINEB=TRIM(LINEB,@VM,'T')
+    LINEB=TRIM(LINEB,@SVM,'T')
     LINEA = LINEA[AOFFSET, 99999]
     LINEB = LINEB[BOFFSET, 99999]
     TMPA=LINEA
@@ -1747,7 +1736,7 @@ SHOW_ID_HELP:
 INPT: !
     POS=1
     EDITED=FALSE
-    CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,AM,'','',ESC)
+    CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,@AM,'','',ESC)
     IF INPTYPE EQ 'YN' THEN
         Z = 'NY'[Z+1,1]
     END

@@ -37,8 +37,8 @@ MAIN$:!
             PRINT TOF:FLNM 'L#20 ':ITNM
             PRINT
             RR=INDROW
-            FOR I=1 TO 24
-                PRINT RR 'R%4  ':RDSP(I); RR=RR+1
+            FOR I=1 TO PDEPTH
+                PRINT RR 'R%4  ':REC<I+INDROW-1>; RR=RR+1
             NEXT I
             IF NOT(TO_SCREEN) THEN
                 PRINTER CLOSE

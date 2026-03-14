@@ -2,6 +2,7 @@
     INCLUDE EB.EQUS EB.COMMON
     GO MAIN$
     INCLUDE EB.EQUS EB.EQUS
+    DEFFUN isVariable()
 !
 ! This routine is called from EB to handle string replacements.
 ! The variables RSTR and WSTR are the original search and replace sets.
@@ -41,41 +42,43 @@ MAIN$:!
     RSTRL=LEN(TMP)
     RSTR=SWAP(RSTR,'...','@1')
     WSTR=SWAP(WSTR,'...','@1')
-    STR.CNT=0
     OK=1
     OCCURS=''
     FIRST.DISP=TRUE
-!
-! Initialise counter
-!
-!    SOP=1
-!    ACNT=''
-!    LOOP
-!        POS=INDEX(WSTR,'@',SOP)
-!        IF POS THEN
-!            THE.REST=WSTR[POS+1,9]
-!            ACNT=INDEX(THE.REST,'x',1)
-!            IF ACNT THEN
-!                ACNT++
-!                APOS=ACNT
-!                LOOP WHILE THE.REST[APOS,1] MATCHES "1N0N" DO APOS++ REPEAT
-!                ACNT = THE.REST[ACNT,APOS-ACNT]
-!                WSTR=WSTR[1,POS]:'x':THE.REST[APOS,MAX]
-!                IF ACNT='' THEN ACNT=1
-!            END
-!        END
-!    UNTIL ACNT OR NOT(POS) DO SOP+=1 REPEAT
     LHASH='L#':PWIDTH-lnbr_width
 !
 ! Break-up wild-cards and literals
 !
+    STR.CNT=1
     LOOP
-        STR.POS=INDEX(RSTR,'@':STR.CNT+1,1)
-    WHILE STR.POS DO
+        RSTRS = RSTR
+        LOOP
+            STR.POS=INDEX(RSTR,'@':STR.CNT,1)
+        WHILE STR.POS DO
+            RSTR=RSTR[1,STR.POS-1]:@AM:STR.CNT:@VM:RSTR[STR.POS+2,MAX]
+        REPEAT
+        LOOP
+            STR.POS=INDEX(RSTR,'%':STR.CNT,1)
+        WHILE STR.POS DO
+            RSTR=RSTR[1,STR.POS-1]:@AM:'v':STR.CNT:@VM:RSTR[STR.POS+2,MAX]
+        REPEAT
+    WHILE RSTRS NE RSTR DO
         STR.CNT+=1
-        RSTR=RSTR[1,STR.POS-1]:@AM:RSTR[STR.POS+2,MAX]
     REPEAT
+
+    STR.CNT = 1
+    LOOP
+        STR.POS = INDEX(WSTR, '%', STR.CNT)
+    WHILE STR.POS DO
+        IF WSTR[STR.POS+1,1] MATCHES "1N" THEN
+            WSTR = WSTR[1, STR.POS-1]:'@':WSTR[STR.POS+1,MAX]
+        END ELSE
+            STR.CNT++
+        END
+    REPEAT
+    STR.CNT = DCOUNT(RSTR, @AM)
     USE.THE.REST=(RSTR[LEN(RSTR),1]=@AM)          ;! ie. last wild-card goes to eol
+    RSTR = 0:@VM:RSTR
 !
 ! Break-up wild-cards and literals and insert wild-card number where applicable
 !
@@ -100,12 +103,12 @@ MAIN$:!
 !
 ! Find first literal to be used for searching through text
 !
-    FIRST=RSTR<1>
+    FIRST=RSTR<1,2>
     TMP=FIRST; GOSUB CONV.CHARS; FIRST=TMP
     INIT=FIRST
-    STR.CNT=STR.CNT+(RSTR<STR.CNT+1> NE '')
+    STR.CNT += (RSTR<STR.CNT+1,2> NE '')
     FOR I=1 TO STR.CNT UNTIL INIT NE ''
-        INIT=RSTR<I>
+        INIT=RSTR<I,2>
         TMP=INIT; GOSUB CONV.CHARS; INIT=TMP
     NEXT I
 
@@ -164,7 +167,7 @@ MAIN$:!
         IF NOT(INDEX(RSTR, TAB, 1)) THEN
             FOR I = 1 TO LEN(LINE)
                 CH = LINE[I,1]
-                IF INDEX(TAB,CH,1) THEN
+                IF INDEX(TAB:' ',CH,1) THEN
                     LEADWS := CH
                 END ELSE
                     BREAK
@@ -173,7 +176,7 @@ MAIN$:!
             LINE = LINE[I,LEN(LINE)]
             FOR I = LEN(LINE) TO 1 STEP -1
                 CH = LINE[I,1]
-                IF INDEX(TAB,CH,1) THEN
+                IF INDEX(TAB:' ',CH,1) THEN
                     TRAILWS := CH
                 END ELSE
                     BREAK
@@ -188,27 +191,60 @@ MAIN$:!
         IF STR.CNT THEN
             SLINE=LINE
             OK=TRUE
+            RVARS = ''
+            RWCHARS = ''
+            PCHAR = ''
+            POSARR = ''
+            POSLEN = ''
             FOR CNT=1 TO STR.CNT WHILE OK
-                NEW.LINE=RSTR<CNT>
+                VNBR = RSTR<CNT,1>
+                IF VNBR[1,1] EQ 'v' THEN
+                    WW = @TRUE
+                    VNBR = VNBR[2,9]
+                END ELSE WW = @FALSE
+                NEW.LINE=RSTR<CNT,2>
                 IF NEW.LINE NE '' THEN
                     TMP=NEW.LINE; GOSUB CONV.CHARS; NEW.LINE=TMP
                     TMPDC = DCOUNT(NEW.LINE, @AM)
                     FOR TMPA = 2 TO TMPDC
                         TMPO = TMPA-1
-                        NEW.LINE<TMPA> = RSTR<CNT+TMPO>
+                        NEW.LINE<TMPA> = RSTR<CNT+TMPO,2>
                     NEXT TMPA
                     IF REGEX.SEARCH THEN
-                        POS=EB_REGEX(SLINE,NEW.LINE, @FALSE)
+                        POSITIONS = EB_REGEX(SLINE, NEW.LINE, @TRUE)
                     END ELSE
-                        POS=INDEX(SLINE,NEW.LINE,1)
-                        cmline = SLINE[POS,MAX]; cmindex = NEW.LINE; NPOS = POS; GOSUB check_multi_attr
-                        POS = NPOS
+                        POSITIONS = ''
+                        POSC = 1
+                        LOOP
+                            POS=INDEX(SLINE,NEW.LINE, POSC)
+                        WHILE POS DO
+                            POSITIONS<-1> = POS
+                            POSC++
+                        REPEAT
+                    END
+                    POSC = DCOUNT(POSITIONS, @AM)
+                    IF POSC THEN
+                        FOR NPOS = 1 TO POSC
+                            POS = POSITIONS<NPOS>
+                            IF NOT(WW) OR isVariable(PCHAR, SLINE[1, POS-1], SLINE[POS,1]) THEN
+                                BREAK
+                            END
+                        NEXT NPOS
+                        IF NPOS LE POSC THEN
+                            cmline = SLINE[POS,MAX]; cmindex = NEW.LINE; NPOS = POS; GOSUB check_multi_attr
+                            POS = NPOS
+                        END ELSE POS = @FALSE
                     END
                     IF POS THEN
+                        POSARR<-1> = POS
+                        POSLEN<-1> = LEN(NEW.LINE)
+                        RVARS<VNBR> = SLINE[1, POS-1]
+                        RWCHARS<CNT> = NEW.LINE
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
                     END ELSE OK=FALSE
                 END
             NEXT CNT
+            THE.REST = SLINE
         END
         IF OK THEN
             OCC=0; OCCURS=0
@@ -278,79 +314,105 @@ MAIN$:!
                         NLINE := LINE[1,SPOS-1]:TMP
                         LINE = LINE[SPOS+RSTRL,MAX]
                     END ELSE
+                        NEW.LINE = ''
+                        SLINE = RVARS
+                        PWSTR=WSTR
+                        FOR CNT=1 TO WSTR.CNT
+                            TMP=PWSTR<1>; GOSUB CONV.CHARS; PWSTR<1>=TMP
+                            NEW.LINE:=PWSTR<1>
+                            DEL PWSTR<1>
+                            IF PWSTR NE '' THEN
+                                WCNT=PWSTR<1,1>
+                                IF NUM(WCNT) THEN
+                                    op=''
+                                END ELSE
+                                    op = WCNT[1,1]
+                                    WCNT = WCNT[2,MAX]
+                                END
+                                WCNT=SLINE<WCNT>
+                                BEGIN CASE
+                                    CASE op = ''
+                                    CASE op = 'l'; op = 'MCL'
+                                    CASE op = 'u'; op = 'MCU'
+                                    CASE op = 'c'; op = 'MCT'
+                                    CASE op = 'x'; op = ''; WCNT = XCNT; XCNT++
+                                END CASE
+                                IF LEN(op) THEN WCNT = OCONV(WCNT, op)
+                                NEW.LINE:=WCNT
+                                DEL PWSTR<1,1>
+                            END
+                        NEXT CNT
+                        TMP=PWSTR; GOSUB CONV.CHARS; PWSTR=TMP
+                        NLINE := NEW.LINE:PWSTR:THE.REST
+                        LEN.DIFF=LEN(NLINE) - LEN(LINE)
+                        LINE = ''
+!                        LINE = THE.REST
 !
 ! Build up wild-card replacements
 !
-                        SLINE=LINE[1,SPOS-1]; THE.REST=LINE[SPOS+LEN(FIRST),MAX]
-                        NEW.LINE=SLINE
-                        POS=TRUE
-                        FOR CNT=2 TO STR.CNT WHILE POS
-                            TMP=RSTR<CNT>; GOSUB CONV.CHARS; RSTR<CNT>=TMP
-                            POS = INDEX(THE.REST, TMP, 1)
-                            SLINE<CNT>=THE.REST[1,POS-1]
-                            POS+=LEN(TMP)
-                            THE.REST=THE.REST[POS,MAX]
-                        NEXT CNT
-                        CNT+=am_start
-                        IF POS THEN
-                            POS=RSTR<CNT>
-                            IF POS NE '' THEN
-                                TMP=POS; GOSUB CONV.CHARS; POS=TMP
-                                POS = INDEX(THE.REST, POS, 1)
-                                SLINE<CNT>=THE.REST[1,POS-1]
-                                THE.REST=THE.REST[POS+LEN(TMP),MAX]
-                            END ELSE
-                                IF USE.THE.REST THEN SLINE<CNT>=THE.REST; THE.REST=''
-                                POS=TRUE
-                            END
-                        END
-                        IF POS THEN
-                            LEN.DIFF=LEN(LINE)
-                            IF WWSTR NE '' THEN
-                                TMP=WSTR; GOSUB CONV.CHARS
-                                NLINE := SLINE<1>:TMP
-                                LINE = THE.REST
-                            END ELSE
-                                DEL SLINE<1>
-                                PWSTR=WSTR
-                                FOR CNT=1 TO WSTR.CNT
-                                    TMP=PWSTR<1>; GOSUB CONV.CHARS; PWSTR<1>=TMP
-                                    NEW.LINE:=PWSTR<1>
-                                    DEL PWSTR<1>
-                                    IF PWSTR NE '' THEN
-                                        WCNT=PWSTR<1,1>
-                                        IF NUM(WCNT) THEN
-                                            op=''
-                                        END ELSE
-                                            op = WCNT[1,1]
-                                            WCNT = WCNT[2,MAX]
-                                        END
-                                        WCNT=SLINE<WCNT>
-                                        BEGIN CASE
-                                            CASE op = ''
-                                            CASE op = 'l'; op = 'MCL'
-                                            CASE op = 'u'; op = 'MCU'
-                                            CASE op = 'c'; op = 'MCT'
-                                            CASE op = 'x'; op = ''; WCNT = XCNT; XCNT++
-                                        END CASE
-                                        IF LEN(op) THEN WCNT = OCONV(WCNT, op)
-                                        NEW.LINE:=WCNT
-                                        DEL PWSTR<1,1>
-                                    END
-                                NEXT CNT
-                                TMP=PWSTR; GOSUB CONV.CHARS; PWSTR=TMP
-                                NLINE := NEW.LINE:PWSTR
-                                LINE = THE.REST
-                            END
-                        END
-                        LEN.DIFF=LEN(NLINE:LINE)-LEN.DIFF+1
+!                        SLINE=LINE[1,SPOS-1]; THE.REST=LINE[SPOS+LEN(FIRST),MAX]
+!                        NEW.LINE=SLINE
+!                        NPOS = DCOUNT(POSARR, @AM)
+!                        FOR CNT=2 TO NPOS
+!                            POS = POSARR<CNT>
+!                            TMP = THE.REST[1,POS-1]
+!                            SLINE<CNT> = TMP
+!                            THE.REST=THE.REST[POS+POSLEN<CNT>,MAX]
+!                        NEXT CNT
+!                        CNT+=am_start
+!!                        IF POS THEN
+!                            POS=RSTR<CNT,2>
+!                            IF POS NE '' THEN
+!                                TMP=POS; GOSUB CONV.CHARS; POS=TMP
+!                                POS = INDEX(THE.REST, POS, 1)
+!                                SLINE<CNT>=THE.REST[1,POS-1]
+!                                THE.REST=THE.REST[POS+LEN(TMP),MAX]
+!                            END ELSE
+!                                IF USE.THE.REST THEN SLINE<CNT>=THE.REST; THE.REST=''
+!                                POS=TRUE
+!                            END
+!!                        END
+!                        IF POS THEN
+!                            LEN.DIFF=LEN(LINE)
+!                            IF WWSTR NE '' THEN
+!                                TMP=WSTR; GOSUB CONV.CHARS
+!                                NLINE := SLINE<1>:TMP
+!                                LINE = THE.REST
+!                            END ELSE
+!                                DEL SLINE<1>
+!                                PWSTR=WSTR
+!                                FOR CNT=1 TO WSTR.CNT
+!                                    TMP=PWSTR<1>; GOSUB CONV.CHARS; PWSTR<1>=TMP
+!                                    NEW.LINE:=PWSTR<1>
+!                                    DEL PWSTR<1>
+!                                    IF PWSTR NE '' THEN
+!                                        WCNT=PWSTR<1,1>
+!                                        IF NUM(WCNT) THEN
+!                                            op=''
+!                                        END ELSE
+!                                            op = WCNT[1,1]
+!                                            WCNT = WCNT[2,MAX]
+!                                        END
+!                                        WCNT=SLINE<WCNT>
+!                                        BEGIN CASE
+!                                            CASE op = ''
+!                                            CASE op = 'l'; op = 'MCL'
+!                                            CASE op = 'u'; op = 'MCU'
+!                                            CASE op = 'c'; op = 'MCT'
+!                                            CASE op = 'x'; op = ''; WCNT = XCNT; XCNT++
+!                                        END CASE
+!                                        IF LEN(op) THEN WCNT = OCONV(WCNT, op)
+!                                        NEW.LINE:=WCNT
+!                                        DEL PWSTR<1,1>
+!                                    END
+!                                NEXT CNT
+!                                TMP=PWSTR; GOSUB CONV.CHARS; PWSTR=TMP
+!                                NLINE := NEW.LINE:PWSTR
+!                                LINE = THE.REST
+!                            END
+!                        END
+!                        LEN.DIFF=LEN(NLINE:LINE)-LEN.DIFF+1
                     END
-!                    LOOP
-!                        POS=INDEX(LINE,'@x',1)
-!                    WHILE POS DO
-!                        LINE=LINE[1,POS-1]:ACNT:LINE[POS+2,MAX]
-!                        ACNT+=1
-!                    REPEAT
                     END.POS+=LEN.DIFF
                 END
             NEXT I

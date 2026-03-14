@@ -649,11 +649,16 @@ SCRN.TO.REC: ! Incorporate changed lines into dynamic array, REC.
     FG_TIMEOUT=FG_MONITOR.SECS*10
     RETURN
 UPDATE.REC: !
+RETURN
     FOR I=1 TO PDEPTH
         IF CHANGES(I) THEN
             IF I NE LROW THEN
-                CALL EB_TRIM(RDSP(I),RDSP(I):'',SPC,'T')
-                IF TAB.MODE THEN CALL EB_TRIM(RDSP(I),RDSP(I):'',TAB,'T')
+                CALL EB_TRIM(TMP,REC<I+INDROW-1>:'',SPC,'T')
+                REC<I+INDROW-1> = TMP
+                IF TAB.MODE THEN
+                    CALL EB_TRIM(TMP,REC<I+INDROW-1>:'',TAB,'T')
+                    REC<I+INDROW-1> = TMP
+                END
             END
             REC<I+INDROW-1>=RDSP(I)
             CHANGED=TRUE
@@ -711,7 +716,7 @@ TOP: !
     LOCATE FG_ACT.CODE IN DEBUG.CODES SETTING DPOS THEN DEBUG
     IF FG_TIMEDOUT THEN
         GOSUB SCRN.TO.REC
-        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+        CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
         GO TOP
     END
 
@@ -724,17 +729,17 @@ TOP: !
             INCLUDE EB.INCLUDES VERS_CTRL
             NEW.CHARS:=CHR
             IF NEW.CHARS EQ '}' AND TAB.MODE THEN    ;! unindent?
-                CALL EB_TRIM(CHECK.LINE,RDSP(LROW),TAB,'T')
+                CALL EB_TRIM(CHECK.LINE,REC<LROW+INDROW-1>,TAB,'T')
                 IF CHECK.LINE EQ '' THEN
-                    CHECK.LINE=RDSP(LROW)[1,LEN(RDSP(LROW))-1]
+                    CHECK.LINE=REC<LROW+INDROW-1>[1,LEN(REC<LROW+INDROW-1>)-1]
                     DUMMY=CHECK.LINE:'x'          ;! build a dummy line
                     LNM=1
                     TABLEN=ITAB<1>
                     GOSUB FORMAT
                     IF LCOL EQ I AND I GT TABLEN THEN I-=TABLEN
-                    RDSP(LROW)=STR(TAB,INT(I/TABLEN))       ;! CHECK.LINE
+                    REC<LROW+INDROW-1>=STR(TAB,INT(I/TABLEN))       ;! CHECK.LINE
                     LCOL=I
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
                     STRT=LCOL
                     GOSUB ADD.CHARS
                     COL+=1; LCOL+=1
@@ -747,18 +752,18 @@ TOP: !
             LCOL+=1
             IF COL GT PWIDTH THEN
 ! paginate comments ?!?
-                Z=TRIM(RDSP(LROW):NEW.CHARS)
+                Z=TRIM(REC<LROW+INDROW-1>:NEW.CHARS)
                 Y=Z[1,1]
                 IF LEN(INDEX('*!',Y,1) AND OCONV(Z[2,10],'MCA')) THEN
                     GOSUB ADD.CHARS
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                     GOSUB BACK.WORD
-                    RDSP(LROW)=RDSP(LROW)[1,I-1]:Y:RDSP(LROW)[I,MAX]
+                    REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,I-1]:Y:REC<LROW+INDROW-1>[I,MAX]
                     LCOL=I
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
                     CRT @(COL,ROW):
                     GOSUB SPLIT.LINE; ROW+=1; LROW+=1
-                    LLEN=LEN(RDSP(LROW)); GO GEOL
+                    LLEN=LEN(REC<LROW+INDROW-1>); GO GEOL
                 END ELSE
                     GOSUB ADD.CHARS
                     GO STRT
@@ -773,7 +778,7 @@ TOP: !
                             GOSUB displayLine
                             GO TOP
                         END ELSE
-                            TMP=RDSP(LROW)[LCOL,PWIDTH+1-COL]
+                            TMP=REC<LROW+INDROW-1>[LCOL,PWIDTH+1-COL]
                             IF LEN(TRIM(TMP)) THEN
                                 CRT @(COL-1,ROW):SPC:TMP:
                             END
@@ -806,15 +811,15 @@ TOP: !
             END
     END CASE
 !! new chars prev pos
-!    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
-    LLEN=LEN(RDSP(LROW))
+!    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
+    LLEN=LEN(REC<LROW+INDROW-1>)
     IF CHR EQ BS.CH THEN
         IF (LCOL+OFFSET) EQ 1 THEN
-            IF LROW GT 1 THEN LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+            IF LROW GT 1 THEN LROW-=1; LLEN=LEN(REC<LROW+INDROW-1>); ROW-=1; GO GEOL
         END ELSE
             IF LCOL GT LLEN+1 THEN
                 COL-=1
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                 GO TOP
             END ELSE
                 GOSUB ADD_TO_UNDO
@@ -822,7 +827,7 @@ TOP: !
                     SP1=""
                     IF COL GT lnbr_width THEN
                         CRT BS.CH:
-                        Y=RDSP(LROW)
+                        Y=REC<LROW+INDROW-1>
                         CALL EB_TABS(Y,PWIDTH,0,0)
                         Y=Y[PWIDTH-lnbr_width+OFFSET,2]
                         IF LEN(DEL.CHAR) THEN
@@ -833,11 +838,11 @@ TOP: !
                         END
                     END
                 END ELSE SP1=SPC
-                RDSP(LROW)=RDSP(LROW)[1,LCOL-2]:SP1:RDSP(LROW)[LCOL,MAX]
-                IF LCOL EQ LLEN+1 THEN LLEN-=1; RDSP(LROW)=RDSP(LROW)[1,LLEN]
+                REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,LCOL-2]:SP1:REC<LROW+INDROW-1>[LCOL,MAX]
+                IF LCOL EQ LLEN+1 THEN LLEN-=1; REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,LLEN]
                 COL-=1; GOSUB CHG.LROW
                 IF COL GT lnbr_width THEN CRT @(COL,ROW):SP1:
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                 GO TOP
             END
         END
@@ -846,18 +851,18 @@ CHECK.CODES: !
     BEGIN CASE
         CASE FG_ACT.CODE EQ FG_RIGHT.CODE
             LCOL++
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
             GO TOP
         CASE FG_ACT.CODE EQ FG_LEFT.CODE
             IF COL EQ (lnbr_width+1) THEN
                 IF NOT(OFFSET) THEN
                     IF LROW GT 1 THEN
-                        LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+                        LROW-=1; LLEN=LEN(REC<LROW+INDROW-1>); ROW-=1; GO GEOL
                     END
                 END
             END ELSE
                 LCOL--
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
                 CRT BACK:
                 GO TOP
             END
@@ -873,7 +878,7 @@ CHECK.CODES: !
                 SCR.UD=Y NE INDROW
             END ELSE
                 ROW-=1
-                IF LROW GT 1 THEN LLEN=LEN(RDSP(LROW-1))         ;! else it's done in SCR.UD block
+                IF LROW GT 1 THEN LLEN=LEN(REC<LROW-1+INDROW-1>)         ;! else it's done in SCR.UD block
                 LROW-=1
                 IF LROW LT 1 THEN
                     IF INDROW GT 1 THEN
@@ -890,7 +895,7 @@ CHECK.CODES: !
                                 DIMOFF = FG
                             END ELSE DIMON = ''; DIMOFF = ''
                             CRT DIMON:INDROW lnbr_hash1:DIMOFF:
-                            CRTLN=RDSP(1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
+                            CRTLN=REC<1+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
                             S=LROW; LROW=1; GOSUB CRT.LN; LROW=S
                             CRT MSG.DSP:
                         END ELSE SCR.UD=TRUE; SCR.LR=TRUE
@@ -901,7 +906,7 @@ CHECK.CODES: !
                 END ELSE CRT UP:
             END
         CASE FG_ACT.CODE EQ FG_SKP.CODE
-            IF LROW LT (PDEPTH-1) THEN LLEN=LEN(RDSP(LROW+1))    ;! else its done in SCR.UD block
+            IF LROW LT (PDEPTH-1) THEN LLEN=LEN(REC<LROW+1+INDROW-1>)    ;! else its done in SCR.UD block
             IF LROW GT (PDEPTH-2) THEN
                 IF CHANGED THEN GOSUB SCRN.TO.REC
 SCROLL.LINE:    !
@@ -911,7 +916,7 @@ SCROLL.LINE:    !
                 ROW+=1
                 LROW+=1
                 CRT LF:
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                 GO TOP
             END
         CASE CHR EQ CR
@@ -921,20 +926,20 @@ SCROLL.LINE:    !
                 IF CHANGED THEN GOSUB SCRN.TO.REC
                 GOSUB SCROLL.DOWN; LROW-=1; ROW-=1
             END
-            CHECK.LINE=RDSP(LROW)
+            CHECK.LINE=REC<LROW+INDROW-1>
             DUMMY=LROW+1
-            TMP=RDSP(DUMMY)
+            TMP=REC<DUMMY+INDROW-1>
             IF LEN(INS.MODE AND (TRIM(CHECK.LINE[LCOL,MAX])) OR TRIM(TMP) NE '') THEN
                 GOSUB SPLIT.LINE
-                CHECK.LINE=RDSP(LROW+1)
+                CHECK.LINE=REC<LROW+1+INDROW-1>
             END ELSE
-! breaks basic formatting - CALL EB_TRIM(CHECK.LINE, RDSP(LROW), ' ', 'L')
+! breaks basic formatting - CALL EB_TRIM(CHECK.LINE, REC<LROW+INDROW-1>, ' ', 'L')
                 DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
             END
-            Y=RDSP(LROW)[1,COMMENTLEN]
-            IF Y EQ TRIM(RDSP(LROW)) THEN Y=''
+            Y=REC<LROW+INDROW-1>[1,COMMENTLEN]
+            IF Y EQ TRIM(REC<LROW+INDROW-1>) THEN Y=''
             IF CHECK.LINE EQ '' AND INDEX('*!/',Y[1,1],1) AND Y NE '' THEN
-                CHECK.LINE=RDSP(LROW)[1,COMMENTLEN]; RDSP(LROW+1)=CHECK.LINE; I=TABLEN-1
+                CHECK.LINE=REC<LROW+INDROW-1>[1,COMMENTLEN]; REC<LROW+1+INDROW-1>=CHECK.LINE; I=TABLEN-1
             END ELSE Y=''
             LCOL=I
             IF TRIM(CHECK.LINE) EQ '' OR INS.MODE THEN   ;! next line is blank
@@ -944,33 +949,33 @@ SCROLL.LINE:    !
                     SCR.LR=1
                     SCRL=0
                     COL=(lnbr_width+1)
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                 END ELSE SCR.LR=1-2*(INS.LINE NE '')
             END ELSE
                 NLEN=LEN(CHECK.LINE)
                 IF NLEN LT LCOL THEN ;! next line is shorter
                     IF NLEN LT PWIDTH-(lnbr_width+1) AND OFFSET THEN SCR.LR=1-2*(INS.LINE NE ''); OFFSET=0; SCRL=0
                     LCOL=NLEN+1
-                    IF RDSP(LROW) EQ '' AND TAB.MODE THEN RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                    IF REC<LROW+INDROW-1> EQ '' AND TAB.MODE THEN REC<LROW+INDROW-1>=STR(TAB,INT(LCOL/TABLEN))
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
                 END
             END
             ROW+=1
             IF CHECK.LINE EQ '' THEN
                 LLEN=0; LCOL=I
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
             END ELSE LLEN=LEN(CHECK.LINE)
             IF LEN(TMP EQ '' AND (TRIM(CHECK.LINE)) OR TAB.MODE) THEN
                 LROW=ROW+1
-!                IF TRIM(RDSP(LROW)) EQ '' THEN
+!                IF TRIM(REC<LROW+INDROW-1>) EQ '' THEN
 !                    IF TAB.MODE THEN
-!                        RDSP(LROW)=STR(TAB,INT(LCOL/TABLEN))
-!                    END ELSE RDSP(LROW)=SPACE(LCOL)
+!                        REC<LROW+INDROW-1>=STR(TAB,INT(LCOL/TABLEN))
+!                    END ELSE REC<LROW+INDROW-1>=SPACE(LCOL)
 !                END
-!                LCOL=LEN(RDSP(LROW))
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TAB.MODE)
+!                LCOL=LEN(REC<LROW+INDROW-1>)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TAB.MODE)
                 IF SCR.UD ELSE
-                    CRT @((lnbr_width+1),ROW):RDSP(LROW):
+                    CRT @((lnbr_width+1),ROW):REC<LROW+INDROW-1>:
                     GO TOP
                 END
             END
@@ -992,55 +997,62 @@ SCROLL.LINE:    !
             END
             Z=INDROW
             CALL EB_SEARCH
+            IF LROW GE PDEPTH THEN
+                INDROW+=(PDEPTH-2)
+                ROW=1
+                SCR.UD=TRUE
+                CALL EB_REFRESH
+            END
             GOTO TOP
         CASE FG_ACT.CODE EQ FG_DEL.CHAR.CODE
             GOSUB ADD_TO_UNDO
-            IF TRIM(RDSP(LROW)[LCOL,MAX]) EQ '' THEN
-                IF TRIM(RDSP(LROW)) NE '' THEN
-                    CALL EB_TRIM(RDSP(LROW),RDSP(LROW):'',SPC,'T')
+            IF TRIM(REC<LROW+INDROW-1>[LCOL,MAX]) EQ '' THEN
+                IF TRIM(REC<LROW+INDROW-1>) NE '' THEN
+                    CALL EB_TRIM(TMP,REC<LROW+INDROW-1>:'',SPC,'T')
+                    REC<LROW+INDROW-1> = TMP
                     DUMMY=0
-                END ELSE RDSP(LROW)=SPACE(LCOL-2); DUMMY=1
+                END ELSE REC<LROW+INDROW-1>=SPACE(LCOL-2); DUMMY=1
                 CRT @(0,ROW+1):DEL.LINE
                 J.LINE=1; GO 2210
             END ELSE
-                RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[LCOL+1,MAX])
+                REC<LROW+INDROW-1>=(REC<LROW+INDROW-1>[1,LCOL-1]:REC<LROW+INDROW-1>[LCOL+1,MAX])
 !                IF LEN(NOT(TAB.MODE) AND DEL.CHAR) THEN
                 IF LEN(DEL.CHAR) THEN
                     CRT @(COL,ROW):DEL.CHAR:
-                    CRTLN=RDSP(LROW);CRT.X=PWIDTH-lnbr_width+OFFSET;CRT.Y=2
+                    CRTLN=REC<LROW+INDROW-1>;CRT.X=PWIDTH-lnbr_width+OFFSET;CRT.Y=2
                     IF LEN(CRTLN[CRT.X+1,1]) THEN
                         CRT @(PWIDTH,ROW):
                         GOSUB CRT.LN
                     END
                 END ELSE
                     CRT @(COL,ROW):CLEOL:
-                    CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+                    CRTLN=REC<LROW+INDROW-1>;CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
                 END
                 GOSUB CHG.LROW; LLEN-=1; GO TOP
             END
         CASE FG_ACT.CODE EQ FG_INS.CODE
             GOSUB ADD_TO_UNDO
             IF LEN(INS.CHAR) THEN CRT @(COL,ROW):INS.CHAR: ELSE
-                CRT @(COL,ROW):SPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+                CRT @(COL,ROW):SPC:CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
             END
-            RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:SPC:RDSP(LROW)[LCOL,MAX])
+            REC<LROW+INDROW-1>=(REC<LROW+INDROW-1>[1,LCOL-1]:SPC:REC<LROW+INDROW-1>[LCOL,MAX])
             GOSUB CHG.LROW; LLEN+=1; GO TOP
         CASE FG_ACT.CODE EQ FG_TAG.CODE
             GOSUB ADD_TO_UNDO
-            IF RDSP(LROW)[1,COMMENTLEN] NE COMMENT<1,1,1> THEN
-                RDSP(LROW)=COMMENT<1,1,1>:RDSP(LROW)[1,MAX]:COMMENT<1,1,2>
+            IF REC<LROW+INDROW-1>[1,COMMENTLEN] NE COMMENT<1,1,1> THEN
+                REC<LROW+INDROW-1>=COMMENT<1,1,1>:REC<LROW+INDROW-1>[1,MAX]:COMMENT<1,1,2>
                 Y=1
             END ELSE
                 Y=-1
-                RDSP(LROW)=RDSP(LROW)[1+COMMENTLEN,MAX]
-                IF RDSP(LROW)[LEN(RDSP(LROW))-1,COMMENTLEN] EQ COMMENT<1,1,2> THEN
-                    RDSP(LROW)=RDSP(LROW)[1,LEN(RDSP(LROW))-2]
+                REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1+COMMENTLEN,MAX]
+                IF REC<LROW+INDROW-1>[LEN(REC<LROW+INDROW-1>)-1,COMMENTLEN] EQ COMMENT<1,1,2> THEN
+                    REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,LEN(REC<LROW+INDROW-1>)-2]
                 END
             END
-            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
             IF COL GT (lnbr_width+1) THEN
                 COL+=Y
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
             END
             GOSUB CHG.LROW; LLEN+=Y; GO TOP
         CASE FG_ACT.CODE EQ FG_END.CODE
@@ -1050,18 +1062,18 @@ SCROLL.LINE:    !
             LLEN1=LLEN+1
 ! first search for the next non-alpha character
             Y=LCOL
-            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE ''); NEXT I
+            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(REC<LROW+INDROW-1>[I,1],PC) NE ''); NEXT I
 ! then search for the next letter
             Y=I+1
-            FOR I=Y TO LLEN1 UNTIL ICONV(RDSP(LROW)[I,1],PC) NE ''; NEXT I
-            IF I LE LEN(RDSP(LROW)) THEN
+            FOR I=Y TO LLEN1 UNTIL ICONV(REC<LROW+INDROW-1>[I,1],PC) NE ''; NEXT I
+            IF I LE LEN(REC<LROW+INDROW-1>) THEN
                 LCOL=I
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
             END ELSE CRT BELL:
         CASE FG_ACT.CODE EQ FG_BWORD.CODE
             IF LCOL EQ 1 AND ROW GT 1 THEN
                 IF LROW GT 1 THEN
-                    LROW-=1; LLEN=LEN(RDSP(LROW)); ROW-=1; GO GEOL
+                    LROW-=1; LLEN=LEN(REC<LROW+INDROW-1>); ROW-=1; GO GEOL
                 END
             END
             IF LCOL GT 1 THEN
@@ -1199,8 +1211,8 @@ SCROLL.LINE:    !
             GOSUB SCRN.TO.REC
             GOSUB INDENT
         CASE FG_ACT.CODE EQ FG_SUS.CODE
-            RDSP(LROW)=REC<INDROW+ROW>
-            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
+            REC<LROW+INDROW-1>=REC<INDROW+ROW>
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
             CHANGES(LROW)=FALSE
         CASE FG_ACT.CODE EQ FG_TOP.CODE
             IF ROW NE 0 THEN
@@ -1211,6 +1223,7 @@ SCROLL.LINE:    !
                 COL=(lnbr_width+1); ROW=0
                 SCR.UD=TRUE
             END
+            LROW = ROW+1
         CASE FG_ACT.CODE EQ FG_BOT.CODE OR FG_ACT.CODE EQ FG_APP.CODE
             IF FG_ACT.CODE EQ FG_BOT.CODE AND ROW NE (PDEPTH-2) THEN
                 ROW=(PDEPTH-2)
@@ -1236,23 +1249,23 @@ SCROLL.LINE:    !
         CASE FG_ACT.CODE EQ FG_EOL.CODE
 GEOL:       !
             LCOL=LLEN+1
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+            CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
             I=OFFSET
             IF OFFSET AND (COL GT PWIDTH) THEN COL-=(PWIDTH-(lnbr_width+1))
             LOOP WHILE COL GT PWIDTH DO
                 COL-=(PWIDTH-(lnbr_width+1))
                 OFFSET+=(PWIDTH-(lnbr_width+1))
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
             REPEAT
             IF I NE OFFSET THEN
                 SCR.LR=1
             END
         CASE FG_ACT.CODE EQ FG_DEL.WORD.CODE
             GOSUB ADD_TO_UNDO
-            CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+            CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
             GOSUB GET.WORD
-            RDSP(LROW)=RDSP(LROW)[1,LCOL-1]:RDSP(LROW)[I,MAX]
-            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN; CRT @(COL,ROW):
+            REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,LCOL-1]:REC<LROW+INDROW-1>[I,MAX]
+            CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN; CRT @(COL,ROW):
             GOSUB CHG.LROW
         CASE FG_ACT.CODE EQ FG_HLP.CODE
 GET.HELP:   !
@@ -1280,7 +1293,7 @@ GET.HELP:   !
             GO TOP
         CASE FG_ACT.CODE EQ FG_TAB.CODE
             TABLEN=ITAB<ITABPOS>
-            IF LEN(TRIM(RDSP(LROW))) THEN
+            IF LEN(TRIM(REC<LROW+INDROW-1>)) THEN
                 GOSUB ADD_TO_UNDO
                 TABSPC=SPACE(TABLEN)
                 IF TAB.MODE THEN
@@ -1288,30 +1301,30 @@ GET.HELP:   !
                 END ELSE
                     TMP=TABSPC
                 END
-                IF LCOL GT LEN(RDSP(LROW)) THEN
-                    RDSP(LROW):=TAB
+                IF LCOL GT LEN(REC<LROW+INDROW-1>) THEN
+                    REC<LROW+INDROW-1>:=TAB
                     LCOL+=1
-                    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
                 END ELSE
                     IF LEN(INS.CHAR) THEN CRT @(COL,ROW):STR(INS.CHAR,TABLEN): ELSE
-                        CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=RDSP(LROW);CRT.X=LCOL+OFFSET;CRT.Y=PWIDTH-1-COL; GOSUB CRT.LN
+                        CRT @(COL,ROW):TABSPC:CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=LCOL+OFFSET;CRT.Y=PWIDTH-1-COL; GOSUB CRT.LN
                     END
-                    RDSP(LROW)=(RDSP(LROW)[1,LCOL-1]:TMP:RDSP(LROW)[LCOL,MAX])
+                    REC<LROW+INDROW-1>=(REC<LROW+INDROW-1>[1,LCOL-1]:TMP:REC<LROW+INDROW-1>[LCOL,MAX])
                 END
                 LLEN+=LEN(TMP)
             END ELSE
                 Y=LROW+(LROW<3)
-                LOOP WHILE Y GT 2 AND RDSP(Y-1)[1,COMMENTLEN] EQ COMMENT DO Y-=1 REPEAT
-                IF Y GT 1 THEN CHECK.LINE=RDSP(Y-1) ELSE CHECK.LINE=REC<INDROW-Y>
+                LOOP WHILE Y GT 2 AND REC<Y-1+INDROW-1>[1,COMMENTLEN] EQ COMMENT DO Y-=1 REPEAT
+                IF Y GT 1 THEN CHECK.LINE=REC<Y-1+INDROW-1> ELSE CHECK.LINE=REC<INDROW-Y>
                 IF TAB.MODE THEN CALL EB_TABS(CHECK.LINE,PWIDTH,0,0)
                 LLEN=LEN(CHECK.LINE)
                 DUMMY=CHECK.LINE; LNM=1; GOSUB FORMAT
                 IF LCOL EQ I AND I GT TABLEN THEN I-=TABLEN
                 IF TAB.MODE THEN
-                    RDSP(LROW)=STR(TAB,INT(I/TABLEN))
-                END ELSE RDSP(LROW)=SPACE(I)
+                    REC<LROW+INDROW-1>=STR(TAB,INT(I/TABLEN))
+                END ELSE REC<LROW+INDROW-1>=SPACE(I)
                 LCOL=I
-                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
             END
             GOSUB CHG.LROW
             GO TOP
@@ -1341,13 +1354,13 @@ GET.HELP:   !
             LLEN1=LLEN+1
 ! first search for the next non-alpha character
             Y=LCOL+1
-            Z = (IF LCOL EQ 1 THEN '' ELSE RDSP(LROW)[LCOL-1,1])
-            LOOP WHILE RDSP(LROW)[Y,1] EQ SPC DO Y+=1 REPEAT
-            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(RDSP(LROW)[I,1],PC) NE '' OR RDSP(LROW)[I,1]='.'); NEXT I
-            word=FIELD(TRIM(RDSP(LROW)[LCOL,I-LCOL]),SPC,1)
+            Z = (IF LCOL EQ 1 THEN '' ELSE REC<LROW+INDROW-1>[LCOL-1,1])
+            LOOP WHILE REC<LROW+INDROW-1>[Y,1] EQ SPC DO Y+=1 REPEAT
+            FOR I=Y TO LLEN1 UNTIL NOT(ICONV(REC<LROW+INDROW-1>[I,1],PC) NE '' OR REC<LROW+INDROW-1>[I,1]='.'); NEXT I
+            word=FIELD(TRIM(REC<LROW+INDROW-1>[LCOL,I-LCOL]),SPC,1)
             DUMMY=UPCASE(word)
             IF DUMMY[1,2] EQ 'GO' THEN
-                DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2)
+                DUMMY=FIELD(TRIM(REC<LROW+INDROW-1>[LCOL,MAX]),SPC,2)
                 DUMMY=FIELD(DUMMY:';',';',1)
                 DFLT.LINE='R':OCONV(DUMMY,'MCU')
                 LOCATE DFLT.LINE IN MARKERS<1,vm_start> BY 'AL' SETTING POS ELSE
@@ -1371,14 +1384,14 @@ GET.HELP:   !
             END ELSE
                 IF INDEX('[(', Z, 1) THEN DUMMY = Z:DUMMY
                 BEGIN CASE
-                    CASE RDSP(LROW)[LCOL-6,6] EQ 'this->'
+                    CASE REC<LROW+INDROW-1>[LCOL-6,6] EQ 'this->'
                         SSS='::':word:'('
                         FG_ACT.CODE=FG_MULTI.CODE
                         CALL EB_SEARCH
                         DUMMY=''
                     CASE DUMMY EQ 'CALL' OR DUMMY EQ 'EXECUTE' OR DUMMY EQ 'PERFORM'
                         callopt = DUMMY EQ 'CALL'
-                        DUMMY=FIELD(TRIM(RDSP(LROW)[LCOL,MAX]),SPC,2,99)
+                        DUMMY=FIELD(TRIM(REC<LROW+INDROW-1>[LCOL,MAX]),SPC,2,99)
                         DUMMY=FIELD(DUMMY:'(','(',1)
                         DUMMY=FIELD(DUMMY:';',';',1)
                         IF NOT(callopt) THEN
@@ -1386,7 +1399,7 @@ GET.HELP:   !
                         END
                         DUMMY := ' (!'
                     CASE DUMMY[1,1] EQ '[' OR DUMMY[1,1] = '('
-                        DUMMY = DUMMY[2,MAX]:RDSP(LROW)[I,MAX]
+                        DUMMY = DUMMY[2,MAX]:REC<LROW+INDROW-1>[I,MAX]
                         Z = DUMMY 'R#1'
                         IF INDEX(')]', Z, 1) THEN DUMMY = DUMMY[1, LEN(DUMMY)-1]
                         IF LEN(DUMMY) THEN
@@ -1396,16 +1409,16 @@ GET.HELP:   !
                         CONVERT TAB TO SPC IN DUMMY
                         DUMMY=FIELD(DUMMY,SPC,1)
                         IF LEN(DUMMY) THEN
-                            DUMMY=RDSP(LROW)[LCOL,MAX]
+                            DUMMY=REC<LROW+INDROW-1>[LCOL,MAX]
                             CONVERT TAB TO SPC IN DUMMY
                             CALL EB_READINCL(HEADERS, DUMMY:'', DUMMY, HEADER, FALSE)
                         END
-                    CASE DUMMY EQ 'OBJECT' OR RDSP(LROW)[LCOL-lnbr_width,4] EQ 'new '
+                    CASE DUMMY EQ 'OBJECT' OR REC<LROW+INDROW-1>[LCOL-lnbr_width,4] EQ 'new '
                         IF DUMMY EQ 'OBJECT' THEN
-                            DUMMY=FIELD(RDSP(LROW)[LCOL,MAX],'(',2)
+                            DUMMY=FIELD(REC<LROW+INDROW-1>[LCOL,MAX],'(',2)
                             DUMMY=FIELD(CONVERT(DUMMY,'"',"'"),"'", 2)
                         END ELSE
-                            DUMMY=FIELD(RDSP(LROW)[LCOL,MAX],'(',1)
+                            DUMMY=FIELD(REC<LROW+INDROW-1>[LCOL,MAX],'(',1)
                         END
                         DUMMY := '.jabba'
                     CASE 1
@@ -1524,7 +1537,7 @@ GET.HELP:   !
                             CASE MOUSESTATE EQ 'LD'
                                 RDIFF = ROW-R
                                 COL=C; ROW=R; LROW -= RDIFF
-                                CALL EB_TABCOL(RDSP(LROW),COL,LCOL,TRUE)
+                                CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,TRUE)
                             CASE MOUSESTATE EQ 'LR'
                         END CASE
                     END
@@ -1548,14 +1561,14 @@ GET.HELP:   !
     INCLUDE EB.INCLUDES CRT.LN
 ADD.CHARS:!
     IF NOT(STRT) THEN
-!        CALL EB_TABCOL(RDSP(LROW),COL-LEN(NEW.CHARS),LCOL,TRUE)
+!        CALL EB_TABCOL(REC<LROW+INDROW-1>,COL-LEN(NEW.CHARS),LCOL,TRUE)
         STRT=LCOL
     END
-    LLEN=LEN(RDSP(LROW))
-!    IF LLEN LT STRT AND NOT(TAB.MODE) THEN RDSP(LROW):=SPACE(STRT-LLEN)
+    LLEN=LEN(REC<LROW+INDROW-1>)
+!    IF LLEN LT STRT AND NOT(TAB.MODE) THEN REC<LROW+INDROW-1>:=SPACE(STRT-LLEN)
     IF INS.MODE THEN LLEN=0 ELSE LLEN=LEN(NEW.CHARS)
     THSH='L#':STRT-1
-    RDSP(LROW)=(RDSP(LROW)[1,STRT-1] THSH:NEW.CHARS:RDSP(LROW)[STRT+LLEN,MAX])
+    REC<LROW+INDROW-1>=(REC<LROW+INDROW-1>[1,STRT-1] THSH:NEW.CHARS:REC<LROW+INDROW-1>[STRT+LLEN,MAX])
     CHANGES(LROW)=1
     STRT=0; NEW.CHARS='';
     GOSUB ADD_TO_UNDO
@@ -1574,7 +1587,7 @@ SCROLL.DOWN: !
         DIMOFF = FG
     END ELSE DIMON = ''; DIMOFF = ''
     CRT @(0,(PDEPTH-2)):CLEOL:DIMON:I lnbr_hash1:DIMOFF:
-    CRTLN=RDSP(PDEPTH-1);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
+    CRTLN=REC<PDEPTH-1+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width
     GOSUB CRT.LN
     IF DEL.LINE EQ '' THEN CRT MSG.DSP:
     Y=2
@@ -1854,7 +1867,7 @@ CHG.LROW:
             IF HEX.MODE THEN REC=STMP
             PREV.TIME=TIME()
         CASE FTYP EQ 'Q'   ;! grab the code under IF or END ELSE and remove the remainder IF/END
-            STMP = TRIM(RDSP(LROW))
+            STMP = TRIM(REC<LROW+INDROW-1>)
             Z=INDROW+LROW-1
             STL = 0; MIDL = 0 ; ENDL = 0
             FTYP = ''
@@ -1916,7 +1929,7 @@ CHG.LROW:
         CASE FTYP EQ 'U'
             GOSUB UNINDENT
         CASE FTYP EQ 'V'
-            STMP=RDSP(LROW)
+            STMP=REC<LROW+INDROW-1>
             CONVERT VM:SVM TO AM:VM IN STMP
             Y='%':ITNM:'.':INDROW+LROW-1:'%'
             WRITE STMP ON JET.PASTE,Y
@@ -1925,15 +1938,15 @@ CHG.LROW:
             READ STMP FROM JET.PASTE,Y ELSE NULL
             DELETE JET.PASTE,Y
             CONVERT VM:AM TO SVM:VM IN STMP
-            IF STMP NE RDSP(LROW) THEN RDSP(LROW)=STMP; GOSUB CHG.LROW
+            IF STMP NE REC<LROW+INDROW-1> THEN REC<LROW+INDROW-1>=STMP; GOSUB CHG.LROW
             SCR.UD=1
         CASE FTYP EQ 'S'
-            STMP=RDSP(LROW)
+            STMP=REC<LROW+INDROW-1>
             CALL EB_SWAP(STMP,POS)
             IF POS THEN
-                RDSP(LROW)=STMP
+                REC<LROW+INDROW-1>=STMP
                 GOSUB CHG.LROW
-                CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
+                CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-lnbr_width; GOSUB CRT.LN
             END
         CASE FTYP EQ 'X'
 !      GOSUB ABORT
@@ -1957,29 +1970,29 @@ CHG.LROW:
 SPLIT.LINE: ! Break a line in two, at the cursor position.
 ! First move all subsequent lines down 1 to allow for the new line.
     IF CHANGED THEN GOSUB SCRN.TO.REC
-    FOR I=(PDEPTH-1) TO LROW STEP -1
-        RDSP(I+1)=RDSP(I)
-    NEXT I
-    INS RDSP(LROW) BEFORE REC<INDROW+ROW>
+!    FOR I=(PDEPTH-1) TO LROW STEP -1
+!        REC<I+1+INDROW-1>=REC<I+INDROW-1>
+!    NEXT I
+    INS REC<LROW+INDROW-1> BEFORE REC<INDROW+ROW>
     CALL EB_MARKADJ(INDROW+ROW,1,1)
 ! This will have inserted an extra copy of the line to be split.
 ! Now discard the unwanted bits of each.
-    RDSP(LROW)=RDSP(LROW)[1,LCOL-1]
-    RDSP(LROW+1)=RDSP(LROW+1)[LCOL,MAX]
-    DUMMY=RDSP(LROW); LNM=1; GOSUB FORMAT
+    REC<LROW+INDROW-1>=REC<LROW+INDROW-1>[1,LCOL-1]
+    REC<LROW+1+INDROW-1>=REC<LROW+1+INDROW-1>[LCOL,MAX]
+    DUMMY=REC<LROW+INDROW-1>; LNM=1; GOSUB FORMAT
     COL=I+lnbr_width
-    CALL EB_TRIM(TMP,RDSP(LROW+1),SPC,'L')
+    CALL EB_TRIM(TMP,REC<LROW+1+INDROW-1>,SPC,'L')
     DUMMY=FIELD(TMP,SPC,1)
     IF UPCASE(DUMMY) EQ 'ELSE' THEN
         DUMMY=(IF DUMMY EQ 'ELSE' THEN 'END' ELSE 'end')
         TMP=DUMMY:' ':TMP
         IF I GT 3 THEN I-=ITAB<1>
     END
-    RDSP(LROW+1)=SPACE(I-1):TMP
+    REC<LROW+1+INDROW-1>=SPACE(I-1):TMP
     CHANGES(LROW+1)=TRUE
     IF LROW LT (PDEPTH-1) THEN
         SCR.LR=1-2*(INS.LINE NE ''); SCRL=ROW
-        CRT CLEOL:@(0,ROW+1):INS.LINE:@((lnbr_width+1),ROW+1):; CRTLN=RDSP(LROW+1);CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
+        CRT CLEOL:@(0,ROW+1):INS.LINE:@((lnbr_width+1),ROW+1):; CRTLN=REC<LROW+1+INDROW-1>;CRT.X=1;CRT.Y=PWIDTH-(lnbr_width+1); GOSUB CRT.LN
         FOR Y=ROW+2 TO (PDEPTH-1)
             CRT @(0,Y):(INDROW+Y) lnbr_hash2:
         NEXT Y
@@ -2008,36 +2021,36 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
 ! Now add current line onto end of selected line, with one space between.
 2210 ! del char at end of line
     IF J.LINE LT 0 THEN
-        CALL EB_TRIM(TMP,RDSP(LROW),SPC,'L')
+        CALL EB_TRIM(TMP,REC<LROW+INDROW-1>,SPC,'L')
     END ELSE
-        CALL EB_TRIM(TMP,RDSP(LROW+J.LINE),SPC,'L')
+        CALL EB_TRIM(TMP,REC<LROW+J.LINE+INDROW-1>,SPC,'L')
         IF TAB.MODE THEN CALL EB_TRIM(TMP,TMP,TAB,'L')
     END
     Z = FIELD(TMP,SPC,1)
     NWORD = UPCASE(Z)
     BEGIN CASE
         CASE NWORD EQ 'END' ; TMP=TMP[COL2()+1,MAX]
-        CASE (NWORD EQ 'CASE' OR NWORD EQ 'IF') AND TRIM(RDSP(LROW+J.LINE)) NE ''
+        CASE (NWORD EQ 'CASE' OR NWORD EQ 'IF') AND TRIM(REC<LROW+J.LINE+INDROW-1>) NE ''
             TMP=TMP[COL2(),MAX]
             IF INDEX(TMP,'#',1) THEN NWORD='AND' ELSE NWORD='OR'
             IF Z NE UPCASE(Z) THEN NWORD = DOWNCASE(NWORD)
             TMP = NWORD:TMP
     END CASE
     LOOP
-        CHR = RDSP(LROW)[LCOL-1,1]
+        CHR = REC<LROW+INDROW-1>[LCOL-1,1]
     WHILE LEN(CHR) EQ 0 AND LCOL GT 1 DO
         --LCOL
         --COL
     REPEAT
     CHR = (IF OCONV(CHR,'MCAN') EQ CHR THEN SPC ELSE '')
     IF J.LINE LT 0 THEN
-        RDSP(LROW+J.LINE):=CHR:TMP
+        REC<LROW+J.LINE+INDROW-1>:=CHR:TMP
     END ELSE
-        RDSP(LROW+J.LINE)=RDSP(LROW):CHR:TMP
+        REC<LROW+J.LINE+INDROW-1>=REC<LROW+INDROW-1>:CHR:TMP
     END
     IF TAB.MODE THEN
-        CALL EB_TABCOL(RDSP(LROW+J.LINE),0,LCOL,FALSE)
-        CRTLN=RDSP(LROW+J.LINE)
+        CALL EB_TABCOL(REC<LROW+J.LINE+INDROW-1>,0,LCOL,FALSE)
+        CRTLN=REC<LROW+J.LINE+INDROW-1>
         CRT.X=1;CRT.Y=PWIDTH+1-COL
         CRT @((lnbr_width+1),ROW):
     END ELSE
@@ -2378,15 +2391,15 @@ TCL: !
 INS.TXT: !
     IF LCOL GT 1 THEN
         HASH='L#':LCOL-1
-        Y=RDSP(LROW)[1,LCOL-1] HASH
+        Y=REC<LROW+INDROW-1>[1,LCOL-1] HASH
     END ELSE Y=''
-    RDSP(LROW)=Y:Z:RDSP(LROW)[LCOL,MAX]
+    REC<LROW+INDROW-1>=Y:Z:REC<LROW+INDROW-1>[LCOL,MAX]
     Y=LEN(Z)
     GOSUB CHG.LROW; LLEN+=Y
-    CRT @(COL,ROW):; CRTLN=RDSP(LROW);CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
+    CRT @(COL,ROW):; CRTLN=REC<LROW+INDROW-1>;CRT.X=LCOL;CRT.Y=PWIDTH-COL; GOSUB CRT.LN
     IF I THEN
         LCOL+=Y
-        CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+        CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
     END
     RETURN
 FORMAT: !
@@ -2412,31 +2425,31 @@ UNINDENT: !
     RETURN
 BACK.WORD:!
     LCOL-=1
-    FOR I=LCOL TO 1 STEP -1 UNTIL OCONV(RDSP(LROW)[I,1],PC) NE ''; NEXT I
+    FOR I=LCOL TO 1 STEP -1 UNTIL OCONV(REC<LROW+INDROW-1>[I,1],PC) NE ''; NEXT I
 ! first search for the previous non-alpha character
     LCOL=I-1
-    FOR I=LCOL TO 1 STEP -1 UNTIL INDEX(SPC:TAB,RDSP(LROW)[I,1],1) OR NOT(ICONV(RDSP(LROW)[I,1],PC) NE ''); NEXT I
+    FOR I=LCOL TO 1 STEP -1 UNTIL INDEX(SPC:TAB,REC<LROW+INDROW-1>[I,1],1) OR NOT(ICONV(REC<LROW+INDROW-1>[I,1],PC) NE ''); NEXT I
     LCOL=I+1
-    CALL EB_TABCOL(RDSP(LROW),COL,LCOL,FALSE)
+    CALL EB_TABCOL(REC<LROW+INDROW-1>,COL,LCOL,FALSE)
     RETURN
 GET.WORD: !
     LLEN1=LLEN+1
 ! first search for the next non-alpha character
     I=LCOL
-    IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN
+    IF INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1) THEN
         LOOP
             I+=1
-            Y=RDSP(LROW)[I,1]
-        UNTIL Y='' OR NOT(INDEX(TAB:SPC,RDSP(LROW)[I,1],1)) DO REPEAT
+            Y=REC<LROW+INDROW-1>[I,1]
+        UNTIL Y='' OR NOT(INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1)) DO REPEAT
     END ELSE
-        IF LEN(ICONV(RDSP(LROW)[LCOL,1],PC)) THEN
-            LOOP WHILE ICONV(RDSP(LROW)[I,1],PC) NE '' DO I+=1 REPEAT
-            IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN I+=1
+        IF LEN(ICONV(REC<LROW+INDROW-1>[LCOL,1],PC)) THEN
+            LOOP WHILE ICONV(REC<LROW+INDROW-1>[I,1],PC) NE '' DO I+=1 REPEAT
+            IF INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1) THEN I+=1
         END ELSE
-            LOOP Y=RDSP(LROW)[I,1] UNTIL Y EQ '' OR ICONV(Y,PC) NE '' DO I+=1 REPEAT
+            LOOP Y=REC<LROW+INDROW-1>[I,1] UNTIL Y EQ '' OR ICONV(Y,PC) NE '' DO I+=1 REPEAT
         END
     END
-    WORD=RDSP(LROW)[LCOL,I-LCOL]
+    WORD=REC<LROW+INDROW-1>[LCOL,I-LCOL]
     RETURN
 GET.PREVWORD: !
     SLCOL=LCOL
@@ -2449,20 +2462,20 @@ GET.PREVWORD: !
     LLEN1=LLEN+1
 ! first search for the next non-alpha character
     I=LCOL
-    IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN
+    IF INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1) THEN
         LOOP
             I-=1
-            Y=RDSP(LROW)[I,1]
-        UNTIL I LT 2 OR NOT(INDEX(TAB:SPC,RDSP(LROW)[I,1],1)) DO REPEAT
+            Y=REC<LROW+INDROW-1>[I,1]
+        UNTIL I LT 2 OR NOT(INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1)) DO REPEAT
     END ELSE
-        IF LEN(ICONV(RDSP(LROW)[LCOL,1],PC)) THEN
-            LOOP UNTIL ICONV(RDSP(LROW)[I,1],PC) EQ '' OR I EQ 1 DO I-=1 REPEAT
-            IF INDEX(TAB:SPC,RDSP(LROW)[I,1],1) THEN I-=1
+        IF LEN(ICONV(REC<LROW+INDROW-1>[LCOL,1],PC)) THEN
+            LOOP UNTIL ICONV(REC<LROW+INDROW-1>[I,1],PC) EQ '' OR I EQ 1 DO I-=1 REPEAT
+            IF INDEX(TAB:SPC,REC<LROW+INDROW-1>[I,1],1) THEN I-=1
         END ELSE
-            LOOP Y=RDSP(LROW)[I,1] UNTIL I LT 2 OR ICONV(Y,PC) EQ '' DO I-=1 REPEAT
+            LOOP Y=REC<LROW+INDROW-1>[I,1] UNTIL I LT 2 OR ICONV(Y,PC) EQ '' DO I-=1 REPEAT
         END
     END
-    WORD=RDSP(LROW)[I, LCOL-I]
+    WORD=REC<LROW+INDROW-1>[I, LCOL-I]
     RETURN
 11000 !
     CRT MSG.CLR:"To delete the item, type in the word DELETE, else press <RETURN> ":
@@ -2810,7 +2823,7 @@ GET.CATL: !
     END
     RETURN
 displayLine: !
-    CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=RDSP(LROW);CRT.X=1+OFFSET;CRT.Y=PWIDTH-(lnbr_width+1)
+    CRT @((lnbr_width+1),ROW):CLEOL:; CRTLN=REC<LROW+INDROW-1>;CRT.X=1+OFFSET;CRT.Y=PWIDTH-(lnbr_width+1)
     GOSUB CRT.LN
     CRT @(COL-1,ROW):
     RETURN

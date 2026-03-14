@@ -30,7 +30,7 @@ MAIN$:!
             CHANGED=TRUE; CHANGES(LROW)=TRUE
         END
         CRT @(lnbr_width+1,ROW):CLEOL:
-        CRTLN=RDSP(LROW)
+        CRTLN=REC<LROW+INDROW-1>
         CRT.X=1+OFFSET
         CRT.Y=PWIDTH-lnbr_width
         GOSUB CRT.LN
@@ -65,7 +65,7 @@ MAIN$:!
                 CRT @(0,RR):DIMON:J lnbr_hash1:DIMOFF:
                 IF SCR.UD>0 OR (RR-(PDEPTH-2)-SCR.UD)>0 THEN
                     CRT CLEOL:
-                    CRTLN=RDSP(LROW)
+                    CRTLN=REC<J>
                     CRT.X=1+OFFSET
                     CRT.Y=PWIDTH-lnbr_width
                     GOSUB CRT.LN
@@ -80,7 +80,7 @@ MAIN$:!
         RR=J-INDROW
         LROW=RR+1
 !        RDSP(LROW)=REC<J>
-        SCR.UD=FALSE; LLEN=LEN(RDSP(ROW+1)); SCRL=0
+        SCR.UD=FALSE; LLEN=LEN(REC<ROW+1+INDROW-1>); SCRL=0
     END
     IF SCR.LR THEN
         DUMMY=1+SCRL
@@ -98,7 +98,7 @@ MAIN$:!
                 CRT CLEOL:
                 S=LROW
                 LROW=J
-                CRTLN=RDSP(J)
+                CRTLN=REC<J+INDROW-1>
                 CRT.X=1+OFFSET
                 CRT.Y=PWIDTH-lnbr_width
                 GOSUB CRT.LN

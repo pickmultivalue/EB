@@ -304,6 +304,7 @@ GET.CHAR: !
         CALL EB_UT_INPUT_ZERO(Y,MAT EB_CHARS,FG_ACT.CODE,YNC,YNR,FG_INPUT.CODES,YNCHRS,YNL,FG_TIMEOUT)
         RETURN
 6000    ! Incorporate changed lines into dynamic array, REC.
+        RETURN
         CHANGES(LROW)=TRUE
         FOR I=1 TO PDEPTH
             IF CHANGES(I) THEN

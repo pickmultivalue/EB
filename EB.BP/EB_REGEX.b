@@ -11,17 +11,6 @@
             sstr = line
             GOSUB get_rpos
             IF rpos THEN
-!                FOR c = 1 TO LEN(line)
-!                    sstr = line[1, c]
-!                    GOSUB get_rpos
-!                    IF rpos THEN BREAK
-!                NEXT c
-!                FOR s = 1 TO c
-!                    pos = c - s + 1
-!                    sstr = line[pos, s]
-!                    GOSUB get_rpos
-!                    IF rpos THEN BREAK
-!                NEXT c
                 positions<-1> = (lnpos + rpos):@VM:LEN(sstr)
                 IF NOT(all) THEN BREAK
             END
