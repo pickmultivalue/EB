@@ -170,7 +170,7 @@ INPT: !
         CRT MSG.CLR:
     WHILE FG_ACT.CODE = FG_OPT.CODE DO
         FG_ACT.CODE=FALSE
-        CALL EB_CHOICES(20,3,'',10,EBGETHOME():'JET.PASTE','',Z,1,1,0:SVM:1,'L#20':SVM:'L#40':CTRL.C:'MCP','Paste items':SVM:'Item')
+        CALL EB_CHOICES(20,3,'',30,EBGETHOME():'JET.PASTE','',Z,1,1,0:SVM:1,'L#20':SVM:'L#40':CTRL.C:'MCP','Paste items':SVM:'Item')
         SCR.UD=1
         CALL EB_REFRESH
     REPEAT

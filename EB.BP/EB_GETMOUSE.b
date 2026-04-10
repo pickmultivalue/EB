@@ -6,7 +6,13 @@
     R = FIELD(EVENT,';',1)-1
     C = FIELD(EVENT[COL2()+1,9],'R',1)-1
     FG_TYPEAHEAD.BUFF=''
-    EVENT=(' "')[BTN,1]
+    IF NOT(NUM(BTN)) THEN
+        EVENT = ''
+        C = ''
+        R = ''
+    END ELSE
+        EVENT=(' "')[BTN,1]
+    END
     RETURN
     cleft=3-LEN(EVENT)
     nc=SYSTEM(14)

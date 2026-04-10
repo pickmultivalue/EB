@@ -22,11 +22,13 @@
     BRIGHT=FG
     FG_TAG.CMD.CODE='T'
     FG_FLD=1
+    FG_TIMEDOUT = @FALSE
     EQU THE.REST TO 9999
     WPCOL=0; Sub=''; HELP.ID=''
     IF UNASSIGNED(INP.STRING) THEN INP.STRING=''  ;!SPACE(LENTH)
     IF INIT.FLAG NE AM THEN INP.STRING=INIT.FLAG
     FG_OLD.FIELD=INP.STRING
+    RTN.STRING = ''
 !    BACK=@(-AM.BACK)          ;!CHAR(21)
 !    FWD=@(-AM.FWD)  ;!CHAR(6)
     ERASE=@(-1)     ;* Used when in debug to clear protect from screen
@@ -182,7 +184,7 @@ STARTLBL: !
             L = LEN(INP.STRING)
             IF L LT LENTH THEN
                 CRT INP.STRING:
-                CRT DOTS[1,LENTH-L]:
+                CRT SPACE(LENTH-L): ;!DOTS[1,LENTH-L]:
             END ELSE
                 CRT INP.STRING JUST:
             END
@@ -249,7 +251,7 @@ PROCESS.RTN: !
                     FG_ACT.CODE=FALSE
                 CASE FG_ACT.CODE=FG_ABT.CODE
                     RTN.STRING=EB.CMD<1>
-                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
+!                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
                 CASE FG_ACT.CODE=FG_BCK.CODE
 !                    RTN.STRING=EB.CMD<2>
 !                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
@@ -268,7 +270,7 @@ PROCESS.RTN: !
                 CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
                     EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
                     CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
-                    FG_ACT.CODE=FALSE
+                    FG_ACT.CODE<2> = C:@VM:R
                 CASE FG_ACT.CODE=FG_OPT.CODE
                     IF LEN(CHOICES) OR LEN(F_CHOICES) THEN
                         IF CHOICES = '?' THEN
@@ -529,10 +531,6 @@ ASCII.INPUT:    !
     REPEAT
 FINISH: !
     CASING case_state
-    IF FG_ACT.CODE = FG_ABT.CODE THEN
-!        INP.STRING = ESC
-        RETURN
-    END
     IF INP.POS=2 AND TRIM(INP.STRING)='' THEN INP.STRING=' ' ELSE
         IF TYPE NE 'LIT' THEN INP.STRING=TRIM(INP.STRING,' ',"T")
     END
@@ -647,6 +645,7 @@ VALID.INPUT.CHECK: !
         INP.POS=1; WPCOL=ORIG.COL
         CRT @(0,23):ERRMSG:
     END
+    IF RTN.STRING NE '' AND FG_ACT.CODE NE FG_ABT.CODE THEN INP.STRING = RTN.STRING
     RETURN
 CRT.UNDERLINE: !
     IF HIDDEN THEN RETURN

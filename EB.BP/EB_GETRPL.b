@@ -43,7 +43,7 @@ MAIN$:!
     WHILE POS DO
         BEGIN CASE
             CASE FG_ACT.CODE=FG_OPT.CODE
-                CALL EB_CHOICES(10,8,71,20,'',RSS,Z,1,RPOS,1,'L#70','Previous Searches')
+                CALL EB_CHOICES(10,4,71,30,'',RSS,Z,1,RPOS,1,'L#70','Previous Searches')
                 SCR.UD=1
                 CALL EB_REFRESH
                 GOSUB DisplayPrompt

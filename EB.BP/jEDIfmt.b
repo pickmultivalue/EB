@@ -2,8 +2,10 @@
 ! Format Basic Program Listing
 !
     INCLUDE JBC.h
+    $option jabba
     DEFC INT JBASEEmulateGETINT(INT)
     DEFFUN EBGETHOME()
+    DEFFUN isVariable()
 
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
     am_start=IF_COMPILED_PRIME
@@ -18,6 +20,7 @@
     EQU D.OPTION TO OPTION(4)
     EQU F.OPTION TO OPTION(6)
     EQU I.OPTION TO OPTION(9)
+    EQU J.OPTION TO OPTION(10)
     EQU L.OPTION TO OPTION(12)
     EQU M.OPTION TO OPTION(13)
     EQU O.OPTION TO OPTION(15)
@@ -27,7 +30,8 @@
     EQU T.OPTION TO OPTION(20)
     EQU U.OPTION TO OPTION(21)
 !
-    EQU PLSQL TO OPTION(17)
+    EQU JSON TO OPTION(10)
+    EQU PLSQL TO OPTION(18)
 !
     EQU SQ TO DELCHR(1)
     EQU DQ TO DELCHR(2)
@@ -109,7 +113,7 @@
     MATCH.IND=''
     BEGIN CASE
         CASE PLSQL
-            IND(1)=0;
+            IND(1)=0
             COMMENTS='--'; COMMENTLEN=2
             ENDW='END IF'; ENDSW='ELSIF '
             PREFIX='ELSIF':AM:'END':AM:'EXCEPTION':AM:'FOR'
@@ -133,10 +137,10 @@
 !
             PS(2)=1     ;! ELSE
 !
-            PE(1)=0; SE(1)=1      ;! BEGIN CASE
-            PE(2)=0; SE(2)=0      ;! END
-            PE(3)=0; SE(3)=0      ;! END IF
-            PE(4)=0; SE(4)=0      ;! END LOOP
+            PE(1)=0; SE(1)=1      ;! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE
+            PE(2)=0; SE(2)=0      ;! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END
+            PE(3)=0; SE(3)=0      ;! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF
+            PE(4)=0; SE(4)=0      ;! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP
         CASE 1
             COMMENTS='!*#'; COMMENTLEN=1
             EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END METHOD':AM:'END THEN':AM:'END TRY':AM:'LOOP':AM:'REPEAT':AM:'TRY'
@@ -162,9 +166,9 @@
 !
             SS(4)=-1    ;! REPEAT
 !
-            PE(1)=0; SE(1)=2      ;! BEGIN CASE
-            PE(2)=1; SE(2)=0      ;! END CASE
-            PE(3)=1; SE(3)=0      ;! REPEAT
+            PE(1)=0; SE(1)=2      ;! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE
+            PE(2)=1; SE(2)=0      ;! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE
+            PE(3)=1; SE(3)=0      ;! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT
     END CASE
 !
     LBL.SUFFIX=':!*'; SC=';'
@@ -248,8 +252,41 @@
             READNEXT ID FROM LIST1 ELSE EOL=TRUE
         END
     UNTIL EOL DO
+        EOL = NOT(LISTACTIVE)
         READU D.ITEM FROM fn,ID THEN
-            MATPARSE ITEM FROM D.ITEM USING AM SETTING NA; IF NA NE DCOUNT(D.ITEM,AM) THEN MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
+            IF JSON THEN
+                D.COMMENTS = ''
+                DC = DCOUNT(D.ITEM, @AM)
+                FOR attr = 1 TO DC
+                    line = D.ITEM<attr>
+                    cpos = INDEX(line, '//', 1)
+                    IF cpos THEN
+                        LOOP WHILE cpos GT 1 AND line[cpos-1,1] EQ ' ' DO cpos-- REPEAT
+                        comment = line[cpos, LEN(line)]
+                        D.ITEM<attr> = line[1, cpos-1]
+                        D.COMMENTS<attr> = cpos:@VM:comment
+                    END
+                NEXT
+                D.ITEM = D.ITEM->$fromjson()
+                D.ITEM = D.ITEM->$tojson(1)
+                D.ITEM = CHANGE(D.ITEM, @TAB, SPACE(4))
+                D.ITEM = CHANGE(D.ITEM, @LF, @AM)
+                FOR attr = 1 TO DC
+                    comment = D.COMMENTS<attr>
+                    IF comment EQ '' THEN CONTINUE
+                    cpos = comment<1,1>
+                    DEL comment<1,1>
+                    IF cpos GT 1 THEN
+                        D.ITEM<attr> := comment
+                    END ELSE
+                        INS comment BEFORE D.ITEM<attr>
+                    END
+                NEXT attr
+                WRITE D.ITEM ON fn,ID
+                CONTINUE
+            END
+            MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
+            IF NA NE DCOUNT(D.ITEM,AM) THEN MATPARSE ITEM FROM D.ITEM USING AM SETTING NA
             IF L.OPTION THEN OMASK='' ELSE
                 IF NA > 999 THEN OMASK='R%4 ' ELSE OMASK='R%3 '
             END
@@ -309,22 +346,34 @@
                                         END
                                     END
                                 END
-                            END ELSE SQFLAG = FALSE; DQFLAG = FALSE
+                            END ELSE
+                                SQFLAG = FALSE
+                                DQFLAG = FALSE
+                            END
                             IF NOT(SQFLAG OR DQFLAG) THEN
-                                NUM.FLDS=DCOUNT(T.STMT,SPC)
                                 F1=FIELD(T.STMT,SPC,1)
                                 IF NUM(F1) OR (INDEX(LBL.SUFFIX,F1[LEN(F1),1],1) AND NOT(INDEX(F1,DQ,1) OR INDEX(F1,SQ,1))) THEN
-                                    IF INDEX(F1, '"', 1) OR INDEX(F1, '\', 1) OR INDEX(F1, \'\, 1) ELSE
-                                        LBL=F1; F1=FIELD(TRIM(T.STMT),SPC,2)
+                                    IF isVariable(' ', F1, ' ') THEN
+                                        LBL=F1
+                                        IF LBL EQ ATTR THEN
+                                            ATTR = ''
+                                        END
+                                        LOOP WHILE INDEX(COMMENTS, LBL 'R#1', 1) DO
+                                            LBL = LBL[1, LEN(LBL)-1]
+                                        REPEAT
+                                        T.STMT = T.STMT[LEN(LBL)+1,MAX]
+                                        F1=FIELD(T.STMT,SPC,1)
+
                                     END
                                 END
+                                NUM.FLDS=DCOUNT(T.STMT,SPC)
                                 FLAST=FIELD(T.STMT,SPC,NUM.FLDS)
                                 NFLAST=FIELD(T.STMT,SPC,NUM.FLDS-1)
                                 IF NFLAST=TOW THEN
                                     NFLAST=FIELD(T.STMT,SPC,NUM.FLDS-2)[1,2]
                                 END ELSE NFLAST=NFLAST[1,2]
 !
-                                IF 1 THEN         ;!NOT(PLSQL) THEN
+                                IF 1 THEN   ;!NOT(PLSQL) THEN
                                     LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
                                         SPOS = FALSE
                                     END
@@ -397,7 +446,10 @@
                                         M.INDEX='P':P.INDEX
                                         LOCATE M.INDEX IN MATCH.E<1,mv_start> BY AL SETTING ME.INDEX ELSE ME.INDEX=FALSE
                                         LOCATE M.INDEX IN MATCH.S<1,mv_start> BY AL SETTING MATCH.POS THEN MS.INDEX=M.INDEX
-                                    END ELSE ONEND=FALSE; P.INDEX=FALSE
+                                    END ELSE
+                                        ONEND=FALSE
+                                        P.INDEX=FALSE
+                                    END
 !
                                     IF NFLAST=GOW ELSE
                                         LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY AL SETTING S.INDEX THEN
@@ -445,153 +497,161 @@
                                                 DEL MATCH.IND<1>
                                             END ELSE
                                                 CRT 'Indent mismatch detected at ':LNO; RQM
-                                                GO Error
+                                                GO Error_condition
+                                                END
                                             END
                                         END
-                                    END
-                                    IF LEN(F1) THEN
-                                        LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
-                                            EXCEPT.IND+=1
+                                        IF LEN(F1) THEN
+                                            LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
+                                                EXCEPT.IND+=1
+                                            END
                                         END
                                     END
                                 END
                             END
                         END
-                    END
-                UNTIL NEXT.ATTR='' DO
-                    STMT+=1
+                    UNTIL NEXT.ATTR='' DO
+                        STMT+=1
+                        LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
+                        IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
+                        ATTR=NEXT.ATTR
+                    REPEAT
                     LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
-                    IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
-                    ATTR=NEXT.ATTR
-                REPEAT
-                LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
-                IF T.OPTION THEN
-                    IF M.OPTION THEN IF LNO GT 1 THEN PRINT
-                    IF L.OPTION ELSE PRINT LNO OMASK:
-                END
-                IF COMMENT THEN
-                    IF NOT(CUR.INDEX) THEN CUR.INDEX=1
-                END ELSE
-                    IF ONEND THEN
-                        IF NOT(TECNT) THEN
-                            IF NOT(CUR.INDEX) THEN CUR.INDEX=1
-                        END
-                    END
-                END
-                IF CUR.INDEX > 0 OR (T.STMT = 'END' AND LNO = NA AND CUR.INDEX = 0) THEN
-                    IF CUR.INDEX = 0 THEN
-                        PAD = 0
-                        LINE = ''
-                    END ELSE
-                        IF COMMENT THEN PAD=CT(CUR.INDEX) ELSE PAD=T(CUR.INDEX)
-                    END
                     IF T.OPTION THEN
-                        IF S.OPTION THEN
-                            PRINT PAD.FMT[1,PAD]:
-                            PAD2=PAD.FMT[1,PAD]
-                        END ELSE
-                            PRINT SPACE(PAD):
-                            PAD2=SPACE(PAD)
+                        IF M.OPTION THEN IF LNO GT 1 THEN PRINT
+                        IF L.OPTION ELSE PRINT LNO OMASK:
+                    END
+                    IF COMMENT THEN
+                        IF NOT(CUR.INDEX) THEN CUR.INDEX=1
+                    END ELSE
+                        IF ONEND THEN
+                            IF NOT(TECNT) THEN
+                                IF NOT(CUR.INDEX) THEN CUR.INDEX=1
+                            END
                         END
                     END
-                END ELSE
-                    PAD=1
-                    PAD2=SPACE(1)
-                    IF SYSTEM(1) ELSE CRT BELL:
-                    IF NOT(F.OPTION OR T.OPTION) THEN CRT ID
-                    PRINT '? ':LNO 'R%4 ':LINE
-                    RQM;RQM
-                    CUR.INDEX=1
-                    NEXT.INDEX=1
-                END
-                LINELEN=SYSTEM(2)-OLEN-PAD
-                LNLEN=LINELEN+1
-                IF T.OPTION THEN
-                    IF COMMENT AND B.OPTION THEN
-                        IF LINE='!' THEN LINE=STR('*',LINELEN)
-                    END
-                    LJUST='L#':LINELEN
-                    PRINT LINE LJUST
-                    LOOP WHILE LEN(LINE) GT LNLEN DO
-                        PRINT SPACE(OLEN):PAD2:
-                        PRINT LINE[LNLEN,LINELEN]
-                        LNLEN+=LINELEN
-                    REPEAT
-                END
-                IF TRIM(LINE)='' THEN LINE=''
-                IF F.OPTION THEN
-                    IF LINE='' THEN ITEM(LNO)='' ELSE
-                        IF LBL='' THEN
-                            LINE=SPACE(PAD):LINE
+                    IF CUR.INDEX > 0 OR (T.STMT = 'END' AND LNO = NA AND CUR.INDEX = 0) THEN
+                        IF CUR.INDEX = 0 THEN
+                            PAD = 0
+                            LINE = ''
                         END ELSE
-                            PAD-=LEN(LBL)
-                            IF PAD<1 THEN PAD=1
-                            LINE=LBL:SPACE(PAD):TRIM(OCONV(LINE,'G1 999'), ' ', 'L')
+                            IF COMMENT THEN PAD=CT(CUR.INDEX) ELSE PAD=T(CUR.INDEX)
                         END
-                        LINE=TRIM(LINE,' ',"T")
-                        ITEM(LNO)=LINE
+                        IF T.OPTION THEN
+                            IF S.OPTION THEN
+                                PRINT PAD.FMT[1,PAD]:
+                                PAD2=PAD.FMT[1,PAD]
+                            END ELSE
+                                PRINT SPACE(PAD):
+                                PAD2=SPACE(PAD)
+                            END
+                        END
+                    END ELSE
+                        PAD=1
+                        PAD2=SPACE(1)
+                        IF SYSTEM(1) ELSE CRT BELL:
+                        IF NOT(F.OPTION OR T.OPTION) THEN CRT ID
+                        PRINT '? ':LNO 'R%4 ':LINE
+                        RQM;RQM
+                        CUR.INDEX=1
+                        NEXT.INDEX=1
                     END
-                END
-            NEXT LNO
-Error:      !
-            IF F.OPTION THEN
-                IF CUR.INDEX > 1 THEN
-                    IF U.OPTION THEN MATWRITE ITEM ON fn,ID:ID.SUFFIX
-                END ELSE MATWRITE ITEM ON fn,ID:ID.SUFFIX
-            END
-            IF SYSTEM(1) ELSE
+                    LINELEN=SYSTEM(2)-OLEN-PAD
+                    LNLEN=LINELEN+1
+                    IF T.OPTION THEN
+                        IF COMMENT AND B.OPTION THEN
+                            IF LINE='!' THEN LINE=STR('*',LINELEN)
+                        END
+                        LJUST='L#':LINELEN
+                        PRINT LINE LJUST
+                        LOOP WHILE LEN(LINE) GT LNLEN DO
+                            PRINT SPACE(OLEN):PAD2:
+                            PRINT LINE[LNLEN,LINELEN]
+                            LNLEN+=LINELEN
+                        REPEAT
+                    END
+                    IF TRIM(LINE)='' THEN LINE=''
+                    IF F.OPTION THEN
+                        IF (LINE:LBL) EQ '' THEN ITEM(LNO)='' ELSE
+                            IF LBL='' THEN
+                                LINE=SPACE(PAD):LINE
+                            END ELSE
+                                PAD-=LEN(LBL)
+                                IF PAD<1 THEN PAD=1
+                                LINE=LBL:SPACE(PAD):TRIM(LINE, ' ', 'L')
+                            END
+                            LINE=TRIM(LINE,' ',"T")
+                            ITEM(LNO)=LINE
+                        END
+                    END
+                NEXT LNO
+                Error_condition:
                 IF F.OPTION THEN
-                    IF T.OPTION THEN CRT '--- done ---': ELSE
-                        CRT ICNT 'R#6 ':ID:ID.SUFFIX:
-                    END
-                END ELSE CRT '--- done ---':
-                IF CUR.INDEX > 1 THEN
-                    CRT @(-3):BELL:' * unresolved structure * at line ':LNO:' (':CUR.INDEX:')'
-                    CRT T.STMT
-                    INPUT CONT,1
-                END ELSE CRT
+                    IF CUR.INDEX > 1 THEN
+                        IF U.OPTION THEN MATWRITE ITEM ON fn,ID:ID.SUFFIX
+                    END ELSE MATWRITE ITEM ON fn,ID:ID.SUFFIX
+                END
+                IF SYSTEM(1) ELSE
+                    IF F.OPTION THEN
+                        IF T.OPTION THEN CRT '--- done ---': ELSE
+                            CRT ICNT 'R#6 ':ID:ID.SUFFIX:
+                        END
+                    END ELSE CRT '--- done ---':
+                    IF CUR.INDEX > 1 THEN
+                        CRT @(-3):BELL:' * unresolved structure * at line ':LNO:' (':CUR.INDEX:')'
+                        CRT T.STMT
+                        INPUT CONT,1
+                    END ELSE CRT
+                END
+            END ELSE
+                CRT BELL:SQ:ID:"' not on file!"
+                INPUT CONT,1
+                RELEASE fn,ID
             END
+            IF LISTACTIVE THEN ICNT=ICNT+1 ELSE STOP
+        REPEAT
+        STOP
+!
+        SPLITSTMT:
+!
+        ATTR = TRIM(ATTR, SC, 'T')
+        IF INDEX(COMMENTS,ATTR,1) THEN
+            SEMI.COLON=0
         END ELSE
-            CRT BELL:SQ:ID:"' not on file!"
-            INPUT CONT,1
-            RELEASE fn,ID
+            scc = 1
+            LOOP
+                SEMI.COLON=INDEX(ATTR,SC,scc)
+            WHILE SEMI.COLON DO
+                IF (isVariable(' ', ATTR[1, SEMI.COLON-1], ' ')) THEN BREAK
+                scc++
+            REPEAT
         END
-        IF LISTACTIVE THEN ICNT=ICNT+1 ELSE STOP
-    REPEAT
-    STOP
-!
-SPLITSTMT:
-!
-    ATTR = TRIM(ATTR, ';', 'T')
-    IF INDEX(COMMENTS,ATTR,1) THEN SEMI.COLON=0 ELSE SEMI.COLON=INDEX(ATTR,';',1)
-    SEMIATTR = ATTR[1, SEMI.COLON]
-    IF MOD(COUNT(SEMIATTR, '"'),2) OR MOD(COUNT(SEMIATTR, "'"),2) THEN
-        SEMI.COLON = 0
-    END ELSE
-        IF COUNT(SEMIATTR, '(') NE COUNT(SEMIATTR, ')') THEN SEMI.COLON = 0
-    END
-    SEMICTR=2
-    IF SEMI.COLON THEN
-        FOR DT=1 TO 3 WHILE SEMI.COLON
-            NODEL=DCOUNT(ATTR,DELCHR(DT))
-            FOR DC=1 TO NODEL STEP 2 WHILE SEMI.COLON
-                DL(DT)=INDEX(ATTR,DELCHR(DT),DC)
-                IF SEMI.COLON LT DL(DT) ELSE
-                    DL(DT)=INDEX(ATTR,DELCHR(DT),DC+1)
-                    LOOP WHILE SEMI.COLON AND SEMI.COLON LT DL(DT) DO
-                        SEMI.COLON=INDEX(ATTR,SC,SEMICTR)
-                        SEMICTR+=1
-                    REPEAT
-                END
-            NEXT DC
-        NEXT DT
-    END
-    IF SEMI.COLON THEN
-        T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
-        NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
-        ATTR=ATTR[1,SEMI.COLON]
-    END ELSE
-        T.STMT=TRIM(ATTR,' ',"B")
-        NEXT.ATTR=''
-    END
-    RETURN
+        SEMIATTR = ATTR[1, SEMI.COLON]
+        SEMICTR=2
+        IF SEMI.COLON THEN
+            FOR DT=1 TO 3 WHILE SEMI.COLON
+                NODEL=DCOUNT(ATTR,DELCHR(DT))
+                FOR DC=1 TO NODEL STEP 2 WHILE SEMI.COLON
+                    DL(DT)=INDEX(ATTR,DELCHR(DT),DC)
+                    IF SEMI.COLON LT DL(DT) ELSE
+                        DL(DT)=INDEX(ATTR,DELCHR(DT),DC+1)
+                        LOOP WHILE SEMI.COLON AND SEMI.COLON LT DL(DT) DO
+                            SEMI.COLON=INDEX(ATTR,SC,SEMICTR)
+                            IF NOT(isVariable(' ', ATTR[1, SEMI.COLON], ' ')) THEN
+                                SEMI.COLON = @FALSE
+                            END
+                            SEMICTR+=1
+                        REPEAT
+                    END
+                NEXT DC
+            NEXT DT
+        END
+        IF SEMI.COLON THEN
+            T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
+            NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
+            ATTR=ATTR[1,SEMI.COLON]
+        END ELSE
+            T.STMT=TRIM(ATTR,' ',"B")
+            NEXT.ATTR=''
+        END
+        RETURN

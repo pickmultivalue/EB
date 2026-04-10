@@ -8,7 +8,7 @@
 ! The variables RSTR and WSTR are the original search and replace sets.
 ! Both RSTR and WSTR may contain @n strings throughout (ie @1 @2 etc)
 ! or simply ... which implies @1 (though it is not wise to do so).
-! WSTR may also contain the literal (x) (note: x must be in lower case)
+! WSTR may also containg the literal (x) (note: x must be in lower case)
 ! which will generate automatic sequence numbers in parentheses which
 ! can be used when creating/modifying Dimensioned array equates.
 ! The DELIMS equate is used if the Whole Words was selected to ensure
@@ -164,7 +164,7 @@ MAIN$:!
             LINE<I+1>=REC<LINE.NO+I>
         NEXT I
         LEADWS = ''; TRAILWS = ''
-        IF NOT(INDEX(RSTR, TAB, 1)) THEN
+        IF NOT(INDEX(TAB:' ', RSTR<1,2>[1,1], 1)) THEN
             FOR I = 1 TO LEN(LINE)
                 CH = LINE[I,1]
                 IF INDEX(TAB:' ',CH,1) THEN
@@ -235,6 +235,7 @@ MAIN$:!
                             POS = NPOS
                         END ELSE POS = @FALSE
                     END
+
                     IF POS THEN
                         POSARR<-1> = POS
                         POSLEN<-1> = LEN(NEW.LINE)
@@ -242,6 +243,11 @@ MAIN$:!
                         RWCHARS<CNT> = NEW.LINE
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
                     END ELSE OK=FALSE
+                END ELSE
+                    IF CNT EQ STR.CNT THEN
+                        RVARS<VNBR+1> = SLINE
+                        SLINE = ''
+                    END
                 END
             NEXT CNT
             THE.REST = SLINE
@@ -433,7 +439,10 @@ MAIN$:!
                             FIRST.DISP=FALSE
                         END
                     END
-                    IF NOT(SUPPRESS.OUTPUT) THEN CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
+                    IF NOT(SUPPRESS.OUTPUT) THEN
+                        CRT LINE.NO lnbr_hash1:'<':ORIG.LINE[1,PWIDTH-lnbr_width] LHASH
+                        CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
+                    END
                 END
                 REC<LINE.NO>=LINE
                 IF NDC LT ODC THEN

@@ -105,11 +105,12 @@
                 find_cmd:= ' \( ':CHANGE(matching, @AM, ' -oE '):' \)'
             END
         END
-        find_cmd:= ' -exec grep -E'
-        IF NOT(LEN(types)) THEN
-            find_cmd := ' -I'
-        END
-        find_cmd:= ' -l':nocase:' -- ':sent:' {} \;':sort
+!        find_cmd:= ' -exec grep -E'
+!        IF NOT(LEN(types)) THEN
+!            find_cmd := ' -I'
+!        END
+!        find_cmd:= ' -l':nocase:' -- ':sent:' {} \;':sort
+        find_cmd = 'rg -l ':sent:' ':dir
         IF verbose THEN CRT;CRT find_cmd;CRT
         EXECUTE @IM:'k':find_cmd CAPTURING list
     END

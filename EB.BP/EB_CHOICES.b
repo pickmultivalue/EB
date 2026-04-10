@@ -1,7 +1,7 @@
     SUBROUTINE EB_CHOICES(C.COL,C.ROW,WIDTH,DEPTH,C.FILE,C.ID,VALUE,FLD.NBRS,MV,ATTRS,JUSTS,HEADER)
     $option jabba
     INCLUDE EB.EQUS EB.COMMONS
-    COM GEX(50),EXTRAS(50)
+    INCLUDE EB.EQUS EBCOM
     GO MAIN$
 !
 !=========== Program's Purpose ===============
@@ -71,7 +71,7 @@
     EQU NEXT.SEL TO CHAR(14), PREV.SEL TO CHAR(16)
     EQU MAX TO 999999
 !
-MAIN$:!
+MAIN$:
 !
     DEFC INT JBASEEmulateGETINT(INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
@@ -148,7 +148,8 @@ MAIN$:!
     disable_multi_sel = INDEX(FLD.NBRS, '-', 1)
     force_selection = INDEX(FLD.NBRS, '+', 1)
     auto_complete = INDEX(FLD.NBRS, '*', 1)
-    CONVERT '-+*' TO '' IN FLD.NBRS
+    auto_sel = INDEX(FLD.NBRS, '>', 1)
+    CONVERT '-+*>' TO '' IN FLD.NBRS
     NBR.FLDS=DCOUNT(FLD.NBRS,SVM)
     FIRST.VAL=0
     FIRST.ATTR=ATTRS<1,1,1>
@@ -200,7 +201,7 @@ MAIN$:!
         END
         DISP.ATTRS<1,1,A>=SRT:ATTR
     NEXT A
-    IF LEN(RR) AND RR LT 1 THEN RR=8
+    IF LEN(RR) AND RR LT 0 THEN RR=8
     IF WIDTH EQ '' THEN
         IF JUSTS NE '' THEN
             WIDTH=2
@@ -254,7 +255,7 @@ MAIN$:!
         SAVE.ATTRS=ATTRS
         BEGIN CASE
             CASE fn EQ 'EB.WORK'; F.FILE=FG_WORK.FILE
-            CASE fn EQ 'EB.HELP.INDEX'; F.FILE=FG_EB.HELP        ;!.INDEX
+            CASE fn EQ 'EB.HELP.INDEX'; F.FILE=FG_EB.HELP        ;!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX!.INDEX
             CASE fn MATCHES "1N0N"
                 IF FG_SCR.PAGING<1,fn> EQ FG_WINDOW THEN fn=WIN.PANE(fn) ELSE fn=DAT(fn)
                 GOSUB OPEN.FILE
@@ -349,6 +350,15 @@ MAIN$:!
     END ELSE
         NBR.VALS=DCOUNT(VALUES<K.ATTR>,VM)
     END
+    SUB.LENGTH=''
+    SUB.CODES=FG_SRCH.CH:VM:FG_SEL.CH:VM:FG_TOP.CH:VM:FG_NXT.CH:VM:FG_PRV.CH:VM:FG_TAB.CH
+    IF UNASSIGNED(FG_ID.CHOICES) THEN MAT CRT.PARAMS=''
+    IF NOT(disable_multi_sel) AND FG_ID.CHOICES NE VALUES<1> THEN SUB.CODES<1,-1>=FG_TAG.CH
+    SUB.CODES<2>='1X'
+    FIRST.VAL=0
+    FOR A=1 TO NBR.ATTRS UNTIL FIRST.VAL
+        IF JUSTS<1,1,A> NE '' THEN FIRST.VAL=A
+    NEXT A
     IF NBR.VALS LT DEPTH THEN DEPTH=NBR.VALS+(COL.HDS NE '')
     DEPTH += (auto_complete NE 0)
 !
@@ -364,46 +374,7 @@ MAIN$:!
     BOX.COLOURS=FG_CURR.COLOURS
     IF SCREEN.SAVE<1,1> NE '' THEN CALL EB_SCREEN.SAVE(FG_DISK.DRIVE:FG_CRT.PAGE)
 !
-    CALL EB_BOX(CC,RR,WIDTH,DEPTH,1,BOX.CLEAR,BOX.DRAW)
-    IF HEADER NE '' THEN
-        HEADER=TRIM(HEADER HASH,' ',"T")
-        CRT @(CC+INT((WIDTH-LEN(HEADER))/2)-2-GR.EMBED,RR):GROFF:HEADER:GRON:@(CC+WIDTH,RR):GROFF:
-    END
-    CC+=GR.EMBED
-    CRT MENU.COLOURS:
-    INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
-    CC-=GR.EMBED
-    RV.COL=CC+2-RV.EMBED
-    CC+=2
-    IF COL.HDS NE '' THEN
-        RR+=1
-        DEPTH-=1
-        COL.HD=''
-        FOR I=1 TO NBR.ATTRS
-            JUST=COL.JUSTS<1,1,I>
-            IF JUST NE 'L#0' THEN COL.HD:=COL.HDS<1,1,I> JUST
-        NEXT I
-        CRT @(CC,RR):BG:COL.HD HASH:FG:
-    END
-    IF auto_complete THEN
-        RR+=1
-        DEPTH-=1
-        CRT @(CC,RR):BG:'Filter:':FG:
-        auto_complete_pos = @(CC,RR)
-    END
-    RR+=1
-    SUB.LENGTH=''
-    SUB.CODES=FG_SRCH.CH:VM:FG_SEL.CH:VM:FG_TOP.CH:VM:FG_NXT.CH:VM:FG_PRV.CH:VM:FG_TAB.CH
-    IF UNASSIGNED(FG_ID.CHOICES) THEN MAT CRT.PARAMS=''
-    IF NOT(disable_multi_sel) AND FG_ID.CHOICES NE VALUES<1> THEN SUB.CODES<1,-1>=FG_TAG.CH
-    SUB.CODES<2>='1X'
-    FIRST.VAL=0
-    FOR A=1 TO NBR.ATTRS UNTIL FIRST.VAL
-        IF JUSTS<1,1,A> NE '' THEN FIRST.VAL=A
-    NEXT A
-    RR-=1
-    FOOTER.PREFIX=@(CC+WIDTH-13-2*GR.EMBED,RR+DEPTH+1):GROFF
-    FOOTER.SUFFIX=GRON:@(CC+WIDTH,RR+DEPTH+1):GROFF
+    box_shown = @FALSE
     FILTER.VALUE = ''
     SAVE.DEPTH = DEPTH
     SAVE.VALUES = VALUES
@@ -414,8 +385,23 @@ RESTART: !
 !
     R=1
     IF INIT.VALUE EQ '' THEN C=1 ELSE
-        LOCATE INIT.VALUE IN VALUES<K.ATTR,vm_start> SETTING C ELSE C=1
+        LOCATE INIT.VALUE IN VALUES<K.ATTR,vm_start> SETTING C THEN
+            IF auto_sel THEN
+                VALUE = INIT.VALUE
+                GO EXIT.2
+            END
+        END ELSE
+            C=1
+            IF auto_complete THEN
+                auto_complete = 2
+                filter_obj->last_filter = INIT.VALUE
+                GOSUB REFINE
+            END
+        END
     END
+
+    IF NOT(box_shown) THEN GOSUB show_box
+
     NBR.PAGES=INT((NBR.VALS-1)/DEPTH)+1
     LAST.PGE=INT((NBR.VALS-1)/DEPTH)*DEPTH+1
     IF C GT DEPTH THEN
@@ -509,6 +495,17 @@ RESTART: !
                 END
         END CASE
         BEGIN CASE
+            CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
+                EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
+                CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, MC, MR)
+                IF MC GT C.COL AND C LE (C.COL+WIDTH) THEN
+                    IF MR GT C.ROW AND R LT (C.ROW+DEPTH) THEN
+                        diff = MR - RR
+                        I = diff
+                        IF K.ATTR EQ 'L' THEN VALUE=I ELSE VALUE=VALUES<K.ATTR,I>
+                        BREAK
+                    END
+                END
             CASE FG_ACT.CODE EQ FG_SEARCH.CODE
             CASE FG_ACT.CODE EQ FG_SEL.CODE
             CASE FG_ACT.CODE EQ FG_SKP.CODE OR FG_ACT.CODE EQ FG_SKP.CODE
@@ -589,7 +586,7 @@ CHAR.SEARCH:    !
         END CASE
     REPEAT
 !
-    CRT @(CC,RR+R):RVOFF:NFLSH:
+    IF box_shown THEN CRT @(CC,RR+R):RVOFF:NFLSH:
 FINISH: !
     IF VALUE EQ '' AND NOT(EOF) THEN
         CALL EB_MERRMSG('','Continue with search (Y/N)','',ANS,'Y':@VM:'N')
@@ -599,17 +596,19 @@ FINISH: !
             GO RESTART
         END
     END
-    FG_CURR.COLOURS=SAVE.COLOURS<1>; FG_PREV.COLOURS=SAVE.COLOURS<2>
-    IF SCREEN.SAVE<1,1> NE '' THEN
-        IF FG_KEEP.CHOICES ELSE
-            IF FG_TERM.TYPE[2,1] EQ 'V' THEN CRT BOX.CLEAR: ELSE
-                CALL EB_SCREEN.REST(FG_DISK.DRIVE:FG_CRT.PAGE)
+    IF box_shown THEN
+        FG_CURR.COLOURS=SAVE.COLOURS<1>; FG_PREV.COLOURS=SAVE.COLOURS<2>
+        IF SCREEN.SAVE<1,1> NE '' THEN
+            IF FG_KEEP.CHOICES ELSE
+                IF FG_TERM.TYPE[2,1] EQ 'V' THEN CRT BOX.CLEAR: ELSE
+                    CALL EB_SCREEN.REST(FG_DISK.DRIVE:FG_CRT.PAGE)
+                END
             END
+            CRT FG_CURR.COLOURS:
+        END ELSE
+            CRT FG_CURR.COLOURS:
+            CRT BOX.CLEAR:
         END
-        CRT FG_CURR.COLOURS:
-    END ELSE
-        CRT FG_CURR.COLOURS:
-        CRT BOX.CLEAR:
     END
 EXIT.2: !
     INCLUDE EB.OS.INCLUDES PC.ON.CURSOR
@@ -803,7 +802,7 @@ GET.LINE: !
     END
     RETURN
 !
-OPEN.FILE:!
+OPEN.FILE:
 !
     IF NOT(fn MATCHES "1N0N") THEN
         LOCATE fn IN OPEN.FILE.LIST<am_start> SETTING POS ELSE
@@ -901,4 +900,36 @@ RESUME.SEARCH: !
         INCLUDE EB.OS.INCLUDES INPUT.ZERO
     REPEAT
     ECHO ON
+    RETURN
+show_box:
+    box_shown = @TRUE
+    CALL EB_BOX(CC,RR,WIDTH,DEPTH,1,BOX.CLEAR,BOX.DRAW)
+    IF HEADER NE '' THEN
+        HEADER=TRIM(HEADER HASH,' ',"T")
+        CRT @(CC+INT((WIDTH-LEN(HEADER))/2)-2-GR.EMBED,RR):GROFF:HEADER:GRON:@(CC+WIDTH,RR):GROFF:
+    END
+    CC+=GR.EMBED
+    CRT MENU.COLOURS:
+    INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
+    CC-=GR.EMBED
+    RV.COL=CC+2-RV.EMBED
+    CC+=2
+    IF COL.HDS NE '' THEN
+        RR+=1
+        DEPTH-=1
+        COL.HD=''
+        FOR I=1 TO NBR.ATTRS
+            JUST=COL.JUSTS<1,1,I>
+            IF JUST NE 'L#0' THEN COL.HD:=COL.HDS<1,1,I> JUST
+        NEXT I
+        CRT @(CC,RR):BG:COL.HD HASH:FG:
+    END
+    IF auto_complete THEN
+        RR+=1
+        DEPTH-=1
+        CRT @(CC,RR):BG:'Filter:':FG:
+        auto_complete_pos = @(CC,RR)
+    END
+    FOOTER.PREFIX=@(CC+WIDTH-13-2*GR.EMBED,RR+DEPTH+1):GROFF
+    FOOTER.SUFFIX=GRON:@(CC+WIDTH,RR+DEPTH+1):GROFF
     RETURN

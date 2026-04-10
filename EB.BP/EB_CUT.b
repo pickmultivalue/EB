@@ -46,13 +46,13 @@ MAIN$:!
                 CRT MSG.CLR:"Enter Paste Name or Number (F1) ":
                 L=20; Z=''
                 GOSUB INPT
-            WHILE FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO
+            WHILE FG_ACT.CODE NE FG_ABT.CODE AND FG_ACT.CODE NE FG_JMP.CODE AND INDEX(0,Z,1) DO
                 IF FG_ACT.CODE = FG_HLP.CODE THEN
                     CALL EB_HELP('EBCUT', @FALSE)
                 END
             REPEAT
             IF FG_ACT.CODE EQ FG_JMP.CODE THEN Z = '^^'
-            IF INDEX(ESC,Z,1) THEN
+            IF FG_ACT.CODE EQ FG_ABT.CODE THEN
                 Y=CUT.POS<1,1,2>-OFFSET
                 CUT.POS=CUT.POS<1,1,1>-OFFSET
                 CUT.POS-=INDROW

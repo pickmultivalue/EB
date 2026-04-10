@@ -1413,14 +1413,13 @@ GET.HELP:   !
                             CONVERT TAB TO SPC IN DUMMY
                             CALL EB_READINCL(HEADERS, DUMMY:'', DUMMY, HEADER, FALSE)
                         END
-                    CASE DUMMY EQ 'OBJECT' OR REC<LROW+INDROW-1>[LCOL-lnbr_width,4] EQ 'new '
+                    CASE DUMMY EQ 'OBJECT' OR DUMMY EQ 'NEW' OR REC<LROW+INDROW-1>[LCOL-lnbr_width,4] EQ 'new '
                         IF DUMMY EQ 'OBJECT' THEN
                             DUMMY=FIELD(REC<LROW+INDROW-1>[LCOL,MAX],'(',2)
                             DUMMY=FIELD(CONVERT(DUMMY,'"',"'"),"'", 2)
                         END ELSE
                             DUMMY=FIELD(REC<LROW+INDROW-1>[LCOL,MAX],'(',1)
                         END
-                        DUMMY := '.jabba'
                     CASE 1
                         READ tags FROM F.currdir,'tags' THEN
                             POS=INDEX(tags,word:TAB,1)
@@ -1792,7 +1791,7 @@ CHG.LROW:
         CASE FTYP EQ 'B'
             IF DSPLY NE '' AND ERR.NOS NE COMPER THEN GO 2700 ELSE CRT MSG.CLR:'No errors ':PR:; INPUT FTYP:
         CASE FTYP EQ 'C'
-            CALL EB_COMPARE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
+            CALL EB_COMPARE(FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
             SCR.UD=TRUE ;!SCRL=0
             MREC=''
             CRT MSG.DSP:
@@ -2124,7 +2123,7 @@ TCL: !
     RETURN
 !================
 5000 ! Merge lines from an item
-    CALL EB_MERGE(MAT RDSP,FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
+    CALL EB_MERGE(FIL,REC,CHANGED,MREC,POS,READ.AGAIN,LCOL,LROW,ROW,INDROW,PR,MSG.CLR,MSG.AKN,FLNM,MFLNM,ITNM,MITNM,DCT,MDCT)
     SCR.UD=TRUE; OFFSET=0; SCRL=0
     COL=(lnbr_width+1)
     MREC=''
@@ -2411,7 +2410,11 @@ INDENT: !
     CRT MSG.CLR:'Formatting program...':
     ECHO OFF
     DUMMY='jEDIfmt ':path:'JET.PASTE ':Y
-    IF TYPE EQ 'SQL' THEN DUMMY:=' (Q'
+    BEGIN CASE
+    CASE TYPE EQ 'json'; DUMMY:=' (J'
+    CASE TYPE EQ 'SQL'; DUMMY:=' (Q'
+    CASE 1; DUMMY:= ' (CFOU'
+    END CASE
     EXECUTE DUMMY
     ECHO ON
     READ REC FROM JET.PASTE,Y ELSE NULL
@@ -2636,6 +2639,7 @@ GET.EDIT.MODE: !
         CASE ITNM 'R#4' EQ '.hpp'; EDIT.MODE='cpp'
         CASE ITNM 'R#2' EQ '.h'; EDIT.MODE='c'
         CASE ITNM 'R#4' EQ '.sqc'; EDIT.MODE='c'
+        CASE ITNM 'R#5' EQ '.json'; EDIT.MODE='J'
         CASE ITNM 'R#5' EQ '.java'; EDIT.MODE='cpp'
         CASE ITNM 'R#3' EQ '.pc'; EDIT.MODE='c'
         CASE ITNM 'R#3' EQ '.py'; EDIT.MODE='py'
@@ -2685,6 +2689,11 @@ SET.MODE: !
             TYPE='BASIC'
             ITABPOS=1
             PC:=';("_");("/");(".")'
+        CASE COUNT(EDIT.MODE,'J')
+            COMMENT='//'
+            TYPE='json'
+            ITABPOS=2
+            PC:=';("_");("/")'
         CASE COUNT(EDIT.MODE,'cpp')
             COMMENT='//'
             TYPE='C++'
