@@ -2,6 +2,7 @@
 ! ==============
     INCLUDE EB.EQUS EB.COMMON
     COMMON /EB_LEXER/ reservedWords, colors, comments, commentlen, incomment, case_insensitive
+    DIM SAVE_GEX(50)
     IF UNASSIGNED(reservedWords) THEN
         reservedWords = ''
         colors = ''
@@ -1598,7 +1599,9 @@ EB.SUB: !
         WRITE HEADERS ON F.currdir,'eb_headers'
     END
     IF accuterm THEN CRT ESC:CHAR(2):0:
+    MAT SAVE_GEX = MAT GEX
     EXECUTE DUMMY
+    MAT GEX = MAT SAVE_GEX
     IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     SCR.LR=1
