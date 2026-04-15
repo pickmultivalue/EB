@@ -11,6 +11,7 @@
     DEFFUN GETFLNM()
     DEFFUN GETFULLPATH()
     DEFFUN EBJSHOW()
+    DIM SAVE_GEX(50)
 !
     Re_Read_Flag = FALSE
     shell = @IM:'k'
@@ -109,8 +110,10 @@
                         CASE Y='R'; Y=FALSE
                         CASE Y='C'
                             ECHO ON
+                            MAT SAVE_GEX = MAT GEX
                             DATA '','',''
                             EXECUTE 'COMPARE_ITEM ':FLNM:DIR_DELIM_CH:ITNM:REV:' ':FLNM:DIR_DELIM_CH:ITNM:'.tmp (T'
+                            MAT GEX = MAT SAVE_GEX
                             READ REC FROM FIL,ITNM:'.tmp' THEN
                                 SCR.UD=1
                                 CALL EB_REFRESH

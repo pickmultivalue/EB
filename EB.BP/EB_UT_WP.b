@@ -551,7 +551,7 @@ FINISH: !
                 GOSUB STMP.OCONV
             END
             CRT STR(BACK,INP.POS-1):STMP:
-            GOSUB STMP.ICONV
+!            GOSUB STMP.ICONV
         END ELSE
             IF UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
         END
@@ -575,7 +575,7 @@ VALID.INPUT.CHECK: !
                     STMP=ICONV(INP.STRING,'D')
             END CASE
             IF STMP NE '' THEN
-                INP.STRING=STMP
+                INP.STRING = OCONV(STMP, TYPE)
             END ELSE
                 CRT BELL:
                 RTN.KEY=FALSE
@@ -1012,10 +1012,11 @@ STMP.OCONV:
         CASE TYPE='YN'
             STMP='NY'[INP.STRING+1,1]
         CASE TYPE NE 'LIT' AND LEN(JUST)
-            STMP=INP.STRING JUST
+            STMP=INP.STRING;! JUST
         CASE 1
             STMP=INP.STRING
     END CASE
+    INP.STRING = STMP
     RETURN
 STMP.ICONV:
     BEGIN CASE

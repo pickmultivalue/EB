@@ -6,7 +6,7 @@ CODE=FALSE
 CHR.FOUND=FALSE
 CHR.NBR=''
 LOOP
-    CRT @(COL,ROW):
+!     CRT @(COL,ROW):
     LAST.NBR=CHR.NBR
 !
 ! If FG_TYPEAHEAD was not null, process any "normal" characters as input

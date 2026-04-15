@@ -392,7 +392,8 @@ RESTART: !
             END
         END ELSE
             C=1
-            IF auto_complete THEN
+            IF auto_complete AND INIT.VALUE 'R#1' EQ '*' THEN
+                INIT.VALUE = INIT.VALUE[1, LEN(INIT.VALUE)-1]
                 auto_complete = 2
                 filter_obj->last_filter = INIT.VALUE
                 GOSUB REFINE
@@ -428,8 +429,7 @@ RESTART: !
             END
             FG_ACT.CODE=FG_END.CODE
         END
-        IF auto_complete AND FG_ACT.CODE EQ FG_ABT.CODE THEN
-            FG_ACT.CODE = FG_SEARCH.CODE
+        IF auto_complete AND FG_ACT.CODE EQ FG_SEARCH.CODE THEN
             FG_MONITOR.SECS = auto_complete_timeout
             FG_TIMEOUT = 10*FG_MONITOR.SECS
             SUB.CODES = FG_INPUT.CODES

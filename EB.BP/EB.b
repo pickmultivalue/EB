@@ -2104,6 +2104,7 @@ TCL: !
     SCR.LR=1; CRT @(-1)
     IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
+    MAT SAVE_GEX = MAT GEX
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
     IF jutil_ctrl_pos THEN
@@ -2120,6 +2121,7 @@ TCL: !
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
     IF accuterm THEN CRT ESC:CHAR(2):1:
+    MAT GEX = MAT SAVE_GEX
     CALL EB_RSS(0)
     CRT CURS.ON:
     SCR.UD=1
@@ -2300,7 +2302,9 @@ TCL: !
                             END
                             IF LEN(source) AND FIELD(source, DIR_DELIM_CH, DCOUNT(source, DIR_DELIM_CH)) # ITNM THEN
                                 WRITE DSPLY ON JET.PASTE,'%DSPLY%'
+                                MAT SAVE_GEX = MAT GEX
                                 EXECUTE 'EB ':source
+                                MAT GEX = MAT SAVE_GEX
                             END
                             TXT="re-edit"
                             IF suffix[1,1] EQ 'c' THEN

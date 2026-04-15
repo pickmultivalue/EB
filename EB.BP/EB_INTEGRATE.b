@@ -19,6 +19,7 @@
         IF INDEX(REC, m.H, 1) THEN GO RETRY
     NEXT m
     m = 4
+    DIM SAVE_GEX(50)
     GO MISSING
 RETRY:
     m.X='<<<<<<<'
@@ -75,7 +76,9 @@ REPROMPT:
         WRITE BREC ON FIL,IDC2
         ID1 = FLNM:DIR_DELIM_CH:IDC1
         ID2 = FLNM:DIR_DELIM_CH:IDC2
+        MAT SAVE_GEX = MAT GEX
         EXECUTE 'COMPARE_ITEM ':ID1:' ':ID2
+        MAT GEX = MAT SAVE_GEX
         DELETE FIL,IDC1
         DELETE FIL,IDC2
         SCR.UD=TRUE

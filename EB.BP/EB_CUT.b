@@ -10,6 +10,7 @@
     DEFFUN EBGETHOME()
     EQU SDEL TO CHAR(250)     ;* Delete cut item
     EQU MAX TO 999999
+    DIM SAVE_GEX(50)
 MAIN$:!
     G60=FALSE
     INPTYPE='AN'
@@ -129,7 +130,9 @@ MAIN$:!
                     path = EBGETHOME()
                     Y ='.PASTE*':FG_LOGNAME:'*'
                     WRITE ROTATE ON JET.PASTE,Y
+                    MAT SAVE_GEX = MAT GEX
                     EXECUTE 'EB ':path:'JET.PASTE ':Y
+                    MAT GEX = MAT SAVE_GEX
                     READ ROTATE FROM JET.PASTE,Y
                 END
                 FOR J=1 TO NO.D.L
