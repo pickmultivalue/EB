@@ -2,8 +2,11 @@ General syntax:
 
 R{opts}/<old>/<new>{/FI}
 S{opts}/<new>/<old>{/FI}
+D{opts}/matching text
 
 The / delimiter can be any non alphanumeric character
+
+The D option is specifically for deleting lines
 
 opts:
 
@@ -27,7 +30,9 @@ R1-EVU/I/ILOOP wil replace all occurrences of I with ILOOP only if I is a variab
 
 Wildcards	u
 
-^nnn can be used to represent CHAR(nnn) (must be 3 numerics)
+A single ^ at the start means match from the beginning of the line
+
+However, ^nnn can be used to represent CHAR(nnn) (must be 3 numerics)
 
 You can use @n (i.e. @1, @2, etc) to mask any number of characters in both the search and replace
 
