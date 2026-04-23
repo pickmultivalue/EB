@@ -15,7 +15,7 @@
     GOSUB 1500      ;! input the field
     MFLNM=OCONV(IDATA,'MCU')
     CRT MSG.AKN:
-    IF MFLNM=ESC THEN GO 5090
+    IF MFLNM EQ ESC OR FG_ACT.CODE EQ FG_ABT.CODE THEN GO 5090
     IF MFLNM=FLNM THEN        ;! default was accepted
         MFL=FIL
     END ELSE

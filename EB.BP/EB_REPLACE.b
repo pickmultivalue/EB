@@ -22,12 +22,14 @@
     EQU DELIMS TO ' ():;+-*/,&!^#=<>[]@':@VM:@SVM:TAB
     EQU MAX TO 999999
     DEFFUN EB_REGEX()
-MAIN$:!
-    DIM RPL.PARMS(3),RPL.PROMPTS(3),RPL.COLS(3)
+MAIN$:
+    DIM RPL.PARMS(4),RPL.PROMPTS(3),RPL.COLS(3)
     EQU WHOLE TO RPL.PARMS(1)
     EQU ALOC TO RPL.PARMS(2)
     EQU CONFIRM TO RPL.PARMS(3)
+    EQU DELMODE TO RPL.PARMS(4)
     case_state = SYSTEM(28)
+    first_time = @TRUE
     CASING ON
     IF EMBED.ATTR<1,1> THEN HILON=RVOFF; HILOFF=RVON ELSE HILON=BG; HILOFF=FG
     HILRESET=FG:RVOFF
@@ -49,6 +51,18 @@ MAIN$:!
 !
 ! Break-up wild-cards and literals
 !
+    match_start = @FALSE
+    match_end = @FALSE
+    IF NOT(REGEX.SEARCH) THEN
+        IF RSTR[1,1] EQ '^' AND NOT(RSTR[2,3] MATCHES "3N") THEN
+            match_start = @TRUE
+            RSTR = RSTR[2, -1]
+        END
+        IF RSTR[-1,1] EQ '$' THEN
+            match_end = @TRUE
+            RSTR = RSTR[1, -2]
+        END
+    END
     STR.CNT=1
     LOOP
         RSTRS = RSTR
@@ -164,7 +178,8 @@ MAIN$:!
             LINE<I+1>=REC<LINE.NO+I>
         NEXT I
         LEADWS = ''; TRAILWS = ''
-        IF NOT(INDEX(TAB:' ', RSTR<1,2>[1,1], 1)) THEN
+        TMP = RSTR<1,2>[1,1]
+        IF NOT(match_start) AND (TMP EQ '' OR NOT(INDEX(TAB:' ', TMP, 1))) THEN
             FOR I = 1 TO LEN(LINE)
                 CH = LINE[I,1]
                 IF INDEX(TAB:' ',CH,1) THEN
@@ -217,6 +232,10 @@ MAIN$:!
                         POSC = 1
                         LOOP
                             POS=INDEX(SLINE,NEW.LINE, POSC)
+                            IF match_start THEN
+                                IF POS EQ 1 THEN POSITIONS = 1
+                                BREAK
+                            END
                         WHILE POS DO
                             POSITIONS<-1> = POS
                             POSC++
@@ -284,12 +303,16 @@ MAIN$:!
                         TMP = TMP[SPOS+LEN(FIRST), MAX]
                     END
                 END
+                IF match_start THEN
+                    IF NOT(SPOS EQ 1 AND OCC EQ 1) THEN SPOS = @FALSE
+                END
                 OCCURS<OCC>=SPOS
             WHILE ALOC AND SPOS AND FIRST NE '' DO REPEAT
             OCCS=OCC-(SPOS=0)
             NLINE = ''
+            SPOS = 0
             FOR I = 1 TO OCCS
-                SPOS=OCCURS<I>
+                SPOS += OCCURS<I>
                 IF WHOLE.WORDS THEN
                     LOOP
                         OK=((INDEX(DELIMS,LINE[SPOS-1,1],1) OR SPOS=1) AND (NOT(RSTRL) OR INDEX(DELIMS,LINE[SPOS+RSTRL,1],1)))
@@ -299,7 +322,9 @@ MAIN$:!
                         IF NOT(NPOS) THEN BREAK
                         SPOS += NPOS
                     REPEAT
-                END ELSE OK=TRUE
+                END ELSE
+                    OK=TRUE
+                END
                 IF OK THEN
                     IF CONFIRM THEN
                         CRT @(0,20):@(-3)
@@ -309,16 +334,17 @@ MAIN$:!
                         CRT LINE[1,SPOS-1]:HILOFF:LINE[SPOS,RSTRL]:HILON:LINE[SPOS+RSTRL,MAX]:HILOFF
                         CRT HILRESET:
                         CRT LINE.NO+1 lnbr_hash1:REC<LINE.NO+1>[1,PWIDTH-lnbr_width]
-                        CRT @(0,PDEPTH):"Replace line ":LINE.NO:" ? (Y/<N>/Last) ":
+                        CRT @(0,PDEPTH):(IF DELMODE THEN "Delete" ELSE "Replace"):" line ":LINE.NO:" ? (Y/<N>/Last) ":
                         CALL EB_UT_INPUT_ZERO(DMY,MAT EB_CHARS,FG_ACT.CODE,35,PDEPTH,FG_INPUT.CODES,'Y':@VM:'N':@VM:'L',1,FG_TIMEOUT)
                         IF FG_ACT.CODE THEN GO RTN
                     END ELSE DMY='Y'
                 END ELSE DMY='N'
-                IF INDEX('N',DMY,1) ELSE
+                IF INDEX('N',DMY,1) OR DELMODE ELSE
                     IF RSTR EQ RRSTR AND WSTR EQ WWSTR THEN
                         TMP=WSTR; GOSUB CONV.CHARS
                         NLINE := LINE[1,SPOS-1]:TMP
                         LINE = LINE[SPOS+RSTRL,MAX]
+                        SPOS = 0
                     END ELSE
                         NEW.LINE = RVARS<1>; DEL RVARS<1>
                         SLINE = RVARS
@@ -352,105 +378,53 @@ MAIN$:!
                         NLINE := NEW.LINE:PWSTR:THE.REST
                         LEN.DIFF=LEN(NLINE) - LEN(LINE)
                         LINE = ''
-!                        LINE = THE.REST
-!
-! Build up wild-card replacements
-!
-!                        SLINE=LINE[1,SPOS-1]; THE.REST=LINE[SPOS+LEN(FIRST),MAX]
-!                        NEW.LINE=SLINE
-!                        NPOS = DCOUNT(POSARR, @AM)
-!                        FOR CNT=2 TO NPOS
-!                            POS = POSARR<CNT>
-!                            TMP = THE.REST[1,POS-1]
-!                            SLINE<CNT> = TMP
-!                            THE.REST=THE.REST[POS+POSLEN<CNT>,MAX]
-!                        NEXT CNT
-!                        CNT+=am_start
-!!                        IF POS THEN
-!                            POS=RSTR<CNT,2>
-!                            IF POS NE '' THEN
-!                                TMP=POS; GOSUB CONV.CHARS; POS=TMP
-!                                POS = INDEX(THE.REST, POS, 1)
-!                                SLINE<CNT>=THE.REST[1,POS-1]
-!                                THE.REST=THE.REST[POS+LEN(TMP),MAX]
-!                            END ELSE
-!                                IF USE.THE.REST THEN SLINE<CNT>=THE.REST; THE.REST=''
-!                                POS=TRUE
-!                            END
-!!                        END
-!                        IF POS THEN
-!                            LEN.DIFF=LEN(LINE)
-!                            IF WWSTR NE '' THEN
-!                                TMP=WSTR; GOSUB CONV.CHARS
-!                                NLINE := SLINE<1>:TMP
-!                                LINE = THE.REST
-!                            END ELSE
-!                                DEL SLINE<1>
-!                                PWSTR=WSTR
-!                                FOR CNT=1 TO WSTR.CNT
-!                                    TMP=PWSTR<1>; GOSUB CONV.CHARS; PWSTR<1>=TMP
-!                                    NEW.LINE:=PWSTR<1>
-!                                    DEL PWSTR<1>
-!                                    IF PWSTR NE '' THEN
-!                                        WCNT=PWSTR<1,1>
-!                                        IF NUM(WCNT) THEN
-!                                            op=''
-!                                        END ELSE
-!                                            op = WCNT[1,1]
-!                                            WCNT = WCNT[2,MAX]
-!                                        END
-!                                        WCNT=SLINE<WCNT>
-!                                        BEGIN CASE
-!                                            CASE op = ''
-!                                            CASE op = 'l'; op = 'MCL'
-!                                            CASE op = 'u'; op = 'MCU'
-!                                            CASE op = 'c'; op = 'MCT'
-!                                            CASE op = 'x'; op = ''; WCNT = XCNT; XCNT++
-!                                        END CASE
-!                                        IF LEN(op) THEN WCNT = OCONV(WCNT, op)
-!                                        NEW.LINE:=WCNT
-!                                        DEL PWSTR<1,1>
-!                                    END
-!                                NEXT CNT
-!                                TMP=PWSTR; GOSUB CONV.CHARS; PWSTR=TMP
-!                                NLINE := NEW.LINE:PWSTR
-!                                LINE = THE.REST
-!                            END
-!                        END
-!                        LEN.DIFF=LEN(NLINE:LINE)-LEN.DIFF+1
                     END
                     END.POS+=LEN.DIFF
                 END
             NEXT I
-            NLINE := LINE
-            LINE = NLINE
-            IF LINE NE ORIG.LINE THEN
-                LINE = LEADWS:LINE:TRAILWS
-                CRTLN=LINE
-                CALL EB_TABS(CRTLN,PWIDTH,0,0)
-                IF ENDL=STRT AND NOT(CONFIRM) THEN
-                    IF NOT(SUPPRESS.OUTPUT) THEN CRT CRTLN[1,PWIDTH-lnbr_width] LHASH:
-                END ELSE
-                    IF CONFIRM THEN
-                        CRT @(0,19):CLEOL:
+            IF DELMODE THEN
+                IF NOT(SUPPRESS.OUTPUT) THEN
+                    IF first_time THEN
+                        first_time = @FALSE
+                        CRT @(-1)
+                        CRT 'Deleting lines:'
+                        CRT
+                    END
+                    CRT LINE.NO lnbr_hash1:' ':REC<LINE.NO>
+                END
+                DEL REC<LINE.NO>
+                CHANGED = @TRUE
+            END ELSE
+                NLINE := LINE
+                LINE = NLINE
+                IF LINE NE ORIG.LINE THEN
+                    LINE = LEADWS:LINE:TRAILWS
+                    CRTLN=LINE
+                    CALL EB_TABS(CRTLN,PWIDTH,0,0)
+                    IF ENDL=STRT AND NOT(CONFIRM) THEN
+                        IF NOT(SUPPRESS.OUTPUT) THEN CRT CRTLN[1,PWIDTH-lnbr_width] LHASH:
                     END ELSE
-                        IF ALOC AND FIRST.DISP THEN
-                            IF NOT(SUPPRESS.OUTPUT) THEN CRT @(-1)
-                            FIRST.DISP=FALSE
+                        IF CONFIRM THEN
+                            CRT @(0,19):CLEOL:
+                        END ELSE
+                            IF ALOC AND FIRST.DISP THEN
+                                IF NOT(SUPPRESS.OUTPUT) THEN CRT @(-1)
+                                FIRST.DISP=FALSE
+                            END
+                        END
+                        IF NOT(SUPPRESS.OUTPUT) THEN
+                            CRT LINE.NO lnbr_hash1:'<':ORIG.LINE[1,PWIDTH-lnbr_width] LHASH
+                            CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
                         END
                     END
-                    IF NOT(SUPPRESS.OUTPUT) THEN
-                        CRT LINE.NO lnbr_hash1:'<':ORIG.LINE[1,PWIDTH-lnbr_width] LHASH
-                        CRT LINE.NO lnbr_hash1:'>':CRTLN[1,PWIDTH-lnbr_width] LHASH
+                    REC<LINE.NO>=LINE
+                    IF NDC LT ODC THEN
+                        FOR I = NDC+1 TO ODC
+                            DEL REC<LINE.NO+I>
+                        NEXT I
                     END
+                    CHANGED=TRUE
                 END
-                REC<LINE.NO>=LINE
-                IF NDC LT ODC THEN
-                    FOR I = NDC+1 TO ODC
-                        DEL REC<LINE.NO+I>
-                    NEXT I
-                END
-                CHANGED=TRUE
             END
             IF DMY='L' THEN GO RTN
         END ELSE STR.POS=STR.POS+LEN(LINE)
