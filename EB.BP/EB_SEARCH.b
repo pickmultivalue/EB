@@ -25,7 +25,8 @@ MAIN$:!
     GOSUB DisplayPrompt
     SAVEROW=ROW
     SAVELROW=LROW
-    L=PWIDTH-1-ICOL; SSTR=''; SRCH.STR=''
+    L=PWIDTH-10-ICOL:@AM:999
+    SSTR=''; SRCH.STR=''
     SPWIDTH = PWIDTH
     OPTIONS=''
     RPOS=1

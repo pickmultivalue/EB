@@ -362,7 +362,7 @@
                                             LBL = LBL[1, LEN(LBL)-1]
                                         REPEAT
                                         T.STMT = T.STMT[LEN(LBL)+1,MAX]
-                                        F1=FIELD(T.STMT,SPC,1)
+                                        F1=FIELD(TRIM(T.STMT),SPC,1)
 
                                     END
                                 END

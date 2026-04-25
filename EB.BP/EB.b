@@ -631,7 +631,7 @@ ALREADY.LOCKED: !
 !! slow...is opening too many files        CALL EB_READHEADERS(REC, HEADERS)
     END
     UNDO_STACK = ''
-    UNDO_POS = 0
+    UNDO_POS = 1
     GOSUB ADD_TO_UNDO
     GO STRT         ;! Skip over subroutines
 !==========
@@ -2163,6 +2163,7 @@ TCL: !
         CASE SCRL[1,ITAB<1>] EQ SPACE(ITAB<1>)
             LOCATE UPCASE(FIELD(TRIM(SCRL),SPC,1)) IN END.WORDS BY 'AL' SETTING POS THEN SCRL=SCRL[ITAB<1>+1,MAX]
     END CASE
+    GOSUB ADD_TO_UNDO
     INS SCRL BEFORE REC<INDROW+ROW>
     CALL EB_MARKADJ(INDROW+ROW,1,1)
     SCR.UD=TRUE; SCRL=ROW
