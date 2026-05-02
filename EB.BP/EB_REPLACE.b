@@ -237,8 +237,16 @@ MAIN$:
                                 BREAK
                             END
                         WHILE POS DO
-                            POSITIONS<-1> = POS
                             POSC++
+                            IF WHOLE.WORDS THEN
+                                prior = (IF POS LT 2 THEN '' ELSE SLINE[POS-1,1])
+                                variable = SLINE[POS,LEN(NEW.LINE)]
+                                after = SLINE[POS+LEN(NEW.LINE),1]
+                                IF NOT(isVariable(prior,variable,after)) THEN
+                                    POS = @FALSE
+                                END
+                            END
+                            IF POS THEN POSITIONS<-1> = POS
                         REPEAT
                     END
                     POSC = DCOUNT(POSITIONS, @AM)
@@ -261,7 +269,9 @@ MAIN$:
                         RVARS<VNBR+1> = SLINE[1, POS-1]
                         RWCHARS<CNT> = NEW.LINE
                         SLINE=SLINE[POS+LEN(NEW.LINE),MAX]
-                    END ELSE OK=FALSE
+                    END ELSE
+                        OK=FALSE
+                    END
                 END ELSE
                     IF CNT EQ STR.CNT THEN
                         RVARS<VNBR+1> = SLINE
@@ -297,7 +307,21 @@ MAIN$:
                     IF REGEX.SEARCH THEN
                         SPOS=EB_REGEX(TMP,FIRST, @FALSE)
                     END ELSE
-                        SPOS=INDEX(TMP,FIRST,1)
+                        S = 1
+                        LOOP
+                            SPOS=INDEX(TMP,FIRST, S)
+                        WHILE SPOS DO
+                            IF SPOS THEN
+                                prior = (IF SPOS LT 2 THEN '' ELSE TMP[SPOS-1,1])
+                                variable = TMP[SPOS,LEN(FIRST)]
+                                after = TMP[SPOS+LEN(FIRST),1]
+                                IF WHOLE.WORDS AND NOT(isVariable(prior, variable, after)) THEN
+                                    SPOS = @FALSE
+                                    S++
+                                END
+                                IF SPOS THEN BREAK
+                            END
+                        REPEAT
                     END
                     IF SPOS THEN
                         TMP = TMP[SPOS+LEN(FIRST), MAX]

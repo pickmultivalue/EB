@@ -67,7 +67,6 @@
     SAVE.POS=''
     ACT.CODE=FALSE
     PASTE=FALSE
-    INSERTING=FALSE
     NUM.FIELD=FALSE
     INDENT=FALSE; MARGIN=''
     SKIP.LIST=''
@@ -166,7 +165,8 @@
     CRT STR(BACK,XX):
 
     remove_RV = (INP.POS EQ 1 AND LEN(INP.STRING))
-
+    FIRST.TIME=remove_RV
+    INSERTING=NOT(FIRST.TIME)
     TRAIL=0
     INCLUDE EB.OS.INCLUDES PC.RESET.CURSOR
 !
@@ -180,6 +180,7 @@ STARTLBL: !
         END ELSE
             FG_ACT.CODE=FALSE
             CALL EB_GET_INPUT(WPCHR, WPCHR.NBR)
+            IF FG_ACT.CODE THEN PREV.CHARS = ''
             IF FG_TIMEDOUT THEN FG_ACT.CODE=FG_ABT.CODE
         END
         IF remove_RV THEN
@@ -193,6 +194,7 @@ STARTLBL: !
             END
             CRT STR(BACK,LENTH):
             remove_RV = FALSE
+            IF FG_ACT.CODE NE FG_INSERT.CODE THEN INSERTING=TRUE
         END
 !
 ! Was the <RETURN> or <Line-Feed> key used ?
@@ -244,6 +246,7 @@ PROCESS.RTN: !
         IF FG_ACT.CODE THEN
             IF FG_TYPEAHEAD.BUFF='' AND PREV.CHARS NE '' THEN
                 FG_TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,THE.REST]
+                PREV.CHARS = ''
             END
             BEGIN CASE
                 CASE FG_ACT.CODE=FG_LEFT.CODE
@@ -378,18 +381,24 @@ ASCII.START: !
             LAST.CHR=CHAR(LAST.NBR)
             IF LAST.CHR=OCONV(LAST.CHR,'MCA') THEN
 ASCII.INPUT:    !
-                IF TYPE = 'U' THEN
-                    WPCHR = OCONV(WPCHR, 'MCU')
-                END ELSE
-                    IF TYPE='L' THEN WPCHR=OCONV(WPCHR,'MCL')
-                END
+                BEGIN CASE
+                    CASE TYPE = 'U'
+                        WPCHR = OCONV(WPCHR, 'MCU')
+                    CASE TYPE='L'
+                        WPCHR=OCONV(WPCHR,'MCL')
+                    CASE NUM.FIELD
+                        IF NOT(NUM(WPCHR)) THEN
+                            CRT BELL:
+                            CONTINUE
+                        END
+                END CASE
                 IF WPCOL<LAST.WPCOL AND NOT(HIDDEN) THEN
                     IF SECRET THEN CRT "*": ELSE CRT WPCHR:
                 END
 !
 ! Word wrap
 !
-                IF INSERTING THEN
+                IF INSERTING AND NOT(FIRST.TIME) THEN
                     IF TRIM(INP.STRING[MAXLENTH,1]) NE '' OR INP.POS-1=MAXLENTH THEN
                         CRT BELL:
                     END ELSE
@@ -533,6 +542,7 @@ ASCII.INPUT:    !
             IF Sub>2 THEN WPCHR=''
         END
         LAST.CHR=WPCHR
+        FIRST.TIME=FALSE
     REPEAT
 FINISH: !
     CASING case_state
@@ -790,7 +800,6 @@ GET.WORD: !
         WPCOL-=1
         CRT BACK:
         IF WPCHR.NBR=SEQ(FG_BS.CH) THEN
-!            CRT SPC:BACK:
             TRAIL=1
             INP.STRING=INP.STRING[1,INP.POS-1]:INP.STRING[INP.POS+1,MAXLENTH]
             GOSUB CRT.UNDERLINE
@@ -839,7 +848,7 @@ DEL.LABEL:
     END
     FG_DELETE.LIST=WORD:NEXT.CHAR:AM:FG_DELETE.LIST
     INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[NEW.POS,MAXLENTH])    ;! JUST
-    TRAIL=LENTH-LEN(INP.STRING[1,LENTH])-WPCOL ;!WORD.LENGTH-1
+    TRAIL=LENTH-LEN(INP.STRING[INP.POS,LENTH])-WPCOL+1 ;!WORD.LENGTH-1
     GOSUB CRT.UNDERLINE
     IF OLD.POS<=PASTE THEN
         PASTE-=WORD.LENGTH
@@ -861,8 +870,9 @@ DEL.LABEL:
     GOSUB INSERT.STRING
     RETURN
 12  !
+
     INP.POS-=1
-    WPCOL-=1-INP.POS
+    WPCOL-=INP.POS+1
     LOOP
         THIS.CHR=INP.STRING[INP.POS,1]
     UNTIL OCONV(THIS.CHR,'MCN') NE '' OR OCONV(THIS.CHR,'MCA') NE '' OR INP.POS=1 DO
@@ -1037,7 +1047,7 @@ STMP.OCONV:
         CASE TYPE='YN'
             STMP='NY'[INP.STRING+1,1]
         CASE TYPE NE 'LIT' AND LEN(JUST)
-            STMP=INP.STRING JUST ;! ticker tape
+            STMP=INP.STRING ;! in screen_driver this wrecks display....  JUST ;! ticker tape
             update_val = @FALSE
         CASE 1
             STMP=INP.STRING

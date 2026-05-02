@@ -120,7 +120,7 @@ MAIN$:!
             END
         END
         DELMODE = UPCASE(RSTR[1,1]) EQ 'D'
-        LSTR=FIELD(RSTR, rdelim, 4)
+        LSTR=FIELD(RSTR, rdelim, 4-DELMODE)
         WSTR=FIELD(RSTR, rdelim, 3)
         RSTR=FIELD(RSTR, rdelim, 2)
 3010    !  Get Replacement String

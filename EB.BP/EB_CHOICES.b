@@ -147,7 +147,7 @@ MAIN$:
     NBR.ATTRS=DCOUNT(ATTRS,SVM)
     disable_multi_sel = INDEX(FLD.NBRS, '-', 1)
     force_selection = INDEX(FLD.NBRS, '+', 1)
-    auto_complete = INDEX(FLD.NBRS, '*', 1)
+    auto_complete = INDEX(FLD.NBRS, '*', 1) GT 0
     auto_sel = INDEX(FLD.NBRS, '>', 1)
     CONVERT '-+*>' TO '' IN FLD.NBRS
     NBR.FLDS=DCOUNT(FLD.NBRS,SVM)
@@ -429,7 +429,8 @@ RESTART: !
             END
             FG_ACT.CODE=FG_END.CODE
         END
-        IF auto_complete AND FG_ACT.CODE EQ FG_SEARCH.CODE THEN
+        IF auto_complete AND (FG_ACT.CODE EQ FG_ABT.CODE OR FG_ACT.CODE EQ FG_SEARCH.CODE) THEN
+            FG_ACT.CODE = FG_SEARCH.CODE
             FG_MONITOR.SECS = auto_complete_timeout
             FG_TIMEOUT = 10*FG_MONITOR.SECS
             SUB.CODES = FG_INPUT.CODES
@@ -929,6 +930,7 @@ show_box:
         DEPTH-=1
         CRT @(CC,RR):BG:'Filter:':FG:
         auto_complete_pos = @(CC,RR)
+        SAVE.DEPTH = DEPTH
     END
     FOOTER.PREFIX=@(CC+WIDTH-13-2*GR.EMBED,RR+DEPTH+1):GROFF
     FOOTER.SUFFIX=GRON:@(CC+WIDTH,RR+DEPTH+1):GROFF

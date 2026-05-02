@@ -2,7 +2,7 @@
 ! ==============
     INCLUDE EB.EQUS EB.COMMON
     COMMON /EB_LEXER/ reservedWords, colors, comments, commentlen, incomment, case_insensitive
-    DIM SAVE_GEX(50)
+    DIM SAVE_GEX(50), SAVE_EXTRAS(50)
     IF UNASSIGNED(reservedWords) THEN
         reservedWords = ''
         colors = ''
@@ -1600,8 +1600,10 @@ EB.SUB: !
     END
     IF accuterm THEN CRT ESC:CHAR(2):0:
     MAT SAVE_GEX = MAT GEX
+    MAT SAVE_EXTRAS = MAT EXTRAS
     EXECUTE DUMMY
     MAT GEX = MAT SAVE_GEX
+    MAT EXTRAS = MAT SAVE_EXTRAS
     IF accuterm THEN CRT ESC:CHAR(2):1:
     CALL EB_RSS(0)
     SCR.LR=1
@@ -2105,6 +2107,7 @@ TCL: !
     IF accuterm THEN CRT ESC:CHAR(2):0:
     CALL EB_RSS(1)
     MAT SAVE_GEX = MAT GEX
+
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
     IF jutil_ctrl_pos THEN

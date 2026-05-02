@@ -6,6 +6,7 @@
     DEFC INT JBASEEmulateGETINT(INT)
     DEFFUN EBGETHOME()
     DEFFUN isVariable()
+    DEFFUN isExpression()
 
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
     am_start=IF_COMPILED_PRIME
@@ -137,10 +138,10 @@
 !
             PS(2)=1     ;! ELSE
 !
-            PE(1)=0; SE(1)=1      ;! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE
-            PE(2)=0; SE(2)=0      ;! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END! END
-            PE(3)=0; SE(3)=0      ;! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF! END IF
-            PE(4)=0; SE(4)=0      ;! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP! END LOOP
+            PE(1)=0; SE(1)=1      ;! BEGIN CASE
+            PE(2)=0; SE(2)=0      ;! END
+            PE(3)=0; SE(3)=0      ;! END IF
+            PE(4)=0; SE(4)=0      ;! END LOOP
         CASE 1
             COMMENTS='!*#'; COMMENTLEN=1
             EXACT = 'BEGIN CASE':AM:'END':AM:'END CASE':AM:'END ELSE':AM:'END METHOD':AM:'END THEN':AM:'END TRY':AM:'LOOP':AM:'REPEAT':AM:'TRY'
@@ -166,9 +167,9 @@
 !
             SS(4)=-1    ;! REPEAT
 !
-            PE(1)=0; SE(1)=2      ;! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE! BEGIN CASE
-            PE(2)=1; SE(2)=0      ;! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE! END CASE
-            PE(3)=1; SE(3)=0      ;! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT! REPEAT
+            PE(1)=0; SE(1)=2      ;! BEGIN CASE
+            PE(2)=1; SE(2)=0      ;! END CASE
+            PE(3)=1; SE(3)=0      ;! REPEAT
     END CASE
 !
     LBL.SUFFIX=':!*'; SC=';'
@@ -362,8 +363,8 @@
                                             LBL = LBL[1, LEN(LBL)-1]
                                         REPEAT
                                         T.STMT = T.STMT[LEN(LBL)+1,MAX]
+                                        ATTR = T.STMT
                                         F1=FIELD(TRIM(T.STMT),SPC,1)
-
                                     END
                                 END
                                 NUM.FLDS=DCOUNT(T.STMT,SPC)
@@ -377,7 +378,7 @@
                                     LOCATE UPCASE(FLAST) IN SUFFIX<am_start> BY 'AL' SETTING SPOS ELSE
                                         SPOS = FALSE
                                     END
-                                    LOCATE UPCASE(T.STMT) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
+                                    LOCATE TRIM(UPCASE(T.STMT)) IN EXACT<am_start> BY 'AL' SETTING EPOS ELSE
                                         IF SPOS THEN
                                             LOCATE UPCASE(FIELD(T.STMT, SPC, 1, 2)) IN EXACT<am_start> BY 'AL' SETTING EPOS THEN
                                                 EPOS = -EPOS
@@ -392,22 +393,23 @@
                                     END ELSE
                                         FPOS = FALSE
                                     END
-                                    IF LEN(NEXT.ATTR) THEN
-                                        SAVE.T.STMT = T.STMT
-                                        LOOP
-                                            ATTR = TRIM(NEXT.ATTR)
-                                            F1 = FIELD(ATTR, ' ',1)
-                                            FLAST = FIELD(ATTR, ' ', DCOUNT(ATTR, ' '))
-                                            GOSUB SPLITSTMT
-                                        UNTIL NEXT.ATTR = '' OR INDEX(COMMENTS, TRIM(NEXT.ATTR)[1,1],1) DO REPEAT
-                                        LOCATE UPCASE(F1) IN PREFIX<am_start> BY 'AL' SETTING NFPOS ELSE NFPOS = FALSE
-                                        LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING NLPOS ELSE NLPOS = FALSE
-                                        T.STMT = SAVE.T.STMT
-                                        ATTR = ITEM(LNO)
-                                    END ELSE
-                                        NFPOS=FALSE
-                                        NLPOS=FALSE
-                                    END
+!                                    IF LEN(NEXT.ATTR) THEN
+!                                        SAVE.T.STMT = NEXT.ATTR:T.STMT
+!                                        SAVE.ATTR = NEXT.ATTR:ATTR
+!                                        LOOP
+!                                            ATTR = TRIM(NEXT.ATTR)
+!                                            F1 = FIELD(ATTR, ' ',1)
+!                                            FLAST = FIELD(ATTR, ' ', DCOUNT(ATTR, ' '))
+!                                            GOSUB SPLITSTMT
+!                                        UNTIL NEXT.ATTR = '' OR INDEX(COMMENTS, TRIM(NEXT.ATTR)[1,1],1) DO REPEAT
+!                                        LOCATE UPCASE(F1) IN PREFIX<am_start> BY 'AL' SETTING NFPOS ELSE NFPOS = FALSE
+!                                        LOCATE UPCASE(FLAST) IN EXACT<am_start> BY 'AL' SETTING NLPOS ELSE NLPOS = FALSE
+!                                        T.STMT = SAVE.T.STMT
+!                                        ATTR = SAVE.ATTR
+!                                    END ELSE
+                                    NFPOS=FALSE
+                                    NLPOS=FALSE
+!                                    END
                                     IF EPOS LT 0 THEN
                                         IF FPOS THEN
                                             EPOS = ABS(EPOS)
@@ -498,160 +500,160 @@
                                             END ELSE
                                                 CRT 'Indent mismatch detected at ':LNO; RQM
                                                 GO Error_condition
-                                                END
                                             END
                                         END
-                                        IF LEN(F1) THEN
-                                            LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
-                                                EXCEPT.IND+=1
-                                            END
+                                    END
+                                    IF LEN(F1) THEN
+                                        LOCATE UPCASE(F1) IN EXCEPTIONS<am_start> BY AL SETTING EX.INDEX THEN
+                                            EXCEPT.IND+=1
                                         END
                                     END
                                 END
                             END
                         END
-                    UNTIL NEXT.ATTR='' DO
-                        STMT+=1
-                        LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
-                        IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
-                        ATTR=NEXT.ATTR
-                    REPEAT
+                    END
+                UNTIL NEXT.ATTR='' DO
+                    STMT+=1
                     LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
-                    IF T.OPTION THEN
-                        IF M.OPTION THEN IF LNO GT 1 THEN PRINT
-                        IF L.OPTION ELSE PRINT LNO OMASK:
-                    END
-                    IF COMMENT THEN
-                        IF NOT(CUR.INDEX) THEN CUR.INDEX=1
-                    END ELSE
-                        IF ONEND THEN
-                            IF NOT(TECNT) THEN
-                                IF NOT(CUR.INDEX) THEN CUR.INDEX=1
-                            END
+                    IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
+                    ATTR=NEXT.ATTR
+                REPEAT
+                LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
+                IF T.OPTION THEN
+                    IF M.OPTION THEN IF LNO GT 1 THEN PRINT
+                    IF L.OPTION ELSE PRINT LNO OMASK:
+                END
+                IF COMMENT THEN
+                    IF NOT(CUR.INDEX) THEN CUR.INDEX=1
+                END ELSE
+                    IF ONEND THEN
+                        IF NOT(TECNT) THEN
+                            IF NOT(CUR.INDEX) THEN CUR.INDEX=1
                         END
                     END
-                    IF CUR.INDEX > 0 OR (T.STMT = 'END' AND LNO = NA AND CUR.INDEX = 0) THEN
-                        IF CUR.INDEX = 0 THEN
-                            PAD = 0
-                            LINE = ''
+                END
+                IF CUR.INDEX > 0 OR (T.STMT = 'END' AND LNO = NA AND CUR.INDEX = 0) THEN
+                    IF CUR.INDEX = 0 THEN
+                        PAD = 0
+                        LINE = ''
+                    END ELSE
+                        IF COMMENT THEN PAD=CT(CUR.INDEX) ELSE PAD=T(CUR.INDEX)
+                    END
+                    IF T.OPTION THEN
+                        IF S.OPTION THEN
+                            PRINT PAD.FMT[1,PAD]:
+                            PAD2=PAD.FMT[1,PAD]
                         END ELSE
-                            IF COMMENT THEN PAD=CT(CUR.INDEX) ELSE PAD=T(CUR.INDEX)
-                        END
-                        IF T.OPTION THEN
-                            IF S.OPTION THEN
-                                PRINT PAD.FMT[1,PAD]:
-                                PAD2=PAD.FMT[1,PAD]
-                            END ELSE
-                                PRINT SPACE(PAD):
-                                PAD2=SPACE(PAD)
-                            END
-                        END
-                    END ELSE
-                        PAD=1
-                        PAD2=SPACE(1)
-                        IF SYSTEM(1) ELSE CRT BELL:
-                        IF NOT(F.OPTION OR T.OPTION) THEN CRT ID
-                        PRINT '? ':LNO 'R%4 ':LINE
-                        RQM;RQM
-                        CUR.INDEX=1
-                        NEXT.INDEX=1
-                    END
-                    LINELEN=SYSTEM(2)-OLEN-PAD
-                    LNLEN=LINELEN+1
-                    IF T.OPTION THEN
-                        IF COMMENT AND B.OPTION THEN
-                            IF LINE='!' THEN LINE=STR('*',LINELEN)
-                        END
-                        LJUST='L#':LINELEN
-                        PRINT LINE LJUST
-                        LOOP WHILE LEN(LINE) GT LNLEN DO
-                            PRINT SPACE(OLEN):PAD2:
-                            PRINT LINE[LNLEN,LINELEN]
-                            LNLEN+=LINELEN
-                        REPEAT
-                    END
-                    IF TRIM(LINE)='' THEN LINE=''
-                    IF F.OPTION THEN
-                        IF (LINE:LBL) EQ '' THEN ITEM(LNO)='' ELSE
-                            IF LBL='' THEN
-                                LINE=SPACE(PAD):LINE
-                            END ELSE
-                                PAD-=LEN(LBL)
-                                IF PAD<1 THEN PAD=1
-                                LINE=LBL:SPACE(PAD):TRIM(LINE, ' ', 'L')
-                            END
-                            LINE=TRIM(LINE,' ',"T")
-                            ITEM(LNO)=LINE
+                            PRINT SPACE(PAD):
+                            PAD2=SPACE(PAD)
                         END
                     END
-                NEXT LNO
-                Error_condition:
+                END ELSE
+                    PAD=1
+                    PAD2=SPACE(1)
+                    IF SYSTEM(1) ELSE CRT BELL:
+                    IF NOT(F.OPTION OR T.OPTION) THEN CRT ID
+                    PRINT '? ':LNO 'R%4 ':LINE
+                    RQM; RQM
+                    CUR.INDEX=1
+                    NEXT.INDEX=1
+                END
+                LINELEN=SYSTEM(2)-OLEN-PAD
+                LNLEN=LINELEN+1
+                IF T.OPTION THEN
+                    IF COMMENT AND B.OPTION THEN
+                        IF LINE='!' THEN LINE=STR('*',LINELEN)
+                    END
+                    LJUST='L#':LINELEN
+                    PRINT LINE LJUST
+                    LOOP WHILE LEN(LINE) GT LNLEN DO
+                        PRINT SPACE(OLEN):PAD2:
+                        PRINT LINE[LNLEN,LINELEN]
+                        LNLEN+=LINELEN
+                    REPEAT
+                END
+                IF TRIM(LINE)='' THEN LINE=''
                 IF F.OPTION THEN
-                    IF CUR.INDEX > 1 THEN
-                        IF U.OPTION THEN MATWRITE ITEM ON fn,ID:ID.SUFFIX
-                    END ELSE MATWRITE ITEM ON fn,ID:ID.SUFFIX
-                END
-                IF SYSTEM(1) ELSE
-                    IF F.OPTION THEN
-                        IF T.OPTION THEN CRT '--- done ---': ELSE
-                            CRT ICNT 'R#6 ':ID:ID.SUFFIX:
+                    IF (LINE:LBL) EQ '' THEN ITEM(LNO)='' ELSE
+                        IF LBL='' THEN
+                            LINE=SPACE(PAD):LINE
+                        END ELSE
+                            PAD-=LEN(LBL)
+                            IF PAD<1 THEN PAD=1
+                            LINE=LBL:SPACE(PAD):TRIM(LINE, ' ', 'L')
                         END
-                    END ELSE CRT '--- done ---':
-                    IF CUR.INDEX > 1 THEN
-                        CRT @(-3):BELL:' * unresolved structure * at line ':LNO:' (':CUR.INDEX:')'
-                        CRT T.STMT
-                        INPUT CONT,1
-                    END ELSE CRT
-                END
-            END ELSE
-                CRT BELL:SQ:ID:"' not on file!"
-                INPUT CONT,1
-                RELEASE fn,ID
-            END
-            IF LISTACTIVE THEN ICNT=ICNT+1 ELSE STOP
-        REPEAT
-        STOP
-!
-        SPLITSTMT:
-!
-        ATTR = TRIM(ATTR, SC, 'T')
-        IF INDEX(COMMENTS,ATTR,1) THEN
-            SEMI.COLON=0
-        END ELSE
-            scc = 1
-            LOOP
-                SEMI.COLON=INDEX(ATTR,SC,scc)
-            WHILE SEMI.COLON DO
-                IF (isVariable(' ', ATTR[1, SEMI.COLON-1], ' ')) THEN BREAK
-                scc++
-            REPEAT
-        END
-        SEMIATTR = ATTR[1, SEMI.COLON]
-        SEMICTR=2
-        IF SEMI.COLON THEN
-            FOR DT=1 TO 3 WHILE SEMI.COLON
-                NODEL=DCOUNT(ATTR,DELCHR(DT))
-                FOR DC=1 TO NODEL STEP 2 WHILE SEMI.COLON
-                    DL(DT)=INDEX(ATTR,DELCHR(DT),DC)
-                    IF SEMI.COLON LT DL(DT) ELSE
-                        DL(DT)=INDEX(ATTR,DELCHR(DT),DC+1)
-                        LOOP WHILE SEMI.COLON AND SEMI.COLON LT DL(DT) DO
-                            SEMI.COLON=INDEX(ATTR,SC,SEMICTR)
-                            IF NOT(isVariable(' ', ATTR[1, SEMI.COLON], ' ')) THEN
-                                SEMI.COLON = @FALSE
-                            END
-                            SEMICTR+=1
-                        REPEAT
+                        LINE=TRIM(LINE,' ',"T")
+                        ITEM(LNO)=LINE
                     END
-                NEXT DC
-            NEXT DT
-        END
-        IF SEMI.COLON THEN
-            T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
-            NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
-            ATTR=ATTR[1,SEMI.COLON]
+                END
+            NEXT LNO
+Error_condition:
+            IF F.OPTION THEN
+                IF CUR.INDEX > 1 THEN
+                    IF U.OPTION THEN MATWRITE ITEM ON fn,ID:ID.SUFFIX
+                END ELSE MATWRITE ITEM ON fn,ID:ID.SUFFIX
+            END
+            IF SYSTEM(1) ELSE
+                IF F.OPTION THEN
+                    IF T.OPTION THEN CRT '--- done ---': ELSE
+                        CRT ICNT 'R#6 ':ID:ID.SUFFIX:
+                    END
+                END ELSE CRT '--- done ---':
+                IF CUR.INDEX > 1 THEN
+                    CRT @(-3):BELL:' * unresolved structure * at line ':LNO:' (':CUR.INDEX:')'
+                    CRT T.STMT
+                    INPUT CONT,1
+                END ELSE CRT
+            END
         END ELSE
-            T.STMT=TRIM(ATTR,' ',"B")
-            NEXT.ATTR=''
+            CRT BELL:SQ:ID:"' not on file!"
+            INPUT CONT,1
+            RELEASE fn,ID
         END
-        RETURN
+        IF LISTACTIVE THEN ICNT=ICNT+1 ELSE STOP
+    REPEAT
+    STOP
+!
+SPLITSTMT:
+!
+    ATTR = TRIM(ATTR, SC, 'T')
+    IF INDEX(COMMENTS,ATTR,1) THEN
+        SEMI.COLON=0
+    END ELSE
+        scc = 1
+        LOOP
+            SEMI.COLON=INDEX(ATTR,SC,scc)
+        WHILE SEMI.COLON DO
+            IF isExpression(ATTR[1, SEMI.COLON-1]) THEN BREAK
+            scc++
+        REPEAT
+    END
+    SEMIATTR = ATTR[1, SEMI.COLON]
+!    SEMICTR=2
+!    IF SEMI.COLON THEN
+!        FOR DT=1 TO 3 WHILE SEMI.COLON
+!            NODEL=DCOUNT(ATTR,DELCHR(DT))
+!            FOR DC=1 TO NODEL STEP 2 WHILE SEMI.COLON
+!                DL(DT)=INDEX(ATTR,DELCHR(DT),DC)
+!                IF SEMI.COLON LT DL(DT) ELSE
+!                    DL(DT)=INDEX(ATTR,DELCHR(DT),DC+1)
+!                    LOOP WHILE SEMI.COLON AND SEMI.COLON LT DL(DT) DO
+!                        SEMI.COLON=INDEX(ATTR,SC,SEMICTR)
+!                        IF NOT(isExpression(ATTR[1, SEMI.COLON])) THEN
+!                            SEMI.COLON = @FALSE
+!                        END
+!                        SEMICTR+=1
+!                    REPEAT
+!                END
+!            NEXT DC
+!        NEXT DT
+!    END
+    IF SEMI.COLON THEN
+        T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
+        NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
+        ATTR=ATTR[1,SEMI.COLON]
+    END ELSE
+        T.STMT=TRIM(ATTR,' ',"B")
+        NEXT.ATTR=''
+    END
+    RETURN
