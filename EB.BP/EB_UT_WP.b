@@ -161,8 +161,10 @@
                 XX+=TRAIL
             END
     END CASE
-    XX+=(1-INP.POS)
-    CRT STR(BACK,XX):
+    IF LENTH THEN
+        XX+=(1-INP.POS)
+        CRT STR(BACK,XX):
+    END
 
     remove_RV = (INP.POS EQ 1 AND LEN(INP.STRING))
     FIRST.TIME=remove_RV
@@ -550,7 +552,6 @@ FINISH: !
         IF TYPE NE 'LIT' THEN INP.STRING=TRIM(INP.STRING,' ',"T")
     END
     IF HIDDEN ELSE
-!        WPCOL=ORIG.COL
         INP.POS=1
         INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
         IF NORMAL.FIELD AND INP.STRING NE '' THEN
@@ -566,12 +567,11 @@ FINISH: !
                 END CASE
                 GOSUB STMP.OCONV
             END
-            CRT STR(BACK,WPCOL):STMP:
+            IF LENTH THEN CRT STR(BACK,WPCOL):STMP:
 !            GOSUB STMP.ICONV
         END ELSE
-            IF UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
+            IF LENTH AND UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
         END
-!        CRT ' ':    ;! weird pixel bug
         INCLUDE EB.OS.INCLUDES PC.BLOCK.CURSOR
     END
     ECHO ON

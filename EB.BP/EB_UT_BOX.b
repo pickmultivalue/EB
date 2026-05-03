@@ -31,8 +31,8 @@
                         BEGIN CASE
                             CASE CRT.STRING#''
                                 BLANK=CRT.STRING:CRT.COLS<1,W-1>:' '
-                            CASE WIDTH>=78 AND CLEOL#''
-                                BLANK=CLEOL
+!                            CASE WIDTH>=78 AND CLEOL#''
+!                                BLANK=CLEOL
                             CASE 1
                                 BLANK=SPACE(W)
                         END CASE
