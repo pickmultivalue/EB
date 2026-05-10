@@ -6,13 +6,23 @@
     READ equs FROM f.equs, 'SCREEN.PARAMS' ELSE STOP 202, 'SCREEN.PARAMS'
     ttype = cmd<2>
     key = 'CRT@':ttype
-    MATREAD SCREEN.PARAMS FROM f.params, key THEN
+
+    READ HEXFILE FROM f.params, key THEN
         status = 'updated'
+        HEXFILE = ICONV(HEXFILE,'MX')
+        MATPARSE SCREEN.PARAMS FROM HEXFILE
     END ELSE
         MAT SCREEN.PARAMS =''
         CRT 'New term type...';RQM
         status = 'created'
     END
+    DEBUG
+    CURS.BLOCK=CHAR(27):'[0 q'
+    CURS.LINE=CHAR(27):'[3 q'
+    MATBUILD HEXFILE FROM SCREEN.PARAMS
+    HEXFILE = OCONV(HEXFILE,'MX')
+    WRITE HEXFILE ON f.params, key
+    STOP
     loc = 0
     LOOP
         REMOVE line FROM equs AT loc SETTING delim
@@ -33,7 +43,7 @@
         END
     WHILE delim DO REPEAT
     len = 0
-    FOR attr = 2 TO 100
+    FOR attr = 2 TO 65
         l = LEN(SCREEN.PARAMS(attr))
         IF l > len THEN len = l
     NEXT attr

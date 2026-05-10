@@ -26,7 +26,7 @@
     EQU THE.REST TO 9999
     WPCOL=0; Sub=''; HELP.ID=''
     IF UNASSIGNED(INP.STRING) THEN INP.STRING=''  ;!SPACE(LENTH)
-    IF INIT.FLAG NE AM THEN INP.STRING=INIT.FLAG
+    IF INIT.FLAG NE @AM THEN INP.STRING=INIT.FLAG
     FG_OLD.FIELD=INP.STRING
 
     RTN.STRING = ''
@@ -65,21 +65,21 @@
     PASTE.STRING=''
     OLD.POS=0
     SAVE.POS=''
-    ACT.CODE=FALSE
-    PASTE=FALSE
-    NUM.FIELD=FALSE
-    INDENT=FALSE; MARGIN=''
+    ACT.CODE=@FALSE
+    PASTE=@FALSE
+    NUM.FIELD=@FALSE
+    INDENT=@FALSE; MARGIN=''
     SKIP.LIST=''
     RTN.CHOICES = ''
     TABS=SPACE(8)
-    DO.SPELL=FALSE
+    DO.SPELL=@FALSE
 ! initialize Paragraph Reformat codes
     P=FG_ERROR.MSGS<46,1>
     D=FG_ERROR.MSGS<46,3>
 !
 ! Display "WP Mode"
 !
-    WORD.PROCESSING=FALSE
+    WORD.PROCESSING=@FALSE
     IF INP.FLD='' THEN INP.FLD='AN'
     TYPE=INP.FLD<1>
     JUST=INP.FLD<2>
@@ -92,9 +92,9 @@
 ! Get length from SCR.PARAMS ?
 !
     IF LENTH THEN
-        RTN.REQUIRED = TRUE
+        RTN.REQUIRED = @TRUE
     END ELSE
-        RTN.REQUIRED = FALSE
+        RTN.REQUIRED = @FALSE
         LENTH = 1
     END
     MAXLENTH = LENTH<2>
@@ -122,7 +122,7 @@
     WPCOL+=INP.POS-1
     PREV.CHARS=''
     WPCHR.NBR=0     ;!FIRST.ASCII
-    RTN.KEY=FALSE
+    RTN.KEY=@FALSE
     NORMAL.FIELD=(TYPE NE 'LIT' AND TYPE NE 'MENU' AND TYPE NE 'ACT')
     SECRET=(TYPE='HD')
     HIDDEN=(TYPE[1,1]='H' AND NOT(SECRET))
@@ -141,7 +141,7 @@
     TRAIL=LENTH-LEN(STMP)
     INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
 !    INP.STRING=STMP
-    XX=LEN(STMP)
+    XX=MINIMUM(LENTH:@AM:LEN(STMP))
     CHOICES=RAISE(EB.CMD<8>)
     F_CHOICES = FIELD(CHOICES, CHAR(6), 1)
     IF LEN(F_CHOICES) NE LEN(CHOICES) THEN
@@ -168,7 +168,8 @@
 
     remove_RV = (INP.POS EQ 1 AND LEN(INP.STRING))
     FIRST.TIME=remove_RV
-    INSERTING=NOT(FIRST.TIME)
+    INSERTING=FIRST.TIME
+    GOSUB 6
     TRAIL=0
     INCLUDE EB.OS.INCLUDES PC.RESET.CURSOR
 !
@@ -180,7 +181,7 @@ STARTLBL: !
         IF NOT(RTN.REQUIRED) AND LAST.NBR THEN
             WPCHR.NBR = RTN.VAL
         END ELSE
-            FG_ACT.CODE=FALSE
+            FG_ACT.CODE=@FALSE
             CALL EB_GET_INPUT(WPCHR, WPCHR.NBR)
             IF FG_ACT.CODE THEN PREV.CHARS = ''
             IF FG_TIMEDOUT THEN FG_ACT.CODE=FG_ABT.CODE
@@ -195,15 +196,15 @@ STARTLBL: !
                 CRT INP.STRING JUST:
             END
             CRT STR(BACK,LENTH):
-            remove_RV = FALSE
-            IF FG_ACT.CODE NE FG_INSERT.CODE THEN INSERTING=TRUE
+            remove_RV = @FALSE
+            IF FG_ACT.CODE NE FG_INSERT.CODE THEN INSERTING=@TRUE
         END
 !
 ! Was the <RETURN> or <Line-Feed> key used ?
 !
 PROCESS.RTN: !
         IF WPCHR.NBR=RTN.VAL THEN
-            RTN.KEY=TRUE
+            RTN.KEY=@TRUE
             IF NOT(WORD.PROCESSING OR TYPE='MENU' OR TYPE='LIT') THEN
                 IF TRIM(INP.STRING) NE '' AND TYPE[1,1] NE 'A' AND NOT(HIDDEN OR SECRET) THEN GOSUB VALID.INPUT.CHECK
             END
@@ -244,7 +245,7 @@ PROCESS.RTN: !
 !
 ! Ignore certain functions if Word Processing
 !
-        SUB.CODE=FALSE
+        SUB.CODE=@FALSE
         IF FG_ACT.CODE THEN
             IF FG_TYPEAHEAD.BUFF='' AND PREV.CHARS NE '' THEN
                 FG_TYPEAHEAD.BUFF=PREV.CHARS[LEN(CHR1)+1,THE.REST]
@@ -253,10 +254,10 @@ PROCESS.RTN: !
             BEGIN CASE
                 CASE FG_ACT.CODE=FG_LEFT.CODE
                     SUB.CODE=FG_LEFT.CODE
-                    FG_ACT.CODE=FALSE
+                    FG_ACT.CODE=@FALSE
                 CASE FG_ACT.CODE=FG_RIGHT.CODE
                     SUB.CODE=FG_RIGHT.CODE
-                    FG_ACT.CODE=FALSE
+                    FG_ACT.CODE=@FALSE
                 CASE FG_ACT.CODE=FG_ABT.CODE
                     RTN.STRING=EB.CMD<1>
 !                    IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
@@ -297,17 +298,17 @@ PROCESS.RTN: !
                                 RTN.CHOICES = DELETE(INP.STRING, 1)
                                 INP.STRING = INP.STRING<1>
                                 RTN.STRING = INP.STRING
-                                FG_ACT.CODE = TRUE
+                                FG_ACT.CODE = @TRUE
                             END ELSE
                                 INP.STRING = FG_OLD.FIELD
-                                FG_ACT.CODE = FALSE
+                                FG_ACT.CODE = @FALSE
                             END
                             IF LEN(CC) THEN
                                 CRT @(CC+INP.POS-1,RR):
                                 GOSUB CRT.UNDERLINE
                             END
                             IF FG_ACT.CODE THEN
-                                FG_ACT.CODE = FALSE
+                                FG_ACT.CODE = @FALSE
                                 BREAK
                             END
                         END
@@ -337,7 +338,7 @@ PROCESS.RTN: !
                         INPUT X,0:
                         IF LEN(REPAINT) THEN
                             CRT REPAINT:
-                            FG_ACT.CODE = FALSE
+                            FG_ACT.CODE = @FALSE
                         END
                     END
                 CASE FG_ACT.CODE=FG_TCL.CODE
@@ -356,7 +357,7 @@ PROCESS.RTN: !
                 CASE 1
                     WPCHR.NBR=0
                     SUB.CODE=FG_ACT.CODE
-                    FG_ACT.CODE=FALSE
+                    FG_ACT.CODE=@FALSE
                     PREV.CHARS=''
             END CASE
         END
@@ -364,7 +365,7 @@ PROCESS.RTN: !
             IF FG_ACT.CODE=FG_HLP.CODE THEN
                 IF HELP.ID NE '' THEN
                     CALL EB_UT_HELP(HELP.ID,FG_EB.PARAMS,TERM.TYPE)
-                    FG_ACT.CODE=FALSE
+                    FG_ACT.CODE=@FALSE
                     GOTO STARTLBL
                 END ELSE
                     RTN.STRING=EB.CMD<6>          ;* Help key
@@ -506,8 +507,8 @@ ASCII.INPUT:    !
             CASE SUB.CODE=FG_PASTE.CODE
                 Sub=21
             CASE RTN.KEY
-                RTN.KEY=FALSE
-                INDENT=FALSE; MARGIN=''
+                RTN.KEY=@FALSE
+                INDENT=@FALSE; MARGIN=''
                 DUMMY=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
                 IF DUMMY='' THEN  ;! end-of-paragraph
                     INP.STRING=TRIM(INP.STRING,' ',"T")
@@ -544,7 +545,7 @@ ASCII.INPUT:    !
             IF Sub>2 THEN WPCHR=''
         END
         LAST.CHR=WPCHR
-        FIRST.TIME=FALSE
+        FIRST.TIME=@FALSE
     REPEAT
 FINISH: !
     CASING case_state
@@ -567,7 +568,7 @@ FINISH: !
                 END CASE
                 GOSUB STMP.OCONV
             END
-            IF LENTH THEN CRT STR(BACK,WPCOL):STMP:
+            IF LENTH THEN CRT STR(BACK,WPCOL):STMP[1,LENTH]:
 !            GOSUB STMP.ICONV
         END ELSE
             IF LENTH AND UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
@@ -594,7 +595,7 @@ VALID.INPUT.CHECK: !
                 INP.STRING = OCONV(STMP, TYPE)
             END ELSE
                 CRT BELL:
-                RTN.KEY=FALSE
+                RTN.KEY=@FALSE
                 RETURN
             END
         CASE TYPE='T'
@@ -651,12 +652,12 @@ VALID.INPUT.CHECK: !
     IF LEN(CHOICES) AND LEN(F_CHOICES) = 0 THEN
         LOCATE INP.STRING IN CHOICES<1> SETTING CPOS ELSE
             CRT BELL:
-            RTN.KEY=FALSE
+            RTN.KEY=@FALSE
             RETURN
         END
     END
     IF ERRMSG NE '' THEN
-        RTN.KEY=FALSE
+        RTN.KEY=@FALSE
         INP.STRING=FG_OLD.FIELD
         INP.POS=1; WPCOL=ORIG.COL
         DEBUG
@@ -739,11 +740,11 @@ GET.WORD: !
     WORD=INP.STRING[INP.POS,WORD.LENGTH]
     RETURN
 1   !
-    ACT.CODE=FALSE
+    ACT.CODE=@FALSE
     ACTION=LAST.CHR
     RETURN
 2   !
-    ACT.CODE=TRUE
+    ACT.CODE=@TRUE
     IF 0 THEN
         IF INP.POS=1 THEN WORD.WRAP=INP.STRING[1,1]
         INP.STRING=(INP.STRING[1,INP.POS-1]:WPCHR:INP.STRING[INP.POS+1,MAXLENTH])
@@ -787,10 +788,10 @@ GET.WORD: !
     RETURN
 6   !
     IF INSERTING THEN
-        INSERTING=FALSE
+        INSERTING=@FALSE
         INCLUDE EB.OS.INCLUDES PC.BLOCK.CURSOR
     END ELSE
-        INSERTING=TRUE
+        INSERTING=@TRUE
         INCLUDE EB.OS.INCLUDES PC.LINE.CURSOR
     END
     RETURN
@@ -820,7 +821,7 @@ GET.WORD: !
     END
     RETURN
 8   !
-    FG_DELETE.LIST=INP.STRING[INP.POS,1]:AM:FG_DELETE.LIST
+    FG_DELETE.LIST=INP.STRING[INP.POS,1]:@AM:FG_DELETE.LIST
 DEL.LABEL:
     INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[INP.POS+1,MAXLENTH])[1,MAXLENTH]
     IF UNDERLINE.FLAG ELSE INP.STRING:=' '
@@ -846,7 +847,7 @@ DEL.LABEL:
     END ELSE
         NEXT.CHAR=''
     END
-    FG_DELETE.LIST=WORD:NEXT.CHAR:AM:FG_DELETE.LIST
+    FG_DELETE.LIST=WORD:NEXT.CHAR:@AM:FG_DELETE.LIST
     INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[NEW.POS,MAXLENTH])    ;! JUST
     TRAIL=LENTH-LEN(INP.STRING[INP.POS,LENTH])-WPCOL+1 ;!WORD.LENGTH-1
     GOSUB CRT.UNDERLINE
@@ -857,7 +858,7 @@ DEL.LABEL:
     RETURN
 10  !
     TRAIL=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
-    FG_DELETE.LIST=INP.STRING[INP.POS,MAXLENTH]:AM:FG_DELETE.LIST
+    FG_DELETE.LIST=INP.STRING[INP.POS,MAXLENTH]:@AM:FG_DELETE.LIST
     TRAIL=LEN(TRAIL)
     IF UNDERLINE.FLAG ELSE CRT SPACE(TRAIL):STR(BACK,TRAIL):
     INP.STRING=INP.STRING[1,INP.POS-1]
