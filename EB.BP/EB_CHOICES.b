@@ -499,8 +499,8 @@ RESTART: !
             CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
                 EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
                 CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, MC, MR)
-                IF MC GT C.COL AND C LE (C.COL+WIDTH) THEN
-                    IF MR GT C.ROW AND R LT (C.ROW+DEPTH) THEN
+                IF MC GT C.COL AND MC LE (C.COL+WIDTH) THEN
+                    IF MR GT C.ROW AND MR LT (C.ROW+DEPTH) THEN
                         diff = MR - RR
                         I = diff + (PGE-1) * DEPTH
                         IF K.ATTR EQ 'L' THEN VALUE=I ELSE VALUE=VALUES<K.ATTR,I>
