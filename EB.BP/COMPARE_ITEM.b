@@ -43,7 +43,6 @@
     EQU INTEG TO CHAR(230)
     EQU BELL TO CHAR(7)
     EQU OTHERWISE TO 1
-    EQU TRUE TO 1, FALSE TO 0
     EQU SPC TO ' ', TAB TO CHAR(9)
     ORIG.DEPTH=SYSTEM(3)
     ORIG.WIDTH=SYSTEM(2)
@@ -58,16 +57,16 @@
     STLN=1
     CNTA=0
     CNTB=0
-    ASENT=FALSE; BSENT=FALSE
-    AISENT=FALSE; BISENT=FALSE
-    DELAREQ=FALSE; DELBREQ=FALSE
-    DELSAVEA=FALSE; DELSAVEB=FALSE
-    VERT.FLAG=FALSE
-    WIDE.FLAG=TRUE
-    DEEP.FLAG=TRUE
-    WRAP.FLAG=FALSE
-    READN=FALSE
-    SHOW_COMMENTS=TRUE
+    ASENT=@FALSE; BSENT=@FALSE
+    AISENT=@FALSE; BISENT=@FALSE
+    DELAREQ=@FALSE; DELBREQ=@FALSE
+    DELSAVEA=@FALSE; DELSAVEB=@FALSE
+    VERT.FLAG=@FALSE
+    WIDE.FLAG=@TRUE
+    DEEP.FLAG=@TRUE
+    WRAP.FLAG=@FALSE
+    READN=@FALSE
+    SHOW_COMMENTS=@TRUE
     DEFAULT.OFFSET=99
     NORMAL.LEN=SYSTEM(2)
     NORMAL.WIDTH=SYSTEM(3)
@@ -119,7 +118,7 @@
     IF NOT(SEL) THEN
         ITNM=FIELD(FG_SENTENCE,' ',2)
         IF ITNM#'' THEN
-            AISENT=TRUE
+            AISENT=@TRUE
             IF INDEX(ITNM, Bslsh, 1) THEN
                 g_slsh=Bslsh
                 b_slsh=Fslsh
@@ -136,7 +135,7 @@
                 INCLUDE EB.OS.INCLUDES GET.FLNM
             END
             IDA=ITNM
-            IF FLNM#'' THEN FNAMEA=FLNM; ASENT=TRUE
+            IF FLNM#'' THEN FNAMEA=FLNM; ASENT=@TRUE
             ITNM=FIELD(FG_SENTENCE,' ',3)
             IF ITNM#'' THEN
                 IF INDEX(ITNM, Bslsh, 1) THEN
@@ -146,7 +145,7 @@
                     g_slsh=Fslsh
                     b_slsh=Bslsh
                 END
-                BISENT=TRUE
+                BISENT=@TRUE
                 CONVERT b_slsh TO g_slsh IN ITNM
                 IF INDEX(ITNM,g_slsh,1) THEN
                     FLNM=ITNM
@@ -156,7 +155,7 @@
                     INCLUDE EB.OS.INCLUDES GET.FLNM
                 END
                 IDB=ITNM
-                IF FLNM#'' THEN FNAMEB=FLNM; BSENT=TRUE
+                IF FLNM#'' THEN FNAMEB=FLNM; BSENT=@TRUE
             END
         END
     END ELSE
@@ -177,7 +176,7 @@
     END
 100 ! Enter First File Name
     LOOP
-        IF ASENT THEN ASENT=FALSE ELSE
+        IF ASENT THEN ASENT=@FALSE ELSE
             prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0;YNR=2;CRT @(0,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
             FNAMEA = Z
@@ -225,12 +224,12 @@
             k++
             IDA = id_list<k>
         END ELSE
-            SEL=FALSE; READN=FALSE
+            SEL=@FALSE; READN=@FALSE
             GOSUB 1300
             GOTO 110
         END
     END ELSE
-        IF AISENT THEN AISENT=FALSE ELSE
+        IF AISENT THEN AISENT=@FALSE ELSE
             LOOP
                 prmpt = 'ENTER ID A: '; YNC=LEN(prmpt)+0;YNR=4;CRT @(0,4):prmpt:@(-4):
                 Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
@@ -266,7 +265,7 @@
         END CASE
     END ELSE
 131     !
-        IF BISENT THEN BISENT=FALSE ELSE
+        IF BISENT THEN BISENT=@FALSE ELSE
             LOOP
                 prmpt = 'ENTER ID B: '; YNC=LEN(prmpt)+42;YNR=4;CRT @(42,4):prmpt:@(-4):
                 Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
@@ -305,7 +304,7 @@
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 130
-    IF OPT EQ 'H' THEN VERT.FLAG=FALSE ELSE VERT.FLAG=TRUE
+    IF OPT EQ 'H' THEN VERT.FLAG=@FALSE ELSE VERT.FLAG=@TRUE
 160 ! Enter Display Type
     prmpt = 'WIDE OR NORMAL SCREEN (W/N): '; YNC=LEN(prmpt)+10;YNR=10;CRT @(10,10):prmpt:
     YNCHRS='W':@VM:'N'
@@ -313,7 +312,7 @@
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 150
-    IF INDEX('W',OPT,1) THEN WIDE.FLAG=TRUE ELSE WIDE.FLAG=FALSE
+    IF INDEX('W',OPT,1) THEN WIDE.FLAG=@TRUE ELSE WIDE.FLAG=@FALSE
 170 ! Enter Display Level
     prmpt = 'DEEP OR NORMAL SCREEN DEPTH (D/N): '; YNC=LEN(prmpt)+10;YNR=12;CRT @(10,12):prmpt:
     YNCHRS='D':@VM:'N'
@@ -321,10 +320,10 @@
     OPT = Z
     IF OPT EQ 'EX' THEN GO 99999
     IF OPT EQ '^' THEN GO 160
-    IF INDEX('D',OPT,1) THEN DEEP.FLAG=TRUE ELSE DEEP.FLAG=FALSE
+    IF INDEX('D',OPT,1) THEN DEEP.FLAG=@TRUE ELSE DEEP.FLAG=@FALSE
 !!!!!!!!!!!!!!!!!!!!!!!!
 200 ! Mainline
-    IF SEL THEN READN=TRUE
+    IF SEL THEN READN=@TRUE
     AOFFSET = 1
     BOFFSET = 1
 !
@@ -433,18 +432,18 @@
         CASE CMD EQ 'RFR'
             GO 200
         CASE CMD EQ 'W'        ;! wide screen
-            WIDE.FLAG=TRUE
+            WIDE.FLAG=@TRUE
             GOSUB 1300
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! display both items
         CASE CMD EQ 'N'        ;! Normal Screen
-            WIDE.FLAG=FALSE
-            DEEP.FLAG=FALSE
+            WIDE.FLAG=@FALSE
+            DEEP.FLAG=@FALSE
             GOSUB 1300
             GOSUB 600 ;! format display mode
             GOSUB 900 ;! Display Both Items
         CASE CMD EQ 'D'        ;! deep screen
-            DEEP.FLAG=TRUE
+            DEEP.FLAG=@TRUE
             GOSUB 1300
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! display both items
@@ -537,13 +536,16 @@
                 GOSUB 1200          ;! Readjust B
                 GOSUB 900 ;! Display Both Items
             END
-        CASE CMD EQ 'EX' OR CMD EQ 'FI' OR CMD EQ 'FS'
-FILE.ITEM:!
+        CASE CMD EQ 'EX' OR CMD = 'PREV' OR CMD[1,2] EQ 'FI' OR CMD[1,2] EQ 'FS'
+            IF CMD = 'PREV' THEN
+                k = k -2
+            END
+FILE.ITEM:  !
             GOSUB UPDATE
             IF CMD#'' THEN
                 IF SEL THEN GO 110
-                WIDE.FLAG=FALSE
-                DEEP.FLAG=FALSE
+                WIDE.FLAG=@FALSE
+                DEEP.FLAG=@FALSE
                 GOSUB 1300
                 CALLSTACK = SYSTEM(16)
                 IF CALLSTACK THEN GOTO 99999
@@ -554,8 +556,8 @@ FILE.ITEM:!
                 GO 110
             END
         CASE CMD EQ 'EXK' OR CMD EQ 'FIK'
-            WIDE.FLAG=FALSE
-            DEEP.FLAG=FALSE
+            WIDE.FLAG=@FALSE
+            DEEP.FLAG=@FALSE
             GOSUB UPDATE
             IF CMD#'' THEN
                 GOSUB 1300
@@ -661,7 +663,7 @@ FILE.ITEM:!
             IF OCONV(CMD,'MCN') EQ '' THEN
                 GOSUB 990
             END ELSE
-                OK=TRUE
+                OK=@TRUE
                 IF CMD MATCHES "'C'1N0X" THEN CMD = 'CA ':CMD[2,9999]
                 IF FIELD(CMD,' ',1) EQ 'C' THEN CMD = 'CA':CMD[COL2(),9999]
                 IF CMD MATCHES "2A1N0X" THEN CMD = CMD[1,2]:' ':CMD[3,9999]
@@ -676,7 +678,7 @@ FILE.ITEM:!
                     CASE CMD MATCHES "2A' '1N0N'-'1N0N' '1N0N'-'1N0N"
                     CASE 1
                         CRT @(0,CMD.ROW):'Incomplete Copy command':CLEOL:
-                        OK=FALSE
+                        OK=@FALSE
                 END CASE
                 IF OK THEN
                     FR.RANGE=FIELD(CMD,' ',2); TO.RANGE=FIELD(CMD,' ',3)
@@ -796,13 +798,13 @@ FILE.ITEM:!
             GOSUB 900
         CASE CMD EQ 'EBA'
             GOSUB WRITEA
-            EXECUTE 'EB JET.PASTE ':NDA
+            ebcmd = 'JET.PASTE ':NDA; GOSUB doeb
             READ RECA FROM F.JET.PASTE,NDA ELSE DEBUG
             GOSUB 600
             GOSUB 900
         CASE CMD EQ 'EBB'
             GOSUB WRITEB
-            EXECUTE 'EB JET.PASTE ':NDB
+            ebcmd = 'JET.PASTE ':NDB; GOSUB doeb
             READ RECB FROM F.JET.PASTE,NDB ELSE DEBUG
             GOSUB 600
             GOSUB 900
@@ -921,11 +923,11 @@ FILE.ITEM:!
         CASE CMD[1,2] EQ 'PR'
             GOSUB 800 ;! Print Items
         CASE CMD[1,1] EQ 'V'
-            VERT.FLAG=TRUE
+            VERT.FLAG=@TRUE
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! Display Both Items
         CASE CMD[1,1] EQ 'H'
-            VERT.FLAG=FALSE
+            VERT.FLAG=@FALSE
             GOSUB 600 ;! Format Display Mode
             GOSUB 900 ;! Display Both Items
         CASE CMD[1,3] EQ 'XEQ'
@@ -1160,14 +1162,14 @@ FILE.ITEM:!
 ! Do restore backup
     READ BCKA FROM F.JET.PASTE,NDA ELSE BCKA = RECA
     IF RECA NE BCKA THEN
-        DELSAVEA=TRUE
+        DELSAVEA=@TRUE
         WRITE BCKA ON F.JET.PASTE,SAVA
         GOSUB WRITEA
     END
 
     READ BCKB FROM F.JET.PASTE,NDB ELSE BCKB = RECB
     IF RECB NE BCKB THEN
-        DELSAVEB=TRUE
+        DELSAVEB=@TRUE
         WRITE BCKB ON F.JET.PASTE,SAVB
         GOSUB WRITEB
     END
@@ -1254,8 +1256,8 @@ FILE.ITEM:!
     IF integrate THEN
         ENDLINE = MAXIMUM(DCOUNT(RECA,@AM):@AM:DCOUNT(RECB,@AM))
     END ELSE ENDLINE=MAX.LINES+1
-    UPDA=FALSE
-    UPDB=FALSE
+    UPDA=@FALSE
+    UPDB=@FALSE
     LASTA=''; LASTB=''
     FOR J=1 TO ENDLINE
         AMA+=1
@@ -1274,10 +1276,10 @@ FILE.ITEM:!
             END
             IF TMPA # TMPB THEN
                 IF CMD[2,1] EQ 'B' THEN
-                    UPDA=TRUE
+                    UPDA=@TRUE
                     LINEA=LINEB
                 END ELSE
-                    UPDB=TRUE
+                    UPDB=@TRUE
                     LINEB=LINEA
                 END
                 RECA<AMA>=LINEA
@@ -1498,7 +1500,7 @@ UPDATE: !
             LOOP
                 CRT BELL:
                 CRT @(0,CMD.ROW):CLEOL:'Changes have been made...continue (Y/N) ? ':
-                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
                 ANS = Z
             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
         END ELSE ANS='Y'
@@ -1516,11 +1518,11 @@ UPDATE: !
                                 prmpt = 'Make patch for ':FNAMEA:' ':IDA:' (Y/N) ? '
                                 YNC = LEN(prmpt); YNR = CMD.ROW
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
-                                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
-                                EXECUTE 'EB ':FNAMEA:' ':IDA
+                                ebcmd = '':FNAMEA:' ':IDA; GOSUB doeb
                             END ELSE
                                 LOCATE IDA IN CHANGEDA<am_start> BY 'AL' SETTING POS ELSE
                                     INS IDA BEFORE CHANGEDA<POS>
@@ -1537,11 +1539,11 @@ UPDATE: !
                                 prmpt = 'Make patch for ':FNAMEB:' ':IDB:' (Y/N) ? '
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
                                 YNC = LEN(prmpt); YNR = CMD.ROW
-                                Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
-                                EXECUTE 'EB ':FNAMEB:' ':IDB
+                                ebcmd = '':FNAMEB:' ':IDB; GOSUB doeb
                             END ELSE
                                 LOCATE IDB IN CHANGEDB<am_start> BY 'AL' SETTING POS ELSE
                                     INS IDB BEFORE CHANGEDB<POS>
@@ -1566,37 +1568,37 @@ FINISH: !
     GOSUB UPDATE.CHANGE
     IF DELSAVEA THEN
         DELETE FILEA,SAVA
-        DELSAVEA=FALSE
+        DELSAVEA=@FALSE
     END
     IF DELSAVEB THEN
         DELETE FILEB,SAVB
-        DELSAVEB=FALSE
+        DELSAVEB=@FALSE
     END
     STOP
 WRITEA: !
     WRITE RECA ON F.JET.PASTE,NDA
-    DELAREQ=TRUE
+    DELAREQ=@TRUE
     RETURN
 WRITEB: !
     WRITE RECB ON F.JET.PASTE,NDB
-    DELBREQ=TRUE
+    DELBREQ=@TRUE
     RETURN
 DELETEA: !
     IF DELAREQ THEN
         DELETE F.JET.PASTE,NDA
-        DELAREQ=FALSE
+        DELAREQ=@FALSE
         RETURN
     END
 DELETEB: !
     IF DELBREQ THEN
         DELETE F.JET.PASTE,NDB
-        DELBREQ=FALSE
+        DELBREQ=@FALSE
         RETURN
     END
     RETURN
 OPEN.FILEB: !
 120 ! Enter Second File Name
-    IF BSENT THEN BSENT=FALSE ELSE
+    IF BSENT THEN BSENT=@FALSE ELSE
         LOOP
             prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42;YNR=2;CRT @(42,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
@@ -1693,7 +1695,7 @@ CHECKRANGE: !
 !
 ! Don't allow range commands to include lines we can't see
 !
-    RANGE_OK = FALSE
+    RANGE_OK = @FALSE
     IF SIDE EQ 'A' THEN
         FRST = STARTA
         TOST = STARTB
@@ -1707,11 +1709,11 @@ CHECKRANGE: !
         CASE FR.ST LT FRST
         CASE FR.ST GT FRFI
         CASE SIDES EQ 1
-            RANGE_OK = TRUE
+            RANGE_OK = @TRUE
         CASE TO.ST LT TOST
         CASE TO.ST GT TOFI
         CASE 1
-            RANGE_OK = TRUE
+            RANGE_OK = @TRUE
     END CASE
     IF NOT(RANGE_OK) THEN
         CRT @(0,CMD.ROW):CLEOL:'Range (':FR.ST:'-':FR.FI:
@@ -1720,7 +1722,7 @@ CHECKRANGE: !
         END
         CRT ") not in current view. Enter 'Y' to override ":BELL:
         YNR = CMD.ROW; YNC = 50
-        Z = TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+        Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
         RANGE_OK = Z
         RANGE_OK = UPCASE(RANGE_OK EQ 'Y')
     END
@@ -1735,11 +1737,11 @@ SHOW_ID_HELP:
     RETURN
 INPT: !
     POS=1
-    EDITED=FALSE
+    EDITED=@FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,@AM,'','',ESC)
-    IF INPTYPE EQ 'YN' THEN
-        Z = 'NY'[Z+1,1]
-    END
+!    IF INPTYPE EQ 'YN' THEN
+!        Z = 'NY'[Z+1,1]
+!    END
     INPTYPE='AN'
     GOSUB trans_codes
     RETURN
@@ -1757,4 +1759,9 @@ trans_codes:
         CASE FG_ACT.CODE EQ FG_BTAB.CODE ; Z = 'L':ADJLEN
         CASE FG_ACT.CODE EQ FG_PRVS.CODE ; Z = '-':MAX.LINES
     END CASE
+    RETURN
+doeb:
+    EXECUTE 'EB ':ebcmd
+    FG_TIMEOUT = 0
+    FG_MONITOR.SECS = 0
     RETURN
