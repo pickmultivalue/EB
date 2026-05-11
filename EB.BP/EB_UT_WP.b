@@ -197,7 +197,7 @@ STARTLBL: !
             END
             CRT STR(BACK,LENTH):
             remove_RV = @FALSE
-            IF FG_ACT.CODE NE FG_INSERT.CODE THEN INSERTING=@TRUE
+            IF FG_ACT.CODE NE FG_INSERT.CODE THEN GOSUB 6
         END
 !
 ! Was the <RETURN> or <Line-Feed> key used ?
@@ -385,10 +385,16 @@ ASCII.START: !
             IF LAST.CHR=OCONV(LAST.CHR,'MCA') THEN
 ASCII.INPUT:    !
                 BEGIN CASE
-                    CASE TYPE = 'U'
+                    CASE TYPE EQ 'U'
                         WPCHR = OCONV(WPCHR, 'MCU')
-                    CASE TYPE='L'
+                    CASE TYPE EQ 'L'
                         WPCHR=OCONV(WPCHR,'MCL')
+                    CASE TYPE[1,2] EQ 'YN'
+                        WPCHR = OCONV(WPCHR, 'MCU')
+                        IF NOT(INDEX('YN', WPCHR, 1)) THEN
+                            CRT BELL:
+                            CONTINUE
+                        END
                     CASE NUM.FIELD
                         IF NOT(NUM(WPCHR)) THEN
                             CRT BELL:

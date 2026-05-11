@@ -502,7 +502,7 @@ RESTART: !
                 IF MC GT C.COL AND C LE (C.COL+WIDTH) THEN
                     IF MR GT C.ROW AND R LT (C.ROW+DEPTH) THEN
                         diff = MR - RR
-                        I = diff
+                        I = diff + (PGE-1) * DEPTH
                         IF K.ATTR EQ 'L' THEN VALUE=I ELSE VALUE=VALUES<K.ATTR,I>
                         BREAK
                     END
