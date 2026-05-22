@@ -122,7 +122,6 @@ LOOP
                         CHR1=PREV.CHARS[1,l]
                         FKEY=CHR1
                         INCLUDE EB.OS.INCLUDES CHECK.FOR.CMD
-                        IF FG_ACT.CODE=FG_ABT.CODE THEN DEBUG
                     UNTIL FG_ACT.CODE OR l=1 DO l-- REPEAT
                 UNTIL LAST.CHR=1 OR FG_ACT.CODE DO
                     PREV.CHARS=PREV.CHARS[2,99]

@@ -4,6 +4,7 @@
     DEFFUN EBJSHOW()
     DEFFUN EBGETHOME()
     INCLUDE EB.EQUS EB.COMMON
+    INCLUDE EB.INCLUDES DIM.SAVE.EB
     INCLUDE JBC.h
     DEFC INT JBASEEmulateGETINT(INT)
     IF_COMPILED_PRIME=JBASEEmulateGETINT(30)
@@ -40,6 +41,7 @@
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
     T.OPTION=INDEX(TCL.OPTS,'T',1)
+    M.OPTION=INDEX(TCL.OPTS,'M',1)
     EQU INTEG TO CHAR(230)
     EQU BELL TO CHAR(7)
     EQU OTHERWISE TO 1
@@ -177,7 +179,7 @@
 100 ! Enter First File Name
     LOOP
         IF ASENT THEN ASENT=@FALSE ELSE
-            prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0;YNR=2;CRT @(0,2):prmpt:@(-4):
+            prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0; YNR=2; CRT @(0,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
             FNAMEA = Z
         END
@@ -208,12 +210,12 @@
     AOBJ = FIELD(FNAMEA, ',', 2) EQ 'OBJECT'
     BOBJ = FIELD(FNAMEB, ',', 2) EQ 'OBJECT'
     IF AOBJ THEN
-        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper';STOP
+        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper'; STOP
         rc = IOCTL(FILEA, JBC_COMMAND_GETFILENAME, AOBJ)
         AOBJ := DIR_DELIM_CH
     END
     IF BOBJ THEN
-        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper';STOP
+        IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper'; STOP
         rc = IOCTL(FILEB, JBC_COMMAND_GETFILENAME, AOBJ)
         BOBJ := DIR_DELIM_CH
     END
@@ -231,7 +233,7 @@
     END ELSE
         IF AISENT THEN AISENT=@FALSE ELSE
             LOOP
-                prmpt = 'ENTER ID A: '; YNC=LEN(prmpt)+0;YNR=4;CRT @(0,4):prmpt:@(-4):
+                prmpt = 'ENTER ID A: '; YNC=LEN(prmpt)+0; YNR=4; CRT @(0,4):prmpt:@(-4):
                 Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
                 IDA = Z
             WHILE IDA EQ '?' DO
@@ -267,7 +269,7 @@
 131     !
         IF BISENT THEN BISENT=@FALSE ELSE
             LOOP
-                prmpt = 'ENTER ID B: '; YNC=LEN(prmpt)+42;YNR=4;CRT @(42,4):prmpt:@(-4):
+                prmpt = 'ENTER ID B: '; YNC=LEN(prmpt)+42; YNR=4; CRT @(42,4):prmpt:@(-4):
                 Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
                 IDB = Z
             WHILE IDB EQ '?' DO
@@ -284,9 +286,12 @@
         RECB = jelf->getobject(BOBJ:IDB:'.so')->embed_source
     END ELSE
         READ RECB FROM FILEB,IDB ELSE
-            CRT EL:IDB:' NOT IN ':FNAMEB:
-            STOP
-            GO 131
+            IF NOT(M.OPTION) THEN
+                CRT EL:IDB:' NOT IN ':FNAMEB:
+                STOP
+                GO 131
+            END
+            RECB = ''
         END
     END
     IF RECA EQ RECB THEN
@@ -298,7 +303,7 @@
     CRT EL:
     CRT @(25,6):'--- OPTIONS ---':
 150 ! Enter Display Mode
-    prmpt = 'HORIZONTAL OR VERTICAL DISPLAY (H/V): '; YNC=LEN(prmpt)+10;YNR=8;CRT @(10,8):prmpt:
+    prmpt = 'HORIZONTAL OR VERTICAL DISPLAY (H/V): '; YNC=LEN(prmpt)+10; YNR=8; CRT @(10,8):prmpt:
     YNCHRS='H':@VM:'V'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
@@ -306,7 +311,7 @@
     IF OPT EQ '^' THEN GO 130
     IF OPT EQ 'H' THEN VERT.FLAG=@FALSE ELSE VERT.FLAG=@TRUE
 160 ! Enter Display Type
-    prmpt = 'WIDE OR NORMAL SCREEN (W/N): '; YNC=LEN(prmpt)+10;YNR=10;CRT @(10,10):prmpt:
+    prmpt = 'WIDE OR NORMAL SCREEN (W/N): '; YNC=LEN(prmpt)+10; YNR=10; CRT @(10,10):prmpt:
     YNCHRS='W':@VM:'N'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
@@ -314,7 +319,7 @@
     IF OPT EQ '^' THEN GO 150
     IF INDEX('W',OPT,1) THEN WIDE.FLAG=@TRUE ELSE WIDE.FLAG=@FALSE
 170 ! Enter Display Level
-    prmpt = 'DEEP OR NORMAL SCREEN DEPTH (D/N): '; YNC=LEN(prmpt)+10;YNR=12;CRT @(10,12):prmpt:
+    prmpt = 'DEEP OR NORMAL SCREEN DEPTH (D/N): '; YNC=LEN(prmpt)+10; YNR=12; CRT @(10,12):prmpt:
     YNCHRS='D':@VM:'N'
     YNL=1; GOSUB GET.CHAR
     OPT = Z
@@ -1600,7 +1605,7 @@ OPEN.FILEB: !
 120 ! Enter Second File Name
     IF BSENT THEN BSENT=@FALSE ELSE
         LOOP
-            prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42;YNR=2;CRT @(42,2):prmpt:@(-4):
+            prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42; YNR=2; CRT @(42,2):prmpt:@(-4):
             Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
             FNAMEB = Z
         WHILE FNAMEB EQ '?' DO
@@ -1761,7 +1766,7 @@ trans_codes:
     END CASE
     RETURN
 doeb:
+    INCLUDE EB.INCLUDES SAVE.EB
     EXECUTE 'EB ':ebcmd
-    FG_TIMEOUT = 0
-    FG_MONITOR.SECS = 0
+    INCLUDE EB.INCLUDES RESTORE.EB
     RETURN

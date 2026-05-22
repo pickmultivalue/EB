@@ -2,7 +2,7 @@
 ! ==============
     INCLUDE EB.EQUS EB.COMMON
     COMMON /EB_LEXER/ reservedWords, colors, comments, commentlen, incomment, case_insensitive
-    DIM SAVE_GEX(50), SAVE_EXTRAS(50)
+    INCLUDE EB.INCLUDES DIM.SAVE.EB
     IF UNASSIGNED(reservedWords) THEN
         reservedWords = ''
         colors = ''
@@ -1606,14 +1606,9 @@ EB.SUB: !
     IF LEN(HEADERS) THEN
         WRITE HEADERS ON F.currdir,'eb_headers'
     END
-    IF accuterm THEN CRT ESC:CHAR(2):0:
-    MAT SAVE_GEX = MAT GEX
-    MAT SAVE_EXTRAS = MAT EXTRAS
+    INCLUDE EB.INCLUDES SAVE.EB
     EXECUTE DUMMY
-    MAT GEX = MAT SAVE_GEX
-    MAT EXTRAS = MAT SAVE_EXTRAS
-    IF accuterm THEN CRT ESC:CHAR(2):1:
-    CALL EB_RSS(0)
+    INCLUDE EB.INCLUDES RESTORE.EB
     SCR.LR=1
     GOSUB LAST.USED
     RETURN
@@ -2112,10 +2107,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
 !============
 TCL: !
     SCR.LR=1; CRT @(-1)
-    IF accuterm THEN CRT ESC:CHAR(2):0:
-    CALL EB_RSS(1)
-    MAT SAVE_GEX = MAT GEX
-
+    INCLUDE EB.INCLUDES SAVE.EB
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
     IF jutil_ctrl_pos THEN
@@ -2131,9 +2123,7 @@ TCL: !
         END
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
-    IF accuterm THEN CRT ESC:CHAR(2):1:
-    MAT GEX = MAT SAVE_GEX
-    CALL EB_RSS(0)
+    INCLUDE EB.INCLUDES RESTORE.EB
     CRT CURS.ON:
     SCR.UD=1
     RETURN

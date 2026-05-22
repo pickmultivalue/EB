@@ -5,6 +5,7 @@
     GO MAIN$
     EQU TRUE TO 1, FALSE TO 0, ESC TO CHAR(27)
     INCLUDE EB.EQUS EB.EQUS
+    INCLUDE EB.INCLUDES DIM.SAVE.EB
     INCLUDE JBC.h
     DEFFUN EBJSHOW()
     DEFFUN FNKEYTRANS()
@@ -15,7 +16,7 @@ MAIN$:!
     minihash = 'L#6 ':
     uline = STR('=',78)
     IF NOT(GETENV('EBACCUTERM',accuterm)) THEN accuterm = @TRUE
-    IF accuterm THEN CRT ESC:CHAR(2):0:
+    INCLUDE EB.INCLUDES SAVE.EB
     ksh = @IM:'k'
     INCLUDE EB.OS.INCLUDES OS.REL
     INDENT = SPACE(4)
@@ -166,7 +167,7 @@ MAIN$:!
 !        EXECUTE ksh:'%JBCGLOBALDIR%\man\manhtml\jbc2_':WORD:'.html'
 !    CASE 1; OS.HELP=FALSE
 !    END CASE
-    IF accuterm THEN CRT ESC:CHAR(2):1:
+    INCLUDE EB.INCLUDES RESTORE.EB
     RETURN
 DisplayEBcmds:
     CRT @(-1):'EB Help'

@@ -578,7 +578,7 @@ FINISH: !
                 END CASE
                 GOSUB STMP.OCONV
             END
-            IF LENTH THEN CRT STR(BACK,WPCOL):STMP[1,LENTH]:
+            IF LENTH THEN CRT STR(BACK,WPCOL):STMP[1,LENTH] JUST:
 !            GOSUB STMP.ICONV
         END ELSE
             IF LENTH AND UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
@@ -630,7 +630,12 @@ VALID.INPUT.CHECK: !
                         STMP=ICONV(STMP,'MTS')
                 END CASE
             END
-            IF STMP NE '' THEN INP.STRING=STMP ELSE ERRMSG=FG_ERROR.MSGS<79>
+            IF STMP NE '' THEN
+                INP.STRING=STMP
+            END ELSE
+                ERRMSG=FG_ERROR.MSGS<79>
+                IF @LOGNAME EQ 'itarch' THEN DEBUG
+            END
         CASE NUM.FIELD
             IF INP.STRING[1,1]='$' THEN INP.STRING=INP.STRING[2,MAXLENTH]
             IF NUM(INP.STRING) THEN
@@ -642,8 +647,12 @@ VALID.INPUT.CHECK: !
                 END
                 IF NOT(STMP) THEN
                     ERRMSG=STMP:FG_ERROR.MSGS<78>
+                    IF @LOGNAME EQ 'itarch' THEN DEBUG
                 END
-            END ELSE ERRMSG=FG_ERROR.MSGS<76>
+            END ELSE
+                ERRMSG=FG_ERROR.MSGS<76>
+                IF @LOGNAME EQ 'itarch' THEN DEBUG
+            END
         CASE TYPE='A'
             STMP=OCONV(INP.STRING,'MCA')
             IF STMP NE INP.STRING THEN ERRMSG=FG_ERROR.MSGS<41>
@@ -670,8 +679,7 @@ VALID.INPUT.CHECK: !
         RTN.KEY=@FALSE
         INP.STRING=FG_OLD.FIELD
         INP.POS=1; WPCOL=ORIG.COL
-        DEBUG
-        CRT @(0,23):ERRMSG:
+        RTN.STRING<2> = ERRMSG
     END
     IF RTN.STRING NE '' AND FG_ACT.CODE NE FG_ABT.CODE THEN INP.STRING = RTN.STRING
     RETURN
@@ -1056,7 +1064,11 @@ STMP.OCONV:
         CASE TYPE='T'
             STMP=OCONV(INP.STRING,JUST)
         CASE TYPE='YN'
-            STMP='NY'[INP.STRING+1,1]
+            IF INP.STRING MATCHES "'Y'":@VM:"'N'" THEN
+                STMP = INP.STRING
+            END ELSE
+                STMP='NY'[INP.STRING+1,1]
+            END
         CASE TYPE NE 'LIT' AND LEN(JUST)
             STMP=INP.STRING ;! in screen_driver this wrecks display....  JUST ;! ticker tape
             update_val = @FALSE

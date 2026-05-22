@@ -236,7 +236,11 @@ compare:
         LIST = ''
         IF COMPARE.ITEM THEN
             DATA.STACK='COMPARE_ITEM ':FLNM:' ':SFLNM
-            IF T.OPTION THEN DATA.STACK := ' (T'
+            IF T.OPTION OR M.OPTION THEN
+                DATA.STACK := ' ('
+                IF M.OPTION THEN DATA.STACK := 'M'
+                IF T.OPTION THEN DATA.STACK := 'T'
+            END
             DATA DATA.STACK
             EXECUTE 'GET-LIST ':K.list
         END ELSE
