@@ -81,8 +81,9 @@
 !
     WORD.PROCESSING=@FALSE
     IF INP.FLD='' THEN INP.FLD='AN'
-    TYPE=INP.FLD<1>
+    TYPE = OCONV(INP.FLD<1>, 'MCA')
     JUST=INP.FLD<2>
+    External_Value = INP.FLD<3>
     NUM.FIELD=INDEX('NM',TYPE[1,1],1)
     DFLD=0
     FG_ACT.CODE=''
@@ -283,6 +284,7 @@ PROCESS.RTN: !
                 CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
                     EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
                     CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
+                    IF EVENT EQ 'R' THEN FG_ACT.CODE = FG_RMOUSE.CODE
                     FG_ACT.CODE<2> = C:@VM:R
                 CASE FG_ACT.CODE=FG_OPT.CODE
                     IF LEN(CHOICES) OR LEN(F_CHOICES) THEN
@@ -562,7 +564,7 @@ FINISH: !
     IF INP.POS=2 AND TRIM(INP.STRING)='' THEN INP.STRING=' ' ELSE
         IF TYPE NE 'LIT' THEN INP.STRING=TRIM(INP.STRING,' ',"T")
     END
-    IF HIDDEN ELSE
+    IF NOT(HIDDEN OR External_Value) OR (INP.STRING EQ '' AND UNDERLINE.FLAG) THEN
         INP.POS=1
         INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
         IF NORMAL.FIELD AND INP.STRING NE '' THEN
@@ -571,15 +573,14 @@ FINISH: !
                 STMP=STR('*',LEN(INP.STRING))
             END ELSE
                 BEGIN CASE
-                    CASE TYPE='T'
-!                        INP.STRING=ICONV(INP.STRING,JUST)
+                    CASE TYPE='T' OR TYPE EQ 'D'
+                        INP.STRING=ICONV(INP.STRING,JUST)
                     CASE TYPE='YN'
                         INP.STRING=(OCONV(INP.STRING, 'MCU') = 'Y')
                 END CASE
-                GOSUB STMP.OCONV
             END
             IF LENTH THEN CRT STR(BACK,WPCOL):STMP[1,LENTH] JUST:
-!            GOSUB STMP.ICONV
+            GOSUB STMP.ICONV
         END ELSE
             IF LENTH AND UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
         END
@@ -634,12 +635,18 @@ VALID.INPUT.CHECK: !
                 INP.STRING=STMP
             END ELSE
                 ERRMSG=FG_ERROR.MSGS<79>
-                IF @LOGNAME EQ 'itarch' THEN DEBUG
             END
         CASE NUM.FIELD
             IF INP.STRING[1,1]='$' THEN INP.STRING=INP.STRING[2,MAXLENTH]
             IF NUM(INP.STRING) THEN
-                IF TYPE[1,1]='M' THEN STMP=2 ELSE STMP=TYPE[2,2]+0
+                IF TYPE[1,1]='M' THEN
+                    STMP=2
+                END ELSE
+                    STMP=TYPE[2,2]
+                    IF STMP NE '' THEN
+                        STMP = 1
+                    END
+                END
                 IF STMP THEN
                     IF INP.STRING MATCHES "1N0N" THEN STMP=1
                 END ELSE
@@ -647,11 +654,9 @@ VALID.INPUT.CHECK: !
                 END
                 IF NOT(STMP) THEN
                     ERRMSG=STMP:FG_ERROR.MSGS<78>
-                    IF @LOGNAME EQ 'itarch' THEN DEBUG
                 END
             END ELSE
                 ERRMSG=FG_ERROR.MSGS<76>
-                IF @LOGNAME EQ 'itarch' THEN DEBUG
             END
         CASE TYPE='A'
             STMP=OCONV(INP.STRING,'MCA')

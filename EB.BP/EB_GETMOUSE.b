@@ -11,7 +11,7 @@
         C = ''
         R = ''
     END ELSE
-        EVENT=(' "')[BTN,1]
+        EVENT=('LRC')[BTN,1]
     END
     RETURN
     cleft=3-LEN(EVENT)

@@ -1534,7 +1534,7 @@ GET.HELP:   !
             EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
             CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, C, R)
             IF LEN(R) THEN
-                IF EVENT EQ SPC THEN ;! down
+                IF EVENT EQ SPC OR EVENT EQ 'L' THEN ;! down
                     IF MOUSESTATE EQ '' THEN
                         MOUSECOL=C
                         MOUSEROW=R

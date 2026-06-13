@@ -120,7 +120,11 @@
     Template<-1> = RemoveTemplate
     Template<-1> = @AM:EndTemplate
     WRITE Template ON F.Temp, K.Template
-    TempDir = GETFULLPATH(TempFile)
+    IF TempFile EQ '.' THEN
+        TempDir = '.'
+    END ELSE
+        TempDir = GETFULLPATH(TempFile)
+    END
     IF TempDir EQ '' THEN TempDir = '.'
     K.Message = TempDir:DIR_DELIM_CH:K.Template
     LOOP

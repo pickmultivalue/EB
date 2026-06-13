@@ -451,7 +451,7 @@ MAIN$:
                 END
             END
             IF DMY='L' THEN GO RTN
-        END ELSE STR.POS=STR.POS+LEN(LINE)
+        END ;! ELSE STR.POS=STR.POS+LEN(LINE)
 3090    !
         LINE.POS+=(STR.POS-OCCURS<1>+LEN(LINE)+1)
         IF LINE.POS=PREV.LINE.POS THEN

@@ -315,7 +315,8 @@ MAIN$:
             END CASE
         END
     END
-    K.ATTR=ATTRS<1,1,FLD.NBRS<1,1,1>>
+    FIRST.ATTR=FLD.NBRS<1,1,1>
+    K.ATTR=ATTRS<1,1,FIRST.ATTR>
     IF LAST.CHOICE NE '' THEN VALUES<K.ATTR,-1>=LAST.CHOICE
     IF EXCEPTIONS NE '' THEN CALL EB_EXCEPTIONS(VALUES,EXCEPTIONS,ATTRS<1,1,1>)
     IF INDEX(ATTRS,CTRL.F,1) THEN
@@ -500,10 +501,10 @@ RESTART: !
                 EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
                 CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, MC, MR)
                 IF MC GT C.COL AND MC LE (C.COL+WIDTH) THEN
-                    IF MR GT C.ROW AND MR LT (C.ROW+DEPTH) THEN
+                    IF MR GT C.ROW AND MR LE (C.ROW+DEPTH) THEN
                         diff = MR - RR
-                        I = diff + (PGE-1) * DEPTH
-                        IF K.ATTR EQ 'L' THEN VALUE=I ELSE VALUE=VALUES<K.ATTR,I>
+                        MV = diff + (PGE-1) * DEPTH
+                        IF K.ATTR EQ 'L' THEN VALUE=MV ELSE VALUE=VALUES<K.ATTR,MV>
                         BREAK
                     END
                 END
