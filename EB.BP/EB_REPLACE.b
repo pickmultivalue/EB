@@ -28,9 +28,9 @@ MAIN$:
     EQU ALOC TO RPL.PARMS(2)
     EQU CONFIRM TO RPL.PARMS(3)
     EQU DELMODE TO RPL.PARMS(4)
-    case_state = SYSTEM(28)
+!    case_state = SYSTEM(28)
     first_time = @TRUE
-    CASING ON
+!    CASING ON
     IF EMBED.ATTR<1,1> THEN HILON=RVOFF; HILOFF=RVON ELSE HILON=BG; HILOFF=FG
     HILRESET=FG:RVOFF
     WHOLE.WORDS=WHOLE
@@ -459,7 +459,7 @@ MAIN$:
         END ELSE PREV.LINE.POS=LINE.POS
     REPEAT
 RTN:
-    CASING case_state
+!    CASING case_state
     RETURN
 CONV.CHARS: ! convert ^nnn
     IF INDEX(TMP,'^',1) THEN
