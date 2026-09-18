@@ -28,7 +28,6 @@ MAIN$: !
 !===================================================
 !
     EQU RTN.VAL TO 13
-    time_out = 300
 !
     SUB.CODES=SUBCODES
     NO.ECHO=SUB.CODES<4>

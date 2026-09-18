@@ -23,7 +23,6 @@ MAIN$:!
 !===================================================
 !
     EQU RTN.VAL TO 13
-    time_out = 300
 !
     ECHO OFF
     MAX.LEN=FG_MAX.CHARS
