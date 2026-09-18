@@ -98,6 +98,8 @@ MAIN$:
     IF UNASSIGNED(FG_SCR.CO.ORDS) THEN FG_SCR.CO.ORDS=''
     CC=C.COL
     RR=C.ROW
+    FOOTER = FIELD(HEADER:@TAB, @TAB, 2)
+    HEADER = HEADER[1, COL1()-1]
     COL.HDS=DELETE(HEADER,1,1,1); HEADER=HEADER<1,1,1>
     filter_obj = new object()
     filter_obj->last_filter = ''
@@ -238,7 +240,7 @@ MAIN$:
     IF fn EQ '' THEN
         VALUES=ID
         EOF=TRUE
-        IF INDEX(ATTRS,CTRL.L,1) THEN CALL EB_CHOICE.BLD(VALUES,ATTRS:AM:OFFSET)
+        IF INDEX(ATTRS,CTRL.L,1) THEN CALL EB_CHOICE.BLD(VALUES,ATTRS);!:AM:OFFSET)
         IF ATTRS<1,1,1> EQ 'N' THEN        ;* ace
             VMCNT=DCOUNT(VALUES<1>,VM)  ;* ace
             LATTR=DCOUNT(VALUES,AM)+1
@@ -500,8 +502,8 @@ RESTART: !
             CASE FG_ACT.CODE=FG_LMOUSE.CODE OR FG_ACT.CODE=FG_RMOUSE.CODE
                 EVENT = FG_ACT.CODE-FG_LMOUSE.CODE+1
                 CALL EB_GETMOUSE(FG_TYPEAHEAD.BUFF, EVENT, MC, MR)
-                IF MC GT C.COL AND MC LE (C.COL+WIDTH) THEN
-                    IF MR GT C.ROW AND MR LE (C.ROW+DEPTH) THEN
+                IF MC GT CC AND MC LE (CC+WIDTH) THEN
+                    IF MR GT RR AND MR LE (RR+DEPTH) THEN
                         diff = MR - RR
                         MV = diff + (PGE-1) * DEPTH
                         IF K.ATTR EQ 'L' THEN VALUE=MV ELSE VALUE=VALUES<K.ATTR,MV>
@@ -770,7 +772,7 @@ GET.LINE: !
                         IF fn THEN
                             ATTR=ATTR[COL2()+1,99]
                             IF KPOS THEN KPOS=VALUES<KPOS+KOFFSET,MV> ELSE KPOS=KeyVal
-                            READV STMP FROM OPENED.FILES(fn),KPOS,ATTR ELSE STMP=''
+                            READV STMP FROM EB.FILES(fn),KPOS,ATTR ELSE STMP=''
                         END ELSE STMP=''
 !
 ! VALUES should contain columns of data therfore the A loop count should
@@ -909,6 +911,11 @@ show_box:
     IF HEADER NE '' THEN
         HEADER=TRIM(HEADER HASH,' ',"T")
         CRT @(CC+INT((WIDTH-LEN(HEADER))/2)-2-GR.EMBED,RR):GROFF:HEADER:GRON:@(CC+WIDTH,RR):GROFF:
+    END
+    IF FOOTER NE '' THEN
+        FOOTER=TRIM(FOOTER HASH,' ',"T")
+        LL = RR + DEPTH + 1
+        CRT @(CC+INT((WIDTH-LEN(FOOTER))/2)-2-GR.EMBED,LL):GROFF:FOOTER:GRON:@(CC+WIDTH,LL):GROFF:
     END
     CC+=GR.EMBED
     CRT MENU.COLOURS:

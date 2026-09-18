@@ -1,11 +1,14 @@
     IF 1 THEN
-        IN CHR.NBR FOR FG_MONITOR.SECS THEN
-            CHR=CHAR(CHR.NBR)
+        IF FG_MONITOR.SECS THEN
+            IN CHR.NBR FOR FG_MONITOR.SECS ELSE
+                CHR.NBR=-1
+                FG_TIMEOUT=1
+                FG_TIMEDOUT=1
+            END
         END ELSE
-            CHR.NBR=-1
-            FG_TIMEOUT=1
-            FG_TIMEDOUT=1
-        END
+            IN CHR.NBR
+        END 
+        IF CHR.NBR GT 0 THEN CHR = CHAR(CHR.NBR)
     END ELSE
         CALL JBASECommandNext(Code,FG_TYPEAHEAD.BUF,FG_TIMEOUT)
         CALL EB_CONVCODE(Code, FG_TYPEAHEAD.BUF, FG_ACT.CODE)

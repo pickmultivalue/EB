@@ -36,7 +36,7 @@
         CRT
         STOP
     END
-
+    ACCUTERM = @FALSE
     TCL.OPTS=OCONV(TCL.OPTS, 'MCU')
     PATCH.MODE=INDEX(TCL.OPTS,'P',1)
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
@@ -180,7 +180,7 @@
     LOOP
         IF ASENT THEN ASENT=@FALSE ELSE
             prmpt = 'Enter file A: '; YNC=LEN(prmpt)+0; YNR=2; CRT @(0,2):prmpt:@(-4):
-            Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+            Z = ''; L = 60; INPTYPE='AN'; GOSUB INPT
             FNAMEA = Z
         END
     WHILE FNAMEA EQ '?' DO
@@ -207,8 +207,8 @@
         BSENT=FNAMEB#''
     END
     GOSUB OPEN.FILEB
-    AOBJ = FIELD(FNAMEA, ',', 2) EQ 'OBJECT'
-    BOBJ = FIELD(FNAMEB, ',', 2) EQ 'OBJECT'
+    AOBJ = FIELD(FNAMEA, ',', 2) EQ 'OBJECT' OR INDEX(FNAMEA, '/bin', 1) OR INDEX(FNAMEA, '/lib', 1)
+    BOBJ = FIELD(FNAMEB, ',', 2) EQ 'OBJECT' OR INDEX(FNAMEB, '/bin', 1) OR INDEX(FNAMEB, '/lib', 1)
     IF AOBJ THEN
         IF NOT(jelf_opt) THEN CRT 'Missing jelf_helper'; STOP
         rc = IOCTL(FILEA, JBC_COMMAND_GETFILENAME, AOBJ)
@@ -234,7 +234,7 @@
         IF AISENT THEN AISENT=@FALSE ELSE
             LOOP
                 prmpt = 'ENTER ID A: '; YNC=LEN(prmpt)+0; YNR=4; CRT @(0,4):prmpt:@(-4):
-                Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+                Z = ''; L = 60; INPTYPE='AN'; GOSUB INPT
                 IDA = Z
             WHILE IDA EQ '?' DO
                 IDH = 'A'
@@ -270,7 +270,7 @@
         IF BISENT THEN BISENT=@FALSE ELSE
             LOOP
                 prmpt = 'ENTER ID B: '; YNC=LEN(prmpt)+42; YNR=4; CRT @(42,4):prmpt:@(-4):
-                Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+                Z = ''; L = 60; INPTYPE='AN'; GOSUB INPT
                 IDB = Z
             WHILE IDB EQ '?' DO
                 IDH = 'B'
@@ -426,7 +426,7 @@
         POS2=@(0,NORMAL.DEPTH)
     END
     CRT CL:POS1:'ENTER "?" FOR HELP':POS2:FG:REV.ON:'COMMAND: ':
-    Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+    Z = ''; L = 60; INPTYPE='AN'; GOSUB INPT
     CMD = Z
     CMDU=OCONV(FIELD(CMD,' ',1),'MCU')
     CMD=CMDU:CMD[COL2(),999]
@@ -1005,7 +1005,7 @@ FILE.ITEM:  !
         AMB=STARTB+J-1
         NBRB=AMB PDBJ
         GOSUB GETLINES
-        IF TMPA # TMPB THEN
+        IF TRIM(TMPA) NE TRIM(TMPB) THEN
             PAD=REV.OFF
         END ELSE
             PAD=REV.ON
@@ -1033,9 +1033,10 @@ FILE.ITEM:  !
                 BREAK
             END
         NEXT L
-        LINEA=LINEA[1,C]:PAD:TRIM(LINEA[C+1,9999], ' ', 'L')[1,LINE.LEN-2]
-        LINEB=LINEB[1,C]:PAD:TRIM(LINEB[C+1,9999], ' ', 'L')[1,LINE.LEN-2]
-        IF CMTA # CMTB THEN
+        LINEA=LINEA[1,C]:PAD:LINEA[C+1,9999][1,LINE.LEN-2]
+        LINEB=LINEB[1,C]:PAD:LINEB[C+1,9999][1,LINE.LEN-2]
+        IF TRIM(CMTA) # TRIM(CMTB) THEN
+            IF @LOGNAME EQ 'itarch' THEN DEBUG
             PAD=HION
             LINEA = PAD:LINEA
             LINEB = PAD:LINEB
@@ -1210,7 +1211,7 @@ FILE.ITEM:  !
             NBRA=AMA PDAJ
             NBRB=AMB PDBJ
             GOSUB GETLINES
-            IF TMPA # TMPB THEN
+            IF TRIM(TMPA) NE TRIM(TMPB) THEN
                 PAD=REV.OFF
                 LNRV = RVON
             END ELSE
@@ -1219,8 +1220,8 @@ FILE.ITEM:  !
             END
             LINEA = CHANGE(TMPA, TAB, '    ')
             LINEB = CHANGE(TMPB, TAB, '    ')
-            LINEA=TRIM(OCONV(LINEA,'MCP'), ' ', 'L')
-            LINEB=TRIM(OCONV(LINEB,'MCP'), ' ', 'L')
+            LINEA=OCONV(LINEA,'MCP')
+            LINEB=OCONV(LINEB,'MCP')
             CMTA = CMTA[1, LINE.LEN - LEN(LINEA)]
             CMTB = CMTB[1, LINE.LEN - LEN(LINEB)]
             L = MAXIMUM(LEN(LINEA):@AM:LEN(LINEB))
@@ -1232,7 +1233,7 @@ FILE.ITEM:  !
             NEXT L
             LINEA=LINEA[1,C]:PAD:LINEA[C+1,LINE.LEN-2]
             LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]
-            IF CMTA # CMTB THEN
+            IF TRIM(CMTA) # TRIM(CMTB) THEN
                 PAD=HION
                 LNRV = ''
             END ELSE
@@ -1279,7 +1280,7 @@ FILE.ITEM:  !
                 TMPA=TRIM(TMPA)
                 TMPB=TRIM(TMPB)
             END
-            IF TMPA # TMPB THEN
+            IF TRIM(TMPA) NE TRIM(TMPB) THEN
                 IF CMD[2,1] EQ 'B' THEN
                     UPDA=@TRUE
                     LINEA=LINEB
@@ -1336,7 +1337,7 @@ FILE.ITEM:  !
             TMPA=TRIM(TMPA)
             TMPB=TRIM(TMPB)
         END
-        IF TMPA # TMPB THEN
+        IF TRIM(TMPA) NE TRIM(TMPB) THEN
             IF CMD[2,1] EQ 'B' THEN
                 MERGE.CODE := @AM:LINEB
                 IF MERGE.LINE EQ '' THEN MERGE.LINE=AMA
@@ -1505,7 +1506,7 @@ UPDATE: !
             LOOP
                 CRT BELL:
                 CRT @(0,CMD.ROW):CLEOL:'Changes have been made...continue (Y/N) ? ':
-                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                Z = @TRUE; L = 1; INPTYPE='YNA'; GOSUB INPT
                 ANS = Z
             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
         END ELSE ANS='Y'
@@ -1523,7 +1524,7 @@ UPDATE: !
                                 prmpt = 'Make patch for ':FNAMEA:' ':IDA:' (Y/N) ? '
                                 YNC = LEN(prmpt); YNR = CMD.ROW
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
-                                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                Z = @TRUE; L = 1; INPTYPE='YNA'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
@@ -1544,7 +1545,7 @@ UPDATE: !
                                 prmpt = 'Make patch for ':FNAMEB:' ':IDB:' (Y/N) ? '
                                 CRT @(0,CMD.ROW):prmpt:CLEOL
                                 YNC = LEN(prmpt); YNR = CMD.ROW
-                                Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+                                Z = @TRUE; L = 1; INPTYPE='YNA'; GOSUB INPT
                                 ANS = Z
                             UNTIL ANS EQ 'Y' OR ANS EQ 'N' DO REPEAT
                             IF ANS EQ 'Y' THEN
@@ -1606,7 +1607,7 @@ OPEN.FILEB: !
     IF BSENT THEN BSENT=@FALSE ELSE
         LOOP
             prmpt = 'Enter file B: '; YNC=LEN(prmpt)+42; YNR=2; CRT @(42,2):prmpt:@(-4):
-            Z = ''; L = 20; INPTYPE='AN'; GOSUB INPT
+            Z = ''; L = 60; INPTYPE='AN'; GOSUB INPT
             FNAMEB = Z
         WHILE FNAMEB EQ '?' DO
             FH = 'B'
@@ -1727,7 +1728,7 @@ CHECKRANGE: !
         END
         CRT ") not in current view. Enter 'Y' to override ":BELL:
         YNR = CMD.ROW; YNC = 50
-        Z = @TRUE; L = 20; INPTYPE='YN'; GOSUB INPT
+        Z = @TRUE; L = 1; INPTYPE='YNA'; GOSUB INPT
         RANGE_OK = Z
         RANGE_OK = UPCASE(RANGE_OK EQ 'Y')
     END
@@ -1744,7 +1745,7 @@ INPT: !
     POS=1
     EDITED=@FALSE
     CALL EB_UT_WP(Z,INPTYPE,L,1,UMODE,CURS.ON,CURS.OFF,CURS.BLOCK,CURS.LINE,@AM,'','',ESC)
-!    IF INPTYPE EQ 'YN' THEN
+!    IF INPTYPE EQ 'YNA' THEN
 !        Z = 'NY'[Z+1,1]
 !    END
     INPTYPE='AN'

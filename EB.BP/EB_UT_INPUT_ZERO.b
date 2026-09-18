@@ -100,6 +100,7 @@
                         IF CHR1 MATCHES MATCH.SET THEN CHR=CHR1; GOTO FINISH
                     END
                 END
+                CRT BELL:
             END
         END
     UNTIL CHR=CR OR FG_ACT.CODE DO REPEAT

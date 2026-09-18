@@ -21,7 +21,10 @@
         cmd = 'delete'
         IF RemoveFlag THEN cmd := ' --force'
     END
-    IO = GIT_EXEC(cmd:' ':FilePath:'/':ItemName, TRUE)
+    rc = GETCWD(cwd)
+    rc = CHDIR(FilePath)
+    IO = GIT_EXEC(cmd:' ':ItemName, TRUE)
+    rc = CHDIR(cwd)
 !
     IF cmd = 'revert' AND RemoveFlag THEN   ;! try to delete it now
         EXECUTE 'DELETE ':FilePath:' ':ItemName CAPTURING io

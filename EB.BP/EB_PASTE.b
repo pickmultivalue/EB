@@ -71,6 +71,8 @@ MAIN$:!
                 END ELSE
                     IF NUM(Z) THEN Z='PASTE*':FG_LOGNAME:'*':Z
                     READ STMP FROM JET.PASTE,Z ELSE STMP=''
+                    STMP = CHANGE(STMP, '<%%key%%>', ITNM)
+                    STMP = CHANGE(STMP, '<%%date%%>', OCONV(DATE(),'DYMD'))
                 END
             END
         END

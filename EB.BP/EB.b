@@ -3,6 +3,8 @@
     INCLUDE EB.EQUS EB.COMMON
     COMMON /EB_LEXER/ reservedWords, colors, comments, commentlen, incomment, case_insensitive
     INCLUDE EB.INCLUDES DIM.SAVE.EB
+    case_state = SYSTEM(28)
+    CASING ON
     IF UNASSIGNED(reservedWords) THEN
         reservedWords = ''
         colors = ''
@@ -243,8 +245,8 @@
     CODES=FG_INPUT.CODES
     SUB.CODE1=-1; SUB.CODE2=-1
     MATCH.SET=''
-    READV FG_TIMEOUT FROM FG_EB.PARAMS,FG_LOGNAME:'.EB',1 ELSE FG_TIMEOUT=300
-    FG_MONITOR.SECS=FG_TIMEOUT
+!    READV FG_TIMEOUT FROM FG_EB.PARAMS,FG_LOGNAME:'.EB',1 ELSE FG_TIMEOUT=30
+!    FG_MONITOR.SECS=FG_TIMEOUT
     INCLUDE EB.OS.INCLUDES SET.TIMEOUT
     INCLUDE EB.OS.INCLUDES TIMEOUT.ON
 !
@@ -1366,7 +1368,8 @@ GET.HELP:   !
             Z = (IF LCOL EQ 1 THEN '' ELSE REC<LROW+INDROW-1>[LCOL-1,1])
             LOOP WHILE REC<LROW+INDROW-1>[Y,1] EQ SPC DO Y+=1 REPEAT
             FOR I=Y TO LLEN1 UNTIL NOT(ICONV(REC<LROW+INDROW-1>[I,1],PC) NE '' OR REC<LROW+INDROW-1>[I,1]='.'); NEXT I
-            word=FIELD(TRIM(REC<LROW+INDROW-1>[LCOL,I-LCOL]),SPC,1)
+            Y = REC<LROW+INDROW-1>
+            word=FIELD(TRIM(Y[LCOL,I-LCOL]),SPC,1)
             DUMMY=UPCASE(word)
             IF DUMMY[1,2] EQ 'GO' THEN
                 DUMMY=FIELD(TRIM(REC<LROW+INDROW-1>[LCOL,MAX]),SPC,2)
@@ -1429,6 +1432,8 @@ GET.HELP:   !
                         END ELSE
                             DUMMY=FIELD(REC<LROW+INDROW-1>[LCOL,MAX],'(',1)
                         END
+                    CASE DUMMY[1,1] EQ 'H'
+                        DUMMY = TRIM(Y[2,MAX])
                     CASE 1
                         READ tags FROM F.currdir,'tags' THEN
                             POS=INDEX(tags,word:TAB,1)
@@ -2107,6 +2112,7 @@ SPLIT.LINE: ! Break a line in two, at the cursor position.
 !============
 TCL: !
     SCR.LR=1; CRT @(-1)
+    CALL EB_RSS(1)
     INCLUDE EB.INCLUDES SAVE.EB
 !  CALL EB_TCL
 !  EXECUTE shell:'jsh'
@@ -2124,6 +2130,7 @@ TCL: !
     END
     INCLUDE EB.OS.INCLUDES CLEARSELECT
     INCLUDE EB.INCLUDES RESTORE.EB
+    CALL EB_RSS(0)
     CRT CURS.ON:
     SCR.UD=1
     RETURN
@@ -2772,7 +2779,7 @@ LAST.USED:!
     WRITE LAST.EB ON FG_EB.CONTROL,FG_LOGNAME:'.LAST.EB'
     RETURN
 SET.MSG: !
-    MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(PSTIME,'MTS')
+    MSG.DFLT= (FLNM:'/':ITNM) 'R#45 Started: ':OCONV(TIME(),'MTS'):'(':OCONV(PSTIME,'MTS'):')'
 SET.MSG.DSP:
     MSG.DSP=MSG.DFLT:' (Col=   )'
     IF NBR.WORDS GT 3 THEN
@@ -2947,3 +2954,4 @@ WRAPUP: !
             NEXT C
         NEXT F
     END
+    CASING case_state
