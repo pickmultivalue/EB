@@ -12,7 +12,7 @@
     am_start=IF_COMPILED_PRIME
     mv_start=IF_COMPILED_PRIME
     DIM ITEM(50000), T(100), CT(100), PP(10), SP(10), PS(5), SS(5), PE(5), SE(5)
-    DIM OPTION(26), IND(5), DELCHR(5), DL(5)
+    DIM OPTION(26), IND(5), DELCHR(5);!, DL(5)
     EQU TRUE TO 1, FALSE TO 0, BELL TO CHAR(7)
     EQU AM TO CHAR(254), VM TO CHAR(253), SVM TO CHAR(252)
     EQU SPC TO ' ', MAX TO 99999
@@ -514,7 +514,8 @@
                     END
                 UNTIL NEXT.ATTR='' DO
                     STMT+=1
-                    LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
+!                    LINE:=ATTR[INDEX(ATTR,T.STMT[1,1],1), MAX]
+                    LINE:=T.STMT:SC
                     IF INDEX(COMMENTS,NEXT.ATTR[1,COMMENTLEN],1) ELSE LINE:=SPC
                     ATTR=NEXT.ATTR
                 REPEAT
@@ -649,7 +650,7 @@ SPLITSTMT:
 !        NEXT DT
 !    END
     IF SEMI.COLON THEN
-        T.STMT=TRIM(ATTR[1,SEMI.COLON-1],' ',"B")
+        T.STMT=TRIM(ATTR[1, SEMI.COLON-1], ' ', "B")
         NEXT.ATTR=ATTR[SEMI.COLON+1, MAX]
         ATTR=ATTR[1,SEMI.COLON]
     END ELSE
