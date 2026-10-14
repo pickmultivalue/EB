@@ -893,7 +893,7 @@ RESUME.SEARCH: !
             MV+=1
             IF WARN.FLAG THEN IF I GT DEPTH THEN
                 WARN.FLAG=FALSE
-                IF FG_DIALOG.BOX ELSE CALL EB_ERRMSG(FG_ERROR.MSGS<65>, 0)
+!                IF FG_DIALOG.BOX ELSE CALL EB_ERRMSG(FG_ERROR.MSGS<65>, 0)
             END
         END
     REPEAT

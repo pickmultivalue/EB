@@ -580,7 +580,7 @@ FILE.ITEM:  !
                 RECA=RECB
             END ELSE RECB=RECA
             IF CMD[1,2] EQ 'CF' THEN
-                CMD = 'FS'
+                CMD = 'FI'
                 GO FILE.ITEM
             END
             GOSUB 600
