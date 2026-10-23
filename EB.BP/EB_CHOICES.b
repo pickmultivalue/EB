@@ -364,6 +364,9 @@ MAIN$:
     NEXT A
     IF NBR.VALS LT DEPTH THEN DEPTH=NBR.VALS+(COL.HDS NE '')
     DEPTH += (auto_complete NE 0)
+    IF RR + DEPTH GT SYSTEM(3) THEN
+        RR = SYSTEM(3) - DEPTH - 3
+    END
 !
     WIDTH+=GR.EMBED
     CC-=GR.EMBED

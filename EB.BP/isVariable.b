@@ -16,8 +16,8 @@
             END
         NEXT L
     end
-    LeftS  = '(<[{'
-    RIGHTS = ')>]}'
+    Lefts  = '(<[{'
+    Rights = ')>]}'
     Left  = ''
     QuoteS = \"'\:'\'
     Quote = ''
@@ -31,15 +31,20 @@
                     CONTINUE
                 END
                 IF Left NE '' THEN
-                    IF C EQ RIGHTS[Left<1>,1] THEN
+                    IF C EQ Rights[Left<1>,1] THEN
                         DEL Left<1>
                         CONTINUE
                     END
                 END
-                LR = INDEX(LeftS, C, 1)
+                LR = INDEX(Lefts, C, 1)
                 IF LR THEN
                     INS LR BEFORE Left<1>
                     CONTINUE
+                END ELSE
+                    IF Left EQ '' AND C EQ ',' THEN
+                        Left = ','
+                        BREAK
+                    END
                 END
             END ELSE
                 IF C EQ Quote THEN
