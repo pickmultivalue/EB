@@ -42,6 +42,7 @@
     BCKUP.MODE=INDEX(TCL.OPTS,'B',1)
     T.OPTION=INDEX(TCL.OPTS,'T',1)
     M.OPTION=INDEX(TCL.OPTS,'M',1)
+    TRIM_OPT = 'R'
     EQU INTEG TO CHAR(230)
     EQU BELL TO CHAR(7)
     EQU OTHERWISE TO 1
@@ -79,8 +80,8 @@
     WIDE.DEPTH=PDEPTH
     ADJLEN = 10
     TERM=SYSTEM(7)
-    TOGGLE='' ;!FWD.PAGE;!ESC:'J'!ESC:'J'
-    TOGGLE2=BACK.PAGE   ;!ESC:'K'
+    TOGGLE='';!FWD.PAGE;!ESC:'J'!ESC:'J'
+    TOGGLE2=BACK.PAGE;!ESC:'K'
     IF TOGGLE='' THEN
         TOGGLE=CLS
         TOGGLE2=''
@@ -94,7 +95,7 @@
         CASE TERM[1,1] EQ 'W'
             DEEP.MODE=ESC:"e":"*"
             SHALLOW.MODE=ESC:'e&'
-        CASE TERM EQ 'Q' OR TERM EQ 'U'     ;! these were copied from W and are probably wrong
+        CASE TERM EQ 'Q' OR TERM EQ 'U';! these were copied from W and are probably wrong
             DEEP.MODE=ESC:"e":"*"
             SHALLOW.MODE=ESC:'e&'
         CASE 1
@@ -362,7 +363,7 @@
     SAVB='%':FNAMEB:'%':IDB:'.sav%'
     BCKB='%':FNAMEB:'%':IDB:'.bck%'
     integrate = @FALSE
-    IF FNAMEA:IDA EQ FNAMEB:IDB THEN ;! integrate?
+    IF FNAMEA:IDA EQ FNAMEB:IDB THEN;! integrate?
         IF INDEX(RECA, @AM:'>>>>', 1) AND INDEX(RECA, @AM:'====', 1) AND INDEX(RECA, '<<<<', 1) THEN
             integrate = @TRUE
             occ = 1
@@ -412,9 +413,9 @@
     PREV.LOC=''
     STARTA=1
     STARTB=1
-    GOSUB 1300 ;! set screen type
-    GOSUB 600  ;! Format Display Mode
-    GOSUB 900  ;! display both items
+    GOSUB 1300;! set screen type
+    GOSUB 600;! Format Display Mode
+    GOSUB 900;! display both items
 210 ! Enter Command Option
     IF DEEP.FLAG THEN
         CL=@(0,WIDE.DEPTH):CLEOL:HION:REV.ON
@@ -436,28 +437,28 @@
     BEGIN CASE
         CASE CMD EQ 'RFR'
             GO 200
-        CASE CMD EQ 'W'        ;! wide screen
+        CASE CMD EQ 'W';! wide screen
             WIDE.FLAG=@TRUE
             GOSUB 1300
-            GOSUB 600 ;! Format Display Mode
-            GOSUB 900 ;! display both items
-        CASE CMD EQ 'N'        ;! Normal Screen
+            GOSUB 600;! Format Display Mode
+            GOSUB 900;! display both items
+        CASE CMD EQ 'N';! Normal Screen
             WIDE.FLAG=@FALSE
             DEEP.FLAG=@FALSE
             GOSUB 1300
-            GOSUB 600 ;! format display mode
-            GOSUB 900 ;! Display Both Items
-        CASE CMD EQ 'D'        ;! deep screen
+            GOSUB 600;! format display mode
+            GOSUB 900;! Display Both Items
+        CASE CMD EQ 'D';! deep screen
             DEEP.FLAG=@TRUE
             GOSUB 1300
-            GOSUB 600 ;! Format Display Mode
-            GOSUB 900 ;! display both items
-        CASE CMD[1,1] EQ 'G'   ;! Go To Line Number
+            GOSUB 600;! Format Display Mode
+            GOSUB 900;! display both items
+        CASE CMD[1,1] EQ 'G';! Go To Line Number
             NBR=FIELD(CMD,' ',2)
             IF NBR # '' AND NUM(NBR) THEN
                 STARTA=NBR
                 STARTB=NBR
-                GOSUB 900 ;! display items
+                GOSUB 900;! display items
             END
         CASE (CMD[1,1] EQ 'R' OR CMD[1,1] EQ 'L') AND NUM(CMD[2,9])
             amount = OCONV(CMD, 'MCN')
@@ -471,7 +472,7 @@
 !
 ! Rarely used so replaced with shift to Right
 !
-        CASE CMD[1,1] EQ 'R' AND OCONV(CMD,'MCN') ;! replace
+        CASE CMD[1,1] EQ 'R' AND OCONV(CMD,'MCN');! replace
             msg = 'Syntax error'
             SUBSTRS = FIELD(CMD, '/', 2, 99)
             CMD = FIELD(CMD, '/', 1)
@@ -525,21 +526,21 @@
                 END
             END
             CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,2] EQ 'RA' OR CMD[1,2] EQ 'R ' OR CMD EQ 'R'    ;! Readjust Item A
+        CASE CMD[1,2] EQ 'RA' OR CMD[1,2] EQ 'R ' OR CMD EQ 'R';! Readjust Item A
             OFFSET=FIELD(CMD,' ',2)
             IF NUM(OFFSET) THEN
                 IF OFFSET EQ '' THEN OFFSET=DEFAULT.OFFSET
                 DEFAULT.OFFSET=OFFSET
-                GOSUB 1100          ;! Readjust Item A
-                GOSUB 900 ;! Display Both Items
+                GOSUB 1100;! Readjust Item A
+                GOSUB 900;! Display Both Items
             END
-        CASE CMD[1,2] EQ 'RB'  ;! Readjust B
+        CASE CMD[1,2] EQ 'RB';! Readjust B
             OFFSET=FIELD(CMD,' ',2)
             IF NUM(OFFSET) THEN
                 IF OFFSET EQ '' THEN OFFSET=DEFAULT.OFFSET
                 DEFAULT.OFFSET=OFFSET
-                GOSUB 1200          ;! Readjust B
-                GOSUB 900 ;! Display Both Items
+                GOSUB 1200;! Readjust B
+                GOSUB 900;! Display Both Items
             END
         CASE CMD EQ 'EX' OR CMD = 'PREV' OR CMD[1,2] EQ 'FI' OR CMD[1,2] EQ 'FS'
             IF CMD = 'PREV' THEN
@@ -568,14 +569,14 @@ FILE.ITEM:  !
                 GOSUB 1300
                 GOTO 99999
             END
-        CASE CMD[1,1] EQ 'F'   ;! Find Next Difference
-            GOSUB 1000          ;! Find Next Difference
+        CASE CMD[1,1] EQ 'F';! Find Next Difference
+            GOSUB 1000;! Find Next Difference
             IF CHKA#CHKB THEN
-                GOSUB 900 ;! Display Both Items
+                GOSUB 900;! Display Both Items
             END ELSE
                 CRT @(0,CMD.ROW):CLEOL:'No more differences':
             END
-        CASE CMD[1,2] EQ 'CW' OR CMD[1,2] EQ 'CF'     ;! Copy Whole item
+        CASE CMD[1,2] EQ 'CW' OR CMD[1,2] EQ 'CF';! Copy Whole item
             IF CMD[3,1] EQ 'B' THEN
                 RECA=RECB
             END ELSE RECB=RECA
@@ -584,7 +585,10 @@ FILE.ITEM:  !
                 GO FILE.ITEM
             END
             GOSUB 600
-        CASE CMD[1,1] EQ 'I' ;! insert blank lines
+        CASE CMD EQ 'T'
+            TRIM_OPT = (IF TRIM_OPT EQ 'R' THEN 'A' ELSE 'R')
+            CRT DQUOTE(TRIM_OPT):; RQM
+        CASE CMD[1,1] EQ 'I';! insert blank lines
             msg = 'Syntax error'
             FR.RANGE = TRIM(CMD[3,9999])
             IF FR.RANGE MATCHES "1N0N" OR FR.RANGE MATCHES "1N0N','1N0N" THEN
@@ -615,7 +619,7 @@ FILE.ITEM:  !
                 END
             END
             CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,2] EQ 'DE' ;! delete lines
+        CASE CMD[1,2] EQ 'DE';! delete lines
             msg = 'Syntax error'
             FR.RANGE = 4
             SIDES = 1
@@ -664,7 +668,7 @@ FILE.ITEM:  !
                 END
             END
             CRT @(0,CMD.ROW):CLEOL:msg:
-        CASE CMD[1,1] EQ 'C'   ;! Copy Text
+        CASE CMD[1,1] EQ 'C';! Copy Text
             IF OCONV(CMD,'MCN') EQ '' THEN
                 GOSUB 990
             END ELSE
@@ -728,7 +732,7 @@ FILE.ITEM:  !
                     END
                 END
             END
-        CASE CMD[1,1] EQ 'M'   ;! Merge Text
+        CASE CMD[1,1] EQ 'M';! Merge Text
             IF OCONV(CMD,'MCN') EQ '' THEN
                 GOSUB 995
             END ELSE
@@ -780,7 +784,7 @@ FILE.ITEM:  !
                     END
                 END
             END
-        CASE CMD[1,1] EQ 'S'   ;! Next Locate
+        CASE CMD[1,1] EQ 'S';! Next Locate
             IF PREV.LOC # '' THEN
                 searchText=PREV.LOC
                 GO 215
@@ -887,25 +891,25 @@ FILE.ITEM:  !
                 STARTB=I
             END
             PREV.LOC=searchText
-            GOSUB 900 ;! Display Both Items
+            GOSUB 900;! Display Both Items
         CASE CMD[1,1] EQ '='
             CMD=TRIM(FIELD(CMD,'=',2))
             IF CMD MATCHES "1N0N' '1N0N" THEN
                 STARTA=FIELD(CMD, ' ', 1)
                 STARTB=FIELD(CMD, ' ', 2)
-                GOSUB 900 ;! Display Item A
+                GOSUB 900;! Display Item A
             END
         CASE CMD[1,2] EQ 'A EQ ' OR CMD[1,3] EQ 'A ='
             CMD=TRIM(FIELD(CMD,'=',2))
             IF CMD#'' AND NUM(CMD) THEN
                 STARTA=CMD
-                GOSUB 900 ;! Display Item A
+                GOSUB 900;! Display Item A
             END
         CASE CMD[1,2] EQ 'B=' OR CMD[1,3] EQ 'B ='
             CMD=TRIM(FIELD(CMD,'=',2))
             IF CMD#'' AND NUM(CMD) THEN
                 STARTB=CMD
-                GOSUB 900 ;! Display Item B
+                GOSUB 900;! Display Item B
             END
         CASE CMD[1,1] EQ 'A'
             CMD=TRIM(CMD[2,99])
@@ -914,7 +918,7 @@ FILE.ITEM:  !
             END ELSE
                 STARTA+=MAX.LINES
             END
-            GOSUB 900 ;! Display Item A
+            GOSUB 900;! Display Item A
         CASE CMD[1,1] EQ 'B'
             CMD=TRIM(CMD[2,99])
             IF CMD#'' AND NUM(CMD) THEN
@@ -922,19 +926,19 @@ FILE.ITEM:  !
             END ELSE
                 STARTB+=MAX.LINES
             END
-            GOSUB 900 ;! Display Item B
+            GOSUB 900;! Display Item B
         CASE CMD EQ '?'
-            GOSUB 700 ;! Display Help Screen
+            GOSUB 700;! Display Help Screen
         CASE CMD[1,2] EQ 'PR'
-            GOSUB 800 ;! Print Items
+            GOSUB 800;! Print Items
         CASE CMD[1,1] EQ 'V'
             VERT.FLAG=@TRUE
-            GOSUB 600 ;! Format Display Mode
-            GOSUB 900 ;! Display Both Items
+            GOSUB 600;! Format Display Mode
+            GOSUB 900;! Display Both Items
         CASE CMD[1,1] EQ 'H'
             VERT.FLAG=@FALSE
-            GOSUB 600 ;! Format Display Mode
-            GOSUB 900 ;! Display Both Items
+            GOSUB 600;! Format Display Mode
+            GOSUB 900;! Display Both Items
         CASE CMD[1,3] EQ 'XEQ'
             CMD=TRIM(CMD[4,999])
             IF CMD EQ '' THEN CMD=LAST.EXEC
@@ -943,18 +947,18 @@ FILE.ITEM:  !
                 LAST.EXEC=CMD
                 CRT 'Press [RETURN] to continue ':
                 INPUT RET,1:
-                GOSUB 600 ;! Format Display Mode
-                GOSUB 900 ;! Display Both Items
+                GOSUB 600;! Format Display Mode
+                GOSUB 900;! Display Both Items
             END
         CASE CMD EQ 'TOP'
             STARTA=1
             STARTB=1
-            GOSUB 900 ;! Display Both Items
+            GOSUB 900;! Display Both Items
         CASE NUM(CMD) AND CMD # ''
             STARTA+=CMD
             STARTB+=CMD
-            GOSUB 900 ;! Display Both Items
-        CASE CMD[1,1] EQ 'Z'   ;! zoom into multi-valued attribute
+            GOSUB 900;! Display Both Items
+        CASE CMD[1,1] EQ 'Z';! zoom into multi-valued attribute
             AMA=OCONV(CMD,'MCN')
             AMB=STARTB+(AMA-STARTA)
             LINEA = RECA<AMA>
@@ -984,7 +988,7 @@ FILE.ITEM:  !
         CASE OTHERWISE
             STARTA+=MAX.LINES
             STARTB+=MAX.LINES
-            GOSUB 900 ;! Display Both Items
+            GOSUB 900;! Display Both Items
     END CASE
     GO 210
 !
@@ -1005,7 +1009,7 @@ FILE.ITEM:  !
         AMB=STARTB+J-1
         NBRB=AMB PDBJ
         GOSUB GETLINES
-        IF TRIM(TMPA) NE TRIM(TMPB) THEN
+        IF TRIM(TMPA, ' ', TRIM_OPT) NE TRIM(TMPB, ' ', TRIM_OPT) THEN
             PAD=REV.OFF
         END ELSE
             PAD=REV.ON
@@ -1035,8 +1039,8 @@ FILE.ITEM:  !
         NEXT L
         LINEA=LINEA[1,C]:PAD:LINEA[C+1,9999][1,LINE.LEN-2]
         LINEB=LINEB[1,C]:PAD:LINEB[C+1,9999][1,LINE.LEN-2]
-        IF TRIM(CMTA) # TRIM(CMTB) THEN
-            IF @LOGNAME EQ 'itarch' THEN DEBUG
+        IF TRIM(CMTA, ' ', TRIM_OPT) # TRIM(CMTB, ' ', TRIM_OPT) THEN
+            IF @LOGNAME EQ 'itarch' OR @LOGNAME EQ 'port98' OR @LOGNAME EQ 'port10' THEN DEBUG
             PAD=HION
             LINEA = PAD:LINEA
             LINEB = PAD:LINEB
@@ -1107,21 +1111,23 @@ FILE.ITEM:  !
     CRT @(10,11):'"H"orizontal display':
     CRT @(10,12):'"LOC"ate string':
     CRT @(10,13):'"S"earch again':
-    CRT @(10,14):'"F"ind next difference; "R{[<A>,B}}" re-adjust items':
-    CRT @(10,15):'"TOP" of items':
-    CRT @(10,16):'"EA" edit item A; "EB" edit item B':
-    CRT @(10,17):'"PR"int comparsion':
-    CRT @(10,18):'"XEQ"ECUTE A TCL STATEMENT':
-    CRT @(10,19):'"C{[<A>,B]}"opy different lines':
-    CRT @(10,20):'"CW{[<A>,B]}"opy record':
-    CRT @(10,21):'"M{[<A>,B]}"erge different lines':
-    CRT @(10,22):'"C{{[<A>,B]} a-b n-m}" replace lines n-m with a-b':
-    CRT @(10,23):'"M{{[<A>,B]} a-b n}" merge lines a-b before n':
-    CRT @(10,24):'"DE{{[<A>,B]} a{-b}}" delete line a or lines a-b':
-    CRT @(10,25):'"I{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
-    CRT @(10,26):'"*" toggle comment display'
-    CRT @(10,27):'"EX{K}" exit without save; "FI{K}" file changes':
-    CRT @(10,28):'"UNDO restore prior to last changes':
+    CRT @(10,14):'"F"ind next difference':
+    CRT @(10,15):'"R{[<A>,B}}" re-adjust items':
+    CRT @(10,16):'"TOP" of items':
+    CRT @(10,17):'"EA" edit item A; "EB" edit item B':
+    CRT @(10,18):'"PR"int comparsion':
+    CRT @(10,19):'"XEQ"ECUTE A TCL STATEMENT':
+    CRT @(10,20):'"C{[<A>,B]}"opy different lines':
+    CRT @(10,21):'"CW{[<A>,B]}"opy record':
+    CRT @(10,22):'"M{[<A>,B]}"erge different lines':
+    CRT @(10,23):'"C{{[<A>,B]} a-b n-m}" replace lines n-m with a-b':
+    CRT @(10,24):'"M{{[<A>,B]} a-b n}" merge lines a-b before n':
+    CRT @(10,25):'"DE{{[<A>,B]} a{-b}}" delete line a or lines a-b':
+    CRT @(10,26):'"I{{[<A>,B]} a{,b}}" insert a blank line at a or b lines at a':
+    CRT @(10,27):'"*" toggle comment display'
+    CRT @(10,28):'"EX{K}" exit without save; "FI{K}" file changes':
+    CRT @(10,29):'"UNDO restore prior to last changes':
+    CRT @(10,30):'"T"oggle full or reguler TRIM':
     CRT @(0,CMD.ROW):'Press [RETURN] to continue ':CLEOL:
     INPUT RET,1:
     IF TOGGLE2#'' THEN
@@ -1160,8 +1166,8 @@ FILE.ITEM:  !
 820 !
     PRINTER OFF
     PRINTER CLOSE
-    GOSUB 600 ;! Format Display Mode
-    GOSUB 900 ;! Display Both Items
+    GOSUB 600;! Format Display Mode
+    GOSUB 900;! Display Both Items
     RETURN
 !!!!!!!
 900 ! Display A Page
@@ -1180,7 +1186,7 @@ FILE.ITEM:  !
         GOSUB WRITEB
     END
     IF NOT(VERT.FLAG) THEN
-        GOSUB 400 ;! Display Item A
+        GOSUB 400;! Display Item A
         RETURN
     END
 ! Make Sure Have Not Scrolled Past Top Of Records
@@ -1211,7 +1217,7 @@ FILE.ITEM:  !
             NBRA=AMA PDAJ
             NBRB=AMB PDBJ
             GOSUB GETLINES
-            IF TRIM(TMPA) NE TRIM(TMPB) THEN
+            IF TRIM(TMPA, ' ', TRIM_OPT) NE TRIM(TMPB, ' ', TRIM_OPT) THEN
                 PAD=REV.OFF
                 LNRV = RVON
             END ELSE
@@ -1233,7 +1239,7 @@ FILE.ITEM:  !
             NEXT L
             LINEA=LINEA[1,C]:PAD:LINEA[C+1,LINE.LEN-2]
             LINEB=LINEB[1,C]:PAD:LINEB[C+1,LINE.LEN-2]
-            IF TRIM(CMTA) # TRIM(CMTB) THEN
+            IF TRIM(CMTA, ' ', TRIM_OPT) NE TRIM(CMTB, ' ', TRIM_OPT) THEN
                 PAD=HION
                 LNRV = ''
             END ELSE
@@ -1280,7 +1286,7 @@ FILE.ITEM:  !
                 TMPA=TRIM(TMPA)
                 TMPB=TRIM(TMPB)
             END
-            IF TRIM(TMPA) NE TRIM(TMPB) THEN
+            IF TRIM(TMPA, ' ', TRIM_OPT) NE TRIM(TMPB, ' ', TRIM_OPT) THEN
                 IF CMD[2,1] EQ 'B' THEN
                     UPDA=@TRUE
                     LINEA=LINEB
@@ -1337,7 +1343,7 @@ FILE.ITEM:  !
             TMPA=TRIM(TMPA)
             TMPB=TRIM(TMPB)
         END
-        IF TRIM(TMPA) NE TRIM(TMPB) THEN
+        IF TRIM(TMPA, ' ', TRIM_OPT) NE TRIM(TMPB, ' ', TRIM_OPT) THEN
             IF CMD[2,1] EQ 'B' THEN
                 MERGE.CODE := @AM:LINEB
                 IF MERGE.LINE EQ '' THEN MERGE.LINE=AMA
@@ -1396,7 +1402,31 @@ FILE.ITEM:  !
         END ELSE RETURN
     END ELSE
         CRT CL:'Now searching next difference ':
-        INCLUDE EB.OS.INCLUDES FIND.NEXT.DIFF
+        POSA=INDEX(RECA,AM,AMA)
+        POSB=INDEX(RECB,AM,AMB)
+        LOOP
+            LINEA=''
+            LOOP
+                REMOVE MVA FROM RECA AT POSA SETTING DELIMA
+            WHILE DELIMA>2 DO LINEA:=MVA:CHAR(256-DELIMA) REPEAT
+            LINEA:=MVA
+            LINEB=''
+            LOOP
+                REMOVE MVB FROM RECB AT POSB SETTING DELIMB
+            WHILE DELIMB>2 DO LINEB:=MVB:CHAR(256-DELIMB) REPEAT
+            LINEB:=MVB
+            AMA+=1
+            AMB+=1
+            CONVERT TAB TO SPC IN LINEA
+            CONVERT TAB TO SPC IN LINEB
+            LINEA=TRIM(LINEA, ' ', TRIM_OPT)
+            LINEB=TRIM(LINEB, ' ', TRIM_OPT)
+            CHKA=LINEA; CHKB=LINEB
+            IF CHKA[1,1]='!' THEN CHKA=''
+            IF NUM(FIELD(CHKA,' ',1)) AND FIELD(CHKA,' ',2)[1,1]='!' THEN CHKA=''
+            IF CHKB[1,1]='!' THEN CHKB=''
+            IF NUM(FIELD(CHKB,' ',1)) AND FIELD(CHKB,' ',2)[1,1]='!' THEN CHKB=''
+        WHILE (DELIMA OR DELIMB) AND CHKA=CHKB DO REPEAT
     END
 1099 !
     IF CHKA#CHKB THEN
@@ -1420,13 +1450,13 @@ FILE.ITEM:  !
         INPUT RET:
         GO 1199
     END
-    LINEA=TRIM(RECA<AMA>)
+    LINEA=TRIM(RECA<AMA>, ' ', TRIM_OPT)
     EMB=AMB+OFFSET
     LASTB=DCOUNT(RECB,@AM)
     FOR J=AMB TO EMB
         CRT @(19,NORMAL.DEPTH):'(':AMA:'-':J:')':CLEOL:
         IF J>LASTB THEN GO 1105
-        LINEB=TRIM(RECB<J>)
+        LINEB=TRIM(RECB<J>, ' ', TRIM_OPT)
         TMPA=LINEA
         TMPB=LINEB
         IF (T.OPTION) THEN
@@ -1457,13 +1487,13 @@ FILE.ITEM:  !
         INPUT RET:
         GO 1299
     END
-    LINEB=TRIM(RECB<AMB>)
+    LINEB=TRIM(RECB<AMB>, ' ', TRIM_OPT)
     EMA=AMA+OFFSET
     LASTA=DCOUNT(RECA,@AM)
     FOR J=AMA TO EMA
         CRT @(19,NORMAL.DEPTH):'(':AMB:'-':J:')':CLEOL:
         IF J>LASTA THEN GO 1205
-        LINEA=TRIM(RECA<J>)
+        LINEA=TRIM(RECA<J>, ' ', TRIM_OPT)
         TMPA=LINEA
         TMPB=LINEB
         IF (T.OPTION) THEN
@@ -1558,7 +1588,7 @@ UPDATE: !
                         END
                     END
                 END
-                IF CMD[2,1] EQ 'S' THEN CMD = '' ;! don't exit
+                IF CMD[2,1] EQ 'S' THEN CMD = '';! don't exit
             END
         END
     END
@@ -1757,13 +1787,13 @@ GET.CHAR: !
     RETURN
 trans_codes:
     BEGIN CASE
-        CASE FG_ACT.CODE EQ FG_HLP.CODE ; Z = '?'
-        CASE FG_ACT.CODE EQ FG_ABT.CODE ; Z = 'EX'
-        CASE FG_ACT.CODE EQ FG_TOP.CODE ; Z = 'TOP'
-        CASE FG_ACT.CODE EQ FG_TAB.CODE ; Z = 'R':ADJLEN
-        CASE FG_ACT.CODE EQ FG_BTAB.CODE ; Z = 'L':ADJLEN
-        CASE FG_ACT.CODE EQ FG_BTAB.CODE ; Z = 'L':ADJLEN
-        CASE FG_ACT.CODE EQ FG_PRVS.CODE ; Z = '-':MAX.LINES
+        CASE FG_ACT.CODE EQ FG_HLP.CODE; Z = '?'
+        CASE FG_ACT.CODE EQ FG_ABT.CODE; Z = 'EX'
+        CASE FG_ACT.CODE EQ FG_TOP.CODE; Z = 'TOP'
+        CASE FG_ACT.CODE EQ FG_TAB.CODE; Z = 'R':ADJLEN
+        CASE FG_ACT.CODE EQ FG_BTAB.CODE; Z = 'L':ADJLEN
+        CASE FG_ACT.CODE EQ FG_BTAB.CODE; Z = 'L':ADJLEN
+        CASE FG_ACT.CODE EQ FG_PRVS.CODE; Z = '-':MAX.LINES
     END CASE
     RETURN
 doeb:

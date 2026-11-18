@@ -24,14 +24,14 @@
     FG_TIMEDOUT = @FALSE
     EQU THE.REST TO 9999
     WPCOL=0; Sub=''; HELP.ID=''
-    IF UNASSIGNED(INP.STRING) THEN INP.STRING=''  ;!SPACE(LENTH)
+    IF UNASSIGNED(INP.STRING) THEN INP.STRING='';!SPACE(LENTH)
     IF INIT.FLAG NE @AM THEN INP.STRING=INIT.FLAG
     FG_OLD.FIELD=INP.STRING
 
     RTN.STRING = ''
-!    BACK=@(-AM.BACK)          ;!CHAR(21)
-!    FWD=@(-AM.FWD)  ;!CHAR(6)
-    ERASE=@(-1)     ;* Used when in debug to clear protect from screen
+!    BACK=@(-AM.BACK);!CHAR(21)
+!    FWD=@(-AM.FWD);!CHAR(6)
+    ERASE=@(-1);* Used when in debug to clear protect from screen
 *
 *    EB.CMD contains the string to return for the following
 *    1. Abort
@@ -57,7 +57,7 @@
     IF FG_MAX.CHARS>MAX.SUB THEN MAX.LEN=FG_MAX.CHARS+FG_EXPECT.CR*0 ELSE MAX.LEN=MAX.SUB
 !!#endif
     MAX.JUST='R#':FG_MAX.CHARS
-    MAX.LEN=FG_MAX.CHARS      ;!+FG_EXPECT.CR
+    MAX.LEN=FG_MAX.CHARS;!+FG_EXPECT.CR
     ERRS=0
     LAST.CHR=''
     WORD.WRAP=''
@@ -105,7 +105,9 @@
     END
     IF NOT(MAXLENTH) THEN MAXLENTH = LENTH
     CLEAR.FIELD=SPACE(LENTH)
-    DOTS=STR('_',LENTH)
+    IF UMODE EQ '' THEN UMODE = '_'
+    DOTS = UMODE
+    DOTS=STR(DOTS,LENTH)
     LAST.WPCOL=WPCOL+LENTH
     IF ROW MATCHES "1N0N" THEN
         IF LAST.WPCOL>79 THEN
@@ -124,7 +126,7 @@
     ORIG.COL=WPCOL
     WPCOL+=INP.POS-1
     PREV.CHARS=''
-    WPCHR.NBR=0     ;!FIRST.ASCII
+    WPCHR.NBR=0;!FIRST.ASCII
     RTN.KEY=@FALSE
     NORMAL.FIELD=(TYPE NE 'LIT' AND TYPE NE 'MENU' AND TYPE NE 'ACT')
     SECRET=(TYPE='HD')
@@ -153,7 +155,7 @@
     BEGIN CASE
         CASE HIDDEN
         CASE SECRET
-            CRT STR('*',XX): ; SEC.STRING=INP.STRING
+            CRT STR('*',XX):; SEC.STRING=INP.STRING
             INP.STRING=STR('*',LEN(INP.STRING))
         CASE 1
             CRT (IF JUST MATCHES "'L#'1N0N" THEN TRIM(STMP JUST, ' ', 'T') ELSE STMP):
@@ -194,7 +196,7 @@ STARTLBL: !
             L = LEN(INP.STRING)
             IF L LT LENTH THEN
                 CRT INP.STRING:
-                CRT SPACE(LENTH-L): ;!DOTS[1,LENTH-L]:
+                CRT SPACE(LENTH-L):;!DOTS[1,LENTH-L]:
             END ELSE
                 CRT INP.STRING JUST:
             END
@@ -206,7 +208,7 @@ STARTLBL: !
 ! Was the <RETURN> or <Line-Feed> key used ?
 !
 PROCESS.RTN: !
-       IF (WPCHR.NBR EQ RTN.VAL OR WPCHR.NBR EQ LF.VAL) THEN
+        IF (WPCHR.NBR EQ RTN.VAL OR WPCHR.NBR EQ LF.VAL) THEN
             RTN.KEY=@TRUE
             IF NOT(WORD.PROCESSING OR TYPE='MENU' OR TYPE='LIT') THEN
                 IF TRIM(INP.STRING) NE '' AND TYPE[1,1] NE 'A' AND NOT(HIDDEN OR SECRET) THEN GOSUB VALID.INPUT.CHECK
@@ -273,6 +275,7 @@ PROCESS.RTN: !
                 CASE FG_ACT.CODE=FG_SKP.CODE
                 CASE FG_ACT.CODE=FG_SEL.CODE
                 CASE FG_ACT.CODE=FG_SEARCH.CODE
+                CASE FG_ACT.CODE=FG_MULTI.CODE
                 CASE FG_ACT.CODE=FG_NXT.KEY.CODE
                 CASE FG_ACT.CODE=FG_PRV.KEY.CODE
                 CASE FG_ACT.CODE=FG_INS.LINE.CODE
@@ -321,7 +324,7 @@ PROCESS.RTN: !
                     RTN.STRING=EB.CMD<4>
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
 ! TAB
-                CASE FG_ACT.CODE=FG_TAB.CODE          ;!OR INDEX(PREV.CHARS,FG_TAB.CH,1)
+                CASE FG_ACT.CODE=FG_TAB.CODE;!OR INDEX(PREV.CHARS,FG_TAB.CH,1)
                     IF TYPE='MENU' ELSE
                         WPCHR.NBR=RTN.VAL
                         GOTO PROCESS.RTN
@@ -350,9 +353,9 @@ PROCESS.RTN: !
                 CASE FG_ACT.CODE=FG_JMP.CODE
                     IF HELP.ID NE '' THEN
                         CALL EB_BASIC_ZOOM(HELP.ID)
-                        RTN.STRING=EB.CMD<5>          ;* refresh
+                        RTN.STRING=EB.CMD<5>;* refresh
                     END ELSE
-                        RTN.STRING=EB.CMD<7>          ;* Zoom
+                        RTN.STRING=EB.CMD<7>;* Zoom
                     END
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
                 CASE FG_ACT.CODE=FG_RFR.CODE
@@ -372,10 +375,10 @@ PROCESS.RTN: !
                     FG_ACT.CODE=@FALSE
                     GOTO STARTLBL
                 END ELSE
-                    RTN.STRING=EB.CMD<6>          ;* Help key
+                    RTN.STRING=EB.CMD<6>;* Help key
                     IF LEN(RTN.STRING) THEN INP.STRING = RTN.STRING
                 END
-            END     ;! ELSE
+            END;! ELSE
             LAST.CHR=''
             IF JUST[1,2]='MT' THEN INP.STRING=ICONV(OCONV(INP.STRING,'MCU'),JUST)
             GO FINISH
@@ -401,7 +404,11 @@ ASCII.INPUT:    !
                         END
                     CASE NUM.FIELD
                         IF NOT(NUM(WPCHR)) THEN
-                            CRT BELL:
+                            IF FIRST.TIME THEN
+                                GOSUB 9 ;! del word
+                            END ELSE
+                                CRT BELL:
+                            END
                             CONTINUE
                         END
                 END CASE
@@ -429,7 +436,7 @@ ASCII.INPUT:    !
                             IF WORD.PROCESSING OR LAST.CHR=FG_BS.CH ELSE
                                 INP.POS=2
                                 WPCOL+=1
-                                GOSUB 10          ;! cleol
+                                GOSUB 10;! cleol
                                 INP.POS=1
                                 WPCOL-=1
                             END
@@ -484,8 +491,12 @@ ASCII.INPUT:    !
                 END
 ! DEL char
             CASE SUB.CODE=FG_DEL.CHAR.CODE
-                DUMMY=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
-                IF DUMMY NE '' THEN Sub=8
+                IF FIRST.TIME THEN
+                    Sub = 10
+                END ELSE
+                    DUMMY=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
+                    IF DUMMY NE '' THEN Sub=8
+                END
 ! DEL
             CASE SUB.CODE=FG_DEL.WORD.CODE
                 Sub=9
@@ -520,7 +531,7 @@ ASCII.INPUT:    !
                 RTN.KEY=@FALSE
                 INDENT=@FALSE; MARGIN=''
                 DUMMY=TRIM(INP.STRING[INP.POS,MAXLENTH],' ',"T")
-                IF DUMMY='' THEN  ;! end-of-paragraph
+                IF DUMMY='' THEN;! end-of-paragraph
                     INP.STRING=TRIM(INP.STRING,' ',"T")
                     IF NOT(INDEX(INP.STRING,NULL.CHAR,1)) THEN INP.STRING:=NULL.CHAR
                 END
@@ -567,6 +578,7 @@ FINISH: !
         INCLUDE EB.OS.INCLUDES PC.OFF.CURSOR
         IF NORMAL.FIELD AND INP.STRING NE '' THEN
             IF INDEX(INP.STRING,NULL.CHAR,1) THEN CONVERT NULL.CHAR TO HARD.RTN IN INP.STRING
+            SAVE.INP = INP.STRING
             IF SECRET THEN
                 STMP=STR('*',LEN(INP.STRING))
             END ELSE
@@ -575,10 +587,12 @@ FINISH: !
                         INP.STRING=ICONV(INP.STRING,JUST)
                     CASE TYPE='YN'
                         INP.STRING=(OCONV(INP.STRING, 'MCU') = 'Y')
+                    CASE 1
+                        STMP = INP.STRING
                 END CASE
-                STMP = INP.STRING
             END
             IF LENTH THEN CRT STR(BACK,WPCOL):STMP[1,LENTH] JUST:
+            STMP = SAVE.INP
             GOSUB STMP.ICONV
         END ELSE
             IF LENTH AND UNDERLINE.FLAG THEN CRT STR(BACK,INP.POS-1):CLEAR.FIELD:
@@ -610,7 +624,8 @@ VALID.INPUT.CHECK: !
             END
         CASE TYPE='T'
             INP.STRING=OCONV(INP.STRING,'MCU')
-            IF INDEX(INP.STRING,':',1) THEN
+!            IF INDEX(INP.STRING,':',1) THEN
+            IF NOT(INP.STRING MATCHES "1N0N") THEN
                 STMP=ICONV(INP.STRING,'MTS')
             END ELSE
                 STMP=OCONV(INP.STRING,'MCN')
@@ -631,7 +646,7 @@ VALID.INPUT.CHECK: !
                 END CASE
             END
             IF STMP NE '' THEN
-                INP.STRING=STMP
+                INP.STRING=STMP 'MTS'
             END ELSE
                 ERRMSG=FG_ERROR.MSGS<79>
             END
@@ -872,8 +887,8 @@ DEL.LABEL:
         NEXT.CHAR=''
     END
     FG_DELETE.LIST=WORD:NEXT.CHAR:@AM:FG_DELETE.LIST
-    INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[NEW.POS,MAXLENTH])    ;! JUST
-    TRAIL=LENTH-LEN(INP.STRING[INP.POS,LENTH])-WPCOL+1 ;!WORD.LENGTH-1
+    INP.STRING=(INP.STRING[1,INP.POS-1]:INP.STRING[NEW.POS,MAXLENTH]);! JUST
+    TRAIL=LENTH-LEN(INP.STRING[INP.POS,LENTH])-WPCOL+1;!WORD.LENGTH-1
     GOSUB CRT.UNDERLINE
     IF OLD.POS<=PASTE THEN
         PASTE-=WORD.LENGTH
@@ -1011,7 +1026,7 @@ DEL.LABEL:
     END
     OLD.WORD=WORD; NEW.WORD=''; GOSUB CASE.WORD
     ST=OLD.POS; FI=INP.POS-1; GOSUB FOREGROUND
-    INP.STRING=(INP.STRING[1,INP.POS-1]:WORD:INP.STRING[NEW.POS,MAXLENTH])         ;! JUST
+    INP.STRING=(INP.STRING[1,INP.POS-1]:WORD:INP.STRING[NEW.POS,MAXLENTH]);! JUST
     IF PASTE THEN
         ST=INP.POS; FI=NEW.POS; GOSUB BACKGROUND
     END ELSE
@@ -1076,7 +1091,7 @@ STMP.OCONV:
                 STMP='NY'[INP.STRING+1,1]
             END
         CASE TYPE NE 'LIT' AND LEN(JUST)
-            STMP=INP.STRING ;! in screen_driver this wrecks display....  JUST ;! ticker tape
+            STMP=INP.STRING;! in screen_driver this wrecks display....  JUST;! ticker tape
             update_val = @FALSE
         CASE 1
             STMP=INP.STRING

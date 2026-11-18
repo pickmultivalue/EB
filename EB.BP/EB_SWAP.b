@@ -267,6 +267,14 @@
             VAR1 = V1P:VAR1
             VAR2 = VAR2:V2S
         END
+        FUNC = FIELD(VAR2, '(', 1)
+        IF FUNC MATCHES "1A'CONV'" THEN
+            VAR2 = VAR2[COL2()+1, LEN(VAR2)]
+            CONV = FIELD(VAR2, ',', DCOUNT(VAR2, ','))
+            VAR2 = TRIM(VAR2[1, COL1()-1])
+            LETTER = (IF FUNC[1,1] EQ 'O' THEN 'I' ELSE 'O')
+            VAR1 = LETTER:FUNC[2,4]:'(':VAR1:',':CONV
+        END
         STMP=INDENT:VAR2:'=':VAR1:SUFFIX
         RETURN
     END

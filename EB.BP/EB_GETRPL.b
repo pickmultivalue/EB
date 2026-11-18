@@ -24,7 +24,7 @@ MAIN$:!
     CNT=DCOUNT(REC,AM)
     GOSUB DisplayPrompt
     RPOS=1
-    CONVERT AM TO VM IN RSS
+    CALL EB_RSS(0)
     LOOP
         CRT @(ICOL,IROW):
         IF RPOS AND RPOS<21 THEN Z=RSS<1,RPOS>
@@ -64,10 +64,11 @@ MAIN$:!
     CONVERT VM TO AM IN RSS
     IF FG_ACT.CODE AND FG_ACT.CODE NE FG_AMD.CODE THEN GO 3099
     LOCATE Z IN RSS<am_start> SETTING RPOS ELSE
-        IF RPOS<50 THEN RPOS=0 ELSE
-            RPOS=50
-            PSS<50>=''
-        END
+        RPOS = 0
+!        IF RPOS<50 THEN RPOS=0 ELSE
+!            RPOS=50
+!            PSS<50>=''
+!        END
     END
     IF RPOS THEN
         DEL RSS<RPOS>
@@ -295,6 +296,7 @@ MAIN$:!
         END CASE
 3099    !
         CRT MSG.DSP:
+        CALL EB_RSS(1)
         RETURN
 INPT:   !
         POS=1
