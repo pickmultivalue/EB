@@ -1,4 +1,5 @@
     FUNCTION GIT_COMMIT(FullPaths)
+    COMMON /git/ real_git
 !
 ! Utility to check in one or more items to GIT
 !
@@ -56,27 +57,32 @@
     IF GETENV('pwd',homepath) ELSE
         IF GETENV('PWD',homepath) THEN NULL
     END
-!    homepath = GIT_GETHOMEPATH(FullPaths<1>)
     homepath = CHANGE(homepath, DIR_DELIM_CH, '/')
+    esc_chars = '&$'
+    width = 6
+    hash = 'R#':width
+    back = STR(CHAR(8),width):CHAR(0)
+    CRT '(':nbr_items:') ':
+    logs = GIT_EXEC('log', TRUE)
     FOR i = 1 TO nbr_items
         oldPath = FullPaths<i,1>
         newPath = FullPaths<i,2>
         FullPath = homepath:DIR_DELIM_CH:(IF LEN(newPath) THEN newPath ELSE oldPath)
+        FOR cpos = 1 TO LEN(esc_chars)
+            c = esc_chars[cpos,1]
+            FullPath = CHANGE(FullPath, c, '\':c)
+        NEXT cpos
         status = GIT_EXEC('status ':FullPath, TRUE)
         IF LEN(status) = 0 THEN CONTINUE
         CALL SPLITFILEPATH(FullPath, FilePath, ItemName)
         Root = GIT_GETROOT(FilePath)
         LOCATE Root IN RootList SETTING POS ELSE
-!            IF POS>1 THEN
-!                CRT 'Error: ';!you cannot submit from 2 different GIT check out directories'
-!                CRT Root
-!                STOP
-!            END
             INS Root BEFORE RootList<POS>
         END
         logs = SRC_HISTORY(FilePath, ItemName, '')
         log_datetime = logs<3,1>:logs<4,1>
         history = SRC_READHIST(1, FilePath, ItemName, '', '', '', '')
+        CRT i hash:back:
         description = history<1>
         dates = history<5>
         times = history<4>
@@ -88,6 +94,7 @@
                 DESCRIPTION<1, -1> = description<1, v>
             END
         NEXT v
+        IF DESCRIPTION EQ '' THEN CONTINUE
 !
 ! Build a list of Descriptions. If they're all the same then
 ! we'll change the Template at the end of this loop
