@@ -143,7 +143,7 @@ compare:
                 READ FITEM FROM FIRST,ID THEN
                     IF NOT(B.OPTION) THEN
                         LINE = FITEM<1>
-                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+!                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
                     END
                 END ELSE FITEM=''
             END
@@ -155,7 +155,7 @@ compare:
                 READ SFITEM FROM SECOND,ID THEN
                     IF NOT(B.OPTION) THEN
                         LINE = SFITEM<1>
-                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
+!                        IF LINE NE OCONV(LINE,'MCP') THEN CONTINUE
                     END
                 END ELSE SFITEM=''
             END
