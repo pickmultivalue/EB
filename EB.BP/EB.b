@@ -713,6 +713,7 @@ TOP: !
         END ELSE
             LOCATE autocmd<2> IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
             INS autocmd<2> BEFORE SSS<1>
+            CALL EB_RSS(-1)
         END
         GOTO CHECK.CODES
     END
@@ -1004,6 +1005,7 @@ SCROLL.LINE:    !
                     WORD=TRIM(WORD)
                     LOCATE 'V;':WORD IN SSS<am_start> SETTING POS THEN DEL SSS<POS>
                     INS 'V;':WORD BEFORE SSS<1>
+                    CALL EB_RSS(-1)
                 END
             END
             Z=INDROW
@@ -1894,6 +1896,7 @@ CHG.LROW:
             IF LEN(FTYP) THEN
                 LOCATE '///' IN SSS SETTING Z THEN DEL SSS<Z>
                 INS '///' BEFORE SSS<1>
+                CALL EB_RSS(-1)
                 FG_ACT.CODE=FG_MULTI.CODE
                 CALL EB_SEARCH
                 Z=INDROW+LROW-1
